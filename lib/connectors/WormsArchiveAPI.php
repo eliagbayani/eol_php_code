@@ -281,7 +281,7 @@ class WormsArchiveAPI extends ContributorsMapAPI
                 if(@$parts[1]) $field = $parts[1];
 
                 // /* manual adjustments
-                if($class == "agent") {
+                if($class == "agent") { # test
                     if($field == "term_homepage") {
                         if($val = @$rec[$key]) $rec[$key] = str_replace("&amp;", "&", $val);
                     }
