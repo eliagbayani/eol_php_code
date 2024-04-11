@@ -44,7 +44,7 @@ class TraitDataImportAPI
             $this->input['worksheets'] = array('data', 'references', 'vocabulary'); //'data' is the 1st worksheet from Trait_template.xlsx
             $this->vocabulary_fields = array("predicate label", "predicate uri", "value label", "value uri", "units label", "units uri", "statmeth label", "statmeth uri", "sex label", "sex uri", "lifestage label", "lifestage uri");
             
-            $this->opendata_dataset_api = $this->pre_ckain_api.'/action/package_show?id=';
+            $this->opendata_dataset_api = $this->pre_ckan_api.'/action/package_show?id=';
 
             $this->reference_schema = 'https://editors.eol.org/other_files/ontology/reference_extension.xml';
         }
