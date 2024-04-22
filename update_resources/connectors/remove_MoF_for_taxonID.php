@@ -3,8 +3,10 @@ namespace php_active_record;
 /* This is generic way of removing MoF and occurrences for a taxonID.
 first client: Try database: https://opendata.eol.org/dataset/try/resource/c55b9051-4125-4c36-ab54-cb56477a8746
                             https://eol-jira.bibalex.org/browse/DATA-1766?focusedCommentId=67789&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67789
-
+                            http://content.eol.org/resources/578 -- TRY summarized records
     php update_resources/connectors/remove_MoF_for_taxonID.php _ '{"resource_id": "TRY_temp2", "resource": "remove_MoF_for_taxonID", "resource_name": "Try Database temp2"}'
+
+2nd client: xxx
 */
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");

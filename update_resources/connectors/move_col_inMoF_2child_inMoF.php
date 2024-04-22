@@ -3,10 +3,11 @@ namespace php_active_record;
 /* This is generic way to move a column(s) in MoF to a child record in MoF.
 first client: Try database: https://opendata.eol.org/dataset/try/resource/c55b9051-4125-4c36-ab54-cb56477a8746
                             https://eol-jira.bibalex.org/browse/DATA-1766?focusedCommentId=67791&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67791
-
+                            http://content.eol.org/resources/578 -- TRY summarized records
                             Basically moving these columns in MoF SampleSize and bodyPart to children records in MoF
-
 php update_resources/connectors/move_col_inMoF_2child_inMoF.php _ '{"resource_id": "try_dbase_2024_meta_recoded", "resource": "move_MoF_col_2childMoF", "resource_name": "Try DB MoF update"}'
+
+2nd client: xxx
 */
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");
