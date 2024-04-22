@@ -26,18 +26,24 @@ class ResourceUtility
     /*============================================================ STARTS remove_MoF_for_taxonID =================================================*/
     function remove_MoF_for_taxonID($info, $resource_name) //Func #7
     {   // exit("\nthis resource id: $this->resource_id\n"); this resource id: try_dbase_2024
-        
+
+        $tables = $info['harvester']->tables; // print_r($tables); exit;
+
         // /* Customize here:
-        if($this->resource_id == "try_dbase_2024") $this->taxonIDs_in_question = array("Phymatodes sp");
+        if($this->resource_id == "try_dbase_2024") {
+            // generate $this->taxonIDs_in_question -- array("Phymatodes sp")
+            self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'get taxonIDs 2 delete');
+            echo "\ntaxonIDs to delete: [".count($this->taxonIDs_in_question)."]\n";
+        }
         else exit("\nResourceUtility: not yet setup.\n");
         // */
 
-        $tables = $info['harvester']->tables; // print_r($tables); exit;
         // step 1: get all occurrence ids with this taxon ID. Then write occurrence for those that are not of this taxon ID.
         self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/occurrence'][0], 'get occur recs for this taxonID');
         // step 2: write MoF not in the list of occur ids from step 1.
         self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'write MoF not of this taxonID');
-
+        // step 3: generate taxon.tab without the said taxon rows
+        self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxon.tab without the not-wanted taxonIDs');
         if(isset($this->debug)) print_r($this->debug);
     }
 
@@ -88,12 +94,31 @@ class ResourceUtility
             // print_r($rec); exit("\ndebug...\n");
 
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            if($what == 'get occur recs for this taxonID') {
+            if($what === 'get taxonIDs 2 delete') {
+                $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+                $rank = @$rec['http://rs.tdwg.org/dwc/terms/taxonRank'];
+                $status = @$rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'];
+                $this->debug['taxonomicStatus'][$status] = '';
+                // if(stripos($taxonID, " sp") !== false)  //string is found
+                if(substr($taxonID, -3) == " sp" || substr($taxonID, -4) == " sp.") {
+                    if($rank != "species") $this->taxonIDs_in_question[$taxonID] = '';
+                }
+                // ============================
+                // [accepted] => 
+                // [invalid name] => 
+                // [] => 
+                // [multiple synonyms] => 
+                // [unrecognized] => 
+                // [unresolved] => 
+                if(in_array($status, array("invalid name", "multiple synonyms", "unrecognized", "unresolved"))) $this->taxonIDs_in_question[$taxonID] = '';
+            }
+            elseif($what == 'get occur recs for this taxonID') {
                 /*  Array(
                         [http://rs.tdwg.org/dwc/terms/occurrenceID] => TRY_Adenogramma glomerata
                         [http://rs.tdwg.org/dwc/terms/taxonID] => Adenogramma glomerata
                     )*/
-                if(in_array($rec['http://rs.tdwg.org/dwc/terms/taxonID'], $this->taxonIDs_in_question)) {
+                $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+                if(isset($this->taxonIDs_in_question[$taxonID])) {
                     $occurrenceID = $rec['http://rs.tdwg.org/dwc/terms/occurrenceID'];
                     $this->occurrence_IDs_2delete[$occurrenceID] = '';
                     continue;
@@ -108,6 +133,13 @@ class ResourceUtility
                 if(isset($this->occurrence_IDs_2delete[$occurrenceID])) continue;
                 else {
                     $o = new \eol_schema\MeasurementOrFact_specific();
+                    self::loop_write($o, $rec);
+                }
+            }
+            elseif($what == 'gen taxon.tab without the not-wanted taxonIDs') { //for remove_MoF_for_taxonID()
+                $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+                if(!isset($this->taxonIDs_in_question[$taxonID])) {
+                    $o = new \eol_schema\Taxon();
                     self::loop_write($o, $rec);
                 }
             }

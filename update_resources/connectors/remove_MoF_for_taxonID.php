@@ -49,9 +49,8 @@ function process_resource_url($dwca_file, $resource_id, $param)
 
     if($resource_id == "try_dbase_2024") {
         // /* main operation. MoF and occurrence will be updated in ResourceUtility. taxon and reference will be updated in DwCA_Utility's built-in carry-over
-        $excluded_rowtypes = array("http://rs.tdwg.org/dwc/terms/measurementorfact", "http://rs.tdwg.org/dwc/terms/occurrence");
+        $excluded_rowtypes = array("http://rs.tdwg.org/dwc/terms/measurementorfact", "http://rs.tdwg.org/dwc/terms/occurrence", "http://rs.tdwg.org/dwc/terms/taxon");
         // "http://eol.org/schema/reference/reference"
-        // "http://rs.tdwg.org/dwc/terms/taxon"
         // */
         /* during dev only -- comment in real operation
         $excluded_rowtypes = array("http://rs.tdwg.org/dwc/terms/measurementorfact", "http://rs.tdwg.org/dwc/terms/occurrence", "http://eol.org/schema/reference/reference", "http://rs.tdwg.org/dwc/terms/taxon");
