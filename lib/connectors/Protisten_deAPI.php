@@ -43,15 +43,18 @@ class Protisten_deAPI
 
         self::taxon_mapping_from_GoogleSheet();
         self::write_agent();
-        $batches = self::get_total_batches(); print_r($batches);
-        foreach($batches as $filename) {
-            echo "\nprocess batch [$filename]\n";
-            self::process_one_batch($filename);
-            // break; //debug - process only 1 batch.
+        if($batches = self::get_total_batches()) {
+            print_r($batches);
+            foreach($batches as $filename) {
+                echo "\nprocess batch [$filename]\n";
+                self::process_one_batch($filename);
+                // break; //debug - process only 1 batch.
+            }
+            $this->archive_builder->finalize(true);
+            if(isset($this->debug)) print_r($this->debug);
+            if(!@$this->debug['does not exist']) echo "\n--No broken images!--\n";    
         }
-        $this->archive_builder->finalize(true);
-        if(isset($this->debug)) print_r($this->debug);
-        if(!@$this->debug['does not exist']) echo "\n--No broken images!--\n";
+        else exit("\nStructure changed. Investigate.\n");
     }
     private function process_one_batch($filename)
     {   
@@ -191,6 +194,8 @@ class Protisten_deAPI
                 return $arr[1];
             }
         }
+        else echo "\nSite is unavailable: [".$this->page['main']."]\n";
+        return false;
     }
     private function write_archive($rec)
     {
