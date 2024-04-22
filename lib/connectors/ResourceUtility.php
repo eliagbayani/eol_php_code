@@ -100,7 +100,7 @@ class ResourceUtility
                 $status = @$rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'];
                 $this->debug['taxonomicStatus'][$status] = '';
                 // if(stripos($taxonID, " sp") !== false)  //string is found
-                if(substr($taxonID, -3) == " sp" || substr($taxonID, -4) == " sp.") {
+                if(substr($taxonID, -3) == " sp" || substr($taxonID, -4) == " sp." || $taxonID == "sp") {
                     if($rank != "species") $this->taxonIDs_in_question[$taxonID] = '';
                 }
                 // ============================
