@@ -156,7 +156,7 @@ class ResourceUtility
 
             elseif($what == 'write MoF not of this taxonID') {
 
-                // /* NEW: log URI not found in EOL Terms file
+                // /* ++++++++++++++++++++ NEW: log URI not found in EOL Terms file
                 $measurementType    = $rec['http://rs.tdwg.org/dwc/terms/measurementType'];
                 $measurementValue   = $rec['http://rs.tdwg.org/dwc/terms/measurementValue'];
                 $measurementMethod  = $rec['http://rs.tdwg.org/dwc/terms/measurementMethod'];
@@ -186,13 +186,21 @@ class ResourceUtility
                         continue; //this can be commented actually
                     }
                 }
+
+                /* We don't need this anymore since EOL terms file is now updated to: is_text_only: true
+                    is_text_only: true
+                    name: measurement method
+                    type: metadata
+                    uri: http://rs.tdwg.org/dwc/terms/measurementMethod
+
                 if($measurementMethod) {
                     if(!isset($this->uris[$measurementMethod])) {
                         @$this->debug["Missing measurementMethod"][$measurementMethod]++;
                         $rec['http://rs.tdwg.org/dwc/terms/measurementMethod'] = '';
                     }    
                 }
-                // */
+                */
+                // ++++++++++++++++++++ */
 
                 // start main write step:
                 $occurrenceID = $rec['http://rs.tdwg.org/dwc/terms/occurrenceID'];
@@ -201,8 +209,6 @@ class ResourceUtility
                     $o = new \eol_schema\MeasurementOrFact_specific();
                     self::loop_write($o, $rec);
                 }
-
-
             }
             elseif($what == 'gen taxon.tab without the not-wanted taxonIDs') { //for remove_MoF_for_taxonID()
                 $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
