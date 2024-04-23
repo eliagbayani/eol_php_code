@@ -31,7 +31,7 @@ class ResourceUtility
 
         // /* Customize here:
         if($this->resource_id == "try_dbase_2024") {
-            // generate $this->taxonIDs_in_question -- array("Phymatodes sp")
+            // generate $this->taxonIDs_in_question -- e.g. array("Phymatodes sp")
             self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'get taxonIDs 2 delete for TRY dbase');
             echo "\ntaxonIDs to delete: [".count($this->taxonIDs_in_question)."]\n";
         }
@@ -45,11 +45,15 @@ class ResourceUtility
         $this->uris = self::assemble_terms_yml();
         // */
 
-
         // step 2: write MoF not in the list of occur ids from step 1.
         self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'write MoF not of this taxonID');
         // step 3: generate taxon.tab without the said taxon rows
         self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxon.tab without the not-wanted taxonIDs');
+
+        // step 4: start write for occurrences
+        self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/occurrence'][0], 'write occurrences');
+
+
         if(isset($this->debug)) print_r($this->debug);
     }
     private function assemble_terms_yml()
@@ -138,18 +142,25 @@ class ResourceUtility
                     $this->occurrence_IDs_2delete[$occurrenceID] = '';
                     continue;
                 }
+            }
+            elseif($what == 'write occurrences') {
+
+                $occurrenceID = $rec['http://rs.tdwg.org/dwc/terms/occurrenceID'];
+                if(isset($this->occurrence_IDs_2delete[$occurrenceID])) continue;
                 else {
                     $o = new \eol_schema\Occurrence_specific();
                     self::loop_write($o, $rec);
                 }
+
             }
+
             elseif($what == 'write MoF not of this taxonID') {
 
                 // /* NEW: log URI not found in EOL Terms file
-                $measurementType = $rec['http://rs.tdwg.org/dwc/terms/measurementType'];
-                $measurementValue = $rec['http://rs.tdwg.org/dwc/terms/measurementValue'];
-                $measurementMethod = $rec['http://rs.tdwg.org/dwc/terms/measurementMethod'];
-
+                $measurementType    = $rec['http://rs.tdwg.org/dwc/terms/measurementType'];
+                $measurementValue   = $rec['http://rs.tdwg.org/dwc/terms/measurementValue'];
+                $measurementMethod  = $rec['http://rs.tdwg.org/dwc/terms/measurementMethod'];
+                $occurrenceID       = $rec['http://rs.tdwg.org/dwc/terms/occurrenceID'];
 
                 // /* ----- from Jen: https://github.com/EOL/ContentImport/issues/7#issuecomment-2072229132
                 // For TRY database but can be global
@@ -165,12 +176,14 @@ class ResourceUtility
 
                 if(!isset($this->uris[$measurementType])) {
                     @$this->debug["Missing measurementType"][$measurementType]++;
-                    continue;
+                    $this->occurrence_IDs_2delete[$occurrenceID] = '';
+                    continue; //this can be commented actually
                 }
                 if(!is_numeric($measurementValue)) {
                     if(!isset($this->uris[$measurementValue])) {
                         @$this->debug["Missing measurementValue"][$measurementValue]++;
-                        continue;
+                        $this->occurrence_IDs_2delete[$occurrenceID] = '';
+                        continue; //this can be commented actually
                     }
                 }
                 if($measurementMethod) {
