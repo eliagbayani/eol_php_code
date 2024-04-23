@@ -13,7 +13,7 @@ https://github.com/EOL/eol_terms/blob/main/resources/terms.yml
 */
 class EOLterms_ymlAPI
 {
-    function __construct($archive_builder, $resource_id)
+    function __construct($archive_builder = false, $resource_id = false)
     {
         $this->download_options = array('cache' => 1, 'expire_seconds' => 60*60*24*1, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1, 'delay_in_minutes' => 1);
         // $this->download_options['expire_seconds'] = false; //comment after first harvest
@@ -48,6 +48,7 @@ class EOLterms_ymlAPI
                     )*/
                     $name = self::remove_quote_delimiters($rek['name']);
                     if($sought_type == 'ALL')               $final[$name] = $rek['uri'];
+                    elseif($sought_type == 'ALL_URI')       $final[$rek['uri']] = $name;
                     elseif($sought_type == 'WoRMS value') {
                         if(@$rek['type'] == 'value') $final[$rek['uri']] = $name;
                     }

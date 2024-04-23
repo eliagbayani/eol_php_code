@@ -32,7 +32,7 @@ class ResourceUtility
         // /* Customize here:
         if($this->resource_id == "try_dbase_2024") {
             // generate $this->taxonIDs_in_question -- array("Phymatodes sp")
-            self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'get taxonIDs 2 delete');
+            self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'get taxonIDs 2 delete for TRY dbase');
             echo "\ntaxonIDs to delete: [".count($this->taxonIDs_in_question)."]\n";
         }
         else exit("\nResourceUtility: not yet setup.\n");
@@ -40,12 +40,27 @@ class ResourceUtility
 
         // step 1: get all occurrence ids with this taxon ID. Then write occurrence for those that are not of this taxon ID.
         self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/occurrence'][0], 'get occur recs for this taxonID');
+
+        // /* NEW: to check URI's againt the EOL Terms file
+        $this->uris = self::assemble_terms_yml();
+        // */
+
+
         // step 2: write MoF not in the list of occur ids from step 1.
         self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'write MoF not of this taxonID');
         // step 3: generate taxon.tab without the said taxon rows
         self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxon.tab without the not-wanted taxonIDs');
         if(isset($this->debug)) print_r($this->debug);
     }
+    private function assemble_terms_yml()
+    {
+        require_library('connectors/EOLterms_ymlAPI');
+        $func = new EOLterms_ymlAPI($this->resource_id, $this->archive_builder);
+        $uris = $func->get_terms_yml('ALL_URI');
+        // foreach($ret as $label => $uri) $uris[$uri] = $label;
+        return $uris;
+    }
+
 
     /*============================================================= ENDS remove_MoF_for_taxonID ==================================================*/
     /*============================================================ STARTS remove_unused_occurrences =================================================*/
@@ -94,7 +109,7 @@ class ResourceUtility
             // print_r($rec); exit("\ndebug...\n");
 
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            if($what === 'get taxonIDs 2 delete') {
+            if($what === 'get taxonIDs 2 delete for TRY dbase') {
                 $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
                 $rank = @$rec['http://rs.tdwg.org/dwc/terms/taxonRank'];
                 $status = @$rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'];
@@ -129,12 +144,52 @@ class ResourceUtility
                 }
             }
             elseif($what == 'write MoF not of this taxonID') {
+
+                // /* NEW: log URI not found in EOL Terms file
+                $measurementType = $rec['http://rs.tdwg.org/dwc/terms/measurementType'];
+                $measurementValue = $rec['http://rs.tdwg.org/dwc/terms/measurementValue'];
+                $measurementMethod = $rec['http://rs.tdwg.org/dwc/terms/measurementMethod'];
+
+
+                // /* ----- from Jen: https://github.com/EOL/ContentImport/issues/7#issuecomment-2072229132
+                // For TRY database but can be global
+                if($measurementType == "http://eol.org/schema/terms/Habitat") {
+                    $rec['http://rs.tdwg.org/dwc/terms/measurementType'] = "http://purl.obolibrary.org/obo/RO_0002303";
+                    $measurementType = $rec['http://rs.tdwg.org/dwc/terms/measurementType'];
+                }
+                if($measurementValue == "http://www.wikidata.org/entity/Q127498") {
+                    $rec['http://rs.tdwg.org/dwc/terms/measurementValue'] = "https://www.wikidata.org/entity/Q12806437";
+                    $measurementValue = $rec['http://rs.tdwg.org/dwc/terms/measurementValue'];
+                }
+                // ----- */
+
+                if(!isset($this->uris[$measurementType])) {
+                    @$this->debug["Missing measurementType"][$measurementType]++;
+                    continue;
+                }
+                if(!is_numeric($measurementValue)) {
+                    if(!isset($this->uris[$measurementValue])) {
+                        @$this->debug["Missing measurementValue"][$measurementValue]++;
+                        continue;
+                    }
+                }
+                if($measurementMethod) {
+                    if(!isset($this->uris[$measurementMethod])) {
+                        @$this->debug["Missing measurementMethod"][$measurementMethod]++;
+                        $rec['http://rs.tdwg.org/dwc/terms/measurementMethod'] = '';
+                    }    
+                }
+                // */
+
+                // start main write step:
                 $occurrenceID = $rec['http://rs.tdwg.org/dwc/terms/occurrenceID'];
                 if(isset($this->occurrence_IDs_2delete[$occurrenceID])) continue;
                 else {
                     $o = new \eol_schema\MeasurementOrFact_specific();
                     self::loop_write($o, $rec);
                 }
+
+
             }
             elseif($what == 'gen taxon.tab without the not-wanted taxonIDs') { //for remove_MoF_for_taxonID()
                 $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
