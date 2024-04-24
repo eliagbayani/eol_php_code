@@ -187,7 +187,7 @@ class ResourceUtility
                     }
                 }
 
-                // /* We don't need this anymore since EOL terms file is now updated to: is_text_only: true
+                /* We don't need this anymore since EOL terms file is now updated to: is_text_only: true
                     // is_text_only: true
                     // name: measurement method
                     // type: metadata
@@ -199,7 +199,7 @@ class ResourceUtility
                         $rec['http://rs.tdwg.org/dwc/terms/measurementMethod'] = '';
                     }    
                 }
-                // */
+                */
                 // ++++++++++++++++++++ */
 
                 // start main write step:
