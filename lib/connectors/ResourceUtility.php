@@ -200,6 +200,14 @@ class ResourceUtility
                     }    
                 }
                 */
+
+                // /* per Jen: a new work around for measurementMethod with URL values
+                if(substr($measurementMethod, 0, 4) == "http") {
+                    $measurementMethod = "Followed methods described in " . $measurementMethod;
+                    $rec['http://rs.tdwg.org/dwc/terms/measurementMethod'] = $measurementMethod;
+                }
+                // */
+
                 // ++++++++++++++++++++ */
 
                 // start main write step:
