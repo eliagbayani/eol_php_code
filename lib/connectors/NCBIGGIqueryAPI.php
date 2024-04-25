@@ -158,7 +158,7 @@ class NCBIGGIqueryAPI
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bhl"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
-        // $this->ggi_databases = array("inat"); //debug - use to process 1 database
+        $this->ggi_databases = array("inat"); //debug - use to process 1 database
 
         // $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl");
 
@@ -232,12 +232,12 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                // break; //debug only - process just a subset, just the 1st cycle
+                break; //debug only - process just a subset, just the 1st cycle
                 // if($i > 200) break; //debug only
             }
             // */
 
-            self::compare_previuos_and_current_dumps();
+            self::compare_previuos_and_current_dumps_then_process();
             $this->create_archive();
         }
         echo "\n temp dir: " . $this->TEMP_DIR . "\n";
@@ -261,7 +261,7 @@ class NCBIGGIqueryAPI
         if(!($WRITE = Functions::file_open($file, "w"))) return;
         fclose($WRITE);
     }
-    private function compare_previuos_and_current_dumps()
+    private function compare_previuos_and_current_dumps_then_process()
     {
         foreach($this->ggi_databases as $database) {
             $previous = $this->ggi_text_file[$database]["previous"];
@@ -269,10 +269,12 @@ class NCBIGGIqueryAPI
             if(Functions::count_rows_from_text_file($current) >= Functions::count_rows_from_text_file($previous)) {
                 self::process_text_file($current, $database);
                 unlink($previous);
-                if(copy($current, $previous))
-                  unlink($current);
+                if(copy($current, $previous)) unlink($current);
             }
-            else self::process_text_file($previous, $database);
+            else {
+                self::process_text_file($previous, $database);
+                unlink($current);                
+            }
         }
     }
     private function process_text_file($filename, $database)
@@ -319,6 +321,8 @@ class NCBIGGIqueryAPI
             elseif($database == "gbif")  $with_data = self::query_family_GBIF_info($family, $is_subfamily, $database);
             elseif($database == "bhl")   $with_data = self::query_family_BHL_info($family, $is_subfamily, $database);
             elseif($database == "bolds") $with_data = self::query_family_BOLDS_info($family, $is_subfamily, $database);
+            elseif($database == "inat") $with_data = self::query_family_INAT_info($family, $is_subfamily, $database);
+
 
             if(($is_subfamily && $with_data) || !$is_subfamily) {
                 $taxon = new \eol_schema\Taxon();
