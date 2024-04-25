@@ -25,7 +25,7 @@ Here are the current measurementTypes we're getting from respective databases.
 We either used an API service or a webpage service (scraped) whichever was available.
 
 BOLDS
-"http://eol.org/schema/terms/NumberRecordsInBOLD"
+"http://eol.org/schema/terms/NumberRecordsInBOLD"           - removed non-public -
 "http://eol.org/schema/terms/RecordInBOLD" (boolean)
 "http://eol.org/schema/terms/NumberPublicRecordsInBOLD"
 
@@ -336,11 +336,13 @@ class NCBIGGIqueryAPI
             if($info = self::parse_bolds_taxon_search($json)) {
                 $rec["source"] = $this->bolds_taxon_page_by_id . $info["taxid"];
                 if(@$info["specimens"] > 0) {
+                    /* removed non-public
                     $rec["object_id"]   = "_no_of_rec_in_bolds";
                     $rec["count"]       = $info["specimens"];
                     $rec["label"]       = "Number records in BOLDS";
                     $rec["measurement"] = "http://eol.org/schema/terms/NumberRecordsInBOLD";
                     self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                    */
                     /* removed boolean
                     $rec["object_id"]   = "_rec_in_bolds";
                     $rec["count"]       = "http://eol.org/schema/terms/yes";
@@ -351,8 +353,10 @@ class NCBIGGIqueryAPI
                 }
                 else {
                     if(!$is_subfamily) {
+                        /* removed non-public
                         $rec["object_id"] = "_no_of_rec_in_bolds";
                         self::add_string_types($rec, "Number records in BOLDS", 0, "http://eol.org/schema/terms/NumberRecordsInBOLD", $family);
+                        */
                         /* removed boolean
                         $rec["object_id"] = "_rec_in_bolds";
                         self::add_string_types($rec, "Records in BOLDS", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/RecordInBOLD", $family);
@@ -379,8 +383,10 @@ class NCBIGGIqueryAPI
         else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
 
         if(!$is_subfamily) {
+            /* removed non-public
             $rec["object_id"] = "_no_of_rec_in_bolds";
             self::add_string_types($rec, "Number records in BOLDS", 0, "http://eol.org/schema/terms/NumberRecordsInBOLD", $family);
+            */
             /* removed boolean
             $rec["object_id"] = "_rec_in_bolds";
             self::add_string_types($rec, "Records in BOLDS", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/RecordInBOLD", $family);
