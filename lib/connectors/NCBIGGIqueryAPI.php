@@ -179,8 +179,9 @@ class NCBIGGIqueryAPI
 
     function get_all_taxa()
     {
-        $this->taxa_blacklist_bhl_csv_call = file($this->blacklist_bhl_csv_call, FILE_IGNORE_NEW_LINES);
-        print_r($this->taxa_blacklist_bhl_csv_call); //exit;
+        $this->taxa_blacklist_bhl_csv_call = array();
+        if(file_exists($this->blacklist_bhl_csv_call)) $this->taxa_blacklist_bhl_csv_call = file($this->blacklist_bhl_csv_call, FILE_IGNORE_NEW_LINES);
+        echo "\nBlacklist: "; print_r($this->taxa_blacklist_bhl_csv_call); //exit;
 
         self::initialize_files();
         /*
@@ -578,7 +579,7 @@ class NCBIGGIqueryAPI
                     }
                     elseif(in_array($database, array("ncbi", "gbif", "ggbn"))) { // ncbi, gbif, ggbn
                         $u = $this->eol_api["page"][0] . $id . $this->eol_api["page"][1];
-                        echo "\ninvestigate: [$u]\n";
+                        // echo "\ninvestigate: [$u]\n";
                         if($json = Functions::lookup_with_cache($u, $d_options)) {
                             $json = json_decode($json, true);
                             if(@$json["taxonConcepts"]) {
