@@ -44,7 +44,7 @@ GGBN
 
 NCBI
 "http://eol.org/schema/terms/NumberOfSequencesInGenBank"
-"http://eol.org/schema/terms/SequenceInGenBank"
+"http://eol.org/schema/terms/SequenceInGenBank" (boolean)
 
 Next:
 - now I need to check each of these services if still online, moved or changed.
@@ -814,21 +814,23 @@ class NCBIGGIqueryAPI
                 $rec["label"]       = "Number Of Sequences In GenBank";
                 $rec["measurement"] = "http://eol.org/schema/terms/NumberOfSequencesInGenBank";
                 self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
-
+                /* removed boolean
                 $rec["object_id"] = "SequenceInGenBank";
                 $rec["count"] = "http://eol.org/schema/terms/yes";
                 $rec["label"] = "SequenceInGenBank";
                 $rec["measurement"] = "http://eol.org/schema/terms/SequenceInGenBank";
                 self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
-
+                */
                 return true;
             }
         }
         if(!$is_subfamily) {
             $rec["object_id"] = "_no_of_seq_in_genbank";
             self::add_string_types($rec, "Number Of Sequences In GenBank", 0, "http://eol.org/schema/terms/NumberOfSequencesInGenBank", $family);
+            /* removed boolean
             $rec["object_id"] = "SequenceInGenBank";
             self::add_string_types($rec, "SequenceInGenBank", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/SequenceInGenBank", $family);
+            */
             self::has_diff_family_name_in_eol_api($family, $database);
         }
         self::check_for_sub_family($family);
