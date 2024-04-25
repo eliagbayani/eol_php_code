@@ -46,17 +46,11 @@ NCBI
 "http://eol.org/schema/terms/NumberOfSequencesInGenBank"
 "http://eol.org/schema/terms/SequenceInGenBank" (boolean)
 
-Next:
-- now I need to check each of these services if still online, moved or changed.
-- promote to use the API if source database now provides an API.
-
-And yes, we can add more databases and more measurementTypes if available.
-And yes, we can be more granular (e.g. genera) if databases provide these services or if we are daring enough to massage/asseble parts to get the numbers we want.
-I will update as I continue.
-Thanks.
-
 EOL
 "http://eol.org/schema/terms/NumberRichSpeciesPagesInEOL"
+
+INAT
+"http://dont know yet"
 */
 class NCBIGGIqueryAPI
 {
@@ -92,7 +86,6 @@ class NCBIGGIqueryAPI
         $this->family_service_ggbn = $pre."/Query.php?family=";                          // "Dröge, Gabriele" <g.droege@bgbm.org> advised to use this instead, Apr 17, 2014
         $this->family_service_ggbn = $pre."/ggbn_portal/api/search?getSampletype&name="; // "Dröge, Gabriele" <g.droege@bgbm.org> advised to use this API instead, May 3, 2016
         /* 2024
-        Hi!
         Documentation for the GGBN API is work in progress. Some examples in advance:
         API URL: http://www.ggbn.org/ggbn_portal/api/search?
             getCounts	total counts of different taxon levels and sample types (used for the start page)
@@ -141,6 +134,11 @@ class NCBIGGIqueryAPI
         */
         $this->bolds["TaxonData"] = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId="; //new call, will be used in BOLDS new connector
         $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*9, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //9 months to expire
+
+        // INAT api
+        $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
+        $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
+        
 
         // stats
         $this->TEMP_DIR = create_temp_dir() . "/";
