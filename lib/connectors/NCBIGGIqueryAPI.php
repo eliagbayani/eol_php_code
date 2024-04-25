@@ -138,6 +138,7 @@ class NCBIGGIqueryAPI
         // INAT api
         $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
         $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
+        $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
         
 
         // stats
@@ -152,13 +153,13 @@ class NCBIGGIqueryAPI
         $this->names_in_irmng_but_not_in_falo = $this->TEMP_DIR . "families_in_irmng_but_not_in_falo.txt";
         */
 
-        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds");
+        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds", "inat");
         // $this->ggi_databases = array("ncbi"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("ggbn"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bhl"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
-        $this->ggi_databases = array("inat"); //debug - use to process 1 database
+        // $this->ggi_databases = array("inat"); //debug - use to process 1 database
 
         // $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl");
 
@@ -233,8 +234,8 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                break; //debug only - process just a subset, just the 1st cycle
-                // if($i > 200) break; //debug only
+                // break; //debug only - process just a subset, just the 1st cycle
+                // if($i >= 20) break; //debug only
             }
             // */
 
@@ -635,6 +636,64 @@ class NCBIGGIqueryAPI
         // elseif($canonical == $family) echo "\n Result: Same name in FALO. \n";
         // else echo "\n Result: No name found in EOL API or Partner Links tab. \n";
         return false;
+    }
+    private function query_family_INAT_info($family, $is_subfamily, $database)
+    {   /*
+        $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
+        $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
+        */
+        // $family = "Muridae";
+        $rec["family"] = $family;
+        $rec["taxon_id"] = $family;
+        $rec["source"] = $this->gbif_taxon_info . $family;
+        if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $family, $this->download_options_INAT)) {
+            $taxon_id = self::parse_inat_taxa_search_object($family, 'family', $json); //exit("\n[$taxon_id]\n");
+            // $usageKey = false;
+            // if(!isset($json->usageKey)) {
+            //     if(isset($json->note)) $usageKey = self::get_usage_key($family);
+            //     else {} // e.g. Fervidicoccaceae
+            // }
+            // else $usageKey = trim((string) $json->usageKey);
+            if($taxon_id) {
+                $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
+                $count = self::parse_inat_observ_search_object($json); //exit("\n[$count]\n");
+
+                if($count || strval($count) == "0") {
+                    $rec["source"] = $this->inat['observation_search'] . $taxon_id;
+                    // if($count > 0) {
+                    //     $rec["object_id"]   = "_no_of_rec_in_gbif";
+                    //     $rec["count"]       = $count;
+                    //     $rec["label"]       = "Number records in GBIF";
+                    //     $rec["measurement"] = "http://eol.org/schema/terms/NumberRecordsInGBIF";
+                    //     self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                    //     return true;
+                    // }
+                }
+                else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+            }
+        }
+        else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+        /* copied template
+        if(!$is_subfamily) {
+            $rec["object_id"] = "_no_of_rec_in_gbif";
+            self::add_string_types($rec, "Number records in GBIF", 0, "http://eol.org/schema/terms/NumberRecordsInGBIF", $family);
+            self::has_diff_family_name_in_eol_api($family, $database); //GBIF
+        }
+        self::check_for_sub_family($family); //GBIF
+        */
+        return false;
+    }
+    public function parse_inat_taxa_search_object($sciname, $rank, $json)
+    {   $obj = json_decode($json);
+        foreach($obj->results as $r) {
+            if($r->name == $sciname && $r->rank == strtolower($rank)) return $r->id;
+        }
+    }
+    public function parse_inat_observ_search_object($json)
+    {   $obj = json_decode($json); print_r($obj); //exit;
+        $sum = 0;
+        foreach($obj->results->month_of_year as $r) $sum += $r;
+        return $sum;
     }
     private function query_family_GBIF_info($family, $is_subfamily, $database)
     {
