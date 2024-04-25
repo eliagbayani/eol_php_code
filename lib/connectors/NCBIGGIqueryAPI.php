@@ -31,7 +31,7 @@ BOLDS
 
 BHL
 "http://eol.org/schema/terms/NumberReferencesInBHL"
-"http://eol.org/schema/terms/ReferenceInBHL"
+"http://eol.org/schema/terms/ReferenceInBHL" (boolean)
 
 GBIF
 "http://eol.org/schema/terms/NumberRecordsInGBIF"
@@ -467,11 +467,13 @@ class NCBIGGIqueryAPI
                     $rec["label"]       = "Number pages in BHL";
                     $rec["measurement"] = "http://eol.org/schema/terms/NumberReferencesInBHL";
                     self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                    /* removed boolean
                     $rec["object_id"]   = "_page_in_bhl";
                     $rec["count"]       = "http://eol.org/schema/terms/yes";
                     $rec["label"]       = "Pages in BHL";
                     $rec["measurement"] = "http://eol.org/schema/terms/ReferenceInBHL";
                     self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                    */
                     return true;
                 }
             }
@@ -485,11 +487,13 @@ class NCBIGGIqueryAPI
                             $rec["label"]       = "Number pages in BHL";
                             $rec["measurement"] = "http://eol.org/schema/terms/NumberReferencesInBHL";
                             self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                            /* removed boolean
                             $rec["object_id"]   = "_page_in_bhl";
                             $rec["count"]       = "http://eol.org/schema/terms/yes";
                             $rec["label"]       = "Pages in BHL";
                             $rec["measurement"] = "http://eol.org/schema/terms/ReferenceInBHL";
                             self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                            */
                             return true;
                         }
                     }
@@ -506,8 +510,10 @@ class NCBIGGIqueryAPI
         if(!$is_subfamily) {
             $rec["object_id"] = "_no_of_page_in_bhl";
             self::add_string_types($rec, "Number pages in BHL", 0, "http://eol.org/schema/terms/NumberReferencesInBHL", $family);
+            /* removed boolean     
             $rec["object_id"] = "_page_in_bhl";
             self::add_string_types($rec, "Pages in BHL", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/ReferenceInBHL", $family);
+            */
         }
         self::check_for_sub_family($family);
         return false;
