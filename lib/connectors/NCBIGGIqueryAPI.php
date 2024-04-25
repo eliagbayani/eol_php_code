@@ -140,7 +140,7 @@ class NCBIGGIqueryAPI
         The new call is just to uniform the BOLDS API calls.
         */
         $this->bolds["TaxonData"] = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId="; //new call, will be used in BOLDS new connector
-        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*9, 'download_wait_time' => 2000000, 'timeout' => 10800, 'download_attempts' => 1); //9 months to expire
+        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*9, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //9 months to expire
 
         // stats
         $this->TEMP_DIR = create_temp_dir() . "/";
@@ -231,7 +231,7 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                break; //debug - process just a subset, just the 1st cycle
+                // break; //debug - process just a subset, just the 1st cycle
             }
             // */
 
