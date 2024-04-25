@@ -228,6 +228,7 @@ class NCBIGGIqueryAPI
                 
                 $min = $i; $max = $min+$calls;
                 foreach($this->ggi_databases as $database) {
+                    $this->families_with_no_data = array(); //moved here
                     self::create_instances_from_taxon_object($families, false, $database, $min, $max);
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
@@ -302,7 +303,7 @@ class NCBIGGIqueryAPI
     }
     private function create_instances_from_taxon_object($families, $is_subfamily = false, $database, $min=false, $max=false)
     {
-        $this->families_with_no_data = array();
+        // $this->families_with_no_data = array(); //moved up
         $i = 0;
         $total = count($families);
         foreach($families as $family) {
@@ -401,7 +402,7 @@ class NCBIGGIqueryAPI
             self::add_string_types($rec, "Number public records in BOLDS", 0, "http://eol.org/schema/terms/NumberPublicRecordsInBOLD", $family);
             self::has_diff_family_name_in_eol_api($family, $database); //BOLDS
         }
-        self::check_for_sub_family($family);
+        self::check_for_sub_family($family); //BOLDS
         return false;
     }
     private function parse_bolds_taxon_search($json)
@@ -527,7 +528,7 @@ class NCBIGGIqueryAPI
             self::add_string_types($rec, "Pages in BHL", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/ReferenceInBHL", $family);
             */
         }
-        self::check_for_sub_family($family);
+        self::check_for_sub_family($family); //BHL
         return false;
     }
     private function get_page_count_from_BHL_xml($contents)
@@ -683,7 +684,7 @@ class NCBIGGIqueryAPI
             */
             self::has_diff_family_name_in_eol_api($family, $database); //GBIF
         }
-        self::check_for_sub_family($family);
+        self::check_for_sub_family($family); //GBIF
         return false;
     }
     private function get_usage_key($family)
@@ -793,7 +794,7 @@ class NCBIGGIqueryAPI
             self::add_string_types($rec, "Number of DNA records in GGBN", 0, "http://eol.org/schema/terms/NumberDNARecordsInGGBN", $family);
             self::has_diff_family_name_in_eol_api($family, $database); //GGBN
         }
-        self::check_for_sub_family($family);
+        self::check_for_sub_family($family); //GGBN
         return false;
     }
     private function get_number_of_pages($html, $num)
@@ -845,7 +846,7 @@ class NCBIGGIqueryAPI
             */
             self::has_diff_family_name_in_eol_api($family, $database); //NCBI
         }
-        self::check_for_sub_family($family);
+        self::check_for_sub_family($family); //NCBI
         return false;
     }
     private function add_string_types($rec, $label, $value, $measurementType, $family)
