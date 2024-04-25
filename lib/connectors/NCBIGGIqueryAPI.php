@@ -192,7 +192,7 @@ class NCBIGGIqueryAPI
         $families = self::get_families_xlsx(); //normal operation for resource 723
         /* $families = self::get_families_from_JonCoddington(); //working OK... for Jonathan Coddington - from email May 15-16, 2018 */
 
-        /* families for bhl test
+        /* families for bhl test | during dev only
         $families = array("Caudinidae", "Eupyrgidae", "Gephyrothuriidae", "Molpadiidae");
         */
 
@@ -210,7 +210,7 @@ class NCBIGGIqueryAPI
 
             // /* working, a round-robin option of server load - per 100 calls each server
             $k = 0; $m = count($families)/6; // before 9646/6
-            $calls = 2; //orig is 100
+            $calls = 10; //orig is 100
             for ($i = $k; $i <= count($families)+$calls; $i=$i+$calls) { //orig value of i is 0
                 echo "\n[$i] - ";
                 /* breakdown when caching
@@ -554,7 +554,7 @@ class NCBIGGIqueryAPI
             if($json["results"]) {
                 if($id = $json["results"][0]["id"]) {
                     if($database == "bolds") {
-                        /* service (resources/partner_links) no longer exists in eol.org | commented Apr 24, 2024
+                        // /* service (resources/partner_links) no longer exists in eol.org | commented Apr 24, 2024
                         if($html = Functions::lookup_with_cache("http://eol.org/pages/$id/resources/partner_links", $d_options)) {
                             if(preg_match("/boldsystems\.org\/index.php\/Taxbrowser_Taxonpage\?taxid=(.*?)\"/ims", $html, $arr)) {
                                 echo "\n bolds id: " . $arr[1] . "\n";
@@ -574,7 +574,7 @@ class NCBIGGIqueryAPI
                                 }
                             }
                         }
-                        */
+                        // */
                     }
                     elseif(in_array($database, array("ncbi", "gbif", "ggbn"))) { // ncbi, gbif, ggbn
                         $u = $this->eol_api["page"][0] . $id . $this->eol_api["page"][1];

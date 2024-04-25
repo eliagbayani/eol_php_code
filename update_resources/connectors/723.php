@@ -11,6 +11,7 @@ estimated execution time: ~3 days
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/NCBIGGIqueryAPI');
+$GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 $resource_id = 723;
 $func = new NCBIGGIqueryAPI($resource_id);
