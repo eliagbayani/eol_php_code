@@ -562,7 +562,7 @@ class NCBIGGIqueryAPI
     }
     private function has_diff_family_name_in_eol_api($family, $database)
     {
-        // return false; //debug - remove in normal operation
+        return false; //debug - remove in normal operation
         $canonical = "";
         $d_options = $this->download_options;
         $d_options['resource_id'] = "eol_api";
