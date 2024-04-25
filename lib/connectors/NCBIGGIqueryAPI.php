@@ -231,7 +231,7 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                // break; //debug - process just a subset
+                break; //debug - process just a subset, just the 1st cycle
             }
             // */
 
