@@ -55,7 +55,6 @@ And yes, we can be more granular (e.g. genera) if databases provide these servic
 I will update as I continue.
 Thanks.
 
-
 EOL
 "http://eol.org/schema/terms/NumberRichSpeciesPagesInEOL"
 */
@@ -242,7 +241,6 @@ class NCBIGGIqueryAPI
         // remove temp dir
         recursive_rmdir($this->TEMP_DIR); // debug - comment to check "name_from_eol_api.txt"
     }
-
     private function initialize_files()
     {
         if(!file_exists($this->ggi_path)) mkdir($this->ggi_path);
@@ -254,14 +252,12 @@ class NCBIGGIqueryAPI
             self::initialize_dump_file($this->ggi_text_file[$database]["current"]);
         }
     }
-
     private function initialize_dump_file($file)
     {
         echo "\n initialize file:[$file]\n";
         if(!($WRITE = Functions::file_open($file, "w"))) return;
         fclose($WRITE);
     }
-
     private function compare_previuos_and_current_dumps()
     {
         foreach($this->ggi_databases as $database) {
@@ -276,7 +272,6 @@ class NCBIGGIqueryAPI
             else self::process_text_file($previous, $database);
         }
     }
-
     private function process_text_file($filename, $database)
     {
         foreach(new FileIterator($filename) as $line_number => $line) {
@@ -300,7 +295,6 @@ class NCBIGGIqueryAPI
             }
         }
     }
-
     private function create_instances_from_taxon_object($families, $is_subfamily = false, $database, $min=false, $max=false)
     {
         $this->families_with_no_data = array();
@@ -332,7 +326,6 @@ class NCBIGGIqueryAPI
             }
         }
     }
-
     private function query_family_BOLDS_info($family, $is_subfamily, $database)
     {
         $rec["family"] = $family;
@@ -392,7 +385,6 @@ class NCBIGGIqueryAPI
         self::check_for_sub_family($family);
         return false;
     }
-
     private function parse_bolds_taxon_search($json)
     {
         if($taxid = self::get_best_bolds_taxid($json)) {
@@ -410,7 +402,6 @@ class NCBIGGIqueryAPI
         }
         else return false;
     }
-
     private function get_best_bolds_taxid($json)
     {
         // $a = json_decode($json); print_r($a);
@@ -442,7 +433,6 @@ class NCBIGGIqueryAPI
             foreach(@$arr->top_matched_names as $rec) return $rec->taxid;
         }
         
-        
         /* old ways
         $ranks = array("family", "subfamily", "genus", "order"); // best rank for FALO family, in this order
         if($arr = json_decode($json)) {
@@ -457,7 +447,6 @@ class NCBIGGIqueryAPI
         */
         return false;
     }
-
     private function query_family_BHL_info($family, $is_subfamily, $database)
     {
         $rec["family"] = $family;
@@ -516,13 +505,11 @@ class NCBIGGIqueryAPI
         self::check_for_sub_family($family);
         return false;
     }
-
     private function get_page_count_from_BHL_xml($contents)
     {
         if(preg_match_all("/<PageID>(.*?)<\/PageID>/ims", $contents, $arr)) return count(array_unique($arr[1]));
         return false;
     }
-
     private function get_page_count_from_BHL_csv($contents)
     {
         $temp_path = temp_filepath();
@@ -554,7 +541,6 @@ class NCBIGGIqueryAPI
         unlink($temp_path);
         return count(array_keys($page_ids));
     }
-
     private function has_diff_family_name_in_eol_api($family, $database)
     {
         // return false; //debug - remove in normal operation
@@ -624,7 +610,6 @@ class NCBIGGIqueryAPI
         // else echo "\n Result: No name found in EOL API or Partner Links tab. \n";
         return false;
     }
-
     private function query_family_GBIF_info($family, $is_subfamily, $database)
     {
         $rec["family"] = $family;
@@ -672,7 +657,6 @@ class NCBIGGIqueryAPI
         self::check_for_sub_family($family);
         return false;
     }
-
     private function get_usage_key($family)
     {
         if($json = Functions::lookup_with_cache($this->gbif_taxon_info . $family . "&verbose=true", $this->gbif_download_options)) {
@@ -693,7 +677,6 @@ class NCBIGGIqueryAPI
         }
         return false;
     }
-
     private function get_names_no_entry_from_partner()
     {
         $names = array();
@@ -703,7 +686,6 @@ class NCBIGGIqueryAPI
         }
         return array_keys($names);
     }
-
     private function save_to_dump($rec, $filename)
     {
         if(isset($rec["measurement"]) && is_array($rec)) {
@@ -721,7 +703,6 @@ class NCBIGGIqueryAPI
             fclose($WRITE);
         }
     }
-
     private function query_family_GGBN_info($family, $is_subfamily, $database)
     {
         $records = array();
@@ -781,13 +762,11 @@ class NCBIGGIqueryAPI
         self::check_for_sub_family($family);
         return false;
     }
-
     private function get_number_of_pages($html, $num)
     {
         if($num) return ceil($num/50);
         return 1;
     }
-
     private function process_html($html)
     {
         $temp = array();
@@ -800,7 +779,6 @@ class NCBIGGIqueryAPI
         }
         return array_unique($temp);
     }
-
     private function query_family_NCBI_info($family, $is_subfamily, $database)
     {
         $rec["family"] = $family;
@@ -834,7 +812,6 @@ class NCBIGGIqueryAPI
         self::check_for_sub_family($family);
         return false;
     }
-
     private function add_string_types($rec, $label, $value, $measurementType, $family)
     {
         $taxon_id = (string) $rec["taxon_id"];
@@ -854,7 +831,6 @@ class NCBIGGIqueryAPI
             $this->measurement_ids[$m->measurementID] = '';
         }
     }
-
     private function add_occurrence($taxon_id, $object_id)
     {
         $occurrence_id = $taxon_id . 'O' . $object_id;
@@ -874,13 +850,11 @@ class NCBIGGIqueryAPI
         return $o;
         */
     }
-
     private function create_archive()
     {
         foreach($this->taxa as $t) $this->archive_builder->write_object_to_file($t);
         $this->archive_builder->finalize(TRUE);
     }
-
     private function get_families_with_missing_data_xlsx() // utility
     {
         require_library('XLSParser');
@@ -904,7 +878,6 @@ class NCBIGGIqueryAPI
         }
         return array_keys($families);
     }
-
     private function get_families_from_google_spreadsheet()
     {
         $google_spreadsheets[] = array("title" => "FALO",                                            "column_number_to_return" => 16);
@@ -928,7 +901,6 @@ class NCBIGGIqueryAPI
         }
         return array_keys($families);
     }
-
     /* works but seems obsolete - commented Mar 29, 2018
     private function get_families()
     {
@@ -946,7 +918,6 @@ class NCBIGGIqueryAPI
         return array_keys($families);
     }
     */
-
     function falo_gbif_report()
     {
         require_library('connectors/IrmngAPI');
@@ -971,12 +942,10 @@ class NCBIGGIqueryAPI
         */
         // recursive_rmdir($this->TEMP_DIR);
     }
-
     private function save_as_tab_delimited($names, $file)
     {
         foreach($names as $name) self::save_to_dump($name, $file);
     }
-
     private function check_for_sub_family($family)
     {
         if(substr($family, -3) == "dae") {
@@ -990,10 +959,8 @@ class NCBIGGIqueryAPI
         {
             $family = str_replace("ceae" . "xxx", "deae", $family . "xxx");
             $this->families_with_no_data[$family] = '';
-        }
-        */
+        }*/
     }
-
     private function get_families_from_JonCoddington()
     {
         require_library('XLSParser');
@@ -1053,7 +1020,6 @@ class NCBIGGIqueryAPI
 
         return array_keys($families);
     }
-
     function count_subfamily_per_database($file, $database)
     {
         $subfamilies = array();
@@ -1067,7 +1033,6 @@ class NCBIGGIqueryAPI
         }
         print "\n $database: " . count($subfamilies) . "\n";
     }
-
     private function generate_spreadsheet($resource_id)
     {
         /*[Xenoturbellidae] => Array
@@ -1101,7 +1066,6 @@ class NCBIGGIqueryAPI
         }
         // if(file_exists($this->temp_family_table_file)) unlink($this->temp_family_table_file);
     }
-
     private function family_has_totals($fam_rec, $uris)
     {
         foreach($uris as $uri) {
@@ -1109,7 +1073,6 @@ class NCBIGGIqueryAPI
         }
         return false;
     }
-
     private function convert_measurement_or_fact_to_array($resource_id)
     {
         $fields = array("http://eol.org/schema/terms/NumberReferencesInBHL", "http://eol.org/schema/terms/NumberPublicRecordsInBOLD",
@@ -1136,7 +1099,6 @@ class NCBIGGIqueryAPI
         }
         return $records;
     }
-
     private function access_dump_file($file_path, $is_array = true)
     {
         if(!($file = Functions::file_open($file_path, "r"))) return;
@@ -1145,6 +1107,5 @@ class NCBIGGIqueryAPI
         fclose($file);
         return $contents;
     }
-
 }
 ?>
