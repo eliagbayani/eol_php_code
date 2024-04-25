@@ -192,8 +192,10 @@ class NCBIGGIqueryAPI
         $families = self::get_families_xlsx(); //normal operation for resource 723
         /* $families = self::get_families_from_JonCoddington(); //working OK... for Jonathan Coddington - from email May 15-16, 2018 */
 
-        /* families for bhl test | during dev only
-        $families = array("Caudinidae", "Eupyrgidae", "Gephyrothuriidae", "Molpadiidae");
+        /* families test | during dev only
+        $families = array("Caudinidae", "Eupyrgidae", "Gephyrothuriidae", "Molpadiidae"); //BHL
+        $families[] = "Ophiuridae"; //GGBN
+        $families[] = "Holothuriidae"; //BOLDS
         */
 
         // print_r($families); exit;
@@ -231,7 +233,7 @@ class NCBIGGIqueryAPI
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
                 // break; //debug only - process just a subset, just the 1st cycle
-                if($i > 200) break; //debug only
+                // if($i > 200) break; //debug only
             }
             // */
 
