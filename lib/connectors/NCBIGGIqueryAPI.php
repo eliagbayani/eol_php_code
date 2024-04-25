@@ -35,7 +35,7 @@ BHL
 
 GBIF
 "http://eol.org/schema/terms/NumberRecordsInGBIF"
-"http://eol.org/schema/terms/RecordInGBIF"
+"http://eol.org/schema/terms/RecordInGBIF" (boolean)
 
 GGBN
 "http://eol.org/schema/terms/NumberDNARecordsInGGBN"
@@ -647,11 +647,13 @@ class NCBIGGIqueryAPI
                         $rec["label"]       = "Number records in GBIF";
                         $rec["measurement"] = "http://eol.org/schema/terms/NumberRecordsInGBIF";
                         self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                        /* removed boolean
                         $rec["object_id"]   = "_rec_in_gbif";
                         $rec["count"]       = "http://eol.org/schema/terms/yes";
                         $rec["label"]       = "Records in GBIF";
                         $rec["measurement"] = "http://eol.org/schema/terms/RecordInGBIF";
                         self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                        */
                         return true;
                     }
                 }
@@ -663,8 +665,10 @@ class NCBIGGIqueryAPI
         if(!$is_subfamily) {
             $rec["object_id"] = "_no_of_rec_in_gbif";
             self::add_string_types($rec, "Number records in GBIF", 0, "http://eol.org/schema/terms/NumberRecordsInGBIF", $family);
+            /* removed boolean
             $rec["object_id"] = "_rec_in_gbif";
             self::add_string_types($rec, "Records in GBIF", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/RecordInGBIF", $family);
+            */
             self::has_diff_family_name_in_eol_api($family, $database);
         }
         self::check_for_sub_family($family);
