@@ -555,7 +555,7 @@ class NCBIGGIqueryAPI
             if($json["results"]) {
                 if($id = $json["results"][0]["id"]) {
                     if($database == "bolds") {
-                        // /* service (resources/partner_links) no longer exists in eol.org | commented Apr 24, 2024
+                        /* service (resources/partner_links) no longer exists in eol.org | commented Apr 24, 2024
                         if($html = Functions::lookup_with_cache("http://eol.org/pages/$id/resources/partner_links", $d_options)) {
                             if(preg_match("/boldsystems\.org\/index.php\/Taxbrowser_Taxonpage\?taxid=(.*?)\"/ims", $html, $arr)) {
                                 echo "\n bolds id: " . $arr[1] . "\n";
@@ -575,7 +575,7 @@ class NCBIGGIqueryAPI
                                 }
                             }
                         }
-                        // */
+                        */
                     }
                     elseif(in_array($database, array("ncbi", "gbif", "ggbn"))) { // ncbi, gbif, ggbn
                         $u = $this->eol_api["page"][0] . $id . $this->eol_api["page"][1];
