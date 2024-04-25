@@ -40,7 +40,7 @@ GBIF
 GGBN
 "http://eol.org/schema/terms/NumberDNARecordsInGGBN"
 "http://eol.org/schema/terms/NumberSpecimensInGGBN"
-"http://eol.org/schema/terms/SpecimensInGGBN"
+"http://eol.org/schema/terms/SpecimensInGGBN" (boolean)
 
 NCBI
 "http://eol.org/schema/terms/NumberOfSequencesInGenBank"
@@ -750,19 +750,22 @@ class NCBIGGIqueryAPI
                 $rec["label"] = "NumberSpecimensInGGBN";
                 $rec["measurement"] = "http://eol.org/schema/terms/NumberSpecimensInGGBN";
                 self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
-
+                /* removed boolean
                 $rec["object_id"] = "SpecimensInGGBN";
                 $rec["count"] = "http://eol.org/schema/terms/yes";
                 $rec["label"] = "SpecimensInGGBN";
                 $rec["measurement"] = "http://eol.org/schema/terms/SpecimensInGGBN";
                 self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                */
             }
             else {
                 if(!$is_subfamily) {
                     $rec["object_id"] = "NumberSpecimensInGGBN";
                     self::add_string_types($rec, "NumberSpecimensInGGBN", 0, "http://eol.org/schema/terms/NumberSpecimensInGGBN", $family);
+                    /* removed boolean
                     $rec["object_id"] = "SpecimensInGGBN";
                     self::add_string_types($rec, "SpecimensInGGBN", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/SpecimensInGGBN", $family);
+                    */
                 }
             }
             if(@$obj->sampletype->DNA || @$obj->sampletype->specimen) return true;
@@ -770,8 +773,10 @@ class NCBIGGIqueryAPI
         if(!$is_subfamily) {
             $rec["object_id"] = "NumberSpecimensInGGBN";
             self::add_string_types($rec, "NumberSpecimensInGGBN", 0, "http://eol.org/schema/terms/NumberSpecimensInGGBN", $family);
+            /* removed boolean
             $rec["object_id"] = "SpecimensInGGBN";
             self::add_string_types($rec, "SpecimensInGGBN", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/SpecimensInGGBN", $family);
+            */
             $rec["object_id"] = "NumberDNAInGGBN";
             self::add_string_types($rec, "Number of DNA records in GGBN", 0, "http://eol.org/schema/terms/NumberDNARecordsInGGBN", $family);
             self::has_diff_family_name_in_eol_api($family, $database);
