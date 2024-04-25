@@ -26,7 +26,7 @@ We either used an API service or a webpage service (scraped) whichever was avail
 
 BOLDS
 "http://eol.org/schema/terms/NumberRecordsInBOLD"
-"http://eol.org/schema/terms/RecordInBOLD"
+"http://eol.org/schema/terms/RecordInBOLD" (boolean)
 "http://eol.org/schema/terms/NumberPublicRecordsInBOLD"
 
 BHL
@@ -341,18 +341,22 @@ class NCBIGGIqueryAPI
                     $rec["label"]       = "Number records in BOLDS";
                     $rec["measurement"] = "http://eol.org/schema/terms/NumberRecordsInBOLD";
                     self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                    /* removed boolean
                     $rec["object_id"]   = "_rec_in_bolds";
                     $rec["count"]       = "http://eol.org/schema/terms/yes";
                     $rec["label"]       = "Records in BOLDS";
                     $rec["measurement"] = "http://eol.org/schema/terms/RecordInBOLD";
                     self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                    */
                 }
                 else {
                     if(!$is_subfamily) {
                         $rec["object_id"] = "_no_of_rec_in_bolds";
                         self::add_string_types($rec, "Number records in BOLDS", 0, "http://eol.org/schema/terms/NumberRecordsInBOLD", $family);
+                        /* removed boolean
                         $rec["object_id"] = "_rec_in_bolds";
                         self::add_string_types($rec, "Records in BOLDS", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/RecordInBOLD", $family);
+                        */
                     }
                 }
                 if(@$info["public records"] > 0) {
@@ -377,8 +381,10 @@ class NCBIGGIqueryAPI
         if(!$is_subfamily) {
             $rec["object_id"] = "_no_of_rec_in_bolds";
             self::add_string_types($rec, "Number records in BOLDS", 0, "http://eol.org/schema/terms/NumberRecordsInBOLD", $family);
+            /* removed boolean
             $rec["object_id"] = "_rec_in_bolds";
             self::add_string_types($rec, "Records in BOLDS", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/RecordInBOLD", $family);
+            */
             $rec["object_id"] = "_no_of_public_rec_in_bolds";
             self::add_string_types($rec, "Number public records in BOLDS", 0, "http://eol.org/schema/terms/NumberPublicRecordsInBOLD", $family);
             self::has_diff_family_name_in_eol_api($family, $database);
