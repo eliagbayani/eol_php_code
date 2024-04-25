@@ -1,6 +1,7 @@
 <?php
 namespace php_active_record;
 /* connector: [723] NCBI, GGBN, GBIF, BHL, BOLDS data coverage (DATA-1369 and others)
+http://content.eol.org/resources/555
 
 #==== 5 AM, every 4th day of the month -- [Number of sequences in GenBank (DATA-1369)]
 00 05 4 * * /usr/bin/php /opt/eol_php_code/update_resources/connectors/723.php > /dev/null
@@ -17,6 +18,46 @@ namespace php_active_record;
 #==== 5 AM, every 8th day of the month -- [Number of specimens with sequence in BOLDS (DATA-1417)]
 00 05 8 * * /usr/bin/php /opt/eol_php_code/update_resources/connectors/747.php > /dev/null
 
+----- Start 2024 -----
+Background: 
+Resource DwCA was last generated Aug 4, 2018
+Here are the current measurementTypes we're getting from respective databases.
+We either used an API service or a webpage service (scraped) whichever was available.
+
+BOLDS
+"http://eol.org/schema/terms/NumberRecordsInBOLD"
+"http://eol.org/schema/terms/RecordInBOLD"
+"http://eol.org/schema/terms/NumberPublicRecordsInBOLD"
+
+BHL
+"http://eol.org/schema/terms/NumberReferencesInBHL"
+"http://eol.org/schema/terms/ReferenceInBHL"
+
+GBIF
+"http://eol.org/schema/terms/NumberRecordsInGBIF"
+"http://eol.org/schema/terms/RecordInGBIF"
+
+GGBN
+"http://eol.org/schema/terms/NumberDNARecordsInGGBN"
+"http://eol.org/schema/terms/NumberSpecimensInGGBN"
+"http://eol.org/schema/terms/SpecimensInGGBN"
+
+NCBI
+"http://eol.org/schema/terms/NumberOfSequencesInGenBank"
+"http://eol.org/schema/terms/SequenceInGenBank"
+
+Next:
+- now I need to check each of these services if still online, moved or changed.
+- promote to use the API if source database now provides an API.
+
+And yes, we can add more databases and more measurementTypes if available.
+And yes, we can be more granular (e.g. genera) if databases provide these services or if we are daring enough to massage/asseble parts to get the numbers we want.
+I will update as I continue.
+Thanks.
+
+
+EOL
+"http://eol.org/schema/terms/NumberRichSpeciesPagesInEOL"
 */
 class NCBIGGIqueryAPI
 {
@@ -31,7 +72,7 @@ class NCBIGGIqueryAPI
             $this->occurrence_ids = array();
             $this->measurement_ids = array();
         }
-        $this->download_options = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000/2, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
         // $this->download_options['expire_seconds'] = false; //debug - false -> wont expire; 0 -> expires now
 
         /* obsolete, no longer used
@@ -47,8 +88,35 @@ class NCBIGGIqueryAPI
 
         // GGBN data portal:
         $this->family_service_ggbn = "http://www.dnabank-network.org/Query.php?family=";                // original
-        $this->family_service_ggbn = "http://data.ggbn.org/Query.php?family=";                          // "Dröge, Gabriele" <g.droege@bgbm.org> advised to use this instead, Apr 17, 2014
-        $this->family_service_ggbn = "http://data.ggbn.org/ggbn_portal/api/search?getSampletype&name="; // "Dröge, Gabriele" <g.droege@bgbm.org> advised to use this API instead, May 3, 2016
+        $pre = "http://data.ggbn.org"; //legacy still works
+        // $pre = "http://www.ggbn.org"; //2024 also works
+        $this->family_service_ggbn = $pre."/Query.php?family=";                          // "Dröge, Gabriele" <g.droege@bgbm.org> advised to use this instead, Apr 17, 2014
+        $this->family_service_ggbn = $pre."/ggbn_portal/api/search?getSampletype&name="; // "Dröge, Gabriele" <g.droege@bgbm.org> advised to use this API instead, May 3, 2016
+        /* 2024
+        Hi!
+        Documentation for the GGBN API is work in progress. Some examples in advance:
+        API URL: http://www.ggbn.org/ggbn_portal/api/search?
+            getCounts	total counts of different taxon levels and sample types (used for the start page)
+            getSampletype&name=Arthropoda	total counts of sample types for a certain name (any level)
+            getClassification&name=Chordata	total counts of samples for all children of a name
+        Feel free to test it. If you have any questions please contact support@ggbn.org. More information will follow soon.
+        ============================================================================
+        Hi Jen,
+        For GGBN we're only getting "DNA" and "specimen" counts.
+        But there is also now "tissue". e.g. 
+        https://data.ggbn.org/ggbn_portal/api/search?getSampletype&name=Ophiuridae
+        https://data.ggbn.org/ggbn_portal/api/search?getSampletype&name=Asteriidae
+
+        Which they have a big coverage as well, see here.
+        https://data.ggbn.org/ggbn_portal/api/search?getCounts
+        "DNA", "specimen" and "tissue" have the big numbers.
+
+        The genus level is not cumulative, not reliable.
+        https://data.ggbn.org/ggbn_portal/api/search?getSampletype&name=Panthera
+        The species level is more promising.
+        https://data.ggbn.org/ggbn_portal/api/search?getSampletype&name=Panthera%20leo
+        ============================================================================
+        */
 
         //GBIF services
         $this->gbif_taxon_info = "http://api.gbif.org/v1/species/match?name="; //http://api.gbif.org/v1/species/match?name=felidae&kingdom=Animalia
@@ -77,6 +145,7 @@ class NCBIGGIqueryAPI
 
         // stats
         $this->TEMP_DIR = create_temp_dir() . "/";
+        echo "\nTEMP_DIR: [".$this->TEMP_DIR."]\n";
         $this->names_no_entry_from_partner_dump_file = $this->TEMP_DIR . "names_no_entry_from_partner.txt";
         $this->name_from_eol_api_dump_file = $this->TEMP_DIR . "name_from_eol_api.txt";
         $this->names_dae_to_nae_dump_file = $this->TEMP_DIR . "names_dae_to_nae.txt";
@@ -87,14 +156,16 @@ class NCBIGGIqueryAPI
         */
 
         $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds");
-        // $this->ggi_databases = array("gbif"); //debug - use to process 1 database
-        // $this->ggi_databases = array("bhl"); //debug - use to process 1 database
-        // $this->ggi_databases = array("ncbi"); //debug - use to process 1 database
-        // $this->ggi_databases = array("ggbn"); //debug - use to process 1 database
-        // $this->ggi_databases = array("bolds"); //debug - use to process 1 database
+        // $this->ggi_databases = array("ncbi"); //debug - use to process 1 database - OK Apr 2024
+        // $this->ggi_databases = array("ggbn"); //debug - use to process 1 database - OK Apr 2024
+        // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
+        // $this->ggi_databases = array("bhl"); //debug - use to process 1 database - OK Apr 2024
+        // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
+
         // $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl");
 
         $this->ggi_path = DOC_ROOT . "temp/GGI/";
+        $this->blacklist_bhl_csv_call = $this->ggi_path."blacklist_bhl_csv_call.txt";
 
         $this->eol_api["search"]    = "http://eol.org/api/search/1.0.json?page=1&exact=true&filter_by_taxon_concept_id=&filter_by_hierarchy_entry_id=&filter_by_string=&cache_ttl=&q=";
         $this->eol_api["page"][0]   = "http://eol.org/api/pages/1.0/";
@@ -109,6 +180,9 @@ class NCBIGGIqueryAPI
 
     function get_all_taxa()
     {
+        $this->taxa_blacklist_bhl_csv_call = file($this->blacklist_bhl_csv_call, FILE_IGNORE_NEW_LINES);
+        print_r($this->taxa_blacklist_bhl_csv_call); //exit;
+
         self::initialize_files();
         /*
         $families = self::get_families_from_google_spreadsheet(); Google spreadsheets are very slow, it is better to use Dropbox for our online spreadsheets
@@ -118,6 +192,13 @@ class NCBIGGIqueryAPI
 
         $families = self::get_families_xlsx(); //normal operation for resource 723
         /* $families = self::get_families_from_JonCoddington(); //working OK... for Jonathan Coddington - from email May 15-16, 2018 */
+
+        /* families for bhl test
+        $families = array("Caudinidae", "Eupyrgidae", "Gephyrothuriidae", "Molpadiidae");
+        */
+
+        // print_r($families); exit;
+        echo "\nFamilies count: [".count($families)."]\n";
 
         if($families) {
             /* working but not round-robin, rather each database is processed one after the other.
@@ -130,7 +211,7 @@ class NCBIGGIqueryAPI
 
             // /* working, a round-robin option of server load - per 100 calls each server
             $k = 0; $m = count($families)/6; // before 9646/6
-            $calls = 10; //orig is 100
+            $calls = 2; //orig is 100
             for ($i = $k; $i <= count($families)+$calls; $i=$i+$calls) { //orig value of i is 0
                 echo "\n[$i] - ";
                 /* breakdown when caching
@@ -398,6 +479,7 @@ class NCBIGGIqueryAPI
                     return true;
                 }
             }
+            elseif(in_array($family, $this->taxa_blacklist_bhl_csv_call)){}
             else {
                 if($contents = Functions::lookup_with_cache($this->bhl_taxon_in_csv . $family, $this->download_options)) {
                     if($count = self::get_page_count_from_BHL_csv($contents)) {
@@ -416,6 +498,10 @@ class NCBIGGIqueryAPI
                         }
                     }
                     else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+                }
+                else {
+                    echo "\nBlacklist: $family\n";
+                    self::save_to_dump($family, $this->blacklist_bhl_csv_call);
                 }
             }
         }
@@ -482,6 +568,7 @@ class NCBIGGIqueryAPI
             if($json["results"]) {
                 if($id = $json["results"][0]["id"]) {
                     if($database == "bolds") {
+                        /* service (resources/partner_links) no longer exists in eol.org | commented Apr 24, 2024
                         if($html = Functions::lookup_with_cache("http://eol.org/pages/$id/resources/partner_links", $d_options)) {
                             if(preg_match("/boldsystems\.org\/index.php\/Taxbrowser_Taxonpage\?taxid=(.*?)\"/ims", $html, $arr)) {
                                 echo "\n bolds id: " . $arr[1] . "\n";
@@ -501,20 +588,24 @@ class NCBIGGIqueryAPI
                                 }
                             }
                         }
+                        */
                     }
-                    else // ncbi, gbif, ggbn
-                    {
-                        if($json = Functions::lookup_with_cache($this->eol_api["page"][0] . $id . $this->eol_api["page"][1], $d_options)) {
+                    elseif(in_array($database, array("ncbi", "gbif", "ggbn"))) { // ncbi, gbif, ggbn
+                        $u = $this->eol_api["page"][0] . $id . $this->eol_api["page"][1];
+                        echo "\ninvestigate: [$u]\n";
+                        if($json = Functions::lookup_with_cache($u, $d_options)) {
                             $json = json_decode($json, true);
-                            foreach($json["taxonConcepts"] as $tc) {
-                                if(in_array($database, array("ncbi", "gbif"))) {
-                                    if($this->databases_to_check_eol_api[$database] == $tc["nameAccordingTo"]) {
-                                        if($family != $tc["canonicalForm"]) $canonical = $tc["canonicalForm"];
+                            if(@$json["taxonConcepts"]) {
+                                foreach(@$json["taxonConcepts"] as $tc) {
+                                    if(in_array($database, array("ncbi", "gbif"))) {
+                                        if($this->databases_to_check_eol_api[$database] == $tc["nameAccordingTo"]) {
+                                            if($family != $tc["canonicalForm"]) $canonical = $tc["canonicalForm"];
+                                        }
                                     }
-                                }
-                                elseif($database == "ggbn") {
-                                    if(is_numeric(stripos($tc["nameAccordingTo"], $this->databases_to_check_eol_api[$database]))) $canonical = $tc["canonicalForm"];
-                                }
+                                    elseif($database == "ggbn") {
+                                        if(is_numeric(stripos($tc["nameAccordingTo"], $this->databases_to_check_eol_api[$database]))) $canonical = $tc["canonicalForm"];
+                                    }
+                                }    
                             }
                         }
                     }
