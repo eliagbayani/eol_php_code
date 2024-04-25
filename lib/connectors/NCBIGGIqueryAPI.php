@@ -690,7 +690,7 @@ class NCBIGGIqueryAPI
         }
     }
     public function parse_inat_observ_search_object($json)
-    {   $obj = json_decode($json); print_r($obj); //exit;
+    {   $obj = json_decode($json); //print_r($obj); //exit;
         $sum = 0;
         foreach($obj->results->month_of_year as $r) $sum += $r;
         return $sum;
