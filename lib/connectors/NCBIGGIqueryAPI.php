@@ -399,7 +399,7 @@ class NCBIGGIqueryAPI
             */
             $rec["object_id"] = "_no_of_public_rec_in_bolds";
             self::add_string_types($rec, "Number public records in BOLDS", 0, "http://eol.org/schema/terms/NumberPublicRecordsInBOLD", $family);
-            self::has_diff_family_name_in_eol_api($family, $database);
+            self::has_diff_family_name_in_eol_api($family, $database); //BOLDS
         }
         self::check_for_sub_family($family);
         return false;
@@ -681,7 +681,7 @@ class NCBIGGIqueryAPI
             $rec["object_id"] = "_rec_in_gbif";
             self::add_string_types($rec, "Records in GBIF", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/RecordInGBIF", $family);
             */
-            self::has_diff_family_name_in_eol_api($family, $database);
+            self::has_diff_family_name_in_eol_api($family, $database); //GBIF
         }
         self::check_for_sub_family($family);
         return false;
@@ -791,7 +791,7 @@ class NCBIGGIqueryAPI
             */
             $rec["object_id"] = "NumberDNAInGGBN";
             self::add_string_types($rec, "Number of DNA records in GGBN", 0, "http://eol.org/schema/terms/NumberDNARecordsInGGBN", $family);
-            self::has_diff_family_name_in_eol_api($family, $database);
+            self::has_diff_family_name_in_eol_api($family, $database); //GGBN
         }
         self::check_for_sub_family($family);
         return false;
@@ -843,7 +843,7 @@ class NCBIGGIqueryAPI
             $rec["object_id"] = "SequenceInGenBank";
             self::add_string_types($rec, "SequenceInGenBank", "http://eol.org/schema/terms/no", "http://eol.org/schema/terms/SequenceInGenBank", $family);
             */
-            self::has_diff_family_name_in_eol_api($family, $database);
+            self::has_diff_family_name_in_eol_api($family, $database); //NCBI
         }
         self::check_for_sub_family($family);
         return false;
