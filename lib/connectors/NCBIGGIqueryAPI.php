@@ -158,6 +158,7 @@ class NCBIGGIqueryAPI
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bhl"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
+        // $this->ggi_databases = array("inat"); //debug - use to process 1 database
 
         // $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl");
 
@@ -229,7 +230,8 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                // break; //debug - process just a subset, just the 1st cycle
+                // break; //debug only - process just a subset, just the 1st cycle
+                if($i > 200) break; //debug only
             }
             // */
 
