@@ -50,7 +50,7 @@ EOL
 "http://eol.org/schema/terms/NumberRichSpeciesPagesInEOL"
 
 INAT
-"http://dont know yet"
+"http://eol.org/schema/terms/NumberOfiNaturalistObservations"
 */
 class NCBIGGIqueryAPI
 {
@@ -139,7 +139,7 @@ class NCBIGGIqueryAPI
         $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
         $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
         $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
-        
+        $this->inat['taxon_page'] = "https://www.inaturalist.org/observations/"; // e.g. observations/1972181
 
         // stats
         $this->TEMP_DIR = create_temp_dir() . "/";
@@ -638,55 +638,36 @@ class NCBIGGIqueryAPI
         return false;
     }
     private function query_family_INAT_info($family, $is_subfamily, $database)
-    {   /*
-        $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
-        $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
-        */
-        // $family = "Muridae";
+    {   // $family = "Muridae"; //force assign
         $rec["family"] = $family;
         $rec["taxon_id"] = $family;
-        $rec["source"] = $this->gbif_taxon_info . $family;
         if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $family, $this->download_options_INAT)) {
             $taxon_id = self::parse_inat_taxa_search_object($family, 'family', $json); //exit("\n[$taxon_id]\n");
-            // $usageKey = false;
-            // if(!isset($json->usageKey)) {
-            //     if(isset($json->note)) $usageKey = self::get_usage_key($family);
-            //     else {} // e.g. Fervidicoccaceae
-            // }
-            // else $usageKey = trim((string) $json->usageKey);
             if($taxon_id) {
                 $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
                 $count = self::parse_inat_observ_search_object($json); //exit("\n[$count]\n");
 
                 if($count || strval($count) == "0") {
-                    $rec["source"] = $this->inat['observation_search'] . $taxon_id;
-                    // if($count > 0) {
-                    //     $rec["object_id"]   = "_no_of_rec_in_gbif";
-                    //     $rec["count"]       = $count;
-                    //     $rec["label"]       = "Number records in GBIF";
-                    //     $rec["measurement"] = "http://eol.org/schema/terms/NumberRecordsInGBIF";
-                    //     self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
-                    //     return true;
-                    // }
+                    $rec["source"] = $this->inat['taxon_page'] . $taxon_id;
+                    if($count > 0) {
+                        $rec["object_id"]   = "_no_of_inat_observ";
+                        $rec["count"]       = $count;
+                        $rec["label"]       = "Number of iNaturalist Observations";
+                        $rec["measurement"] = "http://eol.org/schema/terms/NumberOfiNaturalistObservations";
+                        self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                        return true;
+                    }
                 }
                 else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
             }
         }
         else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
-        /* copied template
-        if(!$is_subfamily) {
-            $rec["object_id"] = "_no_of_rec_in_gbif";
-            self::add_string_types($rec, "Number records in GBIF", 0, "http://eol.org/schema/terms/NumberRecordsInGBIF", $family);
-            self::has_diff_family_name_in_eol_api($family, $database); //GBIF
-        }
-        self::check_for_sub_family($family); //GBIF
-        */
         return false;
     }
     public function parse_inat_taxa_search_object($sciname, $rank, $json)
     {   $obj = json_decode($json);
         foreach($obj->results as $r) {
-            if($r->name == $sciname && $r->rank == strtolower($rank)) return $r->id;
+            if($r->name == $sciname && strtolower($r->rank) == strtolower($rank)) return $r->id;
         }
     }
     public function parse_inat_observ_search_object($json)
@@ -708,7 +689,6 @@ class NCBIGGIqueryAPI
                 else {} // e.g. Fervidicoccaceae
             }
             else $usageKey = trim((string) $json->usageKey);
-
             if($usageKey) {
                 $count = Functions::lookup_with_cache($this->gbif_record_count . $usageKey, $this->gbif_download_options);
                 if($count || strval($count) == "0") {
