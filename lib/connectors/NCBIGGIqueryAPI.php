@@ -191,37 +191,38 @@ class NCBIGGIqueryAPI
             https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Protozoa
 
     */
-    function get_all_taxa_genus()
-    {
-        $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
-        echo "\nGenus count: [".count($genus_taxa)."]\n";
-
-    }
-    function get_all_taxa_family()
+    function start()
     {
         $this->taxa_blacklist_bhl_csv_call = array();
         if(file_exists($this->blacklist_bhl_csv_call)) $this->taxa_blacklist_bhl_csv_call = file($this->blacklist_bhl_csv_call, FILE_IGNORE_NEW_LINES);
         echo "\nBlacklist: "; print_r($this->taxa_blacklist_bhl_csv_call); //exit;
 
         self::initialize_files();
-        /*
+
+        self::get_all_taxa_family();
+        // self::get_all_taxa_genus();
+        $this->archive_builder->finalize(TRUE); //moved here
+    }
+    function get_all_taxa_genus()
+    {
+        $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
+        echo "\nGenus count: [".count($genus_taxa)."]\n"; exit;
+
+    }
+    function get_all_taxa_family()
+    {   /* obsolete
         $families = self::get_families_from_google_spreadsheet(); Google spreadsheets are very slow, it is better to use Dropbox for our online spreadsheets
         $families = self::get_families(); use to read a plain text file
         $families = self::get_families_with_missing_data_xlsx(); - utility
+        $families = self::get_families_from_JonCoddington(); //working OK... for Jonathan Coddington - from email May 15-16, 2018
         */
-
         $families = self::get_families_xlsx(); //normal operation for resource 723
-        /* $families = self::get_families_from_JonCoddington(); //working OK... for Jonathan Coddington - from email May 15-16, 2018 */
-
-        /* families test | during dev only
+        /* families force-assign | during dev only
         $families = array("Caudinidae", "Eupyrgidae", "Gephyrothuriidae", "Molpadiidae"); //BHL
         $families[] = "Ophiuridae"; //GGBN
         $families[] = "Holothuriidae"; //BOLDS
         */
-
-        // print_r($families); exit;
         echo "\nFamilies count: [".count($families)."]\n";
-
         if($families) {
             /* working but not round-robin, rather each database is processed one after the other.
             foreach($this->ggi_databases as $database) {
@@ -260,7 +261,7 @@ class NCBIGGIqueryAPI
             // */
 
             self::compare_previuos_and_current_dumps_then_process();
-            $this->create_archive();
+            $this->create_taxa_archive();
         }
         echo "\n temp dir: " . $this->TEMP_DIR . "\n";
         // remove temp dir
@@ -944,10 +945,10 @@ class NCBIGGIqueryAPI
         return $o;
         */
     }
-    private function create_archive()
+    private function create_taxa_archive()
     {
         foreach($this->taxa as $t) $this->archive_builder->write_object_to_file($t);
-        $this->archive_builder->finalize(TRUE);
+        // $this->archive_builder->finalize(TRUE); //moved on top
     }
     private function get_families_with_missing_data_xlsx() // utility
     {
