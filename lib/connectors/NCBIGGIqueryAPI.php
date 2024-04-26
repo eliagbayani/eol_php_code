@@ -176,8 +176,54 @@ class NCBIGGIqueryAPI
 
         $this->temp_family_table_file = DOC_ROOT . "tmp/family_table.txt";
     }
+    function get_all_taxa_genus()
+    {
+        $genus_taxa = self::get_all_genus_taxa("genus");
+        // print_r($genus_taxa); exit;
+        echo "\nGenus count: [".count($genus_taxa)."]\n";
 
-    function get_all_taxa()
+    }
+    private function get_all_genus_taxa($sought_rank)
+    {
+        if(Functions::is_production()) $file = "/extra/other_files/dh21eolid/DH21taxaWeolIDs.txt";
+        else                           $file = "/Volumes/Crucial_2TB/other_files2/dh21eolid/DH21taxaWeolIDs.txt";
+        echo "\nReading DH file $file...\n";
+        $i = 0; $final = array();
+        foreach(new FileIterator($file) as $line => $row) { $i++;
+            // $row = Functions::conv_to_utf8($row);
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = $tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec);
+                // print_r($rec); exit("\nstop muna\n");
+                /*Array( origsource_sciname_info
+                    [taxonID] => 12
+                    [furtherInformationURL] => http://reflora.jbrj.gov.br/reflora/listaBrasil/FichaPublicaTaxonUC/FichaPublicaTaxonUC.do?id=FB12
+                    [acceptedNameUsageID] => 
+                    [parentNameUsageID] => 120181
+                    [scientificName] => Agaricales
+                    [namePublishedIn] => 
+                    [kingdom] => Fungi
+                    [phylum] => Basidiomycota
+                    [class] => 
+                    [order] => Agaricales
+                    [family] => 
+                    [genus] => 
+                    [taxonRank] => order
+                    [scientificNameAuthorship] => 
+                    [taxonomicStatus] => accepted
+                    [modified] => 2018-08-10 11:58:06.954
+                    [canonicalName] => Agaricales
+                )*/
+                if($rec['taxonRank'] == $sought_rank) $final[$rec['canonicalName']] = '';
+            }
+        } //end foreach()
+        return $final;
+    }
+    function get_all_taxa_family()
     {
         $this->taxa_blacklist_bhl_csv_call = array();
         if(file_exists($this->blacklist_bhl_csv_call)) $this->taxa_blacklist_bhl_csv_call = file($this->blacklist_bhl_csv_call, FILE_IGNORE_NEW_LINES);
@@ -234,8 +280,8 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                // break; //debug only - process just a subset, just the 1st cycle
-                // if($i >= 20) break; //debug only
+                // break;              //debug only - process just a subset, just the 1st cycle
+                // if($i >= 20) break; //debug only - just the first 20 cycles
             }
             // */
 
