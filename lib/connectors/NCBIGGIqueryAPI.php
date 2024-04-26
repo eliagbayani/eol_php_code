@@ -646,10 +646,9 @@ class NCBIGGIqueryAPI
             if($taxon_id) {
                 $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
                 $count = self::parse_inat_observ_search_object($json); //exit("\n[$count]\n");
-
                 if($count || strval($count) == "0") {
                     $rec["source"] = $this->inat['taxon_page'] . $taxon_id;
-                    if($count > 0) {
+                    if($count || strval($count) == "0") {
                         $rec["object_id"]   = "_no_of_inat_observ";
                         $rec["count"]       = $count;
                         $rec["label"]       = "Number of iNaturalist Observations";
