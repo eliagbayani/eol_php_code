@@ -16,7 +16,7 @@ $timestart = time_elapsed();
 $resource_id = 723;
 $func = new NCBIGGIqueryAPI($resource_id);
 
-$funct->start();
+$func->start();
 Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.
 
 /* not yet implemented
