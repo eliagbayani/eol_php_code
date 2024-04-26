@@ -199,15 +199,41 @@ class NCBIGGIqueryAPI
 
         self::initialize_files();
 
-        // self::get_all_taxa_family();
-        self::get_all_taxa_genus();
+        $this->process_level = "family"; self::get_all_taxa_family();
+        $this->process_level = "genus";  self::get_all_taxa_genus();
+
         $this->archive_builder->finalize(TRUE); //moved here
     }
     function get_all_taxa_genus()
     {
         $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
-        echo "\nGenus count: [".count($genus_taxa)."]\n"; exit; //Genus count: [187774] as of Apr 27, 2024
+        echo "\nGenus count: [".count($genus_taxa)."]\n"; //exit; //Genus count: [187774] as of Apr 27, 2024
 
+        // /* working, a round-robin option of server load - per 100 calls each server
+        $k = 0; $m = count($families)/6; // before 9646/6
+        $calls = 10; //orig is 100
+        for ($i = $k; $i <= count($families)+$calls; $i=$i+$calls) { //orig value of i is 0
+            echo "\n[$i] - ";
+            /* breakdown when caching
+            $cont = false;
+            // if($i >= 1    && $i < $m)    $cont = true;
+            // if($i >= $m   && $i < $m*2)  $cont = true;
+            // if($i >= $m*2 && $i < $m*3)  $cont = true;
+            // if($i >= $m*3 && $i < $m*4)  $cont = true;
+            // if($i >= $m*4 && $i < $m*5)  $cont = true;
+            if($i >= $m*5 && $i < $m*6)  $cont = true;
+            if(!$cont) continue;
+            */
+            
+            $min = $i; $max = $min+$calls;
+            foreach($this->ggi_databases as $database) {
+                $this->families_with_no_data = array(); //moved here
+                self::create_instances_from_taxon_object($genus_taxa, false, $database, $min, $max);
+            }
+            break;              //debug only - process just a subset, just the 1st cycle
+            // if($i >= 20) break; //debug only - just the first 20 cycles
+        }
+        
 
     }
     function get_all_taxa_family()
@@ -351,14 +377,14 @@ class NCBIGGIqueryAPI
                 $taxon = new \eol_schema\Taxon();
                 $taxon->taxonID         = $family;
                 $taxon->scientificName  = $family;
-                if(!$is_subfamily) $taxon->taxonRank = "family";
+                if(!$is_subfamily) $taxon->taxonRank = $this->process_level;
                 $this->taxa[$taxon->taxonID] = $taxon;
             }
         }
     }
     private function query_family_BOLDS_info($family, $is_subfamily, $database)
     {
-        $rec["family"] = $family;
+        $rec[$this->process_level] = $family;
         $rec["taxon_id"] = $family;
         $rec["source"] = $this->bolds_taxon_page_by_name . $family;
         if($json = Functions::lookup_with_cache($this->bolds["TaxonSearch"] . $family, $this->download_options_BOLDS)) {
@@ -463,7 +489,6 @@ class NCBIGGIqueryAPI
             [total_matched_names] => 1
         )
         */
-        
         $ranks = array("family", "subfamily", "genus", "order"); // best rank for FALO family, in this order
         if($arr = json_decode($json)) {
             foreach($ranks as $rank) {
@@ -491,7 +516,7 @@ class NCBIGGIqueryAPI
     }
     private function query_family_BHL_info($family, $is_subfamily, $database)
     {
-        $rec["family"] = $family;
+        $rec[$this->process_level] = $family;
         $rec["taxon_id"] = $family;
         $rec["source"] = $this->bhl_taxon_page . $family;
         if($contents = Functions::lookup_with_cache($this->bhl_taxon_in_xml . $family, $this->download_options)) {
@@ -660,10 +685,10 @@ class NCBIGGIqueryAPI
     }
     private function query_family_INAT_info($family, $is_subfamily, $database)
     {   // $family = "Muridae"; //force assign
-        $rec["family"] = $family;
+        $rec[$this->process_level] = $family;
         $rec["taxon_id"] = $family;
         if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $family, $this->download_options_INAT)) {
-            $taxon_id = self::parse_inat_taxa_search_object($family, 'family', $json); //exit("\n[$taxon_id]\n");
+            $taxon_id = self::parse_inat_taxa_search_object($family, $this->process_level, $json); //exit("\n[$taxon_id]\n");
             if($taxon_id) {
                 $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
                 $count = self::parse_inat_observ_search_object($json); //exit("\n[$count]\n");
@@ -698,7 +723,7 @@ class NCBIGGIqueryAPI
     }
     private function query_family_GBIF_info($family, $is_subfamily, $database)
     {
-        $rec["family"] = $family;
+        $rec[$this->process_level] = $family;
         $rec["taxon_id"] = $family;
         $rec["source"] = $this->gbif_taxon_info . $family;
         if($json = Functions::lookup_with_cache($this->gbif_taxon_info . $family, $this->gbif_download_options)) {
@@ -760,8 +785,12 @@ class NCBIGGIqueryAPI
                 }
             }
             if($options) {
+                /* orig
                 if(isset($options["FAMILY"])) return min($options["FAMILY"]);
                 else return min($usagekeys);
+                */
+                if(isset($options[strtoupper($this->process_level)])) return min($options[strtoupper($this->process_level)]);
+                else return min($usagekeys);                
             }
         }
         return false;
@@ -778,7 +807,7 @@ class NCBIGGIqueryAPI
     private function save_to_dump($rec, $filename)
     {
         if(isset($rec["measurement"]) && is_array($rec)) {
-            $fields = array("family", "count", "taxon_id", "object_id", "source", "label", "measurement");
+            $fields = array($this->process_level, "count", "taxon_id", "object_id", "source", "label", "measurement");
             $data = "";
             foreach($fields as $field) $data .= $rec[$field] . "\t";
             if(!($WRITE = Functions::file_open($filename, "a"))) return;
@@ -795,7 +824,7 @@ class NCBIGGIqueryAPI
     private function query_family_GGBN_info($family, $is_subfamily, $database)
     {
         $records = array();
-        $rec["family"] = $family;
+        $rec[$this->process_level] = $family;
         $rec["source"] = $this->family_service_ggbn . $family;
         $rec["taxon_id"] = $family;
         if($html = Functions::lookup_with_cache($rec["source"], $this->download_options)) {
@@ -875,7 +904,7 @@ class NCBIGGIqueryAPI
     }
     private function query_family_NCBI_info($family, $is_subfamily, $database)
     {
-        $rec["family"] = $family;
+        $rec[$this->process_level] = $family;
         $rec["source"] = $this->family_service_ncbi . $family;
         $rec["taxon_id"] = $family;
         $contents = Functions::lookup_with_cache($rec["source"], $this->download_options);
@@ -974,6 +1003,7 @@ class NCBIGGIqueryAPI
         }
         return array_keys($families);
     }
+    /* obsolete
     private function get_families_from_google_spreadsheet()
     {
         $google_spreadsheets[] = array("title" => "FALO",                                            "column_number_to_return" => 16);
@@ -996,7 +1026,7 @@ class NCBIGGIqueryAPI
             if($family) $families[$family] = '';
         }
         return array_keys($families);
-    }
+    } */
     /* works but seems obsolete - commented Mar 29, 2018
     private function get_families()
     {
@@ -1075,8 +1105,7 @@ class NCBIGGIqueryAPI
         return array_keys($families);
     }
     private function get_families_xlsx()
-    {
-        require_library('XLSParser');
+    {   require_library('XLSParser');
         $parser = new XLSParser();
         $families = array();
 
