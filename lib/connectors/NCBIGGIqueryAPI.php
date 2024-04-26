@@ -199,14 +199,15 @@ class NCBIGGIqueryAPI
 
         self::initialize_files();
 
-        self::get_all_taxa_family();
-        // self::get_all_taxa_genus();
+        // self::get_all_taxa_family();
+        self::get_all_taxa_genus();
         $this->archive_builder->finalize(TRUE); //moved here
     }
     function get_all_taxa_genus()
     {
         $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
-        echo "\nGenus count: [".count($genus_taxa)."]\n"; exit;
+        echo "\nGenus count: [".count($genus_taxa)."]\n"; exit; //Genus count: [187774] as of Apr 27, 2024
+
 
     }
     function get_all_taxa_family()
@@ -1234,9 +1235,11 @@ class NCBIGGIqueryAPI
                     [modified] => 2018-08-10 11:58:06.954
                     [canonicalName] => Agaricales
                 )*/
-                if($rec['taxonRank'] == $sought_rank) $final[$rec['canonicalName']] = '';
+                $status['taxonomicStatus'][$rec['taxonomicStatus']] = ''; //for stats only
+                if($rec['taxonRank'] == $sought_rank && $rec['taxonomicStatus'] == "accepted") $final[$rec['canonicalName']] = '';
             }
         } //end foreach()
+        print_r($status); //exit;
         return $final;
     }
 }
