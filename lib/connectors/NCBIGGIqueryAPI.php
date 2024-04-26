@@ -386,9 +386,9 @@ class NCBIGGIqueryAPI
                 }
                 if(@$info["specimens"] > 0 || @$info["public records"] > 0) return true;
             }
-            else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+            else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
         }
-        else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+        else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
 
         if(!$is_subfamily) {
             /* removed non-public
@@ -511,7 +511,7 @@ class NCBIGGIqueryAPI
                             return true;
                         }
                     }
-                    else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+                    else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
                 }
                 else {
                     echo "\nBlacklist: $family\n";
@@ -519,7 +519,7 @@ class NCBIGGIqueryAPI
                 }
             }
         }
-        else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+        else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
 
         if(!$is_subfamily) {
             $rec["object_id"] = "_no_of_page_in_bhl";
@@ -657,10 +657,10 @@ class NCBIGGIqueryAPI
                         return true;
                     }
                 }
-                else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+                else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
             }
         }
-        else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+        else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
         return false;
     }
     public function parse_inat_taxa_search_object($sciname, $rank, $json)
@@ -708,10 +708,10 @@ class NCBIGGIqueryAPI
                         return true;
                     }
                 }
-                else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+                else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
             }
         }
-        else self::save_to_dump($family, $this->names_no_entry_from_partner_dump_file);
+        else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
 
         if(!$is_subfamily) {
             $rec["object_id"] = "_no_of_rec_in_gbif";
