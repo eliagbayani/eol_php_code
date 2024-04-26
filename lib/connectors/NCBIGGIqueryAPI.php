@@ -26,25 +26,25 @@ We either used an API service or a webpage service (scraped) whichever was avail
 
 BOLDS
 "http://eol.org/schema/terms/NumberRecordsInBOLD"           - removed non-public -
-"http://eol.org/schema/terms/RecordInBOLD" (boolean)
+"http://eol.org/schema/terms/RecordInBOLD" (boolean)        - removed
 "http://eol.org/schema/terms/NumberPublicRecordsInBOLD"
 
 BHL
 "http://eol.org/schema/terms/NumberReferencesInBHL"
-"http://eol.org/schema/terms/ReferenceInBHL" (boolean)
+"http://eol.org/schema/terms/ReferenceInBHL" (boolean)      - removed
 
 GBIF
 "http://eol.org/schema/terms/NumberRecordsInGBIF"
-"http://eol.org/schema/terms/RecordInGBIF" (boolean)
+"http://eol.org/schema/terms/RecordInGBIF" (boolean)        - removed
 
 GGBN
 "http://eol.org/schema/terms/NumberDNARecordsInGGBN"
 "http://eol.org/schema/terms/NumberSpecimensInGGBN"
-"http://eol.org/schema/terms/SpecimensInGGBN" (boolean)
+"http://eol.org/schema/terms/SpecimensInGGBN" (boolean)     - removed
 
 NCBI
 "http://eol.org/schema/terms/NumberOfSequencesInGenBank"
-"http://eol.org/schema/terms/SequenceInGenBank" (boolean)
+"http://eol.org/schema/terms/SequenceInGenBank" (boolean)   - removed
 
 EOL
 "http://eol.org/schema/terms/NumberRichSpeciesPagesInEOL"
@@ -178,50 +178,10 @@ class NCBIGGIqueryAPI
     }
     function get_all_taxa_genus()
     {
-        $genus_taxa = self::get_all_genus_taxa("genus");
+        $genus_taxa = self::get_DH_taxa_per_rank("genus");
         // print_r($genus_taxa); exit;
         echo "\nGenus count: [".count($genus_taxa)."]\n";
 
-    }
-    private function get_all_genus_taxa($sought_rank)
-    {
-        if(Functions::is_production()) $file = "/extra/other_files/dh21eolid/DH21taxaWeolIDs.txt";
-        else                           $file = "/Volumes/Crucial_2TB/other_files2/dh21eolid/DH21taxaWeolIDs.txt";
-        echo "\nReading DH file $file...\n";
-        $i = 0; $final = array();
-        foreach(new FileIterator($file) as $line => $row) { $i++;
-            // $row = Functions::conv_to_utf8($row);
-            if($i == 1) $fields = explode("\t", $row);
-            else {
-                if(!$row) continue;
-                $tmp = explode("\t", $row);
-                $rec = array(); $k = 0;
-                foreach($fields as $field) { $rec[$field] = $tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec);
-                // print_r($rec); exit("\nstop muna\n");
-                /*Array( origsource_sciname_info
-                    [taxonID] => 12
-                    [furtherInformationURL] => http://reflora.jbrj.gov.br/reflora/listaBrasil/FichaPublicaTaxonUC/FichaPublicaTaxonUC.do?id=FB12
-                    [acceptedNameUsageID] => 
-                    [parentNameUsageID] => 120181
-                    [scientificName] => Agaricales
-                    [namePublishedIn] => 
-                    [kingdom] => Fungi
-                    [phylum] => Basidiomycota
-                    [class] => 
-                    [order] => Agaricales
-                    [family] => 
-                    [genus] => 
-                    [taxonRank] => order
-                    [scientificNameAuthorship] => 
-                    [taxonomicStatus] => accepted
-                    [modified] => 2018-08-10 11:58:06.954
-                    [canonicalName] => Agaricales
-                )*/
-                if($rec['taxonRank'] == $sought_rank) $final[$rec['canonicalName']] = '';
-            }
-        } //end foreach()
-        return $final;
     }
     function get_all_taxa_family()
     {
@@ -1227,6 +1187,43 @@ class NCBIGGIqueryAPI
         else          $contents = fread($file,filesize($file_path));
         fclose($file);
         return $contents;
+    }
+    private function get_DH_taxa_per_rank($sought_rank)
+    {   if(Functions::is_production()) $file = "/extra/other_files/dh21eolid/DH21taxaWeolIDs.txt";
+        else                           $file = "/Volumes/Crucial_2TB/other_files2/dh21eolid/DH21taxaWeolIDs.txt";
+        echo "\nReading DH file $file...\n";
+        $i = 0; $final = array();
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = $tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); // print_r($rec); exit("\nstop muna\n");
+                /*Array( origsource_sciname_info
+                    [taxonID] => 12
+                    [furtherInformationURL] => http://reflora.jbrj.gov.br/reflora/listaBrasil/FichaPublicaTaxonUC/FichaPublicaTaxonUC.do?id=FB12
+                    [acceptedNameUsageID] => 
+                    [parentNameUsageID] => 120181
+                    [scientificName] => Agaricales
+                    [namePublishedIn] => 
+                    [kingdom] => Fungi
+                    [phylum] => Basidiomycota
+                    [class] => 
+                    [order] => Agaricales
+                    [family] => 
+                    [genus] => 
+                    [taxonRank] => order
+                    [scientificNameAuthorship] => 
+                    [taxonomicStatus] => accepted
+                    [modified] => 2018-08-10 11:58:06.954
+                    [canonicalName] => Agaricales
+                )*/
+                if($rec['taxonRank'] == $sought_rank) $final[$rec['canonicalName']] = '';
+            }
+        } //end foreach()
+        return $final;
     }
 }
 ?>
