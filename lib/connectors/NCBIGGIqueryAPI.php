@@ -176,10 +176,24 @@ class NCBIGGIqueryAPI
 
         $this->temp_family_table_file = DOC_ROOT . "tmp/family_table.txt";
     }
+    /* To do:
+    - get all family and genus for iNat
+            https://api.inaturalist.org/v1/taxa?rank=family&page=1
+            https://api.inaturalist.org/v1/taxa?rank=genus&page=2&per_page=50
+
+    - get all family and genus for ggbn: Animalia, Fungi, *Archaebacteria, Plantae, *Monera, Chromista, xProtista, Archaea, Bacteria, Protozoa, *Chrysophytes
+            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Animalia
+            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Fungi
+            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Plantae
+            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Bacteria
+            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Chromista
+            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Archaea
+            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Protozoa
+
+    */
     function get_all_taxa_genus()
     {
-        $genus_taxa = self::get_DH_taxa_per_rank("genus");
-        // print_r($genus_taxa); exit;
+        $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
         echo "\nGenus count: [".count($genus_taxa)."]\n";
 
     }
@@ -330,7 +344,6 @@ class NCBIGGIqueryAPI
             elseif($database == "bhl")   $with_data = self::query_family_BHL_info($family, $is_subfamily, $database);
             elseif($database == "bolds") $with_data = self::query_family_BOLDS_info($family, $is_subfamily, $database);
             elseif($database == "inat") $with_data = self::query_family_INAT_info($family, $is_subfamily, $database);
-
 
             if(($is_subfamily && $with_data) || !$is_subfamily) {
                 $taxon = new \eol_schema\Taxon();
