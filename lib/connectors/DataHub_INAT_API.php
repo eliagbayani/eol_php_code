@@ -1,6 +1,7 @@
 <?php
 namespace php_active_record;
 /*
+    datahub_inat.php or from: NCBIGGIqueryAPI.php
 */
 class DataHub_INAT_API
 {
@@ -74,7 +75,7 @@ class DataHub_INAT_API
                 }
             }
     
-            if($page >= 6) break;
+            // if($page >= 6) break; //dev only
         } //end for loop
 
     
@@ -106,22 +107,5 @@ class DataHub_INAT_API
         //     fclose($WRITE);
         // }
     }
-
-    /*
-    function get_terms_yml($sought_type = 'ALL') //possible values: 'measurement', 'value', 'ALL', 'WoRMS value'
-    {                                            //output structure: $final[label] = URI;
-        $final = array();
-        if($yml = Functions::lookup_with_cache($this->EOL_terms_yml_url, $this->download_options)) { //orig 1 day cache
-            $yml .= "alias: ";
-            if(preg_match_all("/name\:(.*?)alias\:/ims", $yml, $a)) {
-                $arr = array_map('trim', $a[1]);
-            }
-            else exit("\nInvestigate: EOL terms file structure had changed.\n");
-        }
-        else exit("Remote EOL terms (.yml) file not accessible.");
-        print_r($this->debug); //just for stats
-        return $final;
-    } //end get_terms_yml()
-    */
 }
 ?>
