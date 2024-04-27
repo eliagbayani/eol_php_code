@@ -182,15 +182,14 @@ class NCBIGGIqueryAPI
             https://api.inaturalist.org/v1/taxa?rank=family&page=1
             https://api.inaturalist.org/v1/taxa?rank=genus&page=2&per_page=50
 
-    - get all family and genus for ggbn: Animalia, Fungi, *Archaebacteria, Plantae, *Monera, Chromista, xProtista, Archaea, Bacteria, Protozoa, *Chrysophytes
+    - get all family and genus for ggbn: Animalia, Fungi, *Archaebacteria, Plantae, *Monera, Chromista, *Protista, Archaea, Bacteria, Protozoa, *Chrysophytes
             https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Animalia
             https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Fungi
             https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Plantae
-            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Bacteria
             https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Chromista
             https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Archaea
+            https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Bacteria
             https://data.ggbn.org/ggbn_portal/api/search?getClassification&name=Protozoa
-
     */
     function start()
     {
@@ -215,7 +214,6 @@ class NCBIGGIqueryAPI
         $genus_taxa[] = "Gadidae";
         $genus_taxa[] = "Panthera";
         */
-
 
         // /* working, a round-robin option of server load - per 100 calls each server
         $k = 0; $m = count($genus_taxa)/6; // before 9646/6
