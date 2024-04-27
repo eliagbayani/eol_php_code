@@ -115,6 +115,7 @@ class NCBIGGIqueryAPI
         $this->gbif_record_count = "http://api.gbif.org/v1/occurrence/count?taxonKey=";
         $this->gbif_download_options = $this->download_options;
         $this->gbif_download_options['resource_id'] = "";
+        // https://www.gbif.org/dataset/d7dddbf4-2cf0-4f39-9b2a-bb099caae36c --- GBIF Backbone Taxonomy
         if(Functions::is_production()) $this->gbif_download_options['cache_path'] = "/extra/eol_cache_gbif/";
         else                           $this->gbif_download_options['cache_path'] = '/Volumes/Thunderbolt4/eol_cache_gbif/';
 
@@ -199,7 +200,7 @@ class NCBIGGIqueryAPI
 
         self::initialize_files();
 
-        $this->process_level = "family"; self::get_all_taxa_family();
+        // $this->process_level = "family"; self::get_all_taxa_family();
         $this->process_level = "genus";  self::get_all_taxa_genus();
 
         $this->archive_builder->finalize(TRUE); //moved here
@@ -209,10 +210,17 @@ class NCBIGGIqueryAPI
         $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
         echo "\nGenus count: [".count($genus_taxa)."]\n"; //exit; //Genus count: [187774] as of Apr 27, 2024
 
+        /* force assign | debug only
+        $genus_taxa = array();
+        $genus_taxa[] = "Gadidae";
+        $genus_taxa[] = "Panthera";
+        */
+
+
         // /* working, a round-robin option of server load - per 100 calls each server
-        $k = 0; $m = count($families)/6; // before 9646/6
+        $k = 0; $m = count($genus_taxa)/6; // before 9646/6
         $calls = 10; //orig is 100
-        for ($i = $k; $i <= count($families)+$calls; $i=$i+$calls) { //orig value of i is 0
+        for ($i = $k; $i <= count($genus_taxa)+$calls; $i=$i+$calls) { //orig value of i is 0
             echo "\n[$i] - ";
             /* breakdown when caching
             $cont = false;
@@ -233,8 +241,12 @@ class NCBIGGIqueryAPI
             break;              //debug only - process just a subset, just the 1st cycle
             // if($i >= 20) break; //debug only - just the first 20 cycles
         }
-        
+        self::compare_previuos_and_current_dumps_then_process();
+        $this->create_taxa_archive();
 
+        echo "\n temp dir: " . $this->TEMP_DIR . "\n";
+        // remove temp dir
+        recursive_rmdir($this->TEMP_DIR); // debug - comment to check "name_from_eol_api.txt"
     }
     function get_all_taxa_family()
     {   /* obsolete
@@ -1244,32 +1256,33 @@ class NCBIGGIqueryAPI
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = $tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); // print_r($rec); exit("\nstop muna\n");
-                /*Array( origsource_sciname_info
-                    [taxonID] => 12
-                    [furtherInformationURL] => http://reflora.jbrj.gov.br/reflora/listaBrasil/FichaPublicaTaxonUC/FichaPublicaTaxonUC.do?id=FB12
-                    [acceptedNameUsageID] => 
-                    [parentNameUsageID] => 120181
-                    [scientificName] => Agaricales
-                    [namePublishedIn] => 
-                    [kingdom] => Fungi
-                    [phylum] => Basidiomycota
-                    [class] => 
-                    [order] => Agaricales
-                    [family] => 
-                    [genus] => 
-                    [taxonRank] => order
-                    [scientificNameAuthorship] => 
-                    [taxonomicStatus] => accepted
-                    [modified] => 2018-08-10 11:58:06.954
-                    [canonicalName] => Agaricales
-                )*/
+                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+                /*Array
+                    (
+                        [taxonID] => EOL-000000000001
+                        [source] => trunk:4038af35-41da-469e-8806-40e60241bb58
+                        [furtherInformationURL] => 
+                        [acceptedNameUsageID] => 
+                        [parentNameUsageID] => 
+                        [scientificName] => Life
+                        [taxonRank] => 
+                        [taxonomicStatus] => accepted
+                        [datasetID] => trunk
+                        [canonicalName] => Life
+                        [eolID] => 2913056
+                        [Landmark] => 3
+                        [higherClassification] => 
+                )
+                */
                 $status['taxonomicStatus'][$rec['taxonomicStatus']] = ''; //for stats only
+                $status['datasetID'][$rec['datasetID']] = ''; //for stats only
+
                 if($rec['taxonRank'] == $sought_rank && $rec['taxonomicStatus'] == "accepted") $final[$rec['canonicalName']] = '';
             }
         } //end foreach()
-        print_r($status); //exit;
-        return $final;
+        print_r($status); exit;
+        // print_r($final); exit;
+        return array_keys($final);
     }
 }
 ?>
