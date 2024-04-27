@@ -140,6 +140,8 @@ class NCBIGGIqueryAPI
         $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
         $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
         $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 0, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+
         $this->inat['taxon_page'] = "https://www.inaturalist.org/observations/"; // e.g. observations/1972181
 
         // stats
@@ -160,7 +162,7 @@ class NCBIGGIqueryAPI
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bhl"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
-        // $this->ggi_databases = array("inat"); //debug - use to process 1 database
+        $this->ggi_databases = array("inat"); //debug - use to process 1 database
 
         // $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl");
 
@@ -206,14 +208,16 @@ class NCBIGGIqueryAPI
     }
     function get_all_taxa_genus()
     {
-        $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
-        echo "\nGenus count: [".count($genus_taxa)."]\n"; //exit; //Genus count: [187774] as of Apr 27, 2024
+        // $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
 
-        /* force assign | debug only
+        // /* force assign | debug only
         $genus_taxa = array();
         $genus_taxa[] = "Gadidae";
         $genus_taxa[] = "Panthera";
-        */
+        $genus_taxa = array("Quercus");
+        // */
+        echo "\nGenus count: [".count($genus_taxa)."]\n"; //exit; //Genus count: [187774] as of Apr 27, 2024
+
 
         // /* working, a round-robin option of server load - per 100 calls each server
         $k = 0; $m = count($genus_taxa)/6; // before 9646/6
@@ -254,11 +258,13 @@ class NCBIGGIqueryAPI
         $families = self::get_families_from_JonCoddington(); //working OK... for Jonathan Coddington - from email May 15-16, 2018
         */
         $families = self::get_families_xlsx(); //normal operation for resource 723
+
         /* families force-assign | during dev only
         $families = array("Caudinidae", "Eupyrgidae", "Gephyrothuriidae", "Molpadiidae"); //BHL
         $families[] = "Ophiuridae"; //GGBN
         $families[] = "Holothuriidae"; //BOLDS
         */
+        
         echo "\nFamilies count: [".count($families)."]\n";
         if($families) {
             /* working but not round-robin, rather each database is processed one after the other.
@@ -701,7 +707,7 @@ class NCBIGGIqueryAPI
             $taxon_id = self::parse_inat_taxa_search_object($family, $this->process_level, $json); //exit("\n[$taxon_id]\n");
             if($taxon_id) {
                 $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
-                $count = self::parse_inat_observ_search_object($json); //exit("\n[$count]\n");
+                $count = self::parse_inat_observ_search_object($json); exit("\n[$count]\n");
                 if($count || strval($count) == "0") {
                     $rec["source"] = $this->inat['taxon_page'] . $taxon_id;
                     if($count || strval($count) == "0") {
@@ -1278,7 +1284,7 @@ class NCBIGGIqueryAPI
                 if($rec['taxonRank'] == $sought_rank && $rec['taxonomicStatus'] == "accepted") $final[$rec['canonicalName']] = '';
             }
         } //end foreach()
-        print_r($status); exit;
+        // print_r($status); exit;
         // print_r($final); exit;
         return array_keys($final);
     }
