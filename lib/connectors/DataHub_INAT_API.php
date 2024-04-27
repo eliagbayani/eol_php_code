@@ -9,7 +9,7 @@ class DataHub_INAT_API
     {
         $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
         // - get all family and genus for iNat
-        $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/taxa?rank=XRANK&page=XPAGE&per_page=100";
+        $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/taxa?rank=XRANK&page=XPAGE&per_page=25";
         // https://api.inaturalist.org/v1/taxa?rank=family&page=1
         // https://api.inaturalist.org/v1/taxa?rank=genus&page=2&per_page=50
 
@@ -31,7 +31,7 @@ class DataHub_INAT_API
         $json = Functions::lookup_with_cache($url, $this->download_options_INAT);
         $obj = json_decode($json); // print_r($obj); //exit;
         $total = $obj->total_results;
-        $pages = ceil($total / 100); // exit("\n$total\n$pages\n");
+        $pages = ceil($total / 25); // exit("\n$total\n$pages\n");
 
         for($page = 1; $page <= $pages; $page++) {
             $url = str_replace("XPAGE", $page, $this->inat_api['taxa']);
