@@ -140,7 +140,6 @@ class NCBIGGIqueryAPI
         $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
         $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
         $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
-        $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 0, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
 
         $this->inat['taxon_page'] = "https://www.inaturalist.org/observations/"; // e.g. observations/1972181
 
