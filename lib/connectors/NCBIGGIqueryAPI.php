@@ -161,7 +161,7 @@ class NCBIGGIqueryAPI
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bhl"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
-        $this->ggi_databases = array("inat"); //debug - use to process 1 database
+        // $this->ggi_databases = array("inat"); //debug - use to process 1 database
 
         // $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl");
 
