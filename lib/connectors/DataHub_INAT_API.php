@@ -7,7 +7,7 @@ class DataHub_INAT_API
 {
     function __construct($archive_builder = false, $resource_id = false)
     {
-        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
         // - get all family and genus for iNat
         $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/taxa?rank=XRANK&page=XPAGE&per_page=25";
         // https://api.inaturalist.org/v1/taxa?rank=family&page=1
@@ -21,8 +21,135 @@ class DataHub_INAT_API
 
         $this->dump_file = $save_path . "/datahub_inat.txt";
         if(is_file($this->dump_file)) unlink($this->dump_file);
+        // -----------------------------------------------------------------
+        $this->dwca_file = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";
+        $this->api['taxon_observation_count'] = "https://api.inaturalist.org/v2/observations?per_page=0&taxon_id="; //e.g. taxon_id=55533
     }
-    function get_iNat_taxa($rank)
+    function get_iNat_taxa_using_DwCA($rank)
+    {        
+        // /* un-comment in real operation
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        $paths = $func->extract_archive_file($this->dwca_file, "meta.xml", $this->download_options_INAT); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+        // print_r($paths); exit; //debug only
+        // */
+
+        /* development only
+        $paths = Array(
+            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_08324/',
+            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_08324/'
+        );
+        */
+
+        $archive_path = $paths['archive_path'];
+        $temp_dir = $paths['temp_dir'];
+        $harvester = new ContentArchiveReader(NULL, $archive_path);
+        $tables = $harvester->tables;
+        // $index = array_keys($tables); print_r($index); exit;
+
+        self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon', $rank);
+
+        // /* un-comment in real operation -- remove temp dir
+        recursive_rmdir($temp_dir);
+        echo ("\n temporary directory removed: " . $temp_dir);
+        // */
+    }
+    private function process_table($meta, $what, $sought_rank)
+    {
+        $csv_file = $meta->file_uri;
+        $i = 0; $meron = 0;
+        $file = Functions::file_open($csv_file, "r");
+        while(!feof($file)) {
+            $row = fgetcsv($file); //print_r($row);
+            if(!$row) break;
+            $i++; if(($i % 100000) == 0) echo "\n $i ";
+            if($i == 1) {
+                $fields = $row;
+                $count = count($fields);
+                print_r($fields);
+            }
+            else { //main records
+                $values = $row;
+                if($count != count($values)) { //row validation - correct no. of columns
+                    // print_r($values); print_r($rec);
+                    echo("\nWrong CSV format for this row.\n");
+                    // $this->debug['wrong csv'][$class]['identifier'][$rec['identifier']] = '';
+                    continue;
+                }
+                $k = 0;
+                $rec = array();
+                foreach($fields as $field) {
+                    $rec[$field] = $values[$k];
+                    $k++;
+                }
+                // print_r($fields); print_r($rec); exit;
+                /*Array(
+                    [id] => 1
+                    [taxonID] => https://www.inaturalist.org/taxa/1
+                    [identifier] => https://www.inaturalist.org/taxa/1
+                    [parentNameUsageID] => https://www.inaturalist.org/taxa/48460
+                    [kingdom] => Animalia
+                    [phylum] => 
+                    [class] => 
+                    [order] => 
+                    [family] => 
+                    [genus] => 
+                    [specificEpithet] => 
+                    [infraspecificEpithet] => 
+                    [modified] => 2021-11-02T06:05:44Z
+                    [scientificName] => Animalia
+                    [taxonRank] => kingdom
+                    [references] => http://www.catalogueoflife.org/annual-checklist/2013/browse/tree/id/13021388
+                )*/
+                if($sought_rank == $rec['taxonRank']) {
+                    $rek = array();
+                    $rek["id"]                  = $rec['id'];
+                    $rek["rank"]                = $rec['taxonRank'];
+                    $rek["sciname"]             = $rec['scientificName'];
+                    $rek["parent_id"]           = pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME);
+                    $rek["meta_observ_count"]   = self::get_total_observations($rec['id']);
+                    self::save_to_dump($rek, $this->dump_file);
+                    $meron++;
+                    // if($meron >= 3) break; //dev only
+                }
+            } //main records
+        } //main loop
+        fclose($file);
+
+
+        // for tab-separated file
+        // $i = 0;
+        // foreach(new FileIterator($meta->file_uri) as $line => $row) {
+        //     // $row = Functions::conv_to_utf8($row); //new line
+        //     $i++; if(($i % 100000) == 0) echo "\n".number_format($i);
+        //     if($meta->ignore_header_lines && $i == 1) continue;
+        //     if(!$row) continue;
+        //     // $row = Functions::conv_to_utf8($row); //possibly to fix special chars. but from copied template
+        //     $tmp = explode("\t", $row);
+        //     $rec = array(); $k = 0;
+        //     foreach($meta->fields as $field) {
+        //         $term = $field['term'];
+        //         if(!$term) continue;
+        //         $rec[$term] = $tmp[$k];
+        //         $k++;
+        //     }
+        //     $rec = array_map('trim', $rec);
+        //     print_r($rec); exit("\ndebug...\n");
+        // }
+    }
+    function get_total_observations($taxon_id)
+    {
+        $json = Functions::lookup_with_cache($this->api['taxon_observation_count'] . $taxon_id, $this->download_options_INAT);
+        $obj = json_decode($json); //print_r($obj); exit;
+        /*stdClass Object(
+            [total_results] => 17113
+            [page] => 1
+            [per_page] => 0
+            [results] => Array()
+        )*/
+        return $obj->total_results;
+    }
+    function get_iNat_taxa_using_API($rank) //not advisable to use, bec. of the 10,000 limit page coverage
     {
         $this->inat_api['taxa'] = str_replace("XRANK", $rank, $this->inat_api['taxa']);
         $page = 1;
@@ -35,7 +162,6 @@ class DataHub_INAT_API
 
         for($page = 1; $page <= $pages; $page++) {
             $url = str_replace("XPAGE", $page, $this->inat_api['taxa']);
-
             if($json = Functions::lookup_with_cache($url, $this->download_options_INAT)) {
                 $obj = json_decode($json);
                 /*[0] => stdClass Object(
@@ -60,8 +186,7 @@ class DataHub_INAT_API
                         [wikipedia_url] => http://en.wikipedia.org/wiki/Oak
                         [iconic_taxon_name] => Plantae
                         [preferred_common_name] => oaks
-                    )
-                */
+                )*/
                 foreach($obj->results as $o) {
                     if($o->is_active == 1) {
                         $rek = array();
@@ -74,11 +199,8 @@ class DataHub_INAT_API
                     }    
                 }
             }
-    
             // if($page >= 6) break; //dev only
         } //end for loop
-
-    
     }
     private function save_to_dump($rec, $filename)
     {
