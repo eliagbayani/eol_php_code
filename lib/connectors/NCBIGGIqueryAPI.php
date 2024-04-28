@@ -200,7 +200,7 @@ class NCBIGGIqueryAPI
     }
     function get_all_taxa_genus()
     {
-        // $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
+        $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
 
         /* force assign | debug only
         $genus_taxa = array();
