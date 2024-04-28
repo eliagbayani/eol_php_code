@@ -109,7 +109,7 @@ class DataHub_INAT_API
                     $rek["sciname"]             = $rec['scientificName'];
                     $rek["parent_id"]           = pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME);
                     $rek["meta_observ_count"]   = self::get_total_observations($rec['id']);
-                    if($rek["meta_observ_count"] == false) {
+                    if($rek["meta_observ_count"] === false) {
                         break;
                     }
                     self::save_to_dump($rek, $this->dump_file);
@@ -123,7 +123,7 @@ class DataHub_INAT_API
     function get_total_observations($taxon_id)
     {
         $json = Functions::lookup_with_cache($this->api['taxon_observation_count'] . $taxon_id, $this->download_options_INAT);
-
+        // echo "\n[$json]\n";
         // /* iNat special case
         if(stripos($json, 'Too Many Requests') !== false) { //string is found
             echo "\niNat special error: Too Many Requests\n";
