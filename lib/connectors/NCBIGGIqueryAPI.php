@@ -291,7 +291,7 @@ class NCBIGGIqueryAPI
                 */
                 
                 $min = $i; $max = $min+$calls;
-                foreach($this->ggi_databases as $database) {
+                foreach($this->ggi_databases as $database) { //echo "\nProcess dbase: [$database]\n";
                     $this->families_with_no_data = array(); //moved here
                     self::create_instances_from_taxon_object($families, false, $database, $min, $max);
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
@@ -370,7 +370,7 @@ class NCBIGGIqueryAPI
         // $this->families_with_no_data = array(); //moved up
         $i = 0;
         $total = count($families);
-        foreach($families as $family) {
+        foreach($families as $family) { //echo "\nProcess family: [$family][".count($families)."]\n";
             $i++;
             if($min || $max) {
                 // /* breakdown when caching
@@ -386,7 +386,7 @@ class NCBIGGIqueryAPI
             elseif($database == "gbif")  $with_data = self::query_family_GBIF_info($family, $is_subfamily, $database);
             elseif($database == "bhl")   $with_data = self::query_family_BHL_info($family, $is_subfamily, $database);
             elseif($database == "bolds") $with_data = self::query_family_BOLDS_info($family, $is_subfamily, $database);
-            elseif($database == "inat") $with_data = self::query_family_INAT_info($family, $is_subfamily, $database);
+            elseif($database == "inat")  $with_data = self::query_family_INAT_info($family, $is_subfamily, $database);
 
             if(($is_subfamily && $with_data) || !$is_subfamily) {
                 $taxon = new \eol_schema\Taxon();
@@ -706,7 +706,7 @@ class NCBIGGIqueryAPI
             $taxon_id = self::parse_inat_taxa_search_object($family, $this->process_level, $json); //exit("\n[$taxon_id]\n");
             if($taxon_id) {
                 $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
-                $count = self::parse_inat_observ_search_object($json); exit("\n[$count]\n");
+                $count = self::parse_inat_observ_search_object($json); //exit("\ncount: [$count]\n");
                 if($count || strval($count) == "0") {
                     $rec["source"] = $this->inat['taxon_page'] . $taxon_id;
                     if($count || strval($count) == "0") {
