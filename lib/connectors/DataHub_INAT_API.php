@@ -126,7 +126,7 @@ class DataHub_INAT_API
             // echo "\n[$json]\n";
             // /* iNat special case
             if(stripos($json, '429') !== false) { //Too Many Requests           --- //string is found
-                echo "\niNat special error: Too Many Requests\n";
+                echo "\niNat special error: Too Many Requests\n"; exit("\nexit muna, remove iNat from the list of dbases.\n");
                 sleep(60*10); //10 mins
                 $this->TooManyRequests++;
                 if($this->TooManyRequests >= 5) return false;

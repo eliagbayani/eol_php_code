@@ -698,9 +698,9 @@ class NCBIGGIqueryAPI
         if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $family, $this->download_options_INAT)) {
             $taxon_id = self::parse_inat_taxa_search_object($family, $this->process_level, $json); //exit("\n[$taxon_id]\n");
             if($taxon_id) {
-                $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
                 
                 /* 1st ver
+                $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
                 $count = self::parse_inat_observ_search_object($json); //exit("\ncount: [$count]\n");
                 */
                 // /* 2nd ver
