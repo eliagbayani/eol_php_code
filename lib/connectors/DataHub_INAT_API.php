@@ -7,7 +7,7 @@ class DataHub_INAT_API
 {
     function __construct($archive_builder = false, $resource_id = false)
     {
-        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
         // - get all family and genus for iNat
         $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/taxa?rank=XRANK&page=XPAGE&per_page=25";
         // https://api.inaturalist.org/v1/taxa?rank=family&page=1
@@ -24,6 +24,7 @@ class DataHub_INAT_API
         // -----------------------------------------------------------------
         $this->dwca_file = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";
         $this->api['taxon_observation_count'] = "https://api.inaturalist.org/v2/observations?per_page=0&taxon_id="; //e.g. taxon_id=55533
+        $this->TooManyRequests = 0;
     }
     function get_iNat_taxa_using_DwCA($rank)
     {        
@@ -109,7 +110,6 @@ class DataHub_INAT_API
                     $rek["parent_id"]           = pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME);
                     $rek["meta_observ_count"]   = self::get_total_observations($rec['id']);
                     if($rek["meta_observ_count"] == false) {
-                        echo "\niNat special error: Too Many Requests\n";
                         break;
                     }
                     self::save_to_dump($rek, $this->dump_file);
@@ -125,7 +125,12 @@ class DataHub_INAT_API
         $json = Functions::lookup_with_cache($this->api['taxon_observation_count'] . $taxon_id, $this->download_options_INAT);
 
         // /* iNat special case
-        if(stripos($json, 'Too Many Requests') !== false) return false; //string is found
+        if(stripos($json, 'Too Many Requests') !== false) { //string is found
+            echo "\niNat special error: Too Many Requests\n";
+            sleep(60*10); //10 mins
+            $this->TooManyRequests++;
+            if($this->TooManyRequests >= 5) return false;
+        }
         // */
 
         $obj = json_decode($json); //print_r($obj); exit;
