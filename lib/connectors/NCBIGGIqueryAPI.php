@@ -42,6 +42,9 @@ GGBN
 "http://eol.org/schema/terms/NumberSpecimensInGGBN"
 "http://eol.org/schema/terms/SpecimensInGGBN" (boolean)     - removed
 
+https://www.ggbn.org/ggbn_portal/search/browse?sampletype=DNA&page=23&per-page=150
+
+
 NCBI
 "http://eol.org/schema/terms/NumberOfSequencesInGenBank"
 "http://eol.org/schema/terms/SequenceInGenBank" (boolean)   - removed
@@ -92,21 +95,10 @@ class NCBIGGIqueryAPI
             getSampletype&name=Arthropoda	total counts of sample types for a certain name (any level)
             getClassification&name=Chordata	total counts of samples for all children of a name
         Feel free to test it. If you have any questions please contact support@ggbn.org. More information will follow soon.
-        ============================================================================
+        ============================================================================ GitHub link here: https://github.com/EOL/ContentImport/issues/6#issuecomment-2074392011
         Hi Jen,
         For GGBN we're only getting "DNA" and "specimen" counts.
-        But there is also now "tissue". e.g. 
-        https://data.ggbn.org/ggbn_portal/api/search?getSampletype&name=Ophiuridae
-        https://data.ggbn.org/ggbn_portal/api/search?getSampletype&name=Asteriidae
-
-        Which they have a big coverage as well, see here.
-        https://data.ggbn.org/ggbn_portal/api/search?getCounts
-        "DNA", "specimen" and "tissue" have the big numbers.
-
-        The genus level is not cumulative, not reliable.
-        https://data.ggbn.org/ggbn_portal/api/search?getSampletype&name=Panthera
-        The species level is more promising.
-        https://data.ggbn.org/ggbn_portal/api/search?getSampletype&name=Panthera%20leo
+        But there is also now "tissue". e.g. ...
         ============================================================================
         */
 
@@ -161,7 +153,7 @@ class NCBIGGIqueryAPI
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bhl"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
-        // $this->ggi_databases = array("inat"); //debug - use to process 1 database
+        // $this->ggi_databases = array("inat"); //debug - use to process 1 database - OK Apr 2024 NEW
 
         // $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl");
 
@@ -198,23 +190,21 @@ class NCBIGGIqueryAPI
         if(file_exists($this->blacklist_bhl_csv_call)) $this->taxa_blacklist_bhl_csv_call = file($this->blacklist_bhl_csv_call, FILE_IGNORE_NEW_LINES);
         echo "\nBlacklist: "; print_r($this->taxa_blacklist_bhl_csv_call); //exit;
 
-        self::initialize_files();
-
-        $this->process_level = "family"; self::get_all_taxa_family();
-        // $this->process_level = "genus";  self::get_all_taxa_genus();
+        $this->process_level = "family"; self::initialize_files(); self::get_all_taxa_family();
+        // $this->process_level = "genus";  self::initialize_files(); self::get_all_taxa_genus();
 
         $this->archive_builder->finalize(TRUE); //moved here
     }
     function get_all_taxa_genus()
     {
-        // $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
+        $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
 
-        // /* force assign | debug only
+        /* force assign | debug only
         $genus_taxa = array();
         $genus_taxa[] = "Gadidae";
         $genus_taxa[] = "Panthera";
         $genus_taxa = array("Quercus");
-        // */
+        */
         echo "\nGenus count: [".count($genus_taxa)."]\n"; //exit; //Genus count: [187774] as of Apr 27, 2024
 
 
@@ -297,7 +287,7 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                // break;              //debug only - process just a subset, just the 1st cycle
+                break;              //debug only - process just a subset, just the 1st cycle
                 // if($i >= 20) break; //debug only - just the first 20 cycles
             }
             // */
@@ -313,10 +303,10 @@ class NCBIGGIqueryAPI
     {
         if(!file_exists($this->ggi_path)) mkdir($this->ggi_path);
         foreach($this->ggi_databases as $database) {
-            $this->ggi_text_file[$database]["previous"] = $this->ggi_path . $database  . ".txt";
+            $this->ggi_text_file[$database]["previous"] = $this->ggi_path . $database  . "_$this->process_level" . ".txt";
             if(!file_exists($this->ggi_text_file[$database]["previous"])) self::initialize_dump_file($this->ggi_text_file[$database]["previous"]);
             //initialize current batch
-            $this->ggi_text_file[$database]["current"] = $this->ggi_path . $database  . "_working.txt";
+            $this->ggi_text_file[$database]["current"] = $this->ggi_path . $database . "_$this->process_level"  . "_working.txt";
             self::initialize_dump_file($this->ggi_text_file[$database]["current"]);
         }
     }
@@ -390,7 +380,7 @@ class NCBIGGIqueryAPI
 
             if(($is_subfamily && $with_data) || !$is_subfamily) {
                 $taxon = new \eol_schema\Taxon();
-                $taxon->taxonID         = $family;
+                $taxon->taxonID         = str_replace(" ", "_", $family);
                 $taxon->scientificName  = $family;
                 if(!$is_subfamily) $taxon->taxonRank = $this->process_level;
                 $this->taxa[$taxon->taxonID] = $taxon;
@@ -400,7 +390,7 @@ class NCBIGGIqueryAPI
     private function query_family_BOLDS_info($family, $is_subfamily, $database)
     {
         $rec[$this->process_level] = $family;
-        $rec["taxon_id"] = $family;
+        $rec["taxon_id"] = str_replace(" ", "_", $family);
         $rec["source"] = $this->bolds_taxon_page_by_name . $family;
         if($json = Functions::lookup_with_cache($this->bolds["TaxonSearch"] . $family, $this->download_options_BOLDS)) {
             if($info = self::parse_bolds_taxon_search($json)) {
@@ -532,7 +522,7 @@ class NCBIGGIqueryAPI
     private function query_family_BHL_info($family, $is_subfamily, $database)
     {
         $rec[$this->process_level] = $family;
-        $rec["taxon_id"] = $family;
+        $rec["taxon_id"] = str_replace(" ", "_", $family);
         $rec["source"] = $this->bhl_taxon_page . $family;
         if($contents = Functions::lookup_with_cache($this->bhl_taxon_in_xml . $family, $this->download_options)) {
             if($count = self::get_page_count_from_BHL_xml($contents)) {
@@ -701,7 +691,7 @@ class NCBIGGIqueryAPI
     private function query_family_INAT_info($family, $is_subfamily, $database)
     {   // $family = "Muridae"; //force assign
         $rec[$this->process_level] = $family;
-        $rec["taxon_id"] = $family;
+        $rec["taxon_id"] = str_replace(" ", "_", $family);
         if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $family, $this->download_options_INAT)) {
             $taxon_id = self::parse_inat_taxa_search_object($family, $this->process_level, $json); //exit("\n[$taxon_id]\n");
             if($taxon_id) {
@@ -739,7 +729,7 @@ class NCBIGGIqueryAPI
     private function query_family_GBIF_info($family, $is_subfamily, $database)
     {
         $rec[$this->process_level] = $family;
-        $rec["taxon_id"] = $family;
+        $rec["taxon_id"] = str_replace(" ", "_", $family);
         $rec["source"] = $this->gbif_taxon_info . $family;
         if($json = Functions::lookup_with_cache($this->gbif_taxon_info . $family, $this->gbif_download_options)) {
             $json = json_decode($json);
@@ -841,7 +831,7 @@ class NCBIGGIqueryAPI
         $records = array();
         $rec[$this->process_level] = $family;
         $rec["source"] = $this->family_service_ggbn . $family;
-        $rec["taxon_id"] = $family;
+        $rec["taxon_id"] = str_replace(" ", "_", $family);
         if($html = Functions::lookup_with_cache($rec["source"], $this->download_options)) {
             $obj = json_decode($html);
             $has_data = false;
@@ -921,7 +911,7 @@ class NCBIGGIqueryAPI
     {
         $rec[$this->process_level] = $family;
         $rec["source"] = $this->family_service_ncbi . $family;
-        $rec["taxon_id"] = $family;
+        $rec["taxon_id"] = str_replace(" ", "_", $family);
         $contents = Functions::lookup_with_cache($rec["source"], $this->download_options);
         if($xml = simplexml_load_string($contents)) {
             if($xml->Count > 0) {
