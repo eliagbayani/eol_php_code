@@ -478,7 +478,7 @@ class NCBIGGIqueryAPI
                 else { //use orig API call
                     if($json = Functions::lookup_with_cache($this->bolds["TaxonData_orig"] . $taxid, $this->download_options_BOLDS)) {
                         $arr = json_decode($json);
-                        return array("taxid" => $taxid, "public records" => $arr->stats->publicrecords, "specimens" => $arr->stats->sequencedspecimens);
+                        if(@$arr->stats) return array("taxid" => $taxid, "public records" => @$arr->stats->publicrecords, "specimens" => @$arr->stats->sequencedspecimens);
                     }
                 }
             }

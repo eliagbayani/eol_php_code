@@ -122,25 +122,25 @@ class DataHub_INAT_API
     }
     function get_total_observations($taxon_id)
     {
-        $json = Functions::lookup_with_cache($this->api['taxon_observation_count'] . $taxon_id, $this->download_options_INAT);
-        // echo "\n[$json]\n";
-        // /* iNat special case
-        if(stripos($json, 'Too Many Requests') !== false) { //string is found
-            echo "\niNat special error: Too Many Requests\n";
-            sleep(60*10); //10 mins
-            $this->TooManyRequests++;
-            if($this->TooManyRequests >= 5) return false;
+        if($json = Functions::lookup_with_cache($this->api['taxon_observation_count'] . $taxon_id, $this->download_options_INAT)) {
+            // echo "\n[$json]\n";
+            // /* iNat special case
+            if(stripos($json, '429') !== false) { //Too Many Requests           --- //string is found
+                echo "\niNat special error: Too Many Requests\n";
+                sleep(60*10); //10 mins
+                $this->TooManyRequests++;
+                if($this->TooManyRequests >= 5) return false;
+            }
+            // */
+            $obj = json_decode($json); //print_r($obj); exit;
+            /*stdClass Object(
+                [total_results] => 17113
+                [page] => 1
+                [per_page] => 0
+                [results] => Array()
+            )*/
+            return @$obj->total_results;
         }
-        // */
-
-        $obj = json_decode($json); //print_r($obj); exit;
-        /*stdClass Object(
-            [total_results] => 17113
-            [page] => 1
-            [per_page] => 0
-            [results] => Array()
-        )*/
-        return $obj->total_results;
     }
     function get_iNat_taxa_using_API($rank) //not advisable to use, bec. of the 10,000 limit page coverage
     {
