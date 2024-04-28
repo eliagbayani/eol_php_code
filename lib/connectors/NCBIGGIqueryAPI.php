@@ -131,7 +131,7 @@ class NCBIGGIqueryAPI
         // INAT api
         $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
         $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
-        $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 3000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
 
         $this->inat['taxon_page'] = "https://www.inaturalist.org/observations/"; // e.g. observations/1972181
 
@@ -186,24 +186,27 @@ class NCBIGGIqueryAPI
     */
     function start()
     {
+        require_library('connectors/DataHub_INAT_API');
+        $this->func = new DataHub_INAT_API();
+
         $this->taxa_blacklist_bhl_csv_call = array();
         if(file_exists($this->blacklist_bhl_csv_call)) $this->taxa_blacklist_bhl_csv_call = file($this->blacklist_bhl_csv_call, FILE_IGNORE_NEW_LINES);
         echo "\nBlacklist: "; print_r($this->taxa_blacklist_bhl_csv_call); //exit;
 
-        $this->process_level = "family"; self::initialize_files(); self::get_all_taxa_family();
-        // $this->process_level = "genus";  self::initialize_files(); self::get_all_taxa_genus();
+        // $this->process_level = "family"; self::initialize_files(); self::get_all_taxa_family();
+        $this->process_level = "genus";  self::initialize_files(); self::get_all_taxa_genus();
 
         $this->archive_builder->finalize(TRUE); //moved here
     }
     function get_all_taxa_genus()
     {
-        $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
+        // $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
 
         /* force assign | debug only
         $genus_taxa = array();
-        $genus_taxa[] = "Gadidae";
+        $genus_taxa[] = "Gadus";
         $genus_taxa[] = "Panthera";
-        $genus_taxa = array("Quercus");
+        // $genus_taxa = array("Quercus");
         */
         echo "\nGenus count: [".count($genus_taxa)."]\n"; //exit; //Genus count: [187774] as of Apr 27, 2024
 
@@ -229,8 +232,8 @@ class NCBIGGIqueryAPI
                 $this->families_with_no_data = array(); //moved here
                 self::create_instances_from_taxon_object($genus_taxa, false, $database, $min, $max);
             }
-            break;              //debug only - process just a subset, just the 1st cycle
-            // if($i >= 20) break; //debug only - just the first 20 cycles
+            // break;              //debug only - process just a subset, just the 1st cycle
+            // if($i >= 30) break; //debug only - just the first 20 cycles
         }
         self::compare_previuos_and_current_dumps_then_process();
         $this->create_taxa_archive();
@@ -287,7 +290,7 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                break;              //debug only - process just a subset, just the 1st cycle
+                // break;              //debug only - process just a subset, just the 1st cycle
                 // if($i >= 20) break; //debug only - just the first 20 cycles
             }
             // */
@@ -696,17 +699,27 @@ class NCBIGGIqueryAPI
             $taxon_id = self::parse_inat_taxa_search_object($family, $this->process_level, $json); //exit("\n[$taxon_id]\n");
             if($taxon_id) {
                 $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
+                
+                /* 1st ver
                 $count = self::parse_inat_observ_search_object($json); //exit("\ncount: [$count]\n");
+                */
+                // /* 2nd ver
+                $count = $this->func->get_total_observations($taxon_id); //from DataHub_INAT_API.php
+                // echo "\n$count 111\n";
+                if($count === false) {
+                    return false;
+                }
+                // */
+
                 if($count || strval($count) == "0") {
                     $rec["source"] = $this->inat['taxon_page'] . $taxon_id;
-                    if($count || strval($count) == "0") {
-                        $rec["object_id"]   = "_no_of_inat_observ";
-                        $rec["count"]       = $count;
-                        $rec["label"]       = "Number of iNaturalist Observations";
-                        $rec["measurement"] = "http://eol.org/schema/terms/NumberOfiNaturalistObservations";
-                        self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
-                        return true;
-                    }
+                    // echo "\n$count 222\n";
+                    $rec["object_id"]   = "_no_of_inat_observ";
+                    $rec["count"]       = $count;
+                    $rec["label"]       = "Number of iNaturalist Observations";
+                    $rec["measurement"] = "http://eol.org/schema/terms/NumberOfiNaturalistObservations";
+                    self::save_to_dump($rec, $this->ggi_text_file[$database]["current"]);
+                    return true;                    
                 }
                 else self::save_to_dump($family."\t".$database, $this->names_no_entry_from_partner_dump_file);
             }

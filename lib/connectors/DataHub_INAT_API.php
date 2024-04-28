@@ -7,7 +7,7 @@ class DataHub_INAT_API
 {
     function __construct($archive_builder = false, $resource_id = false)
     {
-        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 3000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
         // - get all family and genus for iNat
         $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/taxa?rank=XRANK&page=XPAGE&per_page=25";
         // https://api.inaturalist.org/v1/taxa?rank=family&page=1
