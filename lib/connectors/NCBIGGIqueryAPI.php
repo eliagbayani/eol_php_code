@@ -200,8 +200,8 @@ class NCBIGGIqueryAPI
 
         self::initialize_files();
 
-        // $this->process_level = "family"; self::get_all_taxa_family();
-        $this->process_level = "genus";  self::get_all_taxa_genus();
+        $this->process_level = "family"; self::get_all_taxa_family();
+        // $this->process_level = "genus";  self::get_all_taxa_genus();
 
         $this->archive_builder->finalize(TRUE); //moved here
     }
