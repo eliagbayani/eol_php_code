@@ -1251,7 +1251,7 @@ class NCBIGGIqueryAPI
         return $contents;
     }
     private function get_DH_taxa_per_rank($sought_rank)
-    {   if(Functions::is_production()) $file = "/extra/other_files/dh21eolid/DH21taxaWeolIDs.txt";
+    {   if(Functions::is_production()) $file = "/extra/other_files/dh21eolid/taxon.tab";
         else                           $file = "/Volumes/Crucial_2TB/other_files2/dh21eolid/DH21taxaWeolIDs.txt";
         echo "\nReading DH file $file...\n";
         $i = 0; $final = array();
