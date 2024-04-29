@@ -56,7 +56,7 @@ class DataHub_INAT_API
         echo ("\n temporary directory removed: " . $temp_dir);
         // */
     }
-    private function process_table($meta, $what, $sought_rank)
+    private function process_table($meta, $what, $sought_rank = false)
     {
         $csv_file = $meta->file_uri;
         $i = 0; $meron = 0;
@@ -103,20 +103,29 @@ class DataHub_INAT_API
                     [taxonRank] => kingdom
                     [references] => http://www.catalogueoflife.org/annual-checklist/2013/browse/tree/id/13021388
                 )*/
-                if($sought_rank == $rec['taxonRank']) {
-                    $rek = array();
-                    $rek["id"]                  = $rec['id'];
-                    $rek["rank"]                = $rec['taxonRank'];
-                    $rek["sciname"]             = $rec['scientificName'];
-                    $rek["parent_id"]           = pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME);
-                    $rek["meta_observ_count"]   = self::get_total_observations($rec['id']);
-                    if($rek["meta_observ_count"] === false) {
-                        break;
-                    }
-                    self::save_to_dump($rek, $this->dump_file);
-                    $meron++;
-                    // if($meron >= 3) break; //dev only
+                // =======================================================================================
+                if($what == 'taxon') {
+                    if($sought_rank == $rec['taxonRank']) {
+                        $rek = array();
+                        $rek["id"]                  = $rec['id'];
+                        $rek["rank"]                = $rec['taxonRank'];
+                        $rek["sciname"]             = $rec['scientificName'];
+                        $rek["parent_id"]           = pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME);
+                        $rek["meta_observ_count"]   = self::get_total_observations($rec['id']);
+                        if($rek["meta_observ_count"] === false) {
+                            break;
+                        }
+                        self::save_to_dump($rek, $this->dump_file);
+                        $meron++;
+                        // if($meron >= 3) break; //dev only
+                    }    
                 }
+                // =======================================================================================
+                // =======================================================================================
+                // =======================================================================================
+                // =======================================================================================
+                // =======================================================================================
+
             } //main records
         } //main loop
         fclose($file);
