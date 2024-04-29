@@ -13,8 +13,12 @@ include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/NCBIGGIqueryAPI');
 $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
-$resource_id = 723;
-$func = new NCBIGGIqueryAPI($resource_id);
+
+$rank = "family";
+// $rank = "genus";
+
+$resource_id = "723_".$rank;
+$func = new NCBIGGIqueryAPI($resource_id, $rank);
 
 $func->start();
 Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.

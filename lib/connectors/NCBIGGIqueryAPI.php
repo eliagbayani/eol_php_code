@@ -57,11 +57,11 @@ INAT
 */
 class NCBIGGIqueryAPI
 {
-    function __construct($folder = null, $query = null)
+    function __construct($folder = null, $process_level = null)
     {
         if($folder) {
             $this->resource_id = $folder;
-            $this->query = $query;
+            $this->process_level = $process_level;
             $this->taxa = array();
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));
@@ -155,8 +155,6 @@ class NCBIGGIqueryAPI
         // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("inat"); //debug - use to process 1 database - OK Apr 2024 NEW
 
-        // $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl");
-
         $this->ggi_path = DOC_ROOT . "temp/GGI/";
         $this->blacklist_bhl_csv_call = $this->ggi_path."blacklist_bhl_csv_call.txt";
 
@@ -193,8 +191,9 @@ class NCBIGGIqueryAPI
         if(file_exists($this->blacklist_bhl_csv_call)) $this->taxa_blacklist_bhl_csv_call = file($this->blacklist_bhl_csv_call, FILE_IGNORE_NEW_LINES);
         echo "\nBlacklist: "; print_r($this->taxa_blacklist_bhl_csv_call); //exit;
 
-        // $this->process_level = "family"; self::initialize_files(); self::get_all_taxa_family();
-        $this->process_level = "genus";  self::initialize_files(); self::get_all_taxa_genus();
+        self::initialize_files();
+        if($this->process_level == 'family') self::get_all_taxa_family();
+        if($this->process_level == 'genus') self::get_all_taxa_genus();
 
         $this->archive_builder->finalize(TRUE); //moved here
     }
@@ -209,7 +208,6 @@ class NCBIGGIqueryAPI
         // $genus_taxa = array("Quercus");
         */
         echo "\nGenus count: [".count($genus_taxa)."]\n"; //exit; //Genus count: [187774] as of Apr 27, 2024
-
 
         // /* working, a round-robin option of server load - per 100 calls each server
         $k = 0; $m = count($genus_taxa)/6; // before 9646/6
@@ -699,21 +697,19 @@ class NCBIGGIqueryAPI
             $taxon_id = self::parse_inat_taxa_search_object($family, $this->process_level, $json); //exit("\n[$taxon_id]\n");
             if($taxon_id) {
                 
-                /* 1st ver
+                // /* 1st ver - using the histogram
                 $json = Functions::lookup_with_cache($this->inat['observation_search'] . $taxon_id, $this->download_options_INAT);
                 $count = self::parse_inat_observ_search_object($json); //exit("\ncount: [$count]\n");
-                */
-                // /* 2nd ver
+                // */
+
+                /* 2nd ver --- designed for genus level but caused "Too Many Requests" error.
                 $count = $this->func->get_total_observations($taxon_id); //from DataHub_INAT_API.php
-                // echo "\n$count 111\n";
                 if($count === false) {
                     return false;
-                }
-                // */
+                }*/
 
                 if($count || strval($count) == "0") {
                     $rec["source"] = $this->inat['taxon_page'] . $taxon_id;
-                    // echo "\n$count 222\n";
                     $rec["object_id"]   = "_no_of_inat_observ";
                     $rec["count"]       = $count;
                     $rec["label"]       = "Number of iNaturalist Observations";
