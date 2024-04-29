@@ -192,8 +192,8 @@ class NCBIGGIqueryAPI
         echo "\nBlacklist: "; print_r($this->taxa_blacklist_bhl_csv_call); //exit;
 
         self::initialize_files();
-        if($this->process_level == 'family') self::get_all_taxa_family();
-        if($this->process_level == 'genus') self::get_all_taxa_genus();
+        if($this->process_level == "family") self::get_all_taxa_family();
+        if($this->process_level == "genus") self::get_all_taxa_genus();
 
         $this->archive_builder->finalize(TRUE); //moved here
     }
@@ -744,7 +744,7 @@ class NCBIGGIqueryAPI
             $json = json_decode($json);
             $usageKey = false;
             if(!isset($json->usageKey)) {
-                if(isset($json->note)) $usageKey = self::get_usage_key($family);
+                if(isset($json->note)) $usageKey = self::get_GBIF_usage_key($family);
                 else {} // e.g. Fervidicoccaceae
             }
             else $usageKey = trim((string) $json->usageKey);
@@ -785,7 +785,7 @@ class NCBIGGIqueryAPI
         self::check_for_sub_family($family); //GBIF
         return false;
     }
-    private function get_usage_key($family)
+    private function get_GBIF_usage_key($family)
     {
         if($json = Functions::lookup_with_cache($this->gbif_taxon_info . $family . "&verbose=true", $this->download_options_GBIF)) {
             $usagekeys = array();
