@@ -105,11 +105,11 @@ class NCBIGGIqueryAPI
         //GBIF services
         $this->gbif_taxon_info = "http://api.gbif.org/v1/species/match?name="; //http://api.gbif.org/v1/species/match?name=felidae&kingdom=Animalia
         $this->gbif_record_count = "http://api.gbif.org/v1/occurrence/count?taxonKey=";
-        $this->gbif_download_options = $this->download_options;
-        $this->gbif_download_options['resource_id'] = "";
+        $this->download_options_GBIF = $this->download_options;
+        $this->download_options_GBIF['resource_id'] = "";
         // https://www.gbif.org/dataset/d7dddbf4-2cf0-4f39-9b2a-bb099caae36c --- GBIF Backbone Taxonomy
-        if(Functions::is_production()) $this->gbif_download_options['cache_path'] = "/extra/eol_cache_gbif/";
-        else                           $this->gbif_download_options['cache_path'] = '/Volumes/Thunderbolt4/eol_cache_gbif/';
+        if(Functions::is_production()) $this->download_options_GBIF['cache_path'] = "/extra/eol_cache_gbif/";
+        else                           $this->download_options_GBIF['cache_path'] = '/Volumes/Thunderbolt4/eol_cache_gbif/';
 
         // BHL services
         $this->bhl_taxon_page = "http://www.biodiversitylibrary.org/name/";
@@ -744,7 +744,7 @@ class NCBIGGIqueryAPI
         $rec[$this->process_level] = $family;
         $rec["taxon_id"] = str_replace(" ", "_", $family);
         $rec["source"] = $this->gbif_taxon_info . $family;
-        if($json = Functions::lookup_with_cache($this->gbif_taxon_info . $family, $this->gbif_download_options)) {
+        if($json = Functions::lookup_with_cache($this->gbif_taxon_info . $family, $this->download_options_GBIF)) {
             $json = json_decode($json);
             $usageKey = false;
             if(!isset($json->usageKey)) {
@@ -753,7 +753,7 @@ class NCBIGGIqueryAPI
             }
             else $usageKey = trim((string) $json->usageKey);
             if($usageKey) {
-                $count = Functions::lookup_with_cache($this->gbif_record_count . $usageKey, $this->gbif_download_options);
+                $count = Functions::lookup_with_cache($this->gbif_record_count . $usageKey, $this->download_options_GBIF);
                 if($count || strval($count) == "0") {
                     $rec["source"] = $this->gbif_record_count . $usageKey;
                     if($count > 0) {
@@ -791,7 +791,7 @@ class NCBIGGIqueryAPI
     }
     private function get_usage_key($family)
     {
-        if($json = Functions::lookup_with_cache($this->gbif_taxon_info . $family . "&verbose=true", $this->gbif_download_options)) {
+        if($json = Functions::lookup_with_cache($this->gbif_taxon_info . $family . "&verbose=true", $this->download_options_GBIF)) {
             $usagekeys = array();
             $options = array();
             $json = json_decode($json);
