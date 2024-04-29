@@ -147,7 +147,7 @@ class NCBIGGIqueryAPI
         $this->names_in_irmng_but_not_in_falo = $this->TEMP_DIR . "families_in_irmng_but_not_in_falo.txt";
         */
 
-        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds", "inat");
+        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds", "inat"); //for family-level only
         // $this->ggi_databases = array("ncbi"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("ggbn"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
@@ -199,6 +199,8 @@ class NCBIGGIqueryAPI
     }
     function get_all_taxa_genus()
     {
+        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds"); //for genus-level we remove "inat"
+
         $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
 
         /* force assign | debug only
@@ -307,18 +309,19 @@ class NCBIGGIqueryAPI
             $this->ggi_text_file[$database]["previous"] = $this->ggi_path . $database  . "_$this->process_level" . ".txt";
             if(!file_exists($this->ggi_text_file[$database]["previous"])) self::initialize_dump_file($this->ggi_text_file[$database]["previous"]);
             //initialize current batch
-            $this->ggi_text_file[$database]["current"] = $this->ggi_path . $database . "_$this->process_level"  . "_working.txt";
+            $this->ggi_text_file[$database]["current"]  = $this->ggi_path . $database . "_$this->process_level"  . "_working.txt";
             self::initialize_dump_file($this->ggi_text_file[$database]["current"]);
         }
     }
     private function initialize_dump_file($file)
     {
-        echo "\n initialize file:[$file]\n";
         if(!($WRITE = Functions::file_open($file, "w"))) return;
         fclose($WRITE);
+        echo "\n initialize file:[$file]\n";
     }
     private function compare_previuos_and_current_dumps_then_process()
     {
+        /* should be working but better to always process the 'current'.
         foreach($this->ggi_databases as $database) {
             $previous = $this->ggi_text_file[$database]["previous"];
             $current = $this->ggi_text_file[$database]["current"];
@@ -332,6 +335,14 @@ class NCBIGGIqueryAPI
                 unlink($current);                
             }
         }
+        */
+
+        // /* always process the current
+        foreach($this->ggi_databases as $database) {
+            $current = $this->ggi_text_file[$database]["current"];
+            self::process_text_file($current, $database);
+        }
+        // */
     }
     private function process_text_file($filename, $database)
     {
