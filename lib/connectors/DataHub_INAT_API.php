@@ -21,8 +21,9 @@ class DataHub_INAT_API
 
         $this->dump_file = $save_path . "/datahub_inat.txt";
         if(is_file($this->dump_file)) unlink($this->dump_file);
-        // -----------------------------------------------------------------
+        // ----------------------------------------------------------------- DwCA files from Ken-ichi: https://www.inaturalist.org/pages/developers
         $this->dwca_file = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";
+                        //    "http://www.inaturalist.org/observations/gbif-observations-dwca.zip";
         $this->api['taxon_observation_count'] = "https://api.inaturalist.org/v2/observations?per_page=0&taxon_id="; //e.g. taxon_id=55533
         $this->TooManyRequests = 0;
     }
