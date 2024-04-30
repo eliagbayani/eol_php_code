@@ -23,9 +23,6 @@ $param                     = json_decode(@$argv[2], true);
 $rank = $param['rank'];
 print_r($param);
 
-// $rank = "family";
-// $rank = "genus";
-
 $resource_id = "723_".$rank;
 $func = new NCBIGGIqueryAPI($resource_id, $rank);
 

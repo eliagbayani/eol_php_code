@@ -233,7 +233,7 @@ class NCBIGGIqueryAPI
                 $this->families_with_no_data = array(); //moved here
                 self::create_instances_from_taxon_object($genus_taxa, false, $database, $min, $max);
             }
-            break;              //debug only - process just a subset, just the 1st cycle
+            // break;              //debug only - process just a subset, just the 1st cycle
             // if($i >= 30) break; //debug only - just the first 20 cycles
         }
         self::compare_previuos_and_current_dumps_then_process();
@@ -291,7 +291,7 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                break;              //debug only - process just a subset, just the 1st cycle
+                // break;              //debug only - process just a subset, just the 1st cycle
                 // if($i >= 20) break; //debug only - just the first 20 cycles
             }
             // */
