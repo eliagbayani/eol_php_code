@@ -34,7 +34,7 @@ class DataHub_INAT_API
         // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);
         // self::parse_tsv_file($this->dwca['gbif-downloads']);
         self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
-        if($this->debug) print_r($this->debug);
+        // if($this->debug) print_r($this->debug);
 
         $path = DOC_ROOT . "temp/GGI/reports/";
         if(!is_dir($path)) mkdir($path);
@@ -56,6 +56,10 @@ class DataHub_INAT_API
         $tmp = $this->debug['datasetName'];
         foreach($tmp as $dataset => $total) fwrite($WRITE, $dataset . "\t" . "$total" . "\n");
 
+        fwrite($WRITE, "=====Taxa=====" . "\n");
+        $tmp = $this->debug['taxonID'];
+        foreach($tmp as $taxonID => $total) fwrite($WRITE, "taxonID\t" . $taxonID . "\t" . "$total" . "\n");
+
         fwrite($WRITE, "\n");
         fwrite($WRITE, "=====Taxa per Collection=====" . "\n");
         $tmp = $this->debug['x']['collectionCode'];
@@ -72,10 +76,7 @@ class DataHub_INAT_API
             fwrite($WRITE, $dataset . "\t" . $taxonID . "\t" . "$total" . "\n");
         }
 
-
         fclose($WRITE);
-
-
     }
     private function parse_tsv_file($file)
     {   
@@ -191,14 +192,52 @@ class DataHub_INAT_API
                 // =======================================================================================
                 if($what == "explore gbif-observations") { //print_r($rec);
                     /* Array(
-                        [id] => 52247099
-                        [occurrenceID] => https://www.inaturalist.org/observations/52247099
+                        [id] => 26124613
+                        [occurrenceID] => https://www.inaturalist.org/observations/26124613
                         [basisOfRecord] => HumanObservation
-                        [modified] => 2022-02-26T22:48:45Z
+                        [modified] => 2019-05-31T22:15:43Z
                         [institutionCode] => iNaturalist
                         [collectionCode] => Observations
                         [datasetName] => iNaturalist research-grade observations
-                        ...more fields below */
+                        [informationWithheld] => 
+                        [catalogNumber] => 26124613
+                        [references] => https://www.inaturalist.org/observations/26124613
+                        [occurrenceRemarks] => 
+                        [recordedBy] => Nick Tepper
+                        [recordedByID] => 
+                        [identifiedBy] => Nick Tepper
+                        [identifiedByID] => 
+                        [captive] => wild
+                        [eventDate] => 2019-05-31T08:50:08-04:00
+                        [eventTime] => 08:50:08-04:00
+                        [verbatimEventDate] => Fri May 31 2019 08:50:08 GMT-0400 (EDT)
+                        [verbatimLocality] => 01775, Stow, MA, US
+                        [decimalLatitude] => 42.4175533333
+                        [decimalLongitude] => -71.553025
+                        [coordinateUncertaintyInMeters] => 12
+                        [geodeticDatum] => EPSG:4326
+                        [countryCode] => US
+                        [stateProvince] => Massachusetts
+                        [identificationID] => 57162675
+                        [dateIdentified] => 2019-05-31T17:04:55Z
+                        [identificationRemarks] => 
+                        [taxonID] => 47699
+                        [scientificName] => Geranium maculatum
+                        [taxonRank] => species
+                        [kingdom] => Plantae
+                        [phylum] => Tracheophyta
+                        [class] => Magnoliopsida
+                        [order] => Geraniales
+                        [family] => Geraniaceae
+                        [genus] => Geranium
+                        [license] => http://creativecommons.org/licenses/by-nc/4.0/
+                        [rightsHolder] => Nick Tepper
+                        [inaturalistLogin] => ntepper
+                        [publishingCountry] => 
+                        [sex] => 
+                        [lifeStage] => 
+                        [reproductiveCondition] => flowering
+                    ) */
                     $taxonID = $rec['taxonID'];
                     @$this->debug['taxonID'][$taxonID]++;
                     @$this->debug['institutionCode'][$rec['institutionCode']]++;
@@ -216,7 +255,7 @@ class DataHub_INAT_API
                 // =======================================================================================
 
             } //main records
-            if($i >= 100000) break; //debug only
+            // if($i >= 100000) break; //debug only
         } //main loop
         fclose($file);
     }
