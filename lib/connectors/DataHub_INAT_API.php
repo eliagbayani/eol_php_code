@@ -41,7 +41,7 @@ class DataHub_INAT_API
     {
         $path = DOC_ROOT . "temp/GGI/reports/";
         if(!is_dir($path)) mkdir($path);
-        $filename = $path."iNaturalist_4.tsv";
+        $filename = $path."iNaturalist_5.tsv";
 
         if(!($WRITE = Functions::file_open($filename, "w"))) return;
 
@@ -63,16 +63,31 @@ class DataHub_INAT_API
         fwrite($WRITE, "=====Genus=====" . "\n");
         $tmp = $this->debug['genus'];
         foreach($tmp as $genus_name => $total) {
-            fwrite($WRITE, "genus\t" . $genus_name . "\t" . "$total" . "\n");
+            $info = @$this->debug['taxa'][$taxonID];
+            // fwrite($WRITE, "genus\t" . $genus_name . "\t" . "$total" . "\n");
+            fwrite($WRITE, "genus\t" . $genus_name . "\t" . "$total" . "\t" . implode("\t", @$info) . "\n");
         }
-        // @$this->debug['genus'][$genus]++;
 
+        fwrite($WRITE, "\n");
+        fwrite($WRITE, "=====Family=====" . "\n");
+        $tmp = $this->debug['family'];
+        foreach($tmp as $family_name => $total) {
+            $info = @$this->debug['taxa'][$taxonID];
+            fwrite($WRITE, "family\t" . $family_name . "\t" . "$total" . "\n");
+            // fwrite($WRITE, "family\t" . $family_name . "\t" . "$total" . "\t" . implode("\t", @$info) . "\n");
+        }
 
         fwrite($WRITE, "\n");
         fwrite($WRITE, "=====Taxa ALL=====" . "\n");
         $tmp = $this->debug['taxonID'];
         foreach($tmp as $taxonID => $total) {
             $info = $this->debug['taxa'][$taxonID];
+            /* "Too Many Requests" error
+            $rank = $info['r'];
+            if($rank == 'genus') {
+                $api_count = self::get_total_observations($taxonID);
+                $info['api_count'] = $api_count;
+            }*/
             /*
             @this->debug['taxa'][$taxon_id] = array('sn' => $rec['scientificName'], 'r' => $rec['taxonRank'], 
             'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family'], 'g' => $rec['genus']);
@@ -272,23 +287,40 @@ class DataHub_INAT_API
 
                     @$this->debug['taxa'][$taxonID] = array('sn' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family'], 'g' => $rec['genus']);
 
-                    if($genus = @$rec['genus']) @$this->debug['genus'][$genus]++;
+                    if($genus  = @$rec['genus'])  @$this->debug['genus'][$genus]++;
+                    if($family = @$rec['family']) @$this->debug['family'][$family]++;
+
+                    /* stats only - exploring
+                    $taxonRank = $rec['taxonRank'];
+                    // if($taxonRank == 'genus') {print_r($rec); exit;} //meron
+                    // if($taxonRank == 'family') {print_r($rec); exit;} // wala
+                    */
                 }
                 // =======================================================================================
                 // =======================================================================================
                 // =======================================================================================
                 // =======================================================================================
             } //main records
-            // if($i >= 100000) break; //debug only
+            // if($i >= 200000) break; //debug only
         } //main loop
         fclose($file);
     }
     function get_total_observations($taxon_id)
     {
-        if($json = Functions::lookup_with_cache($this->api['taxon_observation_count'] . $taxon_id, $this->download_options_INAT)) {
+        // @$this->run_query++;
+        // if($this->run_query >= 5) {
+        //     $this->run_query = 0;
+        //     sleep(60*3); echo "\nsleep muna...";
+        // }
+
+        $options = $this->download_options_INAT;
+        $options['download_wait_time'] = 6000000; //6 secs interval
+        $options['expire_seconds'] = false;
+        if($json = Functions::lookup_with_cache($this->api['taxon_observation_count'] . $taxon_id, $options)) {
             // echo "\n[$json]\n";
             // /* iNat special case
             if(stripos($json, '429') !== false) { //Too Many Requests           --- //string is found
+                echo "\n[$json]\n";
                 echo "\niNat special error: Too Many Requests\n"; exit("\nexit muna, remove iNat from the list of dbases.\n");
                 sleep(60*10); //10 mins
                 $this->TooManyRequests++;

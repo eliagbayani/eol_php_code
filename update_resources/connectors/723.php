@@ -4,6 +4,9 @@ namespace php_active_record;
 NCBI, GGBN, GBIF, BHL, BOLDS database coverages
 estimated execution time: ~3 days
 
+php update_resources/connectors/723.php _ '{"rank": "family"}'
+php update_resources/connectors/723.php _ '{"rank": "genus"}'
+
 723	Wednesday 2018-03-28 10:17:55 PM	{"measurement_or_fact.tab":116434,"occurrence.tab":116434,"taxon.tab":9913} - MacMini
 723	Wednesday 2018-03-28 10:54:54 PM	{"measurement_or_fact.tab":116434,"occurrence.tab":116434,"taxon.tab":9913}
 723	Sunday 2018-05-13 03:44:33 PM	    {"measurement_or_fact.tab":116456,"occurrence.tab":116360,"taxon.tab":9917}
@@ -14,7 +17,13 @@ require_library('connectors/NCBIGGIqueryAPI');
 $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 
-$rank = "family";
+// print_r($argv);
+$params['jenkins_or_cron'] = @$argv[1]; //not needed here
+$param                     = json_decode(@$argv[2], true);
+$rank = $param['rank'];
+print_r($param);
+
+// $rank = "family";
 // $rank = "genus";
 
 $resource_id = "723_".$rank;

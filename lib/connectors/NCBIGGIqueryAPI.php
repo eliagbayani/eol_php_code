@@ -133,8 +133,9 @@ class NCBIGGIqueryAPI
         $this->inat['observation_search'] = "https://api.inaturalist.org/v1/observations/histogram?taxon_is_active=true&verifiable=true&date_field=observed&interval=month_of_year&taxon_id="; //taxon_id=44185 Muridae
         $this->download_options_INAT = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 3000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
 
-        $this->inat['taxon_page'] = "https://www.inaturalist.org/observations/"; // e.g. observations/1972181
+        $this->inat['taxon_page'] = "https://www.inaturalist.org/taxa/"; // e.g. taxa/47390
 
+        
         // stats
         $this->TEMP_DIR = create_temp_dir() . "/";
         echo "\nTEMP_DIR: [".$this->TEMP_DIR."]\n";
@@ -232,7 +233,7 @@ class NCBIGGIqueryAPI
                 $this->families_with_no_data = array(); //moved here
                 self::create_instances_from_taxon_object($genus_taxa, false, $database, $min, $max);
             }
-            // break;              //debug only - process just a subset, just the 1st cycle
+            break;              //debug only - process just a subset, just the 1st cycle
             // if($i >= 30) break; //debug only - just the first 20 cycles
         }
         self::compare_previuos_and_current_dumps_then_process();
@@ -290,7 +291,7 @@ class NCBIGGIqueryAPI
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                // break;              //debug only - process just a subset, just the 1st cycle
+                break;              //debug only - process just a subset, just the 1st cycle
                 // if($i >= 20) break; //debug only - just the first 20 cycles
             }
             // */
@@ -717,7 +718,8 @@ class NCBIGGIqueryAPI
                 $count = $this->func->get_total_observations($taxon_id); //from DataHub_INAT_API.php
                 if($count === false) {
                     return false;
-                }*/
+                }
+                */
 
                 if($count || strval($count) == "0") {
                     $rec["source"] = $this->inat['taxon_page'] . $taxon_id;
