@@ -35,10 +35,13 @@ class DataHub_INAT_API
         // self::parse_tsv_file($this->dwca['gbif-downloads']);
         self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
         // if($this->debug) print_r($this->debug);
-
+        self::write_tsv_file();
+    }
+    private function write_tsv_file()
+    {
         $path = DOC_ROOT . "temp/GGI/reports/";
         if(!is_dir($path)) mkdir($path);
-        $filename = $path."iNaturalist.tsv";
+        $filename = $path."iNaturalist_4.tsv";
 
         if(!($WRITE = Functions::file_open($filename, "w"))) return;
 
@@ -56,9 +59,26 @@ class DataHub_INAT_API
         $tmp = $this->debug['datasetName'];
         foreach($tmp as $dataset => $total) fwrite($WRITE, $dataset . "\t" . "$total" . "\n");
 
-        fwrite($WRITE, "=====Taxa=====" . "\n");
+        fwrite($WRITE, "\n");
+        fwrite($WRITE, "=====Genus=====" . "\n");
+        $tmp = $this->debug['genus'];
+        foreach($tmp as $genus_name => $total) {
+            fwrite($WRITE, "genus\t" . $genus_name . "\t" . "$total" . "\n");
+        }
+        // @$this->debug['genus'][$genus]++;
+
+
+        fwrite($WRITE, "\n");
+        fwrite($WRITE, "=====Taxa ALL=====" . "\n");
         $tmp = $this->debug['taxonID'];
-        foreach($tmp as $taxonID => $total) fwrite($WRITE, "taxonID\t" . $taxonID . "\t" . "$total" . "\n");
+        foreach($tmp as $taxonID => $total) {
+            $info = $this->debug['taxa'][$taxonID];
+            /*
+            @this->debug['taxa'][$taxon_id] = array('sn' => $rec['scientificName'], 'r' => $rec['taxonRank'], 
+            'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family'], 'g' => $rec['genus']);
+            */
+            fwrite($WRITE, "taxonID\t" . $taxonID . "\t" . "$total" . "\t" . implode("\t", $info) . "\n");
+        }
 
         fwrite($WRITE, "\n");
         fwrite($WRITE, "=====Taxa per Collection=====" . "\n");
@@ -77,6 +97,9 @@ class DataHub_INAT_API
         }
 
         fclose($WRITE);
+
+        print_r($this->debug['genus']);
+
     }
     private function parse_tsv_file($file)
     {   
@@ -247,13 +270,14 @@ class DataHub_INAT_API
                     @$this->debug["x"]['collectionCode'][$rec['collectionCode']][$taxonID]++;
                     @$this->debug["x"]['datasetName'][$rec['datasetName']][$taxonID]++;
 
+                    @$this->debug['taxa'][$taxonID] = array('sn' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family'], 'g' => $rec['genus']);
+
+                    if($genus = @$rec['genus']) @$this->debug['genus'][$genus]++;
                 }
-
                 // =======================================================================================
                 // =======================================================================================
                 // =======================================================================================
                 // =======================================================================================
-
             } //main records
             // if($i >= 100000) break; //debug only
         } //main loop
