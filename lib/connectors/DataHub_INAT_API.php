@@ -22,26 +22,92 @@ class DataHub_INAT_API
         $this->dump_file = $save_path . "/datahub_inat.txt";
         if(is_file($this->dump_file)) unlink($this->dump_file);
         // ----------------------------------------------------------------- DwCA files from Ken-ichi: https://www.inaturalist.org/pages/developers
-        $this->dwca_file = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";
-                        //    "http://www.inaturalist.org/observations/gbif-observations-dwca.zip";
+        $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
+        $this->dwca['gbif-observations'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/gbif-observations-dwca/observations.csv"; //"http://www.inaturalist.org/observations/gbif-observations-dwca.zip";    //from Ken-ichi
+        $this->dwca['gbif-downloads'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0007976-240425142415019.csv";
+
         $this->api['taxon_observation_count'] = "https://api.inaturalist.org/v2/observations?per_page=0&taxon_id="; //e.g. taxon_id=55533
         $this->TooManyRequests = 0;
     }
+    function explore_dwca()
+    {
+        // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);
+        // self::parse_tsv_file($this->dwca['gbif-downloads']);
+        self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
+        if($this->debug) print_r($this->debug);
+
+        $path = DOC_ROOT . "temp/GGI/reports/";
+        if(!is_dir($path)) mkdir($path);
+        $filename = $path."iNaturalist.tsv";
+
+        if(!($WRITE = Functions::file_open($filename, "w"))) return;
+
+        fwrite($WRITE, "=====Institution=====" . "\n");
+        $tmp = $this->debug['institutionCode'];
+        foreach($tmp as $institution => $total) fwrite($WRITE, $institution . "\t" . "$total" . "\n");
+
+        fwrite($WRITE, "\n");
+        fwrite($WRITE, "=====Collection=====" . "\n");
+        $tmp = $this->debug['collectionCode'];
+        foreach($tmp as $collection => $total) fwrite($WRITE, $collection . "\t" . "$total" . "\n");
+
+        fwrite($WRITE, "\n");
+        fwrite($WRITE, "=====Dataset=====" . "\n");
+        $tmp = $this->debug['datasetName'];
+        foreach($tmp as $dataset => $total) fwrite($WRITE, $dataset . "\t" . "$total" . "\n");
+
+        fwrite($WRITE, "\n");
+        fwrite($WRITE, "=====Taxa per Collection=====" . "\n");
+        $tmp = $this->debug['x']['collectionCode'];
+        foreach($tmp as $collection => $arr_totals) {
+            foreach($arr_totals as $taxonID => $total)
+            fwrite($WRITE, $collection . "\t" . $taxonID . "\t" . "$total" . "\n");
+        }
+
+        fwrite($WRITE, "\n");
+        fwrite($WRITE, "=====Taxa per Dataset=====" . "\n");
+        $tmp = $this->debug['x']['datasetName'];
+        foreach($tmp as $dataset => $arr_totals) {
+            foreach($arr_totals as $taxonID => $total)
+            fwrite($WRITE, $dataset . "\t" . $taxonID . "\t" . "$total" . "\n");
+        }
+
+
+        fclose($WRITE);
+
+
+    }
+    private function parse_tsv_file($file)
+    {   
+        echo "\nReading file $file...\n";
+        $i = 0; $final = array();
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = $tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); print_r($rec); exit("\nstop muna\n");
+                /**/
+            }
+        } //end foreach()
+    }
     function get_iNat_taxa_using_DwCA($rank)
     {        
-        // /* un-comment in real operation
+        /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
-        $paths = $func->extract_archive_file($this->dwca_file, "meta.xml", $this->download_options_INAT); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+        $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $this->download_options_INAT); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
         // print_r($paths); exit; //debug only
-        // */
-
-        /* development only
-        $paths = Array(
-            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_08324/',
-            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_08324/'
-        );
         */
+
+        // /* development only
+        $paths = Array(
+            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_30465/',
+            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_30465/'
+        );
+        // */
 
         $archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
@@ -51,20 +117,22 @@ class DataHub_INAT_API
 
         self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon', $rank);
 
-        // /* un-comment in real operation -- remove temp dir
+        /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
         echo ("\n temporary directory removed: " . $temp_dir);
-        // */
+        */
     }
-    private function process_table($meta, $what, $sought_rank = false)
+    private function process_table($meta, $what, $sought_rank = false, $local_dwca = false)
     {
-        $csv_file = $meta->file_uri;
+        if($meta)           $csv_file = $meta->file_uri;
+        elseif($local_dwca) $csv_file = $local_dwca;
+
         $i = 0; $meron = 0;
         $file = Functions::file_open($csv_file, "r");
         while(!feof($file)) {
             $row = fgetcsv($file); //print_r($row);
             if(!$row) break;
-            $i++; if(($i % 50000) == 0) echo "\n $i ";
+            $i++; if(($i % 100000) == 0) echo "\n $i ";
             if($i == 1) {
                 $fields = $row;
                 $count = count($fields);
@@ -84,7 +152,7 @@ class DataHub_INAT_API
                     $rec[$field] = $values[$k];
                     $k++;
                 }
-                // print_r($fields); print_r($rec); exit;
+                // print_r($rec); //exit;
                 /*Array(
                     [id] => 1
                     [taxonID] => https://www.inaturalist.org/taxa/1
@@ -121,12 +189,34 @@ class DataHub_INAT_API
                     }    
                 }
                 // =======================================================================================
+                if($what == "explore gbif-observations") { //print_r($rec);
+                    /* Array(
+                        [id] => 52247099
+                        [occurrenceID] => https://www.inaturalist.org/observations/52247099
+                        [basisOfRecord] => HumanObservation
+                        [modified] => 2022-02-26T22:48:45Z
+                        [institutionCode] => iNaturalist
+                        [collectionCode] => Observations
+                        [datasetName] => iNaturalist research-grade observations
+                        ...more fields below */
+                    $taxonID = $rec['taxonID'];
+                    @$this->debug['taxonID'][$taxonID]++;
+                    @$this->debug['institutionCode'][$rec['institutionCode']]++;
+                    @$this->debug['collectionCode'][$rec['collectionCode']]++;
+                    @$this->debug['datasetName'][$rec['datasetName']]++;
+
+                    @$this->debug["x"]['collectionCode'][$rec['collectionCode']][$taxonID]++;
+                    @$this->debug["x"]['datasetName'][$rec['datasetName']][$taxonID]++;
+
+                }
+
                 // =======================================================================================
                 // =======================================================================================
                 // =======================================================================================
                 // =======================================================================================
 
             } //main records
+            if($i >= 100000) break; //debug only
         } //main loop
         fclose($file);
     }

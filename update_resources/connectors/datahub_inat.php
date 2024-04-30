@@ -4,12 +4,14 @@ namespace php_active_record;
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/DataHub_INAT_API');
+ini_set('memory_limit','15096M'); //15096M
 $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 $func = new DataHub_INAT_API();
 
 // $func->get_iNat_taxa_using_API('genus'); //not advisable to use, bec. of the 10,000 limit page coverage. Ken-ichi advised to use the DwCA instead.
-$func->get_iNat_taxa_using_DwCA('genus');
+// $func->get_iNat_taxa_using_DwCA('genus');
+$func->explore_dwca();
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
