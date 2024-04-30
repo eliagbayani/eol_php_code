@@ -285,13 +285,22 @@ class DataHub_INAT_API
                     @$this->debug["x"]['collectionCode'][$rec['collectionCode']][$taxonID]++;
                     @$this->debug["x"]['datasetName'][$rec['datasetName']][$taxonID]++;
 
-                    @$this->debug['taxa'][$taxonID] = array('sn' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family'], 'g' => $rec['genus']);
+                    $info = array('sn' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family'], 'g' => $rec['genus']);
+                    @$this->debug['taxa'][$taxonID] = $info;
 
                     if($genus  = @$rec['genus'])  @$this->debug['genus'][$genus]++;
                     if($family = @$rec['family']) @$this->debug['family'][$family]++;
 
-                    /* stats only - exploring
                     $taxonRank = $rec['taxonRank'];
+                    $scientificName = $rec['scientificName'];
+
+                    if($taxonRank == 'genus') {
+                        $info['i'] = $rec['taxonID'];
+                        $this->debug['genus_lookup'][$scientificName] = $info;
+                    }
+
+
+                    /* stats only - exploring contents of DwCA
                     // if($taxonRank == 'genus') {print_r($rec); exit;} //meron
                     // if($taxonRank == 'family') {print_r($rec); exit;} // wala
                     */
