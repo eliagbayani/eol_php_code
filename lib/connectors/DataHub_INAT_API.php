@@ -41,7 +41,7 @@ class DataHub_INAT_API
     {
         $path = DOC_ROOT . "temp/GGI/reports/";
         if(!is_dir($path)) mkdir($path);
-        $filename = $path."iNaturalist_5.tsv";
+        $filename = $path."iNaturalist_6.tsv";
 
         if(!($WRITE = Functions::file_open($filename, "w"))) return;
 
@@ -63,8 +63,8 @@ class DataHub_INAT_API
         fwrite($WRITE, "=====Genus=====" . "\n");
         $tmp = $this->debug['genus'];
         foreach($tmp as $genus_name => $total) {
-            $info = @$this->debug['taxa'][$taxonID];
-            // fwrite($WRITE, "genus\t" . $genus_name . "\t" . "$total" . "\n");
+            $info = @$this->debug['genus_lookup'][$genus_name];
+            if(!$info) $info = array();
             fwrite($WRITE, "genus\t" . $genus_name . "\t" . "$total" . "\t" . implode("\t", @$info) . "\n");
         }
 
@@ -113,7 +113,7 @@ class DataHub_INAT_API
 
         fclose($WRITE);
 
-        print_r($this->debug['genus']);
+        // print_r($this->debug['genus']);
 
     }
     private function parse_tsv_file($file)
@@ -299,7 +299,6 @@ class DataHub_INAT_API
                         $this->debug['genus_lookup'][$scientificName] = $info;
                     }
 
-
                     /* stats only - exploring contents of DwCA
                     // if($taxonRank == 'genus') {print_r($rec); exit;} //meron
                     // if($taxonRank == 'family') {print_r($rec); exit;} // wala
@@ -313,7 +312,7 @@ class DataHub_INAT_API
             // if($i >= 200000) break; //debug only
         } //main loop
         fclose($file);
-    }
+    } //end process_table()
     function get_total_observations($taxon_id)
     {
         // @$this->run_query++;
