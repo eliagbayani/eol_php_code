@@ -31,19 +31,19 @@ class DataHub_INAT_API
     }
     function explore_dwca()
     {
-        // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);
-        self::parse_tsv_file($this->dwca['gbif-downloads']); //not for iNat but can be used for GBIF metrics (numberOfOccurrences)
+        // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //file is csv not tsv
+        // self::parse_tsv_file($this->dwca['gbif-downloads']);                             //doesn't have the data we need
 
-        /* generates inat_species.tsv, inat_genus.tsv, inat_family.tsv --- main operation; works OK
+        // /* generates inat_species.tsv, inat_genus.tsv, inat_family.tsv --- main operation; works OK
         self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
         self::write_tsv_file();
-        */
+        // */
     }
     private function write_tsv_file()
     {
         $path = DOC_ROOT . "temp/GGI/reports/";
         if(!is_dir($path)) mkdir($path);
-        $filename = $path."iNaturalist_7.tsv";
+        $filename = $path."iNaturalist_8.tsv";
 
         if(!($WRITE = Functions::file_open($filename, "w"))) return;
 
