@@ -41,7 +41,7 @@ class DataHub_INAT_API
     {
         $path = DOC_ROOT . "temp/GGI/reports/";
         if(!is_dir($path)) mkdir($path);
-        $filename = $path."iNaturalist_6.tsv";
+        $filename = $path."iNaturalist_7.tsv";
 
         if(!($WRITE = Functions::file_open($filename, "w"))) return;
 

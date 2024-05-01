@@ -1,11 +1,11 @@
 <?php
 namespace php_active_record;
-/*
-NCBI, GGBN, GBIF, BHL, BOLDS database coverages
+/* 
+NCBI, GGBN, GBIF, BHL, BOLDS, INAT (6) database coverages
 estimated execution time: ~3 days
 
-php update_resources/connectors/723.php _ '{"rank": "family"}'
-php update_resources/connectors/723.php _ '{"rank": "genus"}'
+php update_resources/connectors/723.php _ '{"rank": "family"}'          for "ncbi", "ggbn", "gbif", "bhl", "bolds", "inat" BUT inat here may not last long.
+php update_resources/connectors/723.php _ '{"rank": "genus"}'           for "ncbi", "ggbn", "gbif", "bhl", "bolds"   --- No "inat" here.
 
 723	Wednesday 2018-03-28 10:17:55 PM	{"measurement_or_fact.tab":116434,"occurrence.tab":116434,"taxon.tab":9913} - MacMini
 723	Wednesday 2018-03-28 10:54:54 PM	{"measurement_or_fact.tab":116434,"occurrence.tab":116434,"taxon.tab":9913}
@@ -47,5 +47,4 @@ function count_subfamily_per_database() // call this function above to run the r
         $func->count_subfamily_per_database(DOC_ROOT . "/tmp/dir_" . $database . "/" . $database . ".txt", $database);
     }
 }
-
 ?>
