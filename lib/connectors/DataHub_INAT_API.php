@@ -23,8 +23,8 @@ class DataHub_INAT_API
         if(is_file($this->dump_file)) unlink($this->dump_file);
         // ----------------------------------------------------------------- DwCA files from Ken-ichi: https://www.inaturalist.org/pages/developers
         $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
-        $this->dwca['gbif-observations'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/gbif-observations-dwca/observations.csv"; //"http://www.inaturalist.org/observations/gbif-observations-dwca.zip";    //from Ken-ichi
-        $this->dwca['gbif-downloads'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0007976-240425142415019.csv";
+        $this->dwca['gbif-observations'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/gbif-observations-dwca/observations.csv"; //"http://www.inaturalist.org/observations/gbif-observations-dwca.zip";    //from Ken-ichi, advised to read API Docs
+        $this->dwca['gbif-downloads'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0007976-240425142415019.csv"; //https://doi.org/10.15468/dl.ky2k5v
 
         $this->api['taxon_observation_count'] = "https://api.inaturalist.org/v2/observations?per_page=0&taxon_id="; //e.g. taxon_id=55533
         $this->TooManyRequests = 0;
@@ -32,10 +32,12 @@ class DataHub_INAT_API
     function explore_dwca()
     {
         // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);
-        // self::parse_tsv_file($this->dwca['gbif-downloads']);
+        self::parse_tsv_file($this->dwca['gbif-downloads']); //not for iNat but can be used for GBIF metrics (numberOfOccurrences)
+
+        /* generates inat_species.tsv, inat_genus.tsv, inat_family.tsv --- main operation; works OK
         self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
-        // if($this->debug) print_r($this->debug);
         self::write_tsv_file();
+        */
     }
     private function write_tsv_file()
     {
@@ -323,7 +325,7 @@ class DataHub_INAT_API
                 // =======================================================================================
                 // =======================================================================================
             } //main records
-            if($i >= 200000) break; //debug only
+            // if($i >= 200000) break; //debug only
         } //main loop
         fclose($file);
     } //end process_table()

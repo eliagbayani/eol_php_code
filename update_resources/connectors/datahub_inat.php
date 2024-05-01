@@ -9,9 +9,9 @@ $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 $func = new DataHub_INAT_API();
 
-// $func->get_iNat_taxa_using_API('genus'); //not advisable to use, bec. of the 10,000 limit page coverage. Ken-ichi advised to use the DwCA instead.
-// $func->get_iNat_taxa_using_DwCA('genus');
-$func->explore_dwca();
+// $func->get_iNat_taxa_using_API('genus');     //not advisable to use, bec. of the 10,000 limit page coverage. Ken-ichi advised to use the DwCA instead.
+// $func->get_iNat_taxa_using_DwCA('genus');    //works but may not be needed anymore
+$func->explore_dwca(); //this uses the 
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
