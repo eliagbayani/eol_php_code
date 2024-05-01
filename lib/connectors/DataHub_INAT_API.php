@@ -61,24 +61,36 @@ class DataHub_INAT_API
 
         fwrite($WRITE, "\n");
         fwrite($WRITE, "=====Genus=====" . "\n");
+        if(!($WRITE_2 = Functions::file_open($path."iNat_genus.tsv", "w"))) return;
+        $headers = array("genus_name", "count", "sciname", "rank", "kingdom", "phylum", "class", "order", "family", "genus", "taxonID");
+        fwrite($WRITE_2, implode("\t", $headers) . "\n");
         $tmp = $this->debug['genus'];
         foreach($tmp as $genus_name => $total) {
             $info = @$this->debug['genus_lookup'][$genus_name];
             if(!$info) $info = array();
-            fwrite($WRITE, "genus\t" . $genus_name . "\t" . "$total" . "\t" . implode("\t", @$info) . "\n");
+            fwrite($WRITE, "genus\t" . $genus_name . "\t" . "$total" . "\t" . implode("\t", @$info) . "\n"); //orig
+            fwrite($WRITE_2, $genus_name . "\t" . "$total" . "\t" . implode("\t", @$info) . "\n");
         }
+        fclose($WRITE_2);
 
         fwrite($WRITE, "\n");
         fwrite($WRITE, "=====Family=====" . "\n");
+        if(!($WRITE_2 = Functions::file_open($path."iNat_family.tsv", "w"))) return;
+        $headers = array("sciname", "count", "rank");
+        fwrite($WRITE_2, implode("\t", $headers) . "\n");
         $tmp = $this->debug['family'];
         foreach($tmp as $family_name => $total) {
             $info = @$this->debug['taxa'][$taxonID];
             fwrite($WRITE, "family\t" . $family_name . "\t" . "$total" . "\n");
-            // fwrite($WRITE, "family\t" . $family_name . "\t" . "$total" . "\t" . implode("\t", @$info) . "\n");
+            fwrite($WRITE_2, $family_name . "\t" . "$total" . "\t" . "family" . "\n");
         }
+        fclose($WRITE_2);
 
         fwrite($WRITE, "\n");
         fwrite($WRITE, "=====Taxa ALL=====" . "\n");
+        if(!($WRITE_2 = Functions::file_open($path."iNat_species.tsv", "w"))) return;
+        $headers = array("taxonID", "count", "sciname", "rank", "kingdom", "phylum", "class", "order", "family", "genus");
+        fwrite($WRITE_2, implode("\t", $headers) . "\n");
         $tmp = $this->debug['taxonID'];
         foreach($tmp as $taxonID => $total) {
             $info = $this->debug['taxa'][$taxonID];
@@ -93,7 +105,9 @@ class DataHub_INAT_API
             'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family'], 'g' => $rec['genus']);
             */
             fwrite($WRITE, "taxonID\t" . $taxonID . "\t" . "$total" . "\t" . implode("\t", $info) . "\n");
+            fwrite($WRITE_2, $taxonID . "\t" . "$total" . "\t" . implode("\t", $info) . "\n");
         }
+        fclose($WRITE_2);
 
         fwrite($WRITE, "\n");
         fwrite($WRITE, "=====Taxa per Collection=====" . "\n");
@@ -175,7 +189,7 @@ class DataHub_INAT_API
             if($i == 1) {
                 $fields = $row;
                 $count = count($fields);
-                print_r($fields);
+                // print_r($fields);
             }
             else { //main records
                 $values = $row;
@@ -309,7 +323,7 @@ class DataHub_INAT_API
                 // =======================================================================================
                 // =======================================================================================
             } //main records
-            // if($i >= 200000) break; //debug only
+            if($i >= 200000) break; //debug only
         } //main loop
         fclose($file);
     } //end process_table()
