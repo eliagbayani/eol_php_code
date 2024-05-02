@@ -57,14 +57,16 @@ class DataHub_INAT_API
     }
     private function create_dwca()
     {
-        $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv", "species" => "iNat_species.tsv");
-        $files = array("genus" => "iNat_genus.tsv");
-        $files = array("family" => "iNat_family.tsv");
-        $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv");
+        $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv", "ALL" => "iNat_species.tsv");
+        // $files = array("genus" => "iNat_genus.tsv");
+        // $files = array("family" => "iNat_family.tsv");
+        // $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv");
+        // $files = array("species" => "iNat_species.tsv");
+
+        $this->taxa_info = array(); self::get_iNat_taxa_using_DwCA("ALL", true); //$rank can be 'genus' or 'family' or 'ALL'
 
         foreach($files as $rank => $file) {
             $this->rank_level = $rank;
-            $this->taxa_info = array(); self::get_iNat_taxa_using_DwCA($rank, true);
             self::parse_tsv_file($this->reports_path . $file, $file);
         }
     }
@@ -208,7 +210,11 @@ class DataHub_INAT_API
         if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $sciname, $options)) {
             $obj = json_decode($json); //echo "<pre>";print_r($json); echo "</pre>"; exit;
             foreach($obj->results as $r) {
-                if($r->name == $sciname && strtolower($r->rank) == strtolower($rank)) {
+
+                if($rank == 'ALL') $condition = $r->name == $sciname;
+                else               $condition = $r->name == $sciname && strtolower($r->rank) == strtolower($rank);
+
+                if($condition) {
                     $rec['taxonID'] = $r->id;
                     $rec['sciname'] = $r->name;
                     $rec['rank'] = $r->rank;
@@ -263,29 +269,31 @@ class DataHub_INAT_API
         }
 
 
+        $taxonID = $rec['taxonID'];
         $taxon = new \eol_schema\Taxon();
-        $taxon->taxonID         = $rec['taxonID'];
+        $taxon->taxonID         = $taxonID;
         $taxon->scientificName  = $rec['sciname'];
-        $taxon->taxonRank  = $rec['rank'];
-        $taxon->kingdom  = @$rec['kingdom'];
-        $taxon->phylum  = @$rec['phylum'];
-        $taxon->class  = @$rec['class'];
-        $taxon->order  = @$rec['order'];
-        if($taxon->taxonRank != 'family') 
+        $taxon->taxonRank       = $rec['rank'];
+        $taxon->kingdom         = @$rec['kingdom'];
+        $taxon->phylum          = @$rec['phylum'];
+        $taxon->class           = @$rec['class'];
+        $taxon->order           = @$rec['order'];
 
         if($taxon->taxonRank == 'family') {
             $taxon->family = $rec['family'];
-            // $taxon->genus  = $rec['genus'];
         }
         elseif($taxon->taxonRank == 'genus') {
             $taxon->family = $rec['family'];
             $taxon->genus  = $rec['genus'];
         }
 
+        if(!isset($this->taxonIDs[$taxonID])) {
+            $this->taxonIDs[$taxonID] = '';
+            $this->archive_builder->write_object_to_file($taxon);
+            return $taxon->taxonID;    
+        }
+        else return false;
 
-
-        $this->archive_builder->write_object_to_file($taxon);
-        return $taxon->taxonID;
     }
     private function write_MoF($taxon_id, $rec)   //, $label, $value, $measurementType, $family)
     {
