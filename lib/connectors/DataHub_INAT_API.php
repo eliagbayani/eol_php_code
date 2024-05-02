@@ -39,7 +39,6 @@ class DataHub_INAT_API
         $this->reports_path = $save_path; //DOC_ROOT . "temp/GGI/reports/";
         $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
         $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
-
     }
     function explore_dwca()
     {
@@ -47,8 +46,8 @@ class DataHub_INAT_API
         //                         self::parse_tsv_file($this->dwca['gbif-downloads']);     //file is csv not tsv
 
         // /* generates inat_species.tsv, inat_genus.tsv, inat_family.tsv --- main operation; works OK
-        // self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
-        // self::write_tsv_file();
+        self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
+        self::write_tsv_file();
         self::create_dwca();
         // */
 
@@ -58,7 +57,7 @@ class DataHub_INAT_API
     private function create_dwca()
     {
         $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv", "ALL" => "iNat_species.tsv");
-        // $files = array("genus" => "iNat_genus.tsv");
+        $files = array("genus" => "iNat_genus.tsv");
         // $files = array("family" => "iNat_family.tsv");
         // $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv");
         // $files = array("species" => "iNat_species.tsv");
@@ -327,19 +326,21 @@ class DataHub_INAT_API
 
     function get_iNat_taxa_using_DwCA($rank, $memoryYN = false)
     {        
-        /* un-comment in real operation
+        // /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
-        $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $this->download_options_INAT); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+        $options = $this->download_options_INAT;
+        $options['expire_seconds'] = false;
+        $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
         // print_r($paths); exit; //debug only
-        */
+        // */
 
-        // /* development only
+        /* development only
         $paths = Array(
             'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_30465/',
             'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_30465/'
         );
-        // */
+        */
 
         $archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
@@ -349,10 +350,10 @@ class DataHub_INAT_API
 
         self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon', $rank, false, $memoryYN);
 
-        /* un-comment in real operation -- remove temp dir
+        // /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
         echo ("\n temporary directory removed: " . $temp_dir);
-        */
+        // */
     }
     private function process_table($meta, $what, $sought_rank = false, $local_dwca = false, $memoryYN)
     {
