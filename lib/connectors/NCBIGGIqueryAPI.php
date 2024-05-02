@@ -68,7 +68,7 @@ class NCBIGGIqueryAPI
             $this->occurrence_ids = array();
             $this->measurement_ids = array();
         }
-        $this->download_options = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000/2, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options = array('resource_id' => 723, 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
         // $this->download_options['expire_seconds'] = false; //debug - false -> wont expire; 0 -> expires now
 
         /* obsolete, no longer used
@@ -405,7 +405,10 @@ class NCBIGGIqueryAPI
         $rec[$this->process_level] = $family;
         $rec["taxon_id"] = str_replace(" ", "_", $family);
         $rec["source"] = $this->bolds_taxon_page_by_name . $family;
-        if($json = Functions::lookup_with_cache($this->bolds["TaxonSearch"] . $family, $this->download_options_BOLDS)) {
+        $options = $this->download_options_BOLDS;
+        $options['download_wait_time'] = 3000000; //3 secs interval
+
+        if($json = Functions::lookup_with_cache($this->bolds["TaxonSearch"] . $family, $options)) {
             if($info = self::parse_bolds_taxon_search($json)) {
                 $rec["source"] = $this->bolds_taxon_page_by_id . $info["taxid"];
                 if(@$info["specimens"] > 0) {
@@ -537,7 +540,9 @@ class NCBIGGIqueryAPI
         $rec[$this->process_level] = $family;
         $rec["taxon_id"] = str_replace(" ", "_", $family);
         $rec["source"] = $this->bhl_taxon_page . $family;
-        if($contents = Functions::lookup_with_cache($this->bhl_taxon_in_xml . $family, $this->download_options)) {
+        $options = $this->download_options;
+        $options['download_wait_time'] = 10000000; //10 secs interval
+        if($contents = Functions::lookup_with_cache($this->bhl_taxon_in_xml . $family, $options)) {
             if($count = self::get_page_count_from_BHL_xml($contents)) {
                 if($count > 0) {
                     $rec["object_id"]   = "_no_of_page_in_bhl";
