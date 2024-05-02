@@ -45,14 +45,14 @@ class DataHub_INAT_API
         // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //doesn't have the data we need
         //                         self::parse_tsv_file($this->dwca['gbif-downloads']);     //file is csv not tsv
 
-        // /* generates inat_species.tsv, inat_genus.tsv, inat_family.tsv --- main operation; works OK
+        // /* --- main operation; works OK
         self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations'], false);
-        self::write_tsv_file();
+        self::write_tsv_file(); //generates 3 .tsv files: inat_species.tsv, inat_genus.tsv, inat_family.tsv
         self::create_dwca();
         // */
 
         $this->archive_builder->finalize(TRUE);
-        print_r(@$this->debug['wala']);
+        print_r(@$this->debug['wala']); //taxa that were excluded since not found in inaturalist.org interface anyway.
     }
     private function create_dwca()
     {
@@ -324,14 +324,13 @@ class DataHub_INAT_API
         $this->occurrence_ids[$o->occurrenceID] = '';
         return $o->occurrenceID;
     }
-
     function get_iNat_taxa_using_DwCA($rank, $memoryYN = false)
     {        
         // /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $options = $this->download_options_INAT;
-        $options['expire_seconds'] = false;
+        $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
         $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
         // print_r($paths); exit; //debug only
         // */
