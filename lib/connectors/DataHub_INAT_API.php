@@ -46,7 +46,7 @@ class DataHub_INAT_API
         //                         self::parse_tsv_file($this->dwca['gbif-downloads']);     //file is csv not tsv
 
         // /* generates inat_species.tsv, inat_genus.tsv, inat_family.tsv --- main operation; works OK
-        self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
+        self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations'], false);
         self::write_tsv_file();
         self::create_dwca();
         // */
@@ -57,7 +57,7 @@ class DataHub_INAT_API
     private function create_dwca()
     {
         $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv", "ALL" => "iNat_species.tsv");
-        $files = array("genus" => "iNat_genus.tsv");
+        // $files = array("genus" => "iNat_genus.tsv");
         // $files = array("family" => "iNat_family.tsv");
         // $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv");
         // $files = array("species" => "iNat_species.tsv");
