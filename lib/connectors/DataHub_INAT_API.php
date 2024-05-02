@@ -51,12 +51,14 @@ class DataHub_INAT_API
         // self::write_tsv_file();
         self::create_dwca();
         // */
+
+        $this->archive_builder->finalize(TRUE);
     }
     private function create_dwca()
     {
         $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv", "species" => "iNat_species.tsv");
         $files = array("genus" => "iNat_genus.tsv");
-        // $files = array("family" => "iNat_family.tsv");
+        $files = array("family" => "iNat_family.tsv");
 
         foreach($files as $rank => $file) {
             $this->rank_level = $rank;
@@ -152,11 +154,8 @@ class DataHub_INAT_API
             foreach($arr_totals as $taxonID => $total)
             fwrite($WRITE, $dataset . "\t" . $taxonID . "\t" . "$total" . "\n");
         }
-
+        
         fclose($WRITE);
-
-        // print_r($this->debug['genus']);
-
     }
     private function parse_tsv_file($file, $what)
     {   echo "\nReading file $what...\n";
@@ -181,12 +180,18 @@ class DataHub_INAT_API
                     [family] => Ichneumonidae
                     [genus] => Ophion
                     [taxonID] => 47993
+                )
+                Array(
+                    [sciname] => Ichneumonidae
+                    [count] => 28837
+                    [rank] => family
                 )*/
                 // if(!$rec['taxonID']) {
                 //     print_r($rec); exit("\nelix 200\n");
                 // }
 
                 $taxonID = self::write_taxon($rec);
+                if(!@$rec['taxonID']) $rec['taxonID'] = $taxonID;
                 $rec['source'] = $this->taxon_page . $rec['taxonID'];
                 self::write_MoF($taxonID, $rec);
             }
@@ -216,7 +221,7 @@ class DataHub_INAT_API
     }
     private function write_taxon($rec)
     {
-        if(!$rec['taxonID']) {
+        if(!@$rec['taxonID']) {
             if($rek = @$this->taxa_info[$rec['sciname']]) { echo "\ndwca lookup\n";
                 $rec['taxonID'] = $rek['i'];
                 $rec['sciname'] = $rek['s'];
@@ -230,12 +235,16 @@ class DataHub_INAT_API
             }
             else {
                 echo "\napi lookup\n";
-                $rec = self::get_taxon_meta_via_api($rec['sciname'], $this->rank_level, $rec);
+                if($rec = self::get_taxon_meta_via_api($rec['sciname'], $this->rank_level, $rec)) {}
+                else {
+                    print_r($rec);
+                    exit("\nCannot locate...\n");
+                }
             }
         }
 
         $taxon = new \eol_schema\Taxon();
-        $taxon->taxonID         = "inat_".$rec['taxonID'];
+        $taxon->taxonID         = $rec['taxonID'];
         $taxon->scientificName  = $rec['sciname'];
         $taxon->taxonRank  = $rec['rank'];
         $taxon->kingdom  = $rec['kingdom'];
