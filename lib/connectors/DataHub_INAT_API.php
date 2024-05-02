@@ -55,6 +55,9 @@ class DataHub_INAT_API
     private function create_dwca()
     {
         $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv", "species" => "iNat_species.tsv");
+        $files = array("genus" => "iNat_genus.tsv");
+        // $files = array("family" => "iNat_family.tsv");
+
         foreach($files as $rank => $file) {
             $this->rank_level = $rank;
             $this->taxa_info = array(); self::get_iNat_taxa_using_DwCA($rank, true);
@@ -87,7 +90,7 @@ class DataHub_INAT_API
         fwrite($WRITE, "\n");
         fwrite($WRITE, "=====Genus=====" . "\n");
         if(!($WRITE_2 = Functions::file_open($path."iNat_genus.tsv", "w"))) return;
-        $headers = array("genus_name", "count", "sciname", "rank", "kingdom", "phylum", "class", "order", "family", "genus", "taxonID");
+        $headers = array("sciname", "count", "scientificName", "rank", "kingdom", "phylum", "class", "order", "family", "genus", "taxonID");
         fwrite($WRITE_2, implode("\t", $headers) . "\n");
         $tmp = $this->debug['genus'];
         foreach($tmp as $genus_name => $total) {
@@ -167,9 +170,9 @@ class DataHub_INAT_API
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                 $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
                 /*Array(
-                    [genus_name] => Ophion
-                    [count] => 987
                     [sciname] => Ophion
+                    [count] => 987
+                    [scientificName] => Ophion
                     [rank] => genus
                     [kingdom] => Animalia
                     [phylum] => Arthropoda
@@ -179,8 +182,12 @@ class DataHub_INAT_API
                     [genus] => Ophion
                     [taxonID] => 47993
                 )*/
-                $rec['source'] = $this->taxon_page . $rec['taxonID'];
+                // if(!$rec['taxonID']) {
+                //     print_r($rec); exit("\nelix 200\n");
+                // }
+
                 $taxonID = self::write_taxon($rec);
+                $rec['source'] = $this->taxon_page . $rec['taxonID'];
                 self::write_MoF($taxonID, $rec);
             }
         }//end foreach()
@@ -202,7 +209,6 @@ class DataHub_INAT_API
                 }
             }
         }
-
         $rec['taxonID'] = $sciname;
         $rec['sciname'] = $sciname;
         $rec['rank'] = $this->rank_level;
@@ -211,7 +217,7 @@ class DataHub_INAT_API
     private function write_taxon($rec)
     {
         if(!$rec['taxonID']) {
-            if($rek = @$this->taxa_info[$rec['genus_name']]) { echo "\ndwca lookup\n";
+            if($rek = @$this->taxa_info[$rec['sciname']]) { echo "\ndwca lookup\n";
                 $rec['taxonID'] = $rek['i'];
                 $rec['sciname'] = $rek['s'];
                 $rec['rank'] = $rek['r'];
@@ -224,7 +230,7 @@ class DataHub_INAT_API
             }
             else {
                 echo "\napi lookup\n";
-                $rec = self::get_taxon_meta_via_api($rec['genus_name'], $this->rank_level, $rec);
+                $rec = self::get_taxon_meta_via_api($rec['sciname'], $this->rank_level, $rec);
             }
         }
 
@@ -309,6 +315,15 @@ class DataHub_INAT_API
         $file = Functions::file_open($csv_file, "r");
         while(!feof($file)) {
             $row = fgetcsv($file); //print_r($row);
+
+            $str = implode("\t", $row);
+
+            if(stripos($str, "Callisaurus	genus") !== false) {  //string found --- good debug
+                echo("\n$str\n");
+            }
+
+            
+
             if(!$row) break;
             $i++; if(($i % 100000) == 0) echo "\n $i ";
             if($i == 1) {
@@ -331,6 +346,13 @@ class DataHub_INAT_API
                     $k++;
                 }
                 // print_r($rec); //exit;
+
+
+                if(stripos($str, "Callisaurus	genus") !== false) {  //string found --- good debug
+                    print_r($rec); //exit;
+                }
+    
+
                 /*Array(
                     [id] => 1
                     [taxonID] => https://www.inaturalist.org/taxa/1
@@ -350,7 +372,7 @@ class DataHub_INAT_API
                     [references] => http://www.catalogueoflife.org/annual-checklist/2013/browse/tree/id/13021388
                 )*/
                 // =======================================================================================
-                if($what == 'taxon') {
+                if($what == 'taxon' && $memoryYN == false) {
                     if($sought_rank == $rec['taxonRank']) {
                         $rek = array();
                         $rek["id"]                  = $rec['id'];
@@ -362,14 +384,19 @@ class DataHub_INAT_API
                         if($rek["meta_observ_count"] === false) {
                             break;
                         }*/
-                        if(!$memoryYN) self::save_to_dump($rek, $this->dump_file);
-                        else {
-                            $this->taxa_info[$rec['scientificName']] = array('i' => $rec['id'], 's' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family']);
-                        }
+                        self::save_to_dump($rek, $this->dump_file);
                         $meron++;
                         // if($meron >= 3) break; //dev only
                     }    
                 }
+                if($what == 'taxon' && $memoryYN) {
+                    if(stripos($str, "Callisaurus	genus") !== false) {  //string found --- good debug
+                        // print_r($rec); exit("\nditox 100\n");
+                    }    
+                    $this->taxa_info[$rec['scientificName']] = array('i' => $rec['id'], 's' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family']);
+                    $meron++;
+                }
+
                 // =======================================================================================
                 if($what == "explore gbif-observations") { //print_r($rec);
                     /* Array(
@@ -452,9 +479,10 @@ class DataHub_INAT_API
                 // =======================================================================================
                 // =======================================================================================
             } //main records
-            if($i >= 200000) break; //debug only
+            // if($i >= 200000) break; //debug only
         } //main loop
         fclose($file);
+        // exit("\nelix 1\n");
     } //end process_table()
     function get_total_observations($taxon_id)
     {
