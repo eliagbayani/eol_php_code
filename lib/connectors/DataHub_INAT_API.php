@@ -77,14 +77,15 @@ class DataHub_INAT_API
         $observations_csv_path = $ret['observations_csv_path'];
         // */
 
-        // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //doesn't have the data we need
-        //                         self::parse_tsv_file($this->dwca['gbif-downloads']);     //file is csv not tsv
+        // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //doesn't have the data we need; not used ever
 
         // /* step 2: --- main operation; works OK
         // self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations'], false); //working but the csv path is hard-coded, during dev only
-        self::process_table(false, "explore gbif-observations", false, $observations_csv_path, false);
+           self::process_table(false, "explore gbif-observations", false, $observations_csv_path, false);
 
         self::write_tsv_file(); //generates 3 .tsv files: inat_species.tsv, inat_genus.tsv, inat_family.tsv
+
+        $this->debug = array(); //initialize array
         self::create_dwca();
         // */
 
@@ -114,8 +115,7 @@ class DataHub_INAT_API
     }
     private function write_tsv_file()
     {
-        $path = $this->reports_path;
-        echo "\npath: [$path]\n";
+        $path = $this->reports_path; echo "\npath: [$path]\n";
         if(!is_dir($path)) mkdir($path);
         $filename = $path."iNaturalist_8.tsv";
 
