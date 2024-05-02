@@ -31,7 +31,7 @@ class DataHub_INAT_API
         // ----------------------------------------------------------------- DwCA files from Ken-ichi: https://www.inaturalist.org/pages/developers
         $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
         $this->dwca['gbif-observations'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/gbif-observations-dwca/observations.csv"; //"http://www.inaturalist.org/observations/gbif-observations-dwca.zip";    //from Ken-ichi, advised to read API Docs
-        $this->dwca['gbif-downloads'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0007976-240425142415019.csv"; //https://doi.org/10.15468/dl.ky2k5v
+        // $this->dwca['gbif-downloads'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0007976-240425142415019.csv"; //https://doi.org/10.15468/dl.ky2k5v //not used
 
         $this->api['taxon_observation_count'] = "https://api.inaturalist.org/v2/observations?per_page=0&taxon_id="; //e.g. taxon_id=55533
         $this->TooManyRequests = 0;
@@ -226,6 +226,7 @@ class DataHub_INAT_API
         // echo "\ngoes here...[$sciname] [$] [$rank]\n"; print_r($rec); exit("\n");
         /*Array(
             [wala talaga] => Array(
+                    [[Pontania] [genus]] => 
                     [[Gonostomidae] [family]] => 
                 )
         )*/

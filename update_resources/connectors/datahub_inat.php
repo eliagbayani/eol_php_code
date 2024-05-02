@@ -1,6 +1,10 @@
 <?php
 namespace php_active_record;
 /*
+http://rs.tdwg.org/dwc/terms/taxon:
+Total: 481602
+http://rs.tdwg.org/dwc/terms/measurementorfact:
+Total: 481602
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/DataHub_INAT_API');
