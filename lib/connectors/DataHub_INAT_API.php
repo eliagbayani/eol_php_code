@@ -31,8 +31,8 @@ class DataHub_INAT_API
     }
     function explore_dwca()
     {
-        // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //file is csv not tsv
-        // self::parse_tsv_file($this->dwca['gbif-downloads']);                             //doesn't have the data we need
+        // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //doesn't have the data we need
+        //                         self::parse_tsv_file($this->dwca['gbif-downloads']);     //file is csv not tsv
 
         // /* generates inat_species.tsv, inat_genus.tsv, inat_family.tsv --- main operation; works OK
         self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
