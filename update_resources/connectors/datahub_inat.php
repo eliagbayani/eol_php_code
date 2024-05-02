@@ -12,6 +12,7 @@ ini_set('memory_limit','15096M'); //15096M
 $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 $resource_id = 'iNat_metrics';
+$resource_id = 'iNat';
 $func = new DataHub_INAT_API($resource_id);
 
 // $func->get_iNat_taxa_using_API('genus');     //not advisable to use, bec. of the 10,000 limit page coverage. Ken-ichi advised to use the DwCA instead.
