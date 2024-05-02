@@ -16,7 +16,7 @@ class DataHub_INAT_API
         if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
         else                           $save_path = "/Volumes/Crucial_2TB/other_files2/dumps_GGI/";
         if(!is_dir($save_path)) mkdir($save_path);
-        $save_path = $save_path . "iNat";
+        $save_path = $save_path . "iNat/";
         if(!is_dir($save_path)) mkdir($save_path);
 
         $this->dump_file = $save_path . "/datahub_inat.txt";
@@ -28,6 +28,9 @@ class DataHub_INAT_API
 
         $this->api['taxon_observation_count'] = "https://api.inaturalist.org/v2/observations?per_page=0&taxon_id="; //e.g. taxon_id=55533
         $this->TooManyRequests = 0;
+
+        $this->reports_path = $save_path; //DOC_ROOT . "temp/GGI/reports/";
+
     }
     function explore_dwca()
     {
@@ -41,7 +44,8 @@ class DataHub_INAT_API
     }
     private function write_tsv_file()
     {
-        $path = DOC_ROOT . "temp/GGI/reports/";
+        $path = $this->reports_path;
+        echo "\npath: [$path]\n";
         if(!is_dir($path)) mkdir($path);
         $filename = $path."iNaturalist_8.tsv";
 
@@ -325,7 +329,7 @@ class DataHub_INAT_API
                 // =======================================================================================
                 // =======================================================================================
             } //main records
-            // if($i >= 200000) break; //debug only
+            if($i >= 200000) break; //debug only
         } //main loop
         fclose($file);
     } //end process_table()
