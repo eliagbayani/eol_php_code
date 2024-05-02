@@ -31,6 +31,7 @@ class DataHub_INAT_API
         // ----------------------------------------------------------------- DwCA files from Ken-ichi: https://www.inaturalist.org/pages/developers
         $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
         $this->dwca['gbif-observations'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/gbif-observations-dwca/observations.csv"; //"http://www.inaturalist.org/observations/gbif-observations-dwca.zip";    //from Ken-ichi, advised to read API Docs
+        $this->dwca['gbif-observations-dwca'] = "http://www.inaturalist.org/observations/gbif-observations-dwca.zip";
         // $this->dwca['gbif-downloads'] = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0007976-240425142415019.csv"; //https://doi.org/10.15468/dl.ky2k5v //not used
 
         $this->api['taxon_observation_count'] = "https://api.inaturalist.org/v2/observations?per_page=0&taxon_id="; //e.g. taxon_id=55533
@@ -40,19 +41,61 @@ class DataHub_INAT_API
         $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
         $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
     }
+    private function extract_big_inat_observation_dump()
+    {        
+        // /* un-comment in real operation
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        $options = $this->download_options_INAT;
+        $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
+        $paths = $func->extract_archive_file($this->dwca['gbif-observations-dwca'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+        print_r($paths); exit; //debug only
+        // */
+
+        /* development only
+        $paths = Array(
+            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_30465/',
+            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_30465/'
+        );
+        */
+
+        $archive_path = $paths['archive_path'];
+        $temp_dir = $paths['temp_dir'];
+        $harvester = new ContentArchiveReader(NULL, $archive_path);
+        $tables = $harvester->tables;
+        // $index = array_keys($tables); print_r($index); exit;
+
+        return array('temp_dir' => $temp_dir, 'observations_csv_path' => $tables['http://rs.tdwg.org/dwc/terms/Occurrence'][0]);
+
+    }
+
     function explore_dwca()
     {
+        // /* step 1: download, extract zip file
+        $ret = self::extract_big_inat_observation_dump();
+        $temp_dir = $ret['temp_dir'];
+        $observations_csv_path = $ret['observations_csv_path'];
+        // */
+
         // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //doesn't have the data we need
         //                         self::parse_tsv_file($this->dwca['gbif-downloads']);     //file is csv not tsv
 
-        // /* --- main operation; works OK
-        self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations'], false);
+        // /* step 2: --- main operation; works OK
+        // self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations'], false); //working but the csv path is hard-coded, during dev only
+        self::process_table(false, "explore gbif-observations", false, $observations_csv_path, false);
+
         self::write_tsv_file(); //generates 3 .tsv files: inat_species.tsv, inat_genus.tsv, inat_family.tsv
         self::create_dwca();
         // */
 
         $this->archive_builder->finalize(TRUE);
         print_r(@$this->debug['wala']); //taxa that were excluded since not found in inaturalist.org interface anyway.
+
+        // -------------------------- ending
+        // /* un-comment in real operation -- remove temp dir
+        recursive_rmdir($temp_dir);
+        echo ("\n temporary directory removed: " . $temp_dir);
+        // */
     }
     private function create_dwca()
     {
@@ -254,8 +297,7 @@ class DataHub_INAT_API
             else { //echo "\napi lookup\n";
                 if($rec = self::get_taxon_meta_via_api($rec['sciname'], $this->rank_level, $rec)) {}
                 else {
-                    // print_r($rec);
-                    // exit("\nCannot locate...\n");
+                    // print_r($rec); //exit("\nCannot locate...\n");
                     return false;
                 }
             }
@@ -267,7 +309,6 @@ class DataHub_INAT_API
         elseif($rec['rank'] == 'genus') {
             $rec['genus'] = '';
         }
-
 
         $taxonID = $rec['taxonID'];
         $taxon = new \eol_schema\Taxon();
@@ -293,7 +334,6 @@ class DataHub_INAT_API
             return $taxon->taxonID;    
         }
         else return false;
-
     }
     private function write_MoF($taxon_id, $rec)   //, $label, $value, $measurementType, $family)
     {
