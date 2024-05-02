@@ -42,42 +42,35 @@ class DataHub_INAT_API
         $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae
     }
     private function extract_big_inat_observation_dump()
-    {        
-        // /* un-comment in real operation
+    {   // /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $options = $this->download_options_INAT;
         $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
         $paths = $func->extract_archive_file($this->dwca['gbif-observations-dwca'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        print_r($paths); exit; //debug only
+        // print_r($paths); exit; //debug only
         // */
-
         /* development only
         $paths = Array(
             'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_30465/',
             'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_30465/'
         );
         */
-
         $archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
         $harvester = new ContentArchiveReader(NULL, $archive_path);
         $tables = $harvester->tables;
         // $index = array_keys($tables); print_r($index); exit;
-
         return array('temp_dir' => $temp_dir, 'observations_csv_path' => $tables['http://rs.tdwg.org/dwc/terms/Occurrence'][0]);
-
     }
-
     function explore_dwca()
-    {
-        // /* step 1: download, extract zip file
+    {   // /* step 1: download, extract zip file
         $ret = self::extract_big_inat_observation_dump();
         $temp_dir = $ret['temp_dir'];
         $observations_csv_path = $ret['observations_csv_path'];
         // */
 
-        // self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //doesn't have the data we need; not used ever
+        // --- self::process_table(false, "explore", false, $this->dwca['gbif-downloads']);     //doesn't have the data we need; not used ever
 
         // /* step 2: --- main operation; works OK
         // self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations'], false); //working but the csv path is hard-coded, during dev only
@@ -86,7 +79,7 @@ class DataHub_INAT_API
         self::write_tsv_file(); //generates 3 .tsv files: inat_species.tsv, inat_genus.tsv, inat_family.tsv
 
         $this->debug = array(); //initialize array
-        self::create_dwca();
+        self::create_dwca(); //generate DwCA
         // */
 
         $this->archive_builder->finalize(TRUE);
