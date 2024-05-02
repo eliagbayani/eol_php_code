@@ -705,7 +705,9 @@ class NCBIGGIqueryAPI
     {   // $family = "Muridae"; //force assign
         $rec[$this->process_level] = $family;
         $rec["taxon_id"] = str_replace(" ", "_", $family);
-        if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $family, $this->download_options_INAT)) {
+        $options = $this->download_options_INAT;
+        $options['expire_seconds'] = false;
+        if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $family, $options)) {
             $taxon_id = self::parse_inat_taxa_search_object($family, $this->process_level, $json); //exit("\n[$taxon_id]\n");
             if($taxon_id) {
                 

@@ -5,9 +5,16 @@ namespace php_active_record;
 */
 class DataHub_INAT_API
 {
-    function __construct($archive_builder = false, $resource_id = false)
+    function __construct($folder = false)
     {
-        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 3000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+
+        if($folder) {
+            $this->resource_id = $folder;
+            $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
+            $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
+        }
+
         // - get all family and genus for iNat
         $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/taxa?rank=XRANK&page=XPAGE&per_page=25";
         // https://api.inaturalist.org/v1/taxa?rank=family&page=1
@@ -30,6 +37,8 @@ class DataHub_INAT_API
         $this->TooManyRequests = 0;
 
         $this->reports_path = $save_path; //DOC_ROOT . "temp/GGI/reports/";
+        $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
+        $this->inat['taxa_search'] = "https://api.inaturalist.org/v1/taxa?q="; //q=Gadidae Callisaurus
 
     }
     function explore_dwca()
@@ -38,9 +47,19 @@ class DataHub_INAT_API
         //                         self::parse_tsv_file($this->dwca['gbif-downloads']);     //file is csv not tsv
 
         // /* generates inat_species.tsv, inat_genus.tsv, inat_family.tsv --- main operation; works OK
-        self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
-        self::write_tsv_file();
+        // self::process_table(false, "explore gbif-observations", false, $this->dwca['gbif-observations']);
+        // self::write_tsv_file();
+        self::create_dwca();
         // */
+    }
+    private function create_dwca()
+    {
+        $files = array("genus" => "iNat_genus.tsv", "family" => "iNat_family.tsv", "species" => "iNat_species.tsv");
+        foreach($files as $rank => $file) {
+            $this->rank_level = $rank;
+            $this->taxa_info = array(); self::get_iNat_taxa_using_DwCA($rank, true);
+            self::parse_tsv_file($this->reports_path . $file, $file);
+        }
     }
     private function write_tsv_file()
     {
@@ -136,9 +155,8 @@ class DataHub_INAT_API
         // print_r($this->debug['genus']);
 
     }
-    private function parse_tsv_file($file)
-    {   
-        echo "\nReading file $file...\n";
+    private function parse_tsv_file($file, $what)
+    {   echo "\nReading file $what...\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if($i == 1) $fields = explode("\t", $row);
@@ -146,13 +164,114 @@ class DataHub_INAT_API
                 if(!$row) continue;
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
-                foreach($fields as $field) { $rec[$field] = $tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); print_r($rec); exit("\nstop muna\n");
-                /**/
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+                /*Array(
+                    [genus_name] => Ophion
+                    [count] => 987
+                    [sciname] => Ophion
+                    [rank] => genus
+                    [kingdom] => Animalia
+                    [phylum] => Arthropoda
+                    [class] => Insecta
+                    [order] => Hymenoptera
+                    [family] => Ichneumonidae
+                    [genus] => Ophion
+                    [taxonID] => 47993
+                )*/
+                $rec['source'] = $this->taxon_page . $rec['taxonID'];
+                $taxonID = self::write_taxon($rec);
+                self::write_MoF($taxonID, $rec);
             }
-        } //end foreach()
+        }//end foreach()
     }
-    function get_iNat_taxa_using_DwCA($rank)
+    private function get_taxon_meta_via_api($sciname, $rank, $rec)
+    {
+        $options = $this->download_options_INAT;
+        $options['expire_seconds'] = false;
+        $options['resource_id'] = 723;
+        if($json = Functions::lookup_with_cache($this->inat['taxa_search'] . $sciname, $options)) {
+            $obj = json_decode($json); //echo "<pre>";print_r($json); echo "</pre>"; exit;
+            foreach($obj->results as $r) {
+                if($r->name == $sciname && strtolower($r->rank) == strtolower($rank)) {
+                    $rec['taxonID'] = $r->id;
+                    $rec['sciname'] = $r->name;
+                    $rec['rank'] = $r->rank;
+                    $rec['observations_count'] = $r->observations_count;
+                    return $rec;
+                }
+            }
+        }
+
+        $rec['taxonID'] = $sciname;
+        $rec['sciname'] = $sciname;
+        $rec['rank'] = $this->rank_level;
+        return $rec;
+    }
+    private function write_taxon($rec)
+    {
+        if(!$rec['taxonID']) {
+            if($rek = @$this->taxa_info[$rec['genus_name']]) { echo "\ndwca lookup\n";
+                $rec['taxonID'] = $rek['i'];
+                $rec['sciname'] = $rek['s'];
+                $rec['rank'] = $rek['r'];
+                $rec['kingdom'] = $rek['k'];
+                $rec['phylum'] = $rek['p'];
+                $rec['class'] = $rek['c'];
+                $rec['order'] = $rek['o'];
+                $rec['family'] = $rek['f'];
+                $rec['genus'] = $rek['r'];
+            }
+            else {
+                echo "\napi lookup\n";
+                $rec = self::get_taxon_meta_via_api($rec['genus_name'], $this->rank_level, $rec);
+            }
+        }
+
+        $taxon = new \eol_schema\Taxon();
+        $taxon->taxonID         = "inat_".$rec['taxonID'];
+        $taxon->scientificName  = $rec['sciname'];
+        $taxon->taxonRank  = $rec['rank'];
+        $taxon->kingdom  = $rec['kingdom'];
+        $taxon->phylum  = $rec['phylum'];
+        $taxon->class  = $rec['class'];
+        $taxon->order  = $rec['order'];
+        if($taxon->taxonRank != 'family') $taxon->family = $rec['family'];
+        if($taxon->taxonRank != 'genus')  $taxon->genus  = $rec['genus'];
+        $this->archive_builder->write_object_to_file($taxon);
+        return $taxon->taxonID;
+    }
+    private function write_MoF($taxon_id, $rec)   //, $label, $value, $measurementType, $family)
+    {
+        $object_id = $taxon_id."_observations";
+        $m = new \eol_schema\MeasurementOrFact();
+        $occurrence_id = $this->add_occurrence($taxon_id, $object_id);
+        $m->occurrenceID        = $occurrence_id;
+        $m->measurementOfTaxon  = 'true';
+        $m->source              = $rec["source"];
+        $m->measurementType = "http://eol.org/schema/terms/NumberOfiNaturalistObservations";
+        $m->measurementValue = $rec['count'];
+        $m->measurementID = Functions::generate_measurementID($m, $this->resource_id);
+        if(!isset($this->measurement_ids[$m->measurementID])) {
+            $this->archive_builder->write_object_to_file($m);
+            $this->measurement_ids[$m->measurementID] = '';
+        }
+    }
+    private function add_occurrence($taxon_id, $object_id)
+    {
+        $occurrence_id = $taxon_id . 'O' . $object_id;
+        $o = new \eol_schema\Occurrence();
+        $o->occurrenceID = $occurrence_id;
+        $o->taxonID = $taxon_id;
+
+        $o->occurrenceID = Functions::generate_measurementID($o, $this->resource_id, 'occurrence');
+        if(isset($this->occurrence_ids[$o->occurrenceID])) return $o->occurrenceID;
+        $this->archive_builder->write_object_to_file($o);
+        $this->occurrence_ids[$o->occurrenceID] = '';
+        return $o->occurrenceID;
+    }
+
+    function get_iNat_taxa_using_DwCA($rank, $memoryYN = false)
     {        
         /* un-comment in real operation
         require_library('connectors/INBioAPI');
@@ -174,14 +293,14 @@ class DataHub_INAT_API
         $tables = $harvester->tables;
         // $index = array_keys($tables); print_r($index); exit;
 
-        self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon', $rank);
+        self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon', $rank, false, $memoryYN);
 
         /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
         echo ("\n temporary directory removed: " . $temp_dir);
         */
     }
-    private function process_table($meta, $what, $sought_rank = false, $local_dwca = false)
+    private function process_table($meta, $what, $sought_rank = false, $local_dwca = false, $memoryYN)
     {
         if($meta)           $csv_file = $meta->file_uri;
         elseif($local_dwca) $csv_file = $local_dwca;
@@ -238,11 +357,15 @@ class DataHub_INAT_API
                         $rek["rank"]                = $rec['taxonRank'];
                         $rek["sciname"]             = $rec['scientificName'];
                         $rek["parent_id"]           = pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME);
+                        /* not scalable - Too Many Requests error
                         $rek["meta_observ_count"]   = self::get_total_observations($rec['id']);
                         if($rek["meta_observ_count"] === false) {
                             break;
+                        }*/
+                        if(!$memoryYN) self::save_to_dump($rek, $this->dump_file);
+                        else {
+                            $this->taxa_info[$rec['scientificName']] = array('i' => $rec['id'], 's' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'k' => $rec['kingdom'], 'p' => $rec['phylum'], 'c' => $rec['class'], 'o' => $rec['order'], 'f' => $rec['family']);
                         }
-                        self::save_to_dump($rek, $this->dump_file);
                         $meron++;
                         // if($meron >= 3) break; //dev only
                     }    

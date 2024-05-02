@@ -7,7 +7,7 @@ require_library('connectors/DataHub_INAT_API');
 ini_set('memory_limit','15096M'); //15096M
 $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
-$func = new DataHub_INAT_API();
+$func = new DataHub_INAT_API('iNat_metrics');
 
 // $func->get_iNat_taxa_using_API('genus');     //not advisable to use, bec. of the 10,000 limit page coverage. Ken-ichi advised to use the DwCA instead.
 // $func->get_iNat_taxa_using_DwCA('genus');    //works but may not be needed anymore
