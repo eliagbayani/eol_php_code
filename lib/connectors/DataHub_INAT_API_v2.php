@@ -33,18 +33,17 @@ class DataHub_INAT_API_v2
     function start()
     {
         $quality_grades = array('research', 'needs_id');
-        $quality_grades = array('needs_id');
+        // $quality_grades = array('needs_id');
 
-        $groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown");
-        // $groups = array("Insecta");
-        // $groups = array("Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown");
+        $groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown"); //orig
+        // $groups = array("Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown");
 
         foreach($quality_grades as $grade) {
             foreach($groups as $group) {
                 echo "\nProcessing [$group]...[$grade]...\n";
                 self::get_iNat_taxa_using_API($group, $grade);
                 echo "\nEvery group, sleep 1 min.\n";
-                sleep(60*5); //10 mins interval per group
+                // sleep(60*1); //10 mins interval per group
             }    
         }
     }
@@ -65,11 +64,23 @@ class DataHub_INAT_API_v2
 
             if(($page % 50) == 0) {
                 echo "\nEvery 50 calls, sleep 10 mins.\n";
-                sleep(60*5); //10 mins interval
+                // sleep(60*1); //10 mins interval
             }
 
             $url = str_replace("XPAGE", $page, $main_url);
             if($json = Functions::lookup_with_cache($url, $this->download_options_INAT)) {
+
+                /* iNat special case - not reliable needs more test
+                if(stripos($json, 'error') !== false) { //Too Many Requests           --- //string is found
+                    echo "\n[$json]\n";
+                    echo "\niNat special error: Too Many Requests\n"; exit("\nexit muna, remove iNat from the list of dbases.\n");
+                    sleep(60*10); //10 mins
+                    @$this->TooManyRequests++;
+                    if($this->TooManyRequests >= 3) exit("\nToo Many Requests error (429)!\n");
+                }
+                */
+
+
                 $obj = json_decode($json); //print_r($obj); exit;
                 /**/
                 foreach($obj->results as $r) {
@@ -78,10 +89,10 @@ class DataHub_INAT_API_v2
                     $rek["id"]                  = $t->id;
                     $rek["rank"]                = $t->rank;
                     $rek["name"]                = $t->name;
+                    $rek["observations_count"]  = $t->observations_count;
+                    $rek["iconic_taxon_name"]   = @$t->iconic_taxon_name;
                     $rek["parent_id"]           = $t->parent_id;
                     $rek["ancestry"]            = $t->ancestry;
-                    $rek["observations_count"]  = $t->observations_count;
-                    $rek["iconic_taxon_name"]   = $t->iconic_taxon_name;
                     self::save_to_dump($rek, $this->dump_file[$grade]);    
                 }
             }
