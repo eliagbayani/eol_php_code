@@ -28,16 +28,19 @@ class DataHub_INAT_API_v2
             if(is_file($this->dump_file[$grade])) unlink($this->dump_file[$grade]);    
         }
 
+        $this->groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown"); //orig
+        // $groups[] = "Animalia"; //excluded since it is a superset of the groups above.
+
         $this->reports_path = $save_path;
         $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
+        $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
+
+
     }
     function start()
     {
-        $groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown"); //orig
-        // $groups[] = "Animalia"; //excluded since it is a superset of the groups above.
-
         foreach($this->quality_grades as $grade) {
-            foreach($groups as $group) {
+            foreach($this->groups as $group) {
                 echo "\nProcessing [$group]...[$grade]...\n";
                 self::get_iNat_taxa_using_API($group, $grade);
                 echo "\nEvery group, sleep 1 min.\n";
@@ -90,7 +93,7 @@ class DataHub_INAT_API_v2
                     $rek["species_count"]       = $r->count;
                     $rek["iconic_taxon_name"]   = @$t->iconic_taxon_name ? $t->iconic_taxon_name : "unknown";
                     $rek["parent_id"]           = $t->parent_id;
-                    // $rek["ancestry"]            = $t->ancestry;
+                    $rek["ancestry"]            = $t->ancestry;
                     self::save_to_dump($rek, $this->dump_file[$grade]);    
                 }
             }
@@ -116,5 +119,148 @@ class DataHub_INAT_API_v2
 
         }
     }
+    
+    function parse_tsv_then_generate_dwca()
+    {
+        // step 1: gen. info taxa list
+        self::gen_iNat_info_taxa_using_DwCA(); //generates $this->inat_taxa_info
+        // step 2: loop tsv and write taxon and MoF archive
+
+        // require_library('connectors/TraitGeneric'); 
+        // $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
+        // $save = array();
+        // $save['taxon_id'] = $taxonID;
+        // $save['source'] = $rek['source_url'];
+        // $save['bibliographicCitation'] = $this->bibliographicCitation;
+        // $mType = 'http://purl.obolibrary.org/obo/RO_0002303';
+        // $mValue
+        // $save['measurementRemarks'] = ""; //No need to put measurementRemarks coming from Biology. Per Jen: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65452&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65452
+        // $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
+        // $this->func->add_string_types($save, $mValue, $mType, "true");
+
+
+
+
+    }
+    private function gen_iNat_info_taxa_using_DwCA()
+    {        
+        /* un-comment in real operation
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        $options = $this->download_options_INAT;
+        $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
+        $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+        // print_r($paths); exit; //debug only
+        */
+
+        // /* development only
+        $paths = Array(
+            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_52677/',
+            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_52677/'
+        );
+        // */
+
+        $archive_path = $paths['archive_path'];
+        $temp_dir = $paths['temp_dir'];
+        $harvester = new ContentArchiveReader(NULL, $archive_path);
+        $tables = $harvester->tables;
+
+        self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxa info');
+
+        /* un-comment in real operation -- remove temp dir
+        recursive_rmdir($temp_dir);
+        echo ("\n temporary directory removed: " . $temp_dir);
+        */
+    }
+    private function process_table($meta, $what)
+    {
+        if($meta)           $csv_file = $meta->file_uri;
+        elseif($local_dwca) $csv_file = $local_dwca;
+
+        $i = 0; $meron = 0;
+        $file = Functions::file_open($csv_file, "r");
+        while(!feof($file)) {
+            $row = fgetcsv($file); //print_r($row);
+            if(!$row) continue; 
+            $str = implode("\t", $row);
+            // if(stripos($str, "Callisaurus	genus") !== false) {  //string found --- good debug
+            //     echo("\n$str\n");
+            // }
+            if(!$row) break;
+            $i++; if(($i % 100000) == 0) echo "\n $i ";
+            if($i == 1) {
+                $fields = $row;
+                $count = count($fields); // print_r($fields);
+            }
+            else { //main records
+                $values = $row;
+                if($count != count($values)) { //row validation - correct no. of columns
+                    echo("\nWrong CSV format for this row.\n");
+                    continue;
+                }
+                $k = 0;
+                $rec = array();
+                foreach($fields as $field) {
+                    $rec[$field] = $values[$k];
+                    $k++;
+                }
+                // print_r($rec); //exit;
+                /*Array(
+                    [id] => 27459
+                    [taxonID] => https://www.inaturalist.org/taxa/27459
+                    [identifier] => https://www.inaturalist.org/taxa/27459
+                    [parentNameUsageID] => https://www.inaturalist.org/taxa/27444
+                    [kingdom] => Animalia
+                    [phylum] => Chordata
+                    [class] => Amphibia
+                    [order] => Caudata
+                    [family] => Plethodontidae
+                    [genus] => Batrachoseps
+                    [specificEpithet] => attenuatus
+                    [infraspecificEpithet] => 
+                    [modified] => 2019-11-23T09:42:54Z
+                    [scientificName] => Batrachoseps attenuatus
+                    [taxonRank] => species
+                    [references] => http://research.amnh.org/vz/herpetology/amphibia/?action=names&taxon=Batrachoseps+attenuatus
+                )*/
+                if($what == "gen taxa info") $this->inat_taxa_info[$rec['id']] = array('s' => $rec['scientificName'], 'r' => $rec['taxonRank']);
+                
+            }
+        }
+    }
+    private function parse_tsv_file($file, $what)
+    {   echo "\nReading file $what...\n";
+        $i = 0; $final = array();
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+                print_r($rec); exit("\nelix 200\n");
+            }
+        }
+    }
+
+    // private function process_table($meta, $task)
+    // {   //print_r($meta);
+    //     echo "\n\nRunning $task..."; $i = 0;
+    //     foreach(new FileIterator($meta->file_uri) as $line => $row) {
+    //         $i++; if(($i % 300000) == 0) echo "\n".number_format($i);
+    //         if($meta->ignore_header_lines && $i == 1) continue;
+    //         if(!$row) continue;
+    //         // $row = Functions::conv_to_utf8($row); //possibly to fix special chars. but from copied template
+    //         $tmp = explode("\t", $row);
+    //         $rec = array(); $k = 0;
+    //         foreach($meta->fields as $field) {
+    //             if(!$field['term']) continue;
+    //             $rec[$field['term']] = $tmp[$k];
+    //             $k++;
+    //         }
+    //         print_r($rec); exit;
+    //     }
+    // }
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 namespace php_active_record;
-/*
+/* From Katja: https://github.com/EOL/ContentImport/issues/6#issuecomment-2091765126
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/DataHub_INAT_API_v2');
@@ -11,8 +11,12 @@ $resource_id = 'iNat_metrics';
 $resource_id = 'iNat';
 $func = new DataHub_INAT_API_v2($resource_id);
 
-$func->start();
-// Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.
+// $func->start(); //generates the TSV files to be used in writing the final DwCA
+
+// /* main part that generates the DwCA
+$func->parse_tsv_then_generate_dwca();
+Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.
+// */
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
