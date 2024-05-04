@@ -6,7 +6,7 @@ class DataHub_INAT_API_v2
 {
     function __construct($folder = false)
     {
-        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
 
         if($folder) {
             $this->resource_id = $folder;
@@ -21,29 +21,27 @@ class DataHub_INAT_API_v2
         $save_path = $save_path . "iNat/";
         if(!is_dir($save_path)) mkdir($save_path);
 
-        $this->dump_file['research'] = $save_path . "/datahub_inat_grade_research.txt";
-        if(is_file($this->dump_file['research'])) unlink($this->dump_file['research']);
-
-        $this->dump_file['needs_id'] = $save_path . "/datahub_inat_grade_needs_id.txt";
-        if(is_file($this->dump_file['needs_id'])) unlink($this->dump_file['needs_id']);
+        $this->quality_grades = array('research', 'needs_id', 'casual'); //orig
+        // $this->quality_grades = array('casual');
+        foreach($this->quality_grades as $grade) {
+            $this->dump_file[$grade] = $save_path . "/datahub_inat_grade_".$grade.".txt";
+            if(is_file($this->dump_file[$grade])) unlink($this->dump_file[$grade]);    
+        }
 
         $this->reports_path = $save_path;
         $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
     }
     function start()
     {
-        $quality_grades = array('research', 'needs_id');
-        // $quality_grades = array('needs_id');
-
         $groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown"); //orig
-        // $groups = array("Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown");
+        // $groups[] = "Animalia"; //excluded since it is a superset of the groups above.
 
-        foreach($quality_grades as $grade) {
+        foreach($this->quality_grades as $grade) {
             foreach($groups as $group) {
                 echo "\nProcessing [$group]...[$grade]...\n";
                 self::get_iNat_taxa_using_API($group, $grade);
                 echo "\nEvery group, sleep 1 min.\n";
-                // sleep(60*1); //10 mins interval per group
+                // sleep(60*1); //mins interval per group
             }    
         }
     }
@@ -63,8 +61,8 @@ class DataHub_INAT_API_v2
         for($page = 1; $page <= $pages; $page++) {
 
             if(($page % 50) == 0) {
-                echo "\nEvery 50 calls, sleep 10 mins.\n";
-                // sleep(60*1); //10 mins interval
+                echo "\nEvery 50 calls, sleep 1 min.\n";
+                // sleep(60*1); //mins interval
             }
 
             $url = str_replace("XPAGE", $page, $main_url);
@@ -80,7 +78,6 @@ class DataHub_INAT_API_v2
                 }
                 */
 
-
                 $obj = json_decode($json); //print_r($obj); exit;
                 /**/
                 foreach($obj->results as $r) {
@@ -90,9 +87,10 @@ class DataHub_INAT_API_v2
                     $rek["rank"]                = $t->rank;
                     $rek["name"]                = $t->name;
                     $rek["observations_count"]  = $t->observations_count;
-                    $rek["iconic_taxon_name"]   = @$t->iconic_taxon_name;
+                    $rek["species_count"]       = $r->count;
+                    $rek["iconic_taxon_name"]   = @$t->iconic_taxon_name ? $t->iconic_taxon_name : "unknown";
                     $rek["parent_id"]           = $t->parent_id;
-                    $rek["ancestry"]            = $t->ancestry;
+                    // $rek["ancestry"]            = $t->ancestry;
                     self::save_to_dump($rek, $this->dump_file[$grade]);    
                 }
             }
