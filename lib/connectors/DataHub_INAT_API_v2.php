@@ -30,9 +30,7 @@ class DataHub_INAT_API_v2
         $this->reports_path = $save_path;
         $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
         $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
-
         $this->include_ranks = array('species', 'family', 'genus');
-
     }
     function start()
     {
@@ -119,8 +117,7 @@ class DataHub_INAT_API_v2
             foreach($fields as $field) $data .= $rec[$field] . "\t";
             if(!($WRITE = Functions::file_open($filename, "a"))) return;
             fwrite($WRITE, $data . "\n");
-            fclose($WRITE);    
-
+            fclose($WRITE);
         }
     }
     // =========================================================================== start 2nd part
