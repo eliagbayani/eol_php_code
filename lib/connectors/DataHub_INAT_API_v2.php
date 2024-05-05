@@ -20,13 +20,9 @@ class DataHub_INAT_API_v2
         if(!is_dir($save_path)) mkdir($save_path);
         $save_path = $save_path . "iNat/";
         if(!is_dir($save_path)) mkdir($save_path);
+        $this->save_path = $save_path;
 
         $this->quality_grades = array('research', 'needs_id', 'casual'); //orig
-        // $this->quality_grades = array('casual');
-        foreach($this->quality_grades as $grade) {
-            $this->dump_file[$grade] = $save_path . "/datahub_inat_grade_".$grade.".txt";
-            if(is_file($this->dump_file[$grade])) unlink($this->dump_file[$grade]);    
-        }
 
         $this->groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown"); //orig
         // $groups[] = "Animalia"; //excluded since it is a superset of the groups above.
@@ -35,20 +31,24 @@ class DataHub_INAT_API_v2
         $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
         $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
 
-
     }
     function start()
     {
         foreach($this->quality_grades as $grade) {
+            $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt";
+            if(is_file($this->dump_file[$grade])) unlink($this->dump_file[$grade]);    
+        }
+
+        foreach($this->quality_grades as $grade) {
             foreach($this->groups as $group) {
                 echo "\nProcessing [$group]...[$grade]...\n";
-                self::get_iNat_taxa_using_API($group, $grade);
+                self::get_iNat_taxa_observation_using_API($group, $grade);
                 echo "\nEvery group, sleep 1 min.\n";
                 // sleep(60*1); //mins interval per group
             }    
         }
     }
-    function get_iNat_taxa_using_API($group, $grade) //not advisable to use, bec. of the 10,000 limit page coverage
+    function get_iNat_taxa_observation_using_API($group, $grade) //not advisable to use, bec. of the 10,000 limit page coverage
     {
         $main_url = str_replace("XGROUP", $group, $this->inat_api['taxa']);
         $main_url = str_replace("XGRADE", $grade, $main_url);
@@ -119,12 +119,17 @@ class DataHub_INAT_API_v2
 
         }
     }
-    
+    // =========================================================================== start 2nd part
     function parse_tsv_then_generate_dwca()
     {
+        foreach($this->quality_grades as $grade) $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt"; //file variable assignment
+
         // step 1: gen. info taxa list
         self::gen_iNat_info_taxa_using_DwCA(); //generates $this->inat_taxa_info
         // step 2: loop tsv and write taxon and MoF archive
+        self::parse_tsv_file($this->dump_file['research'], "process research grade tsv");
+        
+        $this->archive_builder->finalize(TRUE);
 
         // require_library('connectors/TraitGeneric'); 
         // $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
@@ -137,9 +142,6 @@ class DataHub_INAT_API_v2
         // $save['measurementRemarks'] = ""; //No need to put measurementRemarks coming from Biology. Per Jen: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65452&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65452
         // $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         // $this->func->add_string_types($save, $mValue, $mType, "true");
-
-
-
 
     }
     private function gen_iNat_info_taxa_using_DwCA()
@@ -176,7 +178,6 @@ class DataHub_INAT_API_v2
     {
         if($meta)           $csv_file = $meta->file_uri;
         elseif($local_dwca) $csv_file = $local_dwca;
-
         $i = 0; $meron = 0;
         $file = Functions::file_open($csv_file, "r");
         while(!feof($file)) {
@@ -224,12 +225,12 @@ class DataHub_INAT_API_v2
                     [references] => http://research.amnh.org/vz/herpetology/amphibia/?action=names&taxon=Batrachoseps+attenuatus
                 )*/
                 if($what == "gen taxa info") $this->inat_taxa_info[$rec['id']] = array('s' => $rec['scientificName'], 'r' => $rec['taxonRank']);
-                
+                elseif($what == "xxx") {}
             }
         }
     }
     private function parse_tsv_file($file, $what)
-    {   echo "\nReading file $what...\n";
+    {   echo "\nReading file, task: [$what]...\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if($i == 1) $fields = explode("\t", $row);
@@ -239,11 +240,55 @@ class DataHub_INAT_API_v2
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                 $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
-                print_r($rec); exit("\nelix 200\n");
+                // print_r($rec); exit("\nelix 200\n");
+                if($what == 'process research grade tsv') {
+                    /*Array(
+                        [id] => 47219
+                        [rank] => species
+                        [name] => Apis mellifera
+                        [observations_count] => 411499
+                        [species_count] => 393719
+                        [iconic_taxon_name] => Insecta
+                        [parent_id] => 578086
+                        [ancestry] => 48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
+                        [] => 
+                    )*/
+                    self::prep_write_taxon($rec);
+                }
             }
         }
     }
-
+    private function prep_write_taxon($rec)
+    {   //step 1: 
+        $save_taxon = array();
+        $save_taxon = array('taxonID' => $rec['id'], 'scientificName' => $rec['name'], 'taxonRank' => $rec['rank'] , 'parentNameUsageID' => $rec['parent_id']);
+        self::write_taxon($save_taxon);
+        //step 2: write taxon for the ancestry
+        $ancestry = explode("/", $rec['ancestry']); //print_r($ancestry); //48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
+        $ancestry=array_reverse($ancestry); //print_r($ancestry);
+        // exit("\nstop muna 1\n");
+        $i = -1;
+        foreach($ancestry as $taxon_id) { $i++;
+            if($r = @$this->inat_taxa_info[$taxon_id]) {
+                $save_taxon = array();
+                $save_taxon = array('taxonID' => $taxon_id, 'scientificName' => $r['s'], 'taxonRank' => $r['r'] , 'parentNameUsageID' => @$ancestry[$i+1]);
+                self::write_taxon($save_taxon);        
+            }
+        }
+    }
+    private function write_taxon($rec)
+    {
+        $taxonID = $rec['taxonID'];
+        $taxon = new \eol_schema\Taxon();
+        $taxon->taxonID             = $taxonID;
+        $taxon->scientificName      = $rec['scientificName'];
+        $taxon->taxonRank           = $rec['taxonRank'];
+        $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
+        if(!isset($this->taxonIDs[$taxonID])) {
+            $this->taxonIDs[$taxonID] = '';
+            $this->archive_builder->write_object_to_file($taxon);
+        }
+    }
     // private function process_table($meta, $task)
     // {   //print_r($meta);
     //     echo "\n\nRunning $task..."; $i = 0;
