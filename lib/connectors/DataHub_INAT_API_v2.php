@@ -126,13 +126,14 @@ class DataHub_INAT_API_v2
 
         // step 1: gen. info taxa list
         self::gen_iNat_info_taxa_using_DwCA(); //generates $this->inat_taxa_info
+
         // step 2: loop tsv and write taxon and MoF archive
+        require_library('connectors/TraitGeneric'); 
+        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
         self::parse_tsv_file($this->dump_file['research'], "process research grade tsv");
         
         $this->archive_builder->finalize(TRUE);
 
-        // require_library('connectors/TraitGeneric'); 
-        // $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
         // $save = array();
         // $save['taxon_id'] = $taxonID;
         // $save['source'] = $rek['source_url'];
@@ -142,7 +143,6 @@ class DataHub_INAT_API_v2
         // $save['measurementRemarks'] = ""; //No need to put measurementRemarks coming from Biology. Per Jen: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65452&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65452
         // $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         // $this->func->add_string_types($save, $mValue, $mType, "true");
-
     }
     private function gen_iNat_info_taxa_using_DwCA()
     {        
@@ -254,9 +254,23 @@ class DataHub_INAT_API_v2
                         [] => 
                     )*/
                     self::prep_write_taxon($rec);
+                    self::write_MoF($rec);
                 }
             }
         }
+    }
+    private function write_MoF($rec)
+    {
+        $taxonID = $rec['id'];
+        $save = array();
+        $save['taxon_id'] = $taxonID;
+        $save['source'] = $this->taxon_page . $taxonID;
+        $mType = 'http://eol.org/schema/terms/NumberOfiNaturalistObservations';
+        $mValue = $rec['observations_count'];
+        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
+        // $save['bibliographicCitation'] = '';
+        // $save['measurementRemarks'] = ""; 
+        $this->func->add_string_types($save, $mValue, $mType, "true");
     }
     private function prep_write_taxon($rec)
     {   //step 1: 
