@@ -11,7 +11,9 @@ $resource_id = 'iNat_metrics';
 $resource_id = 'iNat';
 $func = new DataHub_INAT_API_v2($resource_id);
 
-// $func->start(); //generates the TSV files to be used in writing the final DwCA
+// /* generates the TSV files to be used in writing the final DwCA
+$func->start(); 
+// */
 
 // /* main part that generates the DwCA
 $func->parse_tsv_then_generate_dwca();

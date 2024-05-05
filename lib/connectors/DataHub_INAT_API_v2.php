@@ -6,7 +6,7 @@ class DataHub_INAT_API_v2
 {
     function __construct($folder = false)
     {
-        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
 
         if($folder) {
             $this->resource_id = $folder;
@@ -14,7 +14,7 @@ class DataHub_INAT_API_v2
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
 
-        $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/observations/species_counts?taxon_is_active=true&hrank=species&lrank=species&iconic_taxa=XGROUP&quality_grade=XGRADE&page=XPAGE"; //defaults to per_page = 500
+        $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/observations/species_counts?taxon_is_active=true&hrank=XRANK&lrank=XRANK&iconic_taxa=XGROUP&quality_grade=XGRADE&page=XPAGE"; //defaults to per_page = 500
         if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
         else                           $save_path = "/Volumes/Crucial_2TB/other_files2/dumps_GGI/";
         if(!is_dir($save_path)) mkdir($save_path);
@@ -31,6 +31,8 @@ class DataHub_INAT_API_v2
         $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
         $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
 
+        $this->include_ranks = array('species', 'family', 'genus');
+
     }
     function start()
     {
@@ -38,20 +40,22 @@ class DataHub_INAT_API_v2
             $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt";
             if(is_file($this->dump_file[$grade])) unlink($this->dump_file[$grade]);    
         }
-
         foreach($this->quality_grades as $grade) {
-            foreach($this->groups as $group) {
-                echo "\nProcessing [$group]...[$grade]...\n";
-                self::get_iNat_taxa_observation_using_API($group, $grade);
-                echo "\nEvery group, sleep 1 min.\n";
-                // sleep(60*1); //mins interval per group
-            }    
+            foreach($this->include_ranks as $include_rank) {
+                foreach($this->groups as $group) {
+                    echo "\nProcessing [$group]...[$grade]...[$include_rank]\n";
+                    self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
+                    echo "\nEvery group, sleep 10 min.\n";
+                    sleep(60*10); //mins interval per group
+                }        
+            }
         }
     }
-    function get_iNat_taxa_observation_using_API($group, $grade) //not advisable to use, bec. of the 10,000 limit page coverage
+    function get_iNat_taxa_observation_using_API($group, $grade, $include_rank) //not advisable to use, bec. of the 10,000 limit page coverage
     {
         $main_url = str_replace("XGROUP", $group, $this->inat_api['taxa']);
         $main_url = str_replace("XGRADE", $grade, $main_url);
+        $main_url = str_replace("XRANK", $include_rank, $main_url);
 
         $page = 1;
         $url = str_replace("XPAGE", $page, $main_url);
@@ -64,8 +68,8 @@ class DataHub_INAT_API_v2
         for($page = 1; $page <= $pages; $page++) {
 
             if(($page % 50) == 0) {
-                echo "\nEvery 50 calls, sleep 1 min.\n";
-                // sleep(60*1); //mins interval
+                echo "\nEvery 50 calls, sleep 10 min.\n";
+                sleep(60*10); //mins interval
             }
 
             $url = str_replace("XPAGE", $page, $main_url);
@@ -145,22 +149,23 @@ class DataHub_INAT_API_v2
         // $this->func->add_string_types($save, $mValue, $mType, "true");
     }
     private function gen_iNat_info_taxa_using_DwCA()
-    {        
-        /* un-comment in real operation
+    {
+        echo "\nGenerate taxon info list...\n";
+        // /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $options = $this->download_options_INAT;
         $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
         $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
         // print_r($paths); exit; //debug only
-        */
+        // */
 
-        // /* development only
+        /* development only
         $paths = Array(
             'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_52677/',
             'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_52677/'
         );
-        // */
+        */
 
         $archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
@@ -169,10 +174,10 @@ class DataHub_INAT_API_v2
 
         self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxa info');
 
-        /* un-comment in real operation -- remove temp dir
+        // /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
         echo ("\n temporary directory removed: " . $temp_dir);
-        */
+        // */
     }
     private function process_table($meta, $what)
     {
