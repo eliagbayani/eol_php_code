@@ -43,8 +43,8 @@ class DataHub_INAT_API_v2
                 foreach($this->groups as $group) {
                     echo "\nProcessing [$group]...[$grade]...[$include_rank]\n";
                     self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
-                    echo "\nEvery group, sleep 10 min.\n";
-                    sleep(60*10); //mins interval per group
+                    echo "\nEvery group, sleep 5 min.\n";
+                    sleep(60*5); //mins interval per group
                 }        
             }
         }
@@ -66,8 +66,8 @@ class DataHub_INAT_API_v2
         for($page = 1; $page <= $pages; $page++) {
 
             if(($page % 50) == 0) {
-                echo "\nEvery 50 calls, sleep 10 min.\n";
-                sleep(60*10); //mins interval
+                echo "\nEvery 50 calls, sleep 5 min.\n";
+                sleep(60*5); //mins interval
             }
 
             $url = str_replace("XPAGE", $page, $main_url);
@@ -176,7 +176,7 @@ class DataHub_INAT_API_v2
         echo ("\n temporary directory removed: " . $temp_dir);
         // */
     }
-    private function process_table($meta, $what)
+    private function process_table($meta, $what, $local_dwca = false)
     {
         if($meta)           $csv_file = $meta->file_uri;
         elseif($local_dwca) $csv_file = $local_dwca;
