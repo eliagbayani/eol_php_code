@@ -31,14 +31,15 @@ class DataHub_INAT_API_v2
         $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
         $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";     //from Ken-ichi
         $this->include_ranks = array('species', 'family', 'genus');
+        $this->debug = array();
     }
     function start()
     {
-        foreach($this->quality_grades as $grade) {
+        foreach($this->quality_grades as $grade) { //delete old files
             $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt";
             if(is_file($this->dump_file[$grade])) unlink($this->dump_file[$grade]);    
         }
-        foreach($this->quality_grades as $grade) {
+        foreach($this->quality_grades as $grade) { //start main operation: get observation via API and save into TSV dumps.
             foreach($this->include_ranks as $include_rank) {
                 foreach($this->groups as $group) {
                     echo "\nProcessing [$group]...[$grade]...[$include_rank]\n";
