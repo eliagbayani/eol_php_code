@@ -124,6 +124,7 @@ class DataHub_INAT_API_v2
     // =========================================================================== start 2nd part
     function parse_tsv_then_generate_dwca()
     {
+        $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
