@@ -18,6 +18,8 @@ $func = new DataHub_INAT_API($resource_id);
 // $func->get_iNat_taxa_using_API('genus');     //not advisable to use, bec. of the 10,000 limit page coverage. Ken-ichi advised to use the DwCA instead.
 // $func->get_iNat_taxa_using_DwCA('genus');    //works but may not be needed anymore
 
+exit("\n--- Was not used ---\n");
+
 $func->explore_dwca(); //this uses the DwCA provided by iNat to GBIF with only research-grade type observations.
 Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.
 

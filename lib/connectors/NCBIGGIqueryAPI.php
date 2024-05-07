@@ -148,7 +148,7 @@ class NCBIGGIqueryAPI
         $this->names_in_irmng_but_not_in_falo = $this->TEMP_DIR . "families_in_irmng_but_not_in_falo.txt";
         */
 
-        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds", "inat"); //for family-level only
+        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds"); //for family-level only | removed iNat here, it has its own connector.
         // $this->ggi_databases = array("ncbi"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("ggbn"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
