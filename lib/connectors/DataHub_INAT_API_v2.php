@@ -251,7 +251,8 @@ class DataHub_INAT_API_v2
     }
     private function write_dwca_from_assembled_array()
     {
-        foreach($this->assembled as $taxonID => $totals) {
+        $total = count($this->assembled); $i = 0;
+        foreach($this->assembled as $taxonID => $totals) { $i++; if(($i % 10000) == 0) echo "\n $i of $total ";
             // print_r($totals); print_r($this->assembled[$taxonID]); exit;
             if($rek = @$this->inat_taxa_info[$taxonID]) {
                 /*Array( $rek
@@ -281,7 +282,7 @@ class DataHub_INAT_API_v2
         }
     }
     private function parse_tsv_file($file, $what, $quality_grade = false)
-    {   echo "\nReading file, task: [$what]...\n";
+    {   echo "\nReading file, task: [$what]...[$quality_grade]\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if($i == 1) $fields = explode("\t", $row);
