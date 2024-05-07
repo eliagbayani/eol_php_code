@@ -7,33 +7,106 @@ class DataHub_GBIF_API
     function __construct($folder = false)
     {
         $this->download_options_GBIF = array('resource_id' => "723_gbif", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
-
         if($folder) {
             $this->resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
-
         if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
         else                           $save_path = "/Volumes/Crucial_2TB/other_files2/dumps_GGI/";
         if(!is_dir($save_path)) mkdir($save_path);
         $save_path = $save_path . "GBIF/";
         if(!is_dir($save_path)) mkdir($save_path);
         $this->save_path = $save_path;
-
         $this->reports_path = $save_path;
-
-        $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/observations/species_counts?taxon_is_active=true&hrank=XRANK&lrank=XRANK&iconic_taxa=XGROUP&quality_grade=XGRADE&page=XPAGE"; //defaults to per_page = 500
-        $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
-        $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";
-        
         $this->debug = array();
+
+        // $this->inat_api['taxa'] = "https://api.inaturalist.org/v1/observations/species_counts?taxon_is_active=true&hrank=XRANK&lrank=XRANK&iconic_taxa=XGROUP&quality_grade=XGRADE&page=XPAGE"; //defaults to per_page = 500
+        // $this->taxon_page = "https://www.inaturalist.org/taxa/"; //1240-Dendragapus or just 1240
+        // $this->dwca['inaturalist-taxonomy'] = "https://www.inaturalist.org/taxa/inaturalist-taxonomy.dwca.zip";
+
+        $this->local_csv = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0000495-240506114902167.csv";
     }
 
     function start()
     {
-
+        self::parse_tsv_file($this->local_csv, "write DwCA");
+        print_r($this->debug);
     }
+    private function parse_tsv_file($file, $what)
+    {   echo "\nReading file, task: [$what]\n";
+        $i = 0; $final = array();
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(($i % 100000) == 0) echo "\n $i ";
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+                // print_r($rec); exit("\nelix 200\n");
+                /*Array(
+                    [taxonKey] => 359
+                    [scientificName] => Mammalia
+                    [acceptedTaxonKey] => 359
+                    [acceptedScientificName] => Mammalia
+                    [numberOfOccurrences] => 126524
+                    [taxonRank] => CLASS
+                    [taxonomicStatus] => ACCEPTED
+                    [kingdom] => Animalia
+                    [kingdomKey] => 1
+                    [phylum] => Chordata
+                    [phylumKey] => 44
+                    [class] => Mammalia
+                    [classKey] => 359
+                    [order] => 
+                    [orderKey] => 
+                    [family] => 
+                    [familyKey] => 
+                    [genus] => 
+                    [genusKey] => 
+                    [species] => 
+                    [speciesKey] => 
+                    [iucnRedListCategory] => NE
+                )*/
+                if($what == 'write DwCA') {
+                    $taxonomicStatus = $rec['taxonomicStatus'];
+                    $this->debug['taxonomicStatus'][$taxonomicStatus] = '';
+                    $rec['taxonRank'] = strtolower($rec['taxonRank']);
+                    $taxonRank = $rec['taxonRank'];
+                    $this->debug['taxonRank'][$taxonRank] = '';
+                    /* [taxonomicStatus] => Array( [ACCEPTED] [SYNONYM] [DOUBTFUL] [] ) */
+
+                    $rank_main[1] = 'kingdom';
+                    $rank_main[1] = 'phylum';
+                    $rank_main[1] = 'class';
+                    $rank_main[1] = 'order';
+                    $rank_main[1] = 'family';
+                    $rank_main[1] = 'genus';
+                    $rank_main[1] = 'species';
+                    $rank_main[1] = 'form';
+                    $rank_main[1] = 'variety';
+                    $rank_main[1] = 'subspecies';
+                    $rank_main[1] = 'unranked';
+
+                    if($taxonRank == 'variety') {
+                        print_r($rec);
+                    }
+
+                    if($taxonomicStatus == 'ACCEPTED') {
+                        // print_r($rec);
+                        // self::prep_write_taxon($rec);
+
+                        // self::write_MoF($rec);
+                        // if($taxonRank == 'form') exit;
+                    }
+                }
+                else exit("\nNothing to do\n");
+            }
+        }
+    }
+
 
     // =========================================================================== copied template below
     function parse_tsv_then_generate_dwca()
@@ -100,61 +173,6 @@ class DataHub_GBIF_API
             self::parse_tsv_file($this->dump_file[$grade], "assemble data from 3 TSVs", $grade);
         }
     }
-    private function process_table($meta, $what, $local_dwca = false)
-    {
-        if($meta)           $csv_file = $meta->file_uri;
-        elseif($local_dwca) $csv_file = $local_dwca;
-        $i = 0; $meron = 0;
-        $file = Functions::file_open($csv_file, "r");
-        while(!feof($file)) {
-            $row = fgetcsv($file); //print_r($row);
-            if(!$row) continue; 
-            $str = implode("\t", $row);
-            // if(stripos($str, "Callisaurus	genus") !== false) {  //string found --- good debug
-            //     echo("\n$str\n");
-            // }
-            if(!$row) break;
-            $i++; if(($i % 100000) == 0) echo "\n $i ";
-            if($i == 1) {
-                $fields = $row;
-                $count = count($fields); // print_r($fields);
-            }
-            else { //main records
-                $values = $row;
-                if($count != count($values)) { //row validation - correct no. of columns
-                    echo("\nWrong CSV format for this row.\n");
-                    continue;
-                }
-                $k = 0;
-                $rec = array();
-                foreach($fields as $field) {
-                    $rec[$field] = $values[$k];
-                    $k++;
-                }
-                // print_r($rec); //exit;
-                /*Array(
-                    [id] => 27459
-                    [taxonID] => https://www.inaturalist.org/taxa/27459
-                    [identifier] => https://www.inaturalist.org/taxa/27459
-                    [parentNameUsageID] => https://www.inaturalist.org/taxa/27444
-                    [kingdom] => Animalia
-                    [phylum] => Chordata
-                    [class] => Amphibia
-                    [order] => Caudata
-                    [family] => Plethodontidae
-                    [genus] => Batrachoseps
-                    [specificEpithet] => attenuatus
-                    [infraspecificEpithet] => 
-                    [modified] => 2019-11-23T09:42:54Z
-                    [scientificName] => Batrachoseps attenuatus
-                    [taxonRank] => species
-                    [references] => http://research.amnh.org/vz/herpetology/amphibia/?action=names&taxon=Batrachoseps+attenuatus
-                )*/
-                if($what == "gen taxa info") $this->inat_taxa_info[$rec['id']] = array('s' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'p' => pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME));
-                elseif($what == "xxx") {}
-            }
-        }
-    }
     private function write_dwca_from_assembled_array()
     {
         $total = count($this->assembled); $i = 0;
@@ -185,43 +203,6 @@ class DataHub_GBIF_API
             // print_r($rec); exit;
             self::prep_write_taxon($rec);
             self::write_MoF($rec);
-        }
-    }
-    private function parse_tsv_file($file, $what, $quality_grade = false)
-    {   echo "\nReading file, task: [$what]...[$quality_grade]\n";
-        $i = 0; $final = array();
-        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if($i == 1) $fields = explode("\t", $row);
-            else {
-                if(!$row) continue;
-                $tmp = explode("\t", $row);
-                $rec = array(); $k = 0;
-                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
-                // print_r($rec); exit("\nelix 200\n");
-                if($what == 'process research grade tsv') {
-                    /*Array(
-                        [id] => 47219
-                        [rank] => species
-                        [name] => Apis mellifera
-                        [observations_count] => 411499
-                        [species_count] => 393719
-                        [iconic_taxon_name] => Insecta
-                        [parent_id] => 578086
-                        [ancestry] => 48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
-                        [] => 
-                    )*/
-                    self::prep_write_taxon($rec);
-                    self::write_MoF($rec);
-                }
-                elseif($what == 'assemble data from 3 TSVs' && $quality_grade) {
-                    $this->assembled[$rec['id']][$quality_grade] = @$this->assembled[$rec['id']][$quality_grade] + $rec['observations_count'];
-                    $this->assembled[$rec['id']]['r'] = $rec['rank'];
-                    $this->assembled[$rec['id']]['s'] = $rec['name'];
-                    $this->assembled[$rec['id']]['p'] = $rec['parent_id'];
-                    $this->assembled[$rec['id']]['a'] = $rec['ancestry'];
-                }
-            }
         }
     }
     private function write_MoF($rec)
@@ -284,5 +265,42 @@ class DataHub_GBIF_API
             $this->archive_builder->write_object_to_file($taxon);
         }
     }
+    private function parse_csv_file($csv_file, $what)
+    {
+        $i = 0; $meron = 0;
+        $file = Functions::file_open($csv_file, "r");
+        while(!feof($file)) {
+            $row = fgetcsv($file); //print_r($row);
+            if(!$row) continue; 
+            $str = implode("\t", $row);
+            // if(stripos($str, "Callisaurus	genus") !== false) {  //string found --- good debug
+            //     echo("\n$str\n");
+            // }
+            if(!$row) break;
+            $i++; if(($i % 100000) == 0) echo "\n $i ";
+            if($i == 1) {
+                $fields = $row;
+                $count = count($fields); // print_r($fields);
+            }
+            else { //main records
+                $values = $row;
+                if($count != count($values)) { //row validation - correct no. of columns
+                    echo("\nWrong CSV format for this row.\n");
+                    continue;
+                }
+                $k = 0;
+                $rec = array();
+                foreach($fields as $field) {
+                    $rec[$field] = $values[$k];
+                    $k++;
+                }
+                print_r($rec); exit;
+
+                // if($what == "gen taxa info") $this->inat_taxa_info[$rec['id']] = array('s' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'p' => pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME));
+                // elseif($what == "xxx") {}
+            }
+        }
+    }
+
 }
 ?>
