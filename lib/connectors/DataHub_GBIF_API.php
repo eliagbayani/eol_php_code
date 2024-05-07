@@ -79,18 +79,31 @@ class DataHub_GBIF_API
                     /* [taxonomicStatus] => Array( [ACCEPTED] [SYNONYM] [DOUBTFUL] [] ) */
 
                     $rank_main[1] = 'kingdom';
-                    $rank_main[1] = 'phylum';
-                    $rank_main[1] = 'class';
-                    $rank_main[1] = 'order';
-                    $rank_main[1] = 'family';
-                    $rank_main[1] = 'genus';
-                    $rank_main[1] = 'species';
-                    $rank_main[1] = 'form';
-                    $rank_main[1] = 'variety';
-                    $rank_main[1] = 'subspecies';
-                    $rank_main[1] = 'unranked';
+                    $rank_main[2] = 'phylum';
+                    $rank_main[3] = 'class';
+                    $rank_main[4] = 'order';
+                    $rank_main[5] = 'family';
+                    $rank_main[6] = 'genus';
+                    $rank_main[7] = 'species';
+                    $rank_main[8] = 'form';
+                    $rank_main[8] = 'variety';
+                    $rank_main[8] = 'subspecies';
+                    $rank_main[9] = 'unranked';
 
-                    if($taxonRank == 'variety') {
+                    $rank_pos['kingdom'] = 1;
+                    $rank_pos['phylum'] = 2;
+                    $rank_pos['class'] = 3;
+                    $rank_pos['order'] = 4;
+                    $rank_pos['family'] = 5;
+                    $rank_pos['genus'] = 6;
+                    $rank_pos['species'] = 7;
+                    $rank_pos['form'] = 8;
+                    $rank_pos['variety'] = 8;
+                    $rank_pos['subspecies'] = 8;
+                    $rank_pos['unranked'] = 9;
+
+
+                    if($taxonRank == 'subspecies') {
                         print_r($rec);
                     }
 

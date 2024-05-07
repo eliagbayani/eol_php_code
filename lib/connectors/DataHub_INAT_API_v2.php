@@ -45,7 +45,7 @@ class DataHub_INAT_API_v2
                     echo "\nProcessing [$group]...[$grade]...[$include_rank]\n";
                     self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
                     echo "\nEvery group, sleep 5 min.\n";
-                    sleep(60*5); //mins interval per group
+                    // sleep(60*5); //mins interval per group
                 }        
             }
         }
@@ -68,7 +68,7 @@ class DataHub_INAT_API_v2
 
             if(($page % 50) == 0) {
                 echo "\nEvery 50 calls, sleep 5 min.\n";
-                sleep(60*5); //mins interval
+                // sleep(60*5); //mins interval
             }
 
             $url = str_replace("XPAGE", $page, $main_url);
