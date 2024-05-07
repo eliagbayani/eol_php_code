@@ -160,21 +160,21 @@ class DataHub_INAT_API_v2
     private function gen_iNat_info_taxa_using_DwCA()
     {
         echo "\nGenerate taxon info list...\n";
-        /* un-comment in real operation
+        // /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $options = $this->download_options_INAT;
         $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
         $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
         // print_r($paths); exit; //debug only
-        */
+        // */
 
-        // /* development only
+        /* development only
         $paths = Array(
             'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/',
             'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/'
         );
-        // */
+        */
 
         $archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
