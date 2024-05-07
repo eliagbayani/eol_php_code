@@ -252,25 +252,32 @@ class DataHub_INAT_API_v2
     private function write_dwca_from_assembled_array()
     {
         foreach($this->assembled as $taxonID => $totals) {
-            if($rek = $this->inat_taxa_info[$taxonID]) {
+            // print_r($totals); print_r($this->assembled[$taxonID]); exit;
+            if($rek = @$this->inat_taxa_info[$taxonID]) {
                 /*Array( $rek
                     [s] => Apis mellifera
                     [r] => species
                     [p] => 578086
                 )*/
-                $rec = array();
-                $rec['id'] = $taxonID;
-                $rec['rank'] = $rek['r'];
-                $rec['name'] = $rek['s'];
-                $rec['RG_count'] = $totals['research'];
-                $rec['all_counts'] = @$totals['research'] + @$totals['needs_id'] + @$totals['casual'];
-                $rec['parent_id'] = $rek['p'];
-                $rec['ancestry'] = @$totals['ancestry'];
-                // print_r($rec); exit;
-                self::prep_write_taxon($rec);
-                self::write_MoF($rec);
+                $rek['a'] = $totals['a'];
             }
-            else $this->debug['not in iNat taxonomy'][$taxonID] = '';
+            elseif($rek = @$this->assembled[$taxonID]) {} //print_r($rek); exit("\nelix 2\n");
+            else {
+                $this->debug['not in iNat taxonomy'][$taxonID] = '';
+                continue;
+            }
+            $rec = array();
+            $rec['id'] = $taxonID;
+            $rec['rank'] = $rek['r'];
+            $rec['name'] = $rek['s'];
+            $rec['RG_count'] = @$totals['research'];
+            $rec['all_counts'] = @$totals['research'] + @$totals['needs_id'] + @$totals['casual'];
+            $rec['parent_id'] = $rek['p'];
+            $rec['ancestry'] = $rek['a'];
+
+            // print_r($rec); exit;
+            self::prep_write_taxon($rec);
+            self::write_MoF($rec);
         }
     }
     private function parse_tsv_file($file, $what, $quality_grade = false)
@@ -302,7 +309,10 @@ class DataHub_INAT_API_v2
                 }
                 elseif($what == 'assemble data from 3 TSVs' && $quality_grade) {
                     $this->assembled[$rec['id']][$quality_grade] = @$this->assembled[$rec['id']][$quality_grade] + $rec['observations_count'];
-                    $this->assembled[$rec['id']]['ancestry'] = $rec['ancestry'];
+                    $this->assembled[$rec['id']]['r'] = $rec['rank'];
+                    $this->assembled[$rec['id']]['s'] = $rec['name'];
+                    $this->assembled[$rec['id']]['p'] = $rec['parent_id'];
+                    $this->assembled[$rec['id']]['a'] = $rec['ancestry'];
                 }
             }
         }
