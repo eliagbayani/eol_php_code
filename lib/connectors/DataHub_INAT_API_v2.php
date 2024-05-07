@@ -123,17 +123,28 @@ class DataHub_INAT_API_v2
     // =========================================================================== start 2nd part
     function parse_tsv_then_generate_dwca()
     {
-        foreach($this->quality_grades as $grade) $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt"; //file variable assignment
-
-        // step 1: gen. info taxa list
-        self::gen_iNat_info_taxa_using_DwCA(); //generates $this->inat_taxa_info
-
-        // step 2: loop tsv and write taxon and MoF archive
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-        self::parse_tsv_file($this->dump_file['research'], "process research grade tsv");
+
+        foreach($this->quality_grades as $grade) $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt"; //file variable assignment
+
+        // step 1: reads iNat taxonomy and gen. info taxa list
+        self::gen_iNat_info_taxa_using_DwCA(); //generates $this->inat_taxa_info
+
+        // step 2: loop each tsv file ('research', 'needs_id', 'casual'), and create info_list for DwCA writing
+        self::assemble_data_from_3TSVs();
+        // print_r($this->assembled); exit;
+
+        // step 3: write DwCA from the big assembled array $this->assembled
+        self::write_dwca_from_assembled_array();
+
+        /*
+        // step ?: loop a tsv dump and write taxon and MoF archive --- if u want to gen. a DwCA from one dump
+        self::parse_tsv_file($this->dump_file['research'], "process research grade tsv"); 
+        */
         
         $this->archive_builder->finalize(TRUE);
+        print_r($this->debug);
 
         // $save = array();
         // $save['taxon_id'] = $taxonID;
@@ -148,21 +159,21 @@ class DataHub_INAT_API_v2
     private function gen_iNat_info_taxa_using_DwCA()
     {
         echo "\nGenerate taxon info list...\n";
-        // /* un-comment in real operation
+        /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $options = $this->download_options_INAT;
         $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
         $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
         // print_r($paths); exit; //debug only
-        // */
-
-        /* development only
-        $paths = Array(
-            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_52677/',
-            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_52677/'
-        );
         */
+
+        // /* development only
+        $paths = Array(
+            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/',
+            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/'
+        );
+        // */
 
         $archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
@@ -171,10 +182,17 @@ class DataHub_INAT_API_v2
 
         self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxa info');
 
-        // /* un-comment in real operation -- remove temp dir
+        /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
         echo ("\n temporary directory removed: " . $temp_dir);
-        // */
+        */
+    }
+    private function assemble_data_from_3TSVs()
+    {
+        $grades = array('research', 'needs_id', 'casual');
+        foreach($grades as $grade) {
+            self::parse_tsv_file($this->dump_file[$grade], "assemble data from 3 TSVs", $grade);
+        }
     }
     private function process_table($meta, $what, $local_dwca = false)
     {
@@ -226,12 +244,36 @@ class DataHub_INAT_API_v2
                     [taxonRank] => species
                     [references] => http://research.amnh.org/vz/herpetology/amphibia/?action=names&taxon=Batrachoseps+attenuatus
                 )*/
-                if($what == "gen taxa info") $this->inat_taxa_info[$rec['id']] = array('s' => $rec['scientificName'], 'r' => $rec['taxonRank']);
+                if($what == "gen taxa info") $this->inat_taxa_info[$rec['id']] = array('s' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'p' => pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME));
                 elseif($what == "xxx") {}
             }
         }
     }
-    private function parse_tsv_file($file, $what)
+    private function write_dwca_from_assembled_array()
+    {
+        foreach($this->assembled as $taxonID => $totals) {
+            if($rek = $this->inat_taxa_info[$taxonID]) {
+                /*Array( $rek
+                    [s] => Apis mellifera
+                    [r] => species
+                    [p] => 578086
+                )*/
+                $rec = array();
+                $rec['id'] = $taxonID;
+                $rec['rank'] = $rek['r'];
+                $rec['name'] = $rek['s'];
+                $rec['RG_count'] = $totals['research'];
+                $rec['all_counts'] = @$totals['research'] + @$totals['needs_id'] + @$totals['casual'];
+                $rec['parent_id'] = $rek['p'];
+                $rec['ancestry'] = @$totals['ancestry'];
+                // print_r($rec); exit;
+                self::prep_write_taxon($rec);
+                self::write_MoF($rec);
+            }
+            else $this->debug['not in iNat taxonomy'][$taxonID] = '';
+        }
+    }
+    private function parse_tsv_file($file, $what, $quality_grade = false)
     {   echo "\nReading file, task: [$what]...\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
@@ -258,6 +300,10 @@ class DataHub_INAT_API_v2
                     self::prep_write_taxon($rec);
                     self::write_MoF($rec);
                 }
+                elseif($what == 'assemble data from 3 TSVs' && $quality_grade) {
+                    $this->assembled[$rec['id']][$quality_grade] = @$this->assembled[$rec['id']][$quality_grade] + $rec['observations_count'];
+                    $this->assembled[$rec['id']]['ancestry'] = $rec['ancestry'];
+                }
             }
         }
     }
@@ -267,15 +313,31 @@ class DataHub_INAT_API_v2
         $save = array();
         $save['taxon_id'] = $taxonID;
         $save['source'] = $this->taxon_page . $taxonID;
-        $mType = 'http://eol.org/schema/terms/NumberOfiNaturalistObservations';
-        $mValue = $rec['observations_count'];
-        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         // $save['bibliographicCitation'] = '';
         // $save['measurementRemarks'] = ""; 
+        // $mValue = $rec['observations_count'];
+
+        $mType = 'http://eol.org/schema/terms/NumberOfRGiNatObservations';
+        $mValue = $rec['RG_count'];
+        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
+        $this->func->add_string_types($save, $mValue, $mType, "true");
+
+        $mType = 'http://eol.org/schema/terms/NumberOfiNaturalistObservations';
+        $mValue = $rec['all_counts'];
+        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         $this->func->add_string_types($save, $mValue, $mType, "true");
     }
     private function prep_write_taxon($rec)
-    {   //step 1: 
+    {   /*Array(
+            [id] => 47219
+            [rank] => species
+            [name] => Apis mellifera
+            [RG_count] => 411499
+            [all_counts] => 1234752
+            [parent_id] => 578086
+            [ancestry] => 48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
+        )*/
+        //step 1: 
         $save_taxon = array();
         $save_taxon = array('taxonID' => $rec['id'], 'scientificName' => $rec['name'], 'taxonRank' => $rec['rank'] , 'parentNameUsageID' => $rec['parent_id']);
         self::write_taxon($save_taxon);
