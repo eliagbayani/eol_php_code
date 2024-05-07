@@ -252,7 +252,7 @@ class DataHub_INAT_API_v2
     private function write_dwca_from_assembled_array()
     {
         $total = count($this->assembled); $i = 0;
-        foreach($this->assembled as $taxonID => $totals) { $i++; if(($i % 10000) == 0) echo "\n $i of $total ";
+        foreach($this->assembled as $taxonID => $totals) { $i++; if(($i % 20000) == 0) echo "\n $i of $total ";
             // print_r($totals); print_r($this->assembled[$taxonID]); exit;
             if($rek = @$this->inat_taxa_info[$taxonID]) {
                 /*Array( $rek
