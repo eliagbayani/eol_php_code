@@ -6,8 +6,8 @@ class DataHub_INAT_API_v3
 {
     function __construct($folder = false)
     {
-        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*1, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
-        $this->download_options_INAT['expire_seconds'] = 60*60*24;
+        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
+        // $this->download_options_INAT['expire_seconds'] = 60*60*24;
         if($folder) {
             $this->resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';

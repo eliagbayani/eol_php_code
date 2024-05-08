@@ -21,23 +21,33 @@ class DataHub_GBIF_API
         $this->reports_path = $save_path;
         $this->debug = array();
 
-        $this->local_csv = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0000495-240506114902167.csv";
+        $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0000495-240506114902167.zip";
+        // $this->local_csv = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0000495-240506114902167.csv"; //dev only
         $this->taxon_page = 'https://www.gbif.org/species/'; //e.g. 8084280
     }
     function start()
-    {   
+    {   //step 1
+        $temp_dir = self::download_extract_gbif_zip_file();
+
+        //step 2: initialize calling of external functions
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-
         require_library('connectors/NCBIGGIqueryAPI'); 
         $this->func_gbif = new NCBIGGIqueryAPI();
 
-
+        //step 3
         self::parse_tsv_file($this->local_csv, "gen taxa info"); //generates $this->gbif_taxa_info
         self::parse_tsv_file($this->local_csv, "write DwCA");
 
         print_r($this->debug);
         $this->archive_builder->finalize(TRUE);
+
+        // /* un-comment in real operation -- remove temp dir
+        if(stripos($temp_dir, "\/eol_php_code_tmp\/") !== false) { //string found
+            recursive_rmdir($temp_dir);
+            echo ("\n temporary directory removed: " . $temp_dir);    
+        }
+        // */
     }
     /*  [taxonomicStatus] => Array(
             [ACCEPTED] => 
@@ -121,7 +131,7 @@ class DataHub_GBIF_API
                             if($count > 0) $t['numberOfOccurrences'] = $count;
                             else continue;
                         }
-                        
+
                         $ret = self::get_parent_id($rec);
                         $t['parent_id'] = $ret['parent_id'];
                         $t['ancestry'] = $ret['ancestry']; //print_r($t);
@@ -256,7 +266,41 @@ class DataHub_GBIF_API
         $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         $this->func->add_string_types($save, $mValue, $mType, "true");
     }
+    private function download_extract_gbif_zip_file()
+    {
+        echo "\ndownload_extract_gbif_zip_file...\n";
+        // /* un-comment in real operation
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        $options = $this->download_options_GBIF;
+        $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
+        $paths = $func->extract_zip_file($this->remote_csv, $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+        // print_r($paths); exit; //debug only
+        // */
 
+        /* sample output:
+        Array(
+            [extracted_file]    => /Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/0000495-240506114902167
+            [temp_dir]          => /Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/
+            [temp_file_path]    => /Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/0000495-240506114902167.zip
+        )*/
+
+
+        /* development only
+        $paths = Array(
+            'extracted_file' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/0000495-240506114902167',
+            'temp_dir'       => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/'
+        );
+        */
+
+        $temp_dir = $paths['temp_dir'];
+        $this->local_csv = $paths['extracted_file'].".csv";
+        return $temp_dir;
+        /* un-comment in real operation -- remove temp dir
+        recursive_rmdir($temp_dir);
+        echo ("\n temporary directory removed: " . $temp_dir);
+        */
+    }
 
     // =========================================================================== copied template below
     function parse_tsv_then_generate_dwca()

@@ -422,5 +422,13 @@ class INBioAPI
                        "http://www.pliniancore.org/plic/pcfcore/unstructuredDocumentation"    => self::EOL . "Notes"
                    );
     }
+    function download_extract_zip_file($remote_zip_file, $destination_folder)
+    {   /*
+        remote zip file:        http://eol.org/folder/filename.zip
+        destination folder:     /extra/dumps/folder/
+        */
+        $output = shell_exec("unzip -oj $remote_zip_file -d $destination_folder"); //-o overwrites; -j removes upper directory; -d destination
+        return $output;
+    }
 }
 ?>
