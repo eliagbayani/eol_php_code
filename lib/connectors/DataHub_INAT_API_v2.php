@@ -23,6 +23,7 @@ class DataHub_INAT_API_v2
         $this->save_path = $save_path;
 
         $this->quality_grades = array('research', 'needs_id', 'casual'); //orig
+        $this->quality_grades = array('research'); //new orig
 
         $this->groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown"); //orig
         // $groups[] = "Animalia"; //excluded since it is a superset of the groups above.
@@ -93,7 +94,7 @@ class DataHub_INAT_API_v2
                     $rek["rank"]                = $t->rank;
                     $rek["name"]                = $t->name;
                     $rek["observations_count"]  = $t->observations_count;
-                    $rek["species_count"]       = $r->count;
+                    $rek["count"]               = $r->count;
                     $rek["iconic_taxon_name"]   = @$t->iconic_taxon_name ? $t->iconic_taxon_name : "unknown";
                     $rek["parent_id"]           = $t->parent_id;
                     $rek["ancestry"]            = $t->ancestry;
@@ -301,7 +302,7 @@ class DataHub_INAT_API_v2
                         [rank] => species
                         [name] => Apis mellifera
                         [observations_count] => 411499
-                        [species_count] => 393719
+                        [count] => 393719
                         [iconic_taxon_name] => Insecta
                         [parent_id] => 578086
                         [ancestry] => 48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
