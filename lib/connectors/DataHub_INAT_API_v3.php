@@ -6,7 +6,7 @@ class DataHub_INAT_API_v3
 {
     function __construct($folder = false)
     {
-        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*1, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
+        $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*1, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
         $this->download_options_INAT['expire_seconds'] = 60*60*24;
         if($folder) {
             $this->resource_id = $folder;
@@ -51,7 +51,7 @@ class DataHub_INAT_API_v3
                         echo "\nProcessing [$group]...[$grade]...[$include_rank]\n";
                         self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
                         echo "\nEvery group, sleep 5 min.\n";
-                        sleep(60*1); //mins interval per group
+                        sleep(60*2); //mins interval per group
                     }            
                 }
                 else { //family and genus
@@ -59,7 +59,7 @@ class DataHub_INAT_API_v3
                     $group = false;
                     self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
                     echo "\nEvery group, sleep 5 min.\n";
-                    sleep(60*1); //mins interval per group
+                    sleep(60*2); //mins interval per group
                 }
             }
         }
@@ -85,7 +85,7 @@ class DataHub_INAT_API_v3
 
             if(($page % 50) == 0) {
                 echo "\nEvery 50 calls, sleep 5 min.\n";
-                sleep(60*1); //mins interval
+                sleep(60*2); //mins interval
             }
 
             $url = str_replace("XPAGE", $page, $main_url);
