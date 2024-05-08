@@ -5,7 +5,7 @@ namespace php_active_record;
 class DataHub_INAT_API_v2
 {
     function __construct($folder = false)
-    {
+    {   exit("\nobsolete\n");
         $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
 
         if($folder) {
@@ -23,7 +23,6 @@ class DataHub_INAT_API_v2
         $this->save_path = $save_path;
 
         $this->quality_grades = array('research', 'needs_id', 'casual'); //orig
-        $this->quality_grades = array('research'); //new orig
 
         $this->groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown"); //orig
         // $groups[] = "Animalia"; //excluded since it is a superset of the groups above.
