@@ -153,7 +153,6 @@ class DataHub_INAT_API_v3
         // step 2: loop a tsv dump and write taxon and MoF archive --- if u want to gen. a DwCA from one dump
         self::parse_tsv_file($this->dump_file['research'], "process research grade tsv"); 
 
-
         /* OBSOLETE
         // step 2: loop each tsv file ('research', 'needs_id', 'casual'), and create info_list for DwCA writing
         self::assemble_data_from_3TSVs();
@@ -165,16 +164,6 @@ class DataHub_INAT_API_v3
         
         $this->archive_builder->finalize(TRUE);
         print_r($this->debug);
-
-        // $save = array();
-        // $save['taxon_id'] = $taxonID;
-        // $save['source'] = $rek['source_url'];
-        // $save['bibliographicCitation'] = $this->bibliographicCitation;
-        // $mType = 'http://purl.obolibrary.org/obo/RO_0002303';
-        // $mValue
-        // $save['measurementRemarks'] = ""; //No need to put measurementRemarks coming from Biology. Per Jen: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65452&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65452
-        // $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
-        // $this->func->add_string_types($save, $mValue, $mType, "true");
     }
     private function gen_iNat_info_taxa_using_DwCA()
     {
@@ -224,9 +213,7 @@ class DataHub_INAT_API_v3
             $row = fgetcsv($file); //print_r($row);
             if(!$row) continue; 
             $str = implode("\t", $row);
-            // if(stripos($str, "Callisaurus	genus") !== false) {  //string found --- good debug
-            //     echo("\n$str\n");
-            // }
+            // if(stripos($str, "Callisaurus	genus") !== false) {echo("\n$str\n");}  //string found --- good debug                
             if(!$row) break;
             $i++; if(($i % 100000) == 0) echo "\n $i ";
             if($i == 1) {
@@ -239,8 +226,7 @@ class DataHub_INAT_API_v3
                     echo("\nWrong CSV format for this row.\n");
                     continue;
                 }
-                $k = 0;
-                $rec = array();
+                $k = 0; $rec = array();
                 foreach($fields as $field) {
                     $rec[$field] = $values[$k];
                     $k++;
@@ -281,7 +267,6 @@ class DataHub_INAT_API_v3
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                 $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
-                // print_r($rec); exit("\nelix 200\n");
                 if($what == 'process research grade tsv') {
                     /*Array(
                         [id] => 47219
