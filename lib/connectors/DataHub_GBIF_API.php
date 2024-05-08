@@ -43,7 +43,7 @@ class DataHub_GBIF_API
         $this->archive_builder->finalize(TRUE);
 
         // /* un-comment in real operation -- remove temp dir
-        if(stripos($temp_dir, "\/eol_php_code_tmp\/") !== false) { //string found
+        if(stripos($temp_dir, '/eol_php_code_tmp/') !== false) { //string found
             recursive_rmdir($temp_dir);
             echo ("\n temporary directory removed: " . $temp_dir);    
         }
@@ -145,6 +145,7 @@ class DataHub_GBIF_API
                 }
                 else exit("\nNothing to do\n");
             }
+            // if($i >= 10) break; //debug only
         }
     }
     private function get_parent_id($rec)
@@ -285,11 +286,10 @@ class DataHub_GBIF_API
             [temp_file_path]    => /Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/0000495-240506114902167.zip
         )*/
 
-
         /* development only
         $paths = Array(
-            'extracted_file' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/0000495-240506114902167',
-            'temp_dir'       => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/'
+            'extracted_file' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_09405/0000495-240506114902167',
+            'temp_dir'       => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_09405/'
         );
         */
 
