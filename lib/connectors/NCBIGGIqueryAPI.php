@@ -755,6 +755,10 @@ class NCBIGGIqueryAPI
         foreach($obj->results->month_of_year as $r) $sum += $r;
         return $sum;
     }
+    public function get_gbif_taxon_record_count($usageKey)
+    {
+        return Functions::lookup_with_cache($this->gbif_record_count . $usageKey, $this->download_options_GBIF);
+    }
     private function query_family_GBIF_info($family, $is_subfamily, $database)
     {
         $rec[$this->process_level] = $family;
@@ -769,7 +773,7 @@ class NCBIGGIqueryAPI
             }
             else $usageKey = trim((string) $json->usageKey);
             if($usageKey) {
-                $count = Functions::lookup_with_cache($this->gbif_record_count . $usageKey, $this->download_options_GBIF);
+                $count = self::get_gbif_taxon_record_count($usageKey);
                 if($count || strval($count) == "0") {
                     $rec["source"] = $this->gbif_record_count . $usageKey;
                     if($count > 0) {

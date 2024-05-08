@@ -29,15 +29,40 @@ class DataHub_GBIF_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
+        require_library('connectors/NCBIGGIqueryAPI'); 
+        $this->func_gbif = new NCBIGGIqueryAPI();
+
+
         self::parse_tsv_file($this->local_csv, "gen taxa info"); //generates $this->gbif_taxa_info
         self::parse_tsv_file($this->local_csv, "write DwCA");
 
         print_r($this->debug);
         $this->archive_builder->finalize(TRUE);
     }
+    /*  [taxonomicStatus] => Array(
+            [ACCEPTED] => 
+            [SYNONYM] => 
+            [DOUBTFUL] => 
+            [] => 
+        )
+    [taxonRank] => Array(
+            [phylum] => 
+            [kingdom] => 
+            [class] => 
+            [order] => 
+            [family] => 
+            [genus] => 
+
+            [species] => 
+            [form] => 
+            [variety] => 
+            [subspecies] => 
+            [unranked] => 
+    )*/
     private function parse_tsv_file($file, $what)
     {   echo "\nReading file, task: [$what]\n";
         $i = 0; $final = array();
+        $included_ranks = array("species", "form", "variety", "subspecies", "unranked");
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % 200000) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
@@ -79,20 +104,29 @@ class DataHub_GBIF_API
                 $taxonRank = $rec['taxonRank'];
                 $this->debug['taxonRank'][$taxonRank] = '';
                 /* [taxonomicStatus] => Array( [ACCEPTED] [SYNONYM] [DOUBTFUL] [] ) */
+                // if($taxonRank != 'variety') continue; //print_r($rec); //debug only
 
                 if($what == 'write DwCA') {
-                    // if($taxonRank != 'variety') continue; //print_r($rec); //debug only
                     if($taxonomicStatus == 'ACCEPTED') { //print_r($rec);
                         $t = array();
                         $t['id'] = $taxonID;
                         $t['rank'] = $rec['taxonRank'];
                         $t['name'] = $rec['scientificName'];
-                        $t['numberOfOccurrences'] = $rec['numberOfOccurrences'];
+
+                        if(in_array($taxonRank, $included_ranks)) {
+                            $t['numberOfOccurrences'] = $rec['numberOfOccurrences'];
+                        }
+                        elseif(in_array($taxonRank, array('kingdom', 'phylum', 'class', 'order', 'family', 'genus'))) {
+                            $count = $this->func_gbif->get_gbif_taxon_record_count($taxonID);
+                            if($count > 0) $t['numberOfOccurrences'] = $count;
+                            else continue;
+                        }
+                        
                         $ret = self::get_parent_id($rec);
                         $t['parent_id'] = $ret['parent_id'];
                         $t['ancestry'] = $ret['ancestry']; //print_r($t);
                         self::prep_write_taxon($t);
-                        self::write_MoF($t);
+                        self::write_MoF($t);                        
                     }
                 }
                 elseif($what == "gen taxa info") {
