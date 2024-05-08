@@ -32,6 +32,8 @@ class DataHub_GBIF_API
     {
         self::parse_tsv_file($this->local_csv, "write DwCA");
         print_r($this->debug);
+        $this->archive_builder->finalize(TRUE);
+
     }
     private function parse_tsv_file($file, $what)
     {   echo "\nReading file, task: [$what]\n";
@@ -71,55 +73,92 @@ class DataHub_GBIF_API
                     [iucnRedListCategory] => NE
                 )*/
                 if($what == 'write DwCA') {
+                    $taxonID = $rec['taxonKey'];
                     $taxonomicStatus = $rec['taxonomicStatus'];
                     $this->debug['taxonomicStatus'][$taxonomicStatus] = '';
                     $rec['taxonRank'] = strtolower($rec['taxonRank']);
                     $taxonRank = $rec['taxonRank'];
                     $this->debug['taxonRank'][$taxonRank] = '';
                     /* [taxonomicStatus] => Array( [ACCEPTED] [SYNONYM] [DOUBTFUL] [] ) */
+                    // if($taxonRank != 'variety') continue; //print_r($rec); //debug only
 
-                    $rank_main[1] = 'kingdom';
-                    $rank_main[2] = 'phylum';
-                    $rank_main[3] = 'class';
-                    $rank_main[4] = 'order';
-                    $rank_main[5] = 'family';
-                    $rank_main[6] = 'genus';
-                    $rank_main[7] = 'species';
-                    $rank_main[8] = 'form';
-                    $rank_main[8] = 'variety';
-                    $rank_main[8] = 'subspecies';
-                    $rank_main[9] = 'unranked';
-
-                    $rank_pos['kingdom'] = 1;
-                    $rank_pos['phylum'] = 2;
-                    $rank_pos['class'] = 3;
-                    $rank_pos['order'] = 4;
-                    $rank_pos['family'] = 5;
-                    $rank_pos['genus'] = 6;
-                    $rank_pos['species'] = 7;
-                    $rank_pos['form'] = 8;
-                    $rank_pos['variety'] = 8;
-                    $rank_pos['subspecies'] = 8;
-                    $rank_pos['unranked'] = 9;
-
-
-                    if($taxonRank == 'subspecies') {
-                        print_r($rec);
-                    }
-
-                    if($taxonomicStatus == 'ACCEPTED') {
-                        // print_r($rec);
-                        // self::prep_write_taxon($rec);
-
-                        // self::write_MoF($rec);
-                        // if($taxonRank == 'form') exit;
+                    if($taxonomicStatus == 'ACCEPTED') { //print_r($rec);
+                        $t = array();
+                        $t['id'] = $taxonID;
+                        $t['rank'] = $rec['taxonRank'];
+                        $t['name'] = $rec['scientificName'];
+                        $t['numberOfOccurrences'] = $rec['numberOfOccurrences'];
+                        $ret = self::get_parent_id($rec);
+                        $t['parent_id'] = $ret['parent_id'];
+                        $t['ancestry'] = $ret['ancestry'];
+                        // print_r($t);
+                        self::prep_write_taxon($t);
+                        // self::write_MoF($t);
                     }
                 }
                 else exit("\nNothing to do\n");
             }
         }
     }
+    private function get_parent_id($rec)
+    {
+        $rank_main[1] = 'kingdom';
+        $rank_main[2] = 'phylum';
+        $rank_main[3] = 'class';
+        $rank_main[4] = 'order';
+        $rank_main[5] = 'family';
+        $rank_main[6] = 'genus';
+        $rank_main[7] = 'species';
+        $rank_main[8] = 'form';
+        $rank_main[8] = 'variety';
+        $rank_main[8] = 'subspecies';
+        $rank_main[9] = 'unranked';
 
+        $rank_pos['kingdom'] = 1;
+        $rank_pos['phylum'] = 2;
+        $rank_pos['class'] = 3;
+        $rank_pos['order'] = 4;
+        $rank_pos['family'] = 5;
+        $rank_pos['genus'] = 6;
+        $rank_pos['species'] = 7;
+        $rank_pos['form'] = 8;
+        $rank_pos['variety'] = 8;
+        $rank_pos['subspecies'] = 8;
+        $rank_pos['unranked'] = 9;
+
+        $ancestry = array();
+        $taxonRank = $rec['taxonRank'];
+        if(!$taxonRank) $pos = 7;
+        else            $pos = $rank_pos[$taxonRank] - 1;
+
+        if($pos >= 8) $pos = 7;
+
+        for($i = 1; $i <= $pos; $i++) {
+            $field = $rank_main[$i]."Key";
+            if($value = $rec[$field]) $ancestry[] = $value;
+        }
+
+        $ancestry = array_filter($ancestry); //remove null arrays
+        $ancestry = array_unique($ancestry); //make unique
+        $ancestry = array_values($ancestry); //reindex key
+        return array('ancestry' => implode("/", $ancestry), 'parent_id' => end($ancestry));
+
+
+        /* [kingdom] => Animalia
+        [kingdomKey] => 1
+        [phylum] => Chordata
+        [phylumKey] => 44
+        [class] => Mammalia
+        [classKey] => 359
+        [order] => 
+        [orderKey] => 
+        [family] => 
+        [familyKey] => 
+        [genus] => 
+        [genusKey] => 
+        [species] => 
+        [speciesKey] => */
+    }
 
     // =========================================================================== copied template below
     function parse_tsv_then_generate_dwca()

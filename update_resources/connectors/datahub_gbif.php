@@ -14,10 +14,9 @@ $func = new DataHub_GBIF_API($resource_id);
 $func->start(); 
 // */
 
-/* main part that generates the DwCA
-$func->parse_tsv_then_generate_dwca();
+// /* main part that generates the DwCA
 Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.
-*/
+// */
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
