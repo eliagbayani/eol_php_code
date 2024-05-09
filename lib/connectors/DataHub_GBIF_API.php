@@ -268,6 +268,9 @@ class DataHub_GBIF_API
             $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
             $this->func->add_string_types($save, $mValue, $mType, "true");    
         }
+        else {
+            echo "\nInvestigate, no numberOfOccurrences field"; print_r($rec);
+        }
     }
     private function download_extract_gbif_zip_file()
     {
