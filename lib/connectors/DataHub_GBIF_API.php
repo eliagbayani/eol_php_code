@@ -131,6 +131,7 @@ class DataHub_GBIF_API
                             if($count > 0) $t['numberOfOccurrences'] = $count;
                             else continue;
                         }
+                        else continue;
 
                         $ret = self::get_parent_id($rec);
                         $t['parent_id'] = $ret['parent_id'];
@@ -269,7 +270,7 @@ class DataHub_GBIF_API
             $this->func->add_string_types($save, $mValue, $mType, "true");    
         }
         else {
-            echo "\nInvestigate, no numberOfOccurrences field"; print_r($rec);
+            echo "\nInvestigate, no numberOfOccurrences field. Should not go here."; print_r($rec);
         }
     }
     private function download_extract_gbif_zip_file()
