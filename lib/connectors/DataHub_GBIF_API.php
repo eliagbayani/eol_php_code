@@ -138,8 +138,9 @@ class DataHub_GBIF_API
                             // continue; //comment in real operation since 157,895 < 187,774 from NCBIGGIqueryAPI.php
 
                             // /* main operation
-                            @$this->special_count++;
-                            if(($this->special_count % 100) == 0) sleep(60); //1 min sleep for every 100 calls
+                            // @$this->special_count++;
+                            // if(($this->special_count % 100) == 0) sleep(60); //1 min sleep for every 100 calls
+
                             $count = $this->func_gbif->get_gbif_taxon_record_count($taxonID);
                             if($count > 0) $t['numberOfOccurrences'] = $count;
                             else continue;
