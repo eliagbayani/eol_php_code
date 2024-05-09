@@ -52,7 +52,7 @@ NCBI
 EOL
 "http://eol.org/schema/terms/NumberRichSpeciesPagesInEOL"
 
-INAT
+INAT (excluded here, it has its own connector)
 "http://eol.org/schema/terms/NumberOfiNaturalistObservations"
 */
 class NCBIGGIqueryAPI
