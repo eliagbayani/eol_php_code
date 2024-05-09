@@ -128,16 +128,18 @@ class DataHub_GBIF_API
                             $t['numberOfOccurrences'] = $rec['numberOfOccurrences'];
                         }
                         elseif(in_array($taxonRank, array('family', 'genus'))) {
-                            /*[counts] => Array(
+                            /*[counts] => Array( as of May 10, 2024
                                 [other-levels] => 1996
                                 [family-genus-level] => 157895
                                 [species-level] => 2572371
-                            )
-                            Since there is 157,895 API calls here, we will just make use of the NCBIGGIqueryAPI.php ver to run.
-                            */
+                            )*/
                             @$this->debug['counts']['family-genus-level']++;
-                            continue; //
+                            
+                            // continue; //comment in real operation since 157,895 < 187,774 from NCBIGGIqueryAPI.php
+
                             // /* main operation
+                            @$this->special_count++;
+                            if(($this->special_count % 100) == 0) sleep(60); //1 min sleep for every 100 calls
                             $count = $this->func_gbif->get_gbif_taxon_record_count($taxonID);
                             if($count > 0) $t['numberOfOccurrences'] = $count;
                             else continue;

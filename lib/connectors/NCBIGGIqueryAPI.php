@@ -148,7 +148,7 @@ class NCBIGGIqueryAPI
         $this->names_in_irmng_but_not_in_falo = $this->TEMP_DIR . "families_in_irmng_but_not_in_falo.txt";
         */
 
-        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds"); //for family-level only | removed iNat here, it has its own connector.
+        $this->ggi_databases = array("ncbi", "ggbn", "bhl", "bolds"); //for family-level only | removed iNat, gbif here, it has its own connector.
         // $this->ggi_databases = array("ncbi"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("ggbn"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
@@ -200,7 +200,7 @@ class NCBIGGIqueryAPI
     }
     function get_all_taxa_genus()
     {
-        $this->ggi_databases = array("ncbi", "ggbn", "gbif", "bhl", "bolds"); //for genus-level we remove "inat"
+        $this->ggi_databases = array("ncbi", "ggbn", "bhl", "bolds"); //for genus-level we remove "inat" and "gbif"; they have separate connectors
 
         $genus_taxa = self::get_DH_taxa_per_rank("genus"); // print_r($genus_taxa); exit;
 
