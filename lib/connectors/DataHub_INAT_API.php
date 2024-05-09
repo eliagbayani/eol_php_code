@@ -7,8 +7,6 @@ class DataHub_INAT_API
 {
     function __construct($folder = false)
     {   
-        exit("\n--- Was not used ---\n");
-
         $this->download_options_INAT = array('resource_id' => "723_inat", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800, 'download_attempts' => 1); //3 months to expire
 
         if($folder) {
