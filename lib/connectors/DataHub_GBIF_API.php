@@ -126,7 +126,7 @@ class DataHub_GBIF_API
                         if(in_array($taxonRank, $included_ranks)) {
                             $t['numberOfOccurrences'] = $rec['numberOfOccurrences'];
                         }
-                        elseif(in_array($taxonRank, array('kingdom', 'phylum', 'class', 'order', 'family', 'genus'))) {
+                        elseif(in_array($taxonRank, array('family', 'genus'))) { //'kingdom', 'phylum', 'class', 'order', 
                             $count = $this->func_gbif->get_gbif_taxon_record_count($taxonID);
                             if($count > 0) $t['numberOfOccurrences'] = $count;
                             else continue;
