@@ -263,9 +263,11 @@ class DataHub_GBIF_API
         // $save['measurementRemarks'] = ""; 
 
         $mType = 'http://eol.org/schema/terms/NumberRecordsInGBIF';
-        $mValue = $rec['numberOfOccurrences'];
-        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
-        $this->func->add_string_types($save, $mValue, $mType, "true");
+        if(isset($rec['numberOfOccurrences'])) {
+            $mValue = $rec['numberOfOccurrences'];
+            $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
+            $this->func->add_string_types($save, $mValue, $mType, "true");    
+        }
     }
     private function download_extract_gbif_zip_file()
     {
