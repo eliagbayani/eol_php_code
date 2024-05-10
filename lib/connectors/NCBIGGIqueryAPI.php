@@ -407,7 +407,7 @@ class NCBIGGIqueryAPI
             // echo "\nBOLDS special error\n"; exit("\nexit muna, remove BOLDS from the list of dbases.\n");
             sleep(60*2); //10 mins
             $this->BOLDS_TooManyRequests++;
-            if($this->BOLDS_TooManyRequests >= 5) exit("\nBOLDS should stop now.\n");
+            if($this->BOLDS_TooManyRequests >= 3) exit("\nBOLDS should stop now.\n");
         }
     }
     private function query_family_BOLDS_info($family, $is_subfamily, $database)
