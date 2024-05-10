@@ -560,6 +560,10 @@ class NCBIGGIqueryAPI
         $options = $this->download_options;
         $options['download_wait_time'] = 10000000; //10 secs interval
         if($contents = Functions::lookup_with_cache($this->bhl_taxon_in_xml . $family, $options)) {
+
+            @$this->bhl_calls++;
+            if(($this->bhl_calls % 100) == 0) echo "\n BHL calls made: [$this->bhl_calls]\nLatest: [". substr($contents,0,20) ."]\n";
+
             if($count = self::get_page_count_from_BHL_xml($contents)) {
                 if($count > 0) {
                     $rec["object_id"]   = "_no_of_page_in_bhl";
@@ -886,6 +890,10 @@ class NCBIGGIqueryAPI
         $rec["source"] = $this->family_service_ggbn . $family;
         $rec["taxon_id"] = str_replace(" ", "_", $family);
         if($html = Functions::lookup_with_cache($rec["source"], $this->download_options)) {
+
+            @$this->ggbn_calls++;
+            if(($this->ggbn_calls % 100) == 0) echo "\n GGBN calls made: [$this->ggbn_calls]\nLatest: [". substr($html,0,20) ."]\n";
+    
             $obj = json_decode($html);
             $has_data = false;
             if(@$obj->sampletype->DNA > 0) {
@@ -966,6 +974,10 @@ class NCBIGGIqueryAPI
         $rec["source"] = $this->family_service_ncbi . $family;
         $rec["taxon_id"] = str_replace(" ", "_", $family);
         $contents = Functions::lookup_with_cache($rec["source"], $this->download_options);
+
+        @$this->ncbi_calls++;
+        if(($this->ncbi_calls % 100) == 0) echo "\n NCBI calls made: [$this->ncbi_calls]\nLatest: [". substr($contents,0,20) ."]\n";
+
         if($xml = simplexml_load_string($contents)) {
             if($xml->Count > 0) {
                 $rec["object_id"] = "_no_of_seq_in_genbank";
