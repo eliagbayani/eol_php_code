@@ -400,6 +400,16 @@ class NCBIGGIqueryAPI
             }
         }
     }
+    private function bolds_API_result_still_validYN($str)
+    {
+        if(stripos($str, 'have reached') !== false) { //string is found
+            echo "\n[$str]\n";
+            // echo "\nBOLDS special error\n"; exit("\nexit muna, remove BOLDS from the list of dbases.\n");
+            sleep(60*2); //10 mins
+            $this->BOLDS_TooManyRequests++;
+            if($this->BOLDS_TooManyRequests >= 5) exit("\nBOLDS should stop now.\n");
+        }
+    }
     private function query_family_BOLDS_info($family, $is_subfamily, $database)
     {
         $rec[$this->process_level] = $family;
@@ -409,6 +419,9 @@ class NCBIGGIqueryAPI
         $options['download_wait_time'] = 3000000; //3 secs interval
 
         if($json = Functions::lookup_with_cache($this->bolds["TaxonSearch"] . $family, $options)) {
+            
+            self::bolds_API_result_still_validYN($json); //special filter
+
             if($info = self::parse_bolds_taxon_search($json)) {
                 $rec["source"] = $this->bolds_taxon_page_by_id . $info["taxid"];
                 if(@$info["specimens"] > 0) {
@@ -478,11 +491,13 @@ class NCBIGGIqueryAPI
     {
         if($taxid = self::get_best_bolds_taxid($json)) {
             if($json = Functions::lookup_with_cache($this->bolds["TaxonData"] . $taxid, $this->download_options_BOLDS)) {
+                self::bolds_API_result_still_validYN($json); //special filter
                 $arr = json_decode($json);
                 // print_r($arr); //good debug
                 if(isset($arr->stats)) return array("taxid" => $taxid, "public records" => $arr->stats->publicrecords, "specimens" => $arr->stats->sequencedspecimens);
                 else { //use orig API call
                     if($json = Functions::lookup_with_cache($this->bolds["TaxonData_orig"] . $taxid, $this->download_options_BOLDS)) {
+                        self::bolds_API_result_still_validYN($json); //special filter
                         $arr = json_decode($json);
                         if(@$arr->stats) return array("taxid" => $taxid, "public records" => @$arr->stats->publicrecords, "specimens" => @$arr->stats->sequencedspecimens);
                     }
