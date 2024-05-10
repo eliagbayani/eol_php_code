@@ -402,11 +402,12 @@ class NCBIGGIqueryAPI
     }
     private function bolds_API_result_still_validYN($str)
     {
-        if(stripos($str, 'have reached') !== false) { //string is found
+        // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
+        if(stripos($str, 'have exceeded') !== false) { //string is found
             echo "\n[$str]\n";
             // echo "\nBOLDS special error\n"; exit("\nexit muna, remove BOLDS from the list of dbases.\n");
-            sleep(60*2); //10 mins
-            $this->BOLDS_TooManyRequests++;
+            sleep(60*10); //10 mins
+            @$this->BOLDS_TooManyRequests++;
             if($this->BOLDS_TooManyRequests >= 3) exit("\nBOLDS should stop now.\n");
         }
     }
