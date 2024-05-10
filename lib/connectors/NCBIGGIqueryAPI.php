@@ -423,7 +423,7 @@ class NCBIGGIqueryAPI
         if($json = Functions::lookup_with_cache($this->bolds["TaxonSearch"] . $family, $options)) {
 
             @$this->bolds_calls++;
-            if(($this->bolds_calls % 1000) == 0) echo "\n BOLDS calls made: [$this->bolds_calls] | Latest: [". substr($json,0,20) ."]\n";
+            if(($this->bolds_calls % 1000) == 0) echo "\n BOLDS calls made: [$this->bolds_calls] | Latest: [". substr($json,0,200) ."]\n";
             
             self::bolds_API_result_still_validYN($json); //special filter
 
@@ -565,7 +565,7 @@ class NCBIGGIqueryAPI
         if($contents = Functions::lookup_with_cache($this->bhl_taxon_in_xml . $family, $options)) {
 
             @$this->bhl_calls++;
-            if(($this->bhl_calls % 1000) == 0) echo "\n BHL calls made: [$this->bhl_calls] | Latest: [". substr($contents,0,20) ."]\n";
+            if(($this->bhl_calls % 1000) == 0) echo "\n BHL calls made: [$this->bhl_calls] | Latest: [". substr($contents,0,200) ."]\n";
 
             if($count = self::get_page_count_from_BHL_xml($contents)) {
                 if($count > 0) {
@@ -895,7 +895,7 @@ class NCBIGGIqueryAPI
         if($html = Functions::lookup_with_cache($rec["source"], $this->download_options)) {
 
             @$this->ggbn_calls++;
-            if(($this->ggbn_calls % 1000) == 0) echo "\n GGBN calls made: [$this->ggbn_calls] | Latest: [". substr($html,0,20) ."]\n";
+            if(($this->ggbn_calls % 1000) == 0) echo "\n GGBN calls made: [$this->ggbn_calls] | Latest: [". substr($html,0,200) ."]\n";
     
             $obj = json_decode($html);
             $has_data = false;
@@ -979,7 +979,7 @@ class NCBIGGIqueryAPI
         $contents = Functions::lookup_with_cache($rec["source"], $this->download_options);
 
         @$this->ncbi_calls++;
-        if(($this->ncbi_calls % 1000) == 0) echo "\n NCBI calls made: [$this->ncbi_calls] | Latest: [". substr($contents,0,20) ."]\n";
+        if(($this->ncbi_calls % 1000) == 0) echo "\n NCBI calls made: [$this->ncbi_calls] | Latest: [". substr($contents,0,200) ."]\n";
 
         if($xml = simplexml_load_string($contents)) {
             if($xml->Count > 0) {
