@@ -773,7 +773,10 @@ class NCBIGGIqueryAPI
     }
     public function get_gbif_taxon_record_count($usageKey)
     {
-        return Functions::lookup_with_cache($this->gbif_record_count . $usageKey, $this->download_options_GBIF);
+        @$this->gbif_calls++;
+        $ret = Functions::lookup_with_cache($this->gbif_record_count . $usageKey, $this->download_options_GBIF);
+        if(($this->gbif_calls % 100) == 0) echo "\n GBIF calls made: [$this->gbif_calls]\nLatest: [$ret]\n";
+        return $ret;
     }
     private function query_family_GBIF_info($family, $is_subfamily, $database)
     {
