@@ -34,8 +34,10 @@ class DataHub_BOLDS_API
     function start()
     {   //step 1: kingdom assemble
         $kingdom = self::assemble_kingdom(); print_r($kingdom);
-        $level_2 = self::assemble_level_2($kingdom); print_r($level_2);
-        $level_3 = self::assemble_level_2($level_2); print_r($level_3);
+        // $level_2 = self::assemble_level_2($kingdom); print_r($level_2);
+        // $level_3 = self::assemble_level_2($level_2); print_r($level_3);
+        // $level_4 = self::assemble_level_2($level_3); print_r($level_4);
+
 
 
     }
@@ -56,8 +58,9 @@ class DataHub_BOLDS_API
                         $html2 = $arr[1];
                         echo "\n$html2\n"; //exit;
                         $rank = self::get_rank($html2);
-                        $list[$rank] = self::get_list_items($html2);
-                        print_r($list); //exit;
+                        $temp = self::get_list_items($html2, $rank); print_r($temp);
+                        foreach($temp as $t) $list[$rank][] = $t;
+                        // print_r($list); //exit;
                     }
                 }
             }
@@ -80,19 +83,20 @@ class DataHub_BOLDS_API
         */
         $final = array();
         $groups = array('Animal', 'Plant', 'Fungi', 'Protist'); //main operation
-        // $groups = array('Fungi');
+        $groups = array('Animal');
         foreach($groups as $group) { $left = '<div id="'.$group.'Div"'; $right = '</div>';
             if($html = Functions::lookup_with_cache($this->start_page, $this->download_options_BOLDS)) {
                 if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
                     $html2 = $arr[1];
-                    $final[$group] = self::get_list_items($html2, $group);
+                    $tmp = self::get_list_items($html2, 'kingdom');
+                    foreach($tmp as $t) $final[$group][] = $t;
                 }    
             }            
         }
         // print_r($final);
         return $final;
     }
-    private function get_list_items($html)
+    private function get_list_items($html, $rank)
     {
         $final = array(); $left = '<li>'; $right = '</li>';
         if(preg_match_all("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr2)) { // print_r($arr2[1]);
@@ -111,6 +115,7 @@ class DataHub_BOLDS_API
                     $r['counts'] = self::get_string_between("[", "]", $ret);
                     $ret = str_replace("[".$r['counts']."]", "", $ret);
                     $r['sciname'] = trim($ret);
+                    $r['rank'] = $rank;
                 }
                 $r = array_map('trim', $r); // echo "\n$t\n"; print_r($r);
                 /*Array(
