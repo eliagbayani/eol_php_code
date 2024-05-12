@@ -6,14 +6,13 @@ class DataHub_BOLDS_API
 {
     function __construct($folder = false)
     {
-        $this->download_options_GBIF = array('resource_id' => "723_gbif", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
         if($folder) {
             $this->resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
         $this->debug = array();
-        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1);
+        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800, 'download_attempts' => 1);
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
 
@@ -34,8 +33,10 @@ class DataHub_BOLDS_API
     }
     function start()
     {   //step 1: kingdom assemble
-        $kingdom = self::assemble_kingdom(); //print_r($kingdom);
-        $level_2 = self::assemble_level_2($kingdom);
+        $kingdom = self::assemble_kingdom(); print_r($kingdom);
+        $level_2 = self::assemble_level_2($kingdom); print_r($level_2);
+        $level_3 = self::assemble_level_2($level_2); print_r($level_3);
+
 
     }
     private function assemble_level_2($kingdom)
@@ -54,13 +55,14 @@ class DataHub_BOLDS_API
                     if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
                         $html2 = $arr[1];
                         echo "\n$html2\n"; //exit;
-                        $list = self::get_list_items($html2);
-                        print_r($list); exit;
-
+                        $rank = self::get_rank($html2);
+                        $list[$rank] = self::get_list_items($html2);
+                        print_r($list); //exit;
                     }
                 }
             }
         }
+        return $list;
     }
     private function assemble_kingdom()
     {   /*
@@ -120,6 +122,14 @@ class DataHub_BOLDS_API
             }                    
         }
         return $final;
+    }
+    private function get_rank($html)
+    {   // <lh>Classes (4) </lh>...
+        if(preg_match("/<lh>(.*?)<\/lh>/ims", $html, $arr)) {
+            $new = trim(preg_replace('/\s*\([^)]*\)/', '', $arr[1])); //remove parenthesis OK
+            return $new;
+        }
+        return "cannot parse rank";
     }
     private function get_string_between($left, $right, $str)
     {
