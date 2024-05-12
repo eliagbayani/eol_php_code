@@ -33,39 +33,11 @@ class DataHub_BOLDS_API
     }
     function start()
     {   //step 1: kingdom assemble
-        $kingdom = self::assemble_kingdom(); print_r($kingdom);
-        // $level_2 = self::assemble_level_2($kingdom); print_r($level_2);
-        // $level_3 = self::assemble_level_2($level_2); print_r($level_3);
-        // $level_4 = self::assemble_level_2($level_3); print_r($level_4);
-
-
-
-    }
-    private function assemble_level_2($kingdom)
-    {
-        foreach($kingdom as $kingdom_name => $rekords) {
-            foreach($rekords as $taxid => $rec) {
-                // echo "\n[$taxid]\n"; print_r($rec); exit;
-                /*Array(
-                    [taxid] => 11
-                    [counts] => 3027
-                    [sciname] => Acanthocephala
-                )*/
-                if($html = Functions::lookup_with_cache($this->next_page.$taxid, $this->download_options_BOLDS)) {
-                    $left = '<div id="taxMenu">';
-                    $right = '</div>';
-                    if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
-                        $html2 = $arr[1];
-                        echo "\n$html2\n"; //exit;
-                        $rank = self::get_rank($html2);
-                        $temp = self::get_list_items($html2, $rank); print_r($temp);
-                        foreach($temp as $t) $list[$rank][] = $t;
-                        // print_r($list); //exit;
-                    }
-                }
-            }
-        }
-        return $list;
+        $level_1 = self::assemble_kingdom(); //print_r($level_1);
+        $level_2 = self::assemble_level_2($level_1); //print_r($level_2);
+        $level_3 = self::assemble_level_2($level_2); //print_r($level_3);
+        $level_4 = self::assemble_level_2($level_3); print_r($level_4);
+        // $level_5 = self::assemble_level_2($level_4); print_r($level_5);
     }
     private function assemble_kingdom()
     {   /*
@@ -81,20 +53,50 @@ class DataHub_BOLDS_API
             </ul>
         </div>
         */
+        $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;
         $final = array();
         $groups = array('Animal', 'Plant', 'Fungi', 'Protist'); //main operation
         $groups = array('Animal');
         foreach($groups as $group) { $left = '<div id="'.$group.'Div"'; $right = '</div>';
-            if($html = Functions::lookup_with_cache($this->start_page, $this->download_options_BOLDS)) {
+            if($html = Functions::lookup_with_cache($this->start_page, $options)) {
                 if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
                     $html2 = $arr[1];
-                    $tmp = self::get_list_items($html2, 'kingdom');
-                    foreach($tmp as $t) $final[$group][] = $t;
+                    $tmp = self::get_list_items($html2, 'phylum');
+                    foreach($tmp as $t) $final['phylums_Eli'][] = $t;
                 }    
             }            
         }
         // print_r($final);
         return $final;
+    }
+    private function assemble_level_2($level_1)
+    {
+        $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;
+        $list = array();
+        foreach($level_1 as $rekords) {
+            foreach($rekords as $rec) {
+                // echo "\n[$taxid]\n"; print_r($rec); exit;
+                /*Array(
+                    [taxid] => 11
+                    [counts] => 3027
+                    [sciname] => Acanthocephala
+                )*/
+                if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
+                    $left = '<div id="taxMenu">';
+                    $right = '</div>';
+                    if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
+                        $html2 = $arr[1];
+                        echo "\n$html2\n"; //exit;
+                        $rank = self::get_rank($html2);
+                        $temp = self::get_list_items($html2, $rank); //print_r($temp);
+                        foreach($temp as $t) $list[$rank][] = $t;
+                        // print_r($list); //exit;
+                    }
+                }
+                // break; //debug only; gets the first taxon only
+            }
+        }
+        return $list;
     }
     private function get_list_items($html, $rank)
     {
