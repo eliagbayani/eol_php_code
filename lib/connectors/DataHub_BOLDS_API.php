@@ -33,8 +33,9 @@ class DataHub_BOLDS_API
     }
     function start() //builds up the taxonomy list
     {
-        $level_1 = self::assemble_kingdom(); //print_r($level_1);
-        $level_2 = self::assemble_level_2($level_1); //print_r($level_2);
+        /*
+        $level_1 = self::assemble_kingdom(); print_r($level_1); exit;
+        $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
         $level_1 = '';
         $level_3 = self::assemble_level_2($level_2); //print_r($level_3);
         $level_2 = '';
@@ -44,6 +45,13 @@ class DataHub_BOLDS_API
         $level_4 = '';
         $level_6 = self::assemble_level_2($level_5); print_r($level_6); //still running
         $level_5 = '';
+        */
+        
+        $test['xxx'][0] = array('taxid' => 2, 'counts' => 3027, 'sciname' => 'Annelida', 'rank' => 'phylum');
+        $level_3 = self::assemble_level_2($test); print_r($level_3);
+        
+
+
 
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
     }
