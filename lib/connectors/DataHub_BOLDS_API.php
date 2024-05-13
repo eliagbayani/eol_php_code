@@ -12,16 +12,13 @@ class DataHub_BOLDS_API
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
         $this->debug = array();
-        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1);
+        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
         $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?taxId=XTAXID&dataTypes=basic,stats&includeTree=true';
 
-
         // special case with: "Tribes" and "Genera"
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=177245
-
-
 
         // /*
         if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
@@ -32,8 +29,6 @@ class DataHub_BOLDS_API
         $this->dump_file = $save_path . "/datahub_bolds_taxonomy.txt";
         if(is_file($this->dump_file)) unlink($this->dump_file);
         // */
-
-
     }
     function start() //builds up the taxonomy list
     {
@@ -45,18 +40,18 @@ class DataHub_BOLDS_API
         $level_2 = '';
         $level_4 = self::assemble_level_2($level_3); //print_r($level_4);
         $level_3 = '';
-        $level_5 = self::assemble_level_2($level_4); //print_r($level_5); //still running
+        $level_5 = self::assemble_level_2($level_4); //print_r($level_5);
         $level_4 = '';
         $level_6 = self::assemble_level_2($level_5); //print_r($level_6); //still running
         $level_5 = '';
+        $level_7 = self::assemble_level_2($level_6); //print_r($level_7); //still running
+        $level_6 = '';
         // */
 
         /* testing only
         $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
         $level_3 = self::assemble_level_2($test); //print_r($level_3);
         */
-
-
 
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
     }
@@ -110,6 +105,13 @@ class DataHub_BOLDS_API
 
 
                 if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
+
+                    @$this->total_calls++; echo "\nx[$this->total_calls]\n";
+                    if($this->total_calls > 15900) {
+                        if(($this->total_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
+                    }
+
+
                     $left = '<div id="taxMenu">';
                     $right = '</div>';
                     if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
