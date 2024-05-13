@@ -31,13 +31,21 @@ class DataHub_BOLDS_API
         // $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0000495-240506114902167.zip";
         // $this->taxon_page = 'https://www.gbif.org/species/'; //e.g. 8084280
     }
-    function start()
-    {   //step 1: kingdom assemble
+    function start() //builds up the taxonomy list
+    {
         $level_1 = self::assemble_kingdom(); //print_r($level_1);
         $level_2 = self::assemble_level_2($level_1); //print_r($level_2);
+        $level_1 = '';
         $level_3 = self::assemble_level_2($level_2); //print_r($level_3);
-        $level_4 = self::assemble_level_2($level_3); print_r($level_4);
-        // $level_5 = self::assemble_level_2($level_4); print_r($level_5);
+        $level_2 = '';
+        $level_4 = self::assemble_level_2($level_3); //print_r($level_4);
+        $level_3 = '';
+        $level_5 = self::assemble_level_2($level_4); print_r($level_5); //still running
+        $level_4 = '';
+        $level_6 = self::assemble_level_2($level_5); print_r($level_6); //still running
+        $level_5 = '';
+
+        // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
     }
     private function assemble_kingdom()
     {   /*
@@ -75,12 +83,15 @@ class DataHub_BOLDS_API
         $list = array();
         foreach($level_1 as $rekords) {
             foreach($rekords as $rec) {
-                // echo "\n[$taxid]\n"; print_r($rec); exit;
+                print_r($rec); //exit;
                 /*Array(
                     [taxid] => 11
                     [counts] => 3027
                     [sciname] => Acanthocephala
                 )*/
+                if(strtolower($rec['rank']) == "species") {echo "\nmay continue\n"; continue;}
+                if(strtolower($rec['rank']) == "subspecies") {echo "\nmay continue\n"; continue;}
+
                 if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
                     $left = '<div id="taxMenu">';
                     $right = '</div>';
