@@ -15,25 +15,29 @@ class DataHub_BOLDS_API
         $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1);
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
+        $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?taxId=XTAXID&dataTypes=basic,stats&includeTree=true';
 
 
         // special case with: "Tribes" and "Genera"
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=177245
 
 
-        // if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
-        // else                           $save_path = "/Volumes/Crucial_2TB/other_files2/dumps_GGI/";
-        // if(!is_dir($save_path)) mkdir($save_path);
-        // $save_path = $save_path . "GBIF/";
-        // if(!is_dir($save_path)) mkdir($save_path);
-        // $this->save_path = $save_path;
-        // $this->reports_path = $save_path;
-        // $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0000495-240506114902167.zip";
-        // $this->taxon_page = 'https://www.gbif.org/species/'; //e.g. 8084280
+
+        // /*
+        if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
+        else                           $save_path = "/Volumes/Crucial_2TB/other_files2/dumps_GGI/";
+        if(!is_dir($save_path)) mkdir($save_path);
+        $save_path = $save_path . "BOLDS/";
+        if(!is_dir($save_path)) mkdir($save_path);
+        $this->dump_file = $save_path . "/datahub_bolds_taxonomy.txt";
+        if(is_file($this->dump_file)) unlink($this->dump_file);
+        // */
+
+
     }
     function start() //builds up the taxonomy list
     {
-        /*
+        // /*
         $level_1 = self::assemble_kingdom(); //print_r($level_1); exit;
         $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
         $level_1 = '';
@@ -45,12 +49,12 @@ class DataHub_BOLDS_API
         $level_4 = '';
         $level_6 = self::assemble_level_2($level_5); //print_r($level_6); //still running
         $level_5 = '';
-        */
+        // */
 
-        // /* testing only
+        /* testing only
         $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
         $level_3 = self::assemble_level_2($test); //print_r($level_3);
-        // */
+        */
 
 
 
@@ -138,6 +142,13 @@ class DataHub_BOLDS_API
         }
         return $list;
     }
+    private function get_ancestry($html)
+    {   /*<div id="subheader">
+            <div class="box">
+                <table width="100%" cellspacing="0" cellpadding="0"><tr><td><h1 id="subHeaderH1">Oonopidae {family} -  <a title="phylum"href="/index.php/TaxBrowser_Taxonpage?taxid=20">Arthropoda</a>;  <a title="class"href="/index.php/TaxBrowser_Taxonpage?taxid=63">Arachnida</a>;  <a title="order"href="/index.php/TaxBrowser_Taxonpage?taxid=251">Araneae</a>; </h1></td><td class="printBtn"><button style="float:right" id="printBtn">Print</button></td></tr></table>
+            </div>
+        </div>*/
+    }
     private function get_list_items($html, $rank)
     {
         $final = array(); $left = '<li>'; $right = '</li>';
@@ -159,7 +170,12 @@ class DataHub_BOLDS_API
                     $r['sciname'] = trim($ret);
                     $r['rank'] = $rank;
                 }
+
+                // $ret = self::get_ancestry(); //todo
+
                 $r = array_map('trim', $r); // echo "\n$t\n"; print_r($r);
+                self::save_to_dump($r, $this->dump_file);
+
                 /*Array(
                     [taxid] => 24818
                     [counts] => 14053
@@ -183,6 +199,32 @@ class DataHub_BOLDS_API
         if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $str, $arr)) return trim($arr[1]);
     }
 
+    private function save_to_dump($rec, $filename)
+    {
+        $fields = array_keys($rec);
+        $data = "";
+
+        if(!is_file($filename)) {
+            foreach($fields as $field) $data .= $field . "\t";
+            if(!($WRITE = Functions::file_open($filename, "a"))) return;
+            fwrite($WRITE, $data . "\n");
+            fclose($WRITE);    
+        }
+        $data = "";
+        foreach($fields as $field) $data .= $rec[$field] . "\t";
+        if(!($WRITE = Functions::file_open($filename, "a"))) return;
+        fwrite($WRITE, $data . "\n");
+        fclose($WRITE);    
+
+
+        // copied template
+        // else {
+        //     if(!($WRITE = Functions::file_open($filename, "a"))) return;
+        //     if($rec && is_array($rec)) fwrite($WRITE, json_encode($rec) . "\n");
+        //     else                       fwrite($WRITE, $rec . "\n");
+        //     fclose($WRITE);
+        // }
+    }
 
 
     // ========================================================= below copied template
