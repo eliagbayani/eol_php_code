@@ -627,6 +627,10 @@ class NCBIGGIqueryAPI
     }
     private function get_page_count_from_BHL_xml($contents)
     {
+        if(preg_match_all("/<ErrorMessage>(.*?)<\/ErrorMessage>/ims", $contents, $arr)) {
+            exit("\nBHL Error found, will terminate. Investigate:\n$contents\n");
+        }
+
         if(preg_match_all("/<PageID>(.*?)<\/PageID>/ims", $contents, $arr)) return count(array_unique($arr[1]));
         return false;
     }

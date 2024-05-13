@@ -12,7 +12,7 @@ class DataHub_BOLDS_API
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
         $this->debug = array();
-        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1);
+        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1);
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
         $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?taxId=XTAXID&dataTypes=basic,stats&includeTree=true';
@@ -181,7 +181,8 @@ class DataHub_BOLDS_API
                     [counts] => 14053
                     [sciname] => Porifera
                 )*/
-                $final[$r['taxid']] = $r;
+                // $final[$r['taxid']] = $r;
+                $final[] = $r;
             }                    
         }
         return $final;
