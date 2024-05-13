@@ -33,23 +33,24 @@ class DataHub_BOLDS_API
     }
     function start() //builds up the taxonomy list
     {
-        /*
-        $level_1 = self::assemble_kingdom(); print_r($level_1); exit;
+        // /*
+        $level_1 = self::assemble_kingdom(); //print_r($level_1); exit;
         $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
         $level_1 = '';
         $level_3 = self::assemble_level_2($level_2); //print_r($level_3);
         $level_2 = '';
         $level_4 = self::assemble_level_2($level_3); //print_r($level_4);
         $level_3 = '';
-        $level_5 = self::assemble_level_2($level_4); print_r($level_5); //still running
+        $level_5 = self::assemble_level_2($level_4); //print_r($level_5); //still running
         $level_4 = '';
         $level_6 = self::assemble_level_2($level_5); print_r($level_6); //still running
         $level_5 = '';
-        */
-        
-        $test['xxx'][0] = array('taxid' => 2, 'counts' => 3027, 'sciname' => 'Annelida', 'rank' => 'phylum');
+        // */
+
+        /* testing only
+        $test['xxx'][0] = array('taxid' => 560894, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
         $level_3 = self::assemble_level_2($test); print_r($level_3);
-        
+        */
 
 
 
@@ -99,17 +100,37 @@ class DataHub_BOLDS_API
                 )*/
                 if(strtolower($rec['rank']) == "species") {echo "\nmay continue\n"; continue;}
                 if(strtolower($rec['rank']) == "subspecies") {echo "\nmay continue\n"; continue;}
+                if(strtolower($rec['rank']) == "variety") {echo "\nmay continue\n"; continue;}
+                if(strtolower($rec['rank']) == "form") {echo "\nmay continue\n"; continue;}
+                if(strtolower($rec['rank']) == "forma") {echo "\nmay continue\n"; continue;}
+
 
                 if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
                     $left = '<div id="taxMenu">';
                     $right = '</div>';
                     if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
-                        $html2 = $arr[1];
-                        echo "\n$html2\n"; //exit;
+                        $html2 = $arr[1]; // echo "\n$html2\n"; //exit;
+                        /*<lh>Classes (3) </lh><ol><li><a href="/index.php/Taxbrowser_Taxonpage?taxid=95135">Clitellata [72690]</a></li>
+                        <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=24489">Polychaeta [67251]</a></li>
+                        <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=15">Sipuncula [1668]</a></li></ol>
+                        <lh>Orders (1) </lh><br/>
+                        <ol><li><a href="/index.php/Taxbrowser_Taxonpage?taxid=532042">Myzostomida [196]</a></li></ol>*/
+
+                        if(preg_match_all("/<lh>(.*?)<\/ol>/ims", $html2, $arr2)) { // print_r($arr2[1]); exit;
+                            foreach($arr2[1] as $html3) {
+                                $html3 = "<lh>".$html3; echo "\n$html3\n"; //exit;
+                                $rank = self::get_rank($html3);
+                                $temp = self::get_list_items($html3, $rank); print_r($temp);
+                                foreach($temp as $t) $list['Elix'][] = $t;
+                            }
+                        }
+
+                        /* legacy ok
                         $rank = self::get_rank($html2);
                         $temp = self::get_list_items($html2, $rank); //print_r($temp);
                         foreach($temp as $t) $list[$rank][] = $t;
                         // print_r($list); //exit;
+                        */
                     }
                 }
                 // break; //debug only; gets the first taxon only
