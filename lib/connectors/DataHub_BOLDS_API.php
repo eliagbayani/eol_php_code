@@ -33,7 +33,7 @@ class DataHub_BOLDS_API
     }
     function start() //builds up the taxonomy list
     {
-        // /*
+        /*
         $level_1 = self::assemble_kingdom(); //print_r($level_1); exit;
         $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
         $level_1 = '';
@@ -43,14 +43,14 @@ class DataHub_BOLDS_API
         $level_3 = '';
         $level_5 = self::assemble_level_2($level_4); //print_r($level_5); //still running
         $level_4 = '';
-        $level_6 = self::assemble_level_2($level_5); print_r($level_6); //still running
+        $level_6 = self::assemble_level_2($level_5); //print_r($level_6); //still running
         $level_5 = '';
-        // */
-
-        /* testing only
-        $test['xxx'][0] = array('taxid' => 560894, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
-        $level_3 = self::assemble_level_2($test); print_r($level_3);
         */
+
+        // /* testing only
+        $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
+        $level_3 = self::assemble_level_2($test); //print_r($level_3);
+        // */
 
 
 
