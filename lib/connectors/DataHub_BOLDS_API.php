@@ -16,6 +16,7 @@ class DataHub_BOLDS_API
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
         $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=';
+        $this->taxon_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
 
         // special case with: "Tribes" and "Genera"
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=177245
@@ -30,10 +31,18 @@ class DataHub_BOLDS_API
         // */
     }
     function start()
-    {   //step 1
+    {   
+        $this->debug = array();
+        require_library('connectors/TraitGeneric'); 
+        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
+        
+        //step 1
         // self::build_taxonomy_list();
         //step 2:
         self::read_tsv_run_api_for_species();
+
+        $this->archive_builder->finalize(TRUE);
+        print_r($this->debug);
     }
     private function read_tsv_run_api_for_species()
     {
@@ -65,6 +74,7 @@ class DataHub_BOLDS_API
                 if($rec['rank'] == 'Species') {
                     print_r($rec);
                     $obj = self::get_data_from_api($rec);
+                    break; //debug only
                 }
             }
         }
@@ -72,11 +82,67 @@ class DataHub_BOLDS_API
     private function get_data_from_api($rec)
     {
         $url = $this->api . $rec['taxid']; //exit("\n$url\n");
-
+        // $url = $this->api . 1; //"41";
         if($json = Functions::lookup_with_cache($url, $this->download_options_BOLDS)) {
             $obj = json_decode($json); //echo "<pre>";print_r($obj); echo "</pre>"; //exit;
-            print_r($obj); exit;
+            // print_r($obj); exit;
+            foreach($obj as $taxid => $o) { print_r($o); //exit;
+                /*stdClass Object(
+                    [taxid] => 1135068
+                    [taxon] => Oonopidae sp. H-AOO012
+                    [tax_rank] => species
+                    [tax_division] => Animalia
+                    [parentid] => 285425
+                    [parentname] => Oonopidae
+                    [stats] => stdClass Object(
+                            [publicrecords] => 3
+                            [publicbins] => 0
+                            [publicspecies] => 1
+                            [publicmarkersequences] => stdClass Object(
+                                    [COI-5P] => 3
+                                )
+                            [specimenrecords] => 3
+                            [sequencedspecimens] => 3
+                            [barcodespecimens] => 0
+                            [species] => 1
+                            [barcodespecies] => 1
+                        )
+                )*/
+                $save = array();
+                $save['taxonID'] = $o->taxid;
+                $save['scientificName'] = $o->taxon;
+                $save['taxonRank'] = $o->tax_rank;
+                $save['parentNameUsageID'] = $o->parentid;
+                self::write_taxon($save);
+                self::write_MoF($o);
+            }
         }
+    }
+    private function write_taxon($rec)
+    {
+        $taxonID = $rec['taxonID'];
+        $taxon = new \eol_schema\Taxon();
+        $taxon->taxonID             = $taxonID;
+        $taxon->scientificName      = $rec['scientificName'];
+        $taxon->taxonRank           = $rec['taxonRank'];
+        $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
+        if(!isset($this->taxonIDs[$taxonID])) {
+            $this->taxonIDs[$taxonID] = '';
+            $this->archive_builder->write_object_to_file($taxon);
+        }
+    }
+    private function write_MoF($o)
+    {   //print_r($o); exit;
+        $taxonID = $o->taxid;
+        $save = array();
+        $save['taxon_id'] = $taxonID;
+        $save['source'] = $this->taxon_page . $taxonID;
+        // $save['bibliographicCitation'] = '';
+        // $save['measurementRemarks'] = ""; 
+        $mType = 'http://eol.org/schema/terms/NumberPublicRecordsInBOLD';
+        $mValue = $o->stats->publicrecords;
+        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
+        $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
     private function build_taxonomy_list() //builds up the taxonomy list
     {
@@ -505,46 +571,6 @@ class DataHub_BOLDS_API
                 $save_taxon = array('taxonID' => $taxon_id, 'scientificName' => $r['s'], 'taxonRank' => $r['r'] , 'parentNameUsageID' => @$ancestry[$i+1]);
                 self::write_taxon($save_taxon);        
             }
-        }
-    }
-    private function write_taxon($rec)
-    {
-        $taxonID = $rec['taxonID'];
-        $taxon = new \eol_schema\Taxon();
-        $taxon->taxonID             = $taxonID;
-        $taxon->scientificName      = $rec['scientificName'];
-        $taxon->taxonRank           = $rec['taxonRank'];
-        $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
-        if(!isset($this->taxonIDs[$taxonID])) {
-            $this->taxonIDs[$taxonID] = '';
-            $this->archive_builder->write_object_to_file($taxon);
-        }
-    }
-    private function write_MoF($rec)
-    {   //print_r($rec); exit;
-        /*Array(
-            [id] => 359
-            [rank] => class
-            [name] => Mammalia
-            [numberOfOccurrences] => 126524
-            [parent_id] => 44
-            [ancestry] => 1/44
-        )*/
-        $taxonID = $rec['id'];
-        $save = array();
-        $save['taxon_id'] = $taxonID;
-        $save['source'] = $this->taxon_page . $taxonID;
-        // $save['bibliographicCitation'] = '';
-        // $save['measurementRemarks'] = ""; 
-
-        $mType = 'http://eol.org/schema/terms/NumberRecordsInGBIF';
-        if(isset($rec['numberOfOccurrences'])) {
-            $mValue = $rec['numberOfOccurrences'];
-            $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
-            $this->func->add_string_types($save, $mValue, $mType, "true");    
-        }
-        else {
-            echo "\nInvestigate, no numberOfOccurrences field. Should not go here."; print_r($rec);
         }
     }
     private function download_extract_gbif_zip_file()
