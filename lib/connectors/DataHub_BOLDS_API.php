@@ -15,7 +15,7 @@ class DataHub_BOLDS_API
         $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
-        $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?taxId=XTAXID&dataTypes=basic,stats&includeTree=true';
+        $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=';
 
         // special case with: "Tribes" and "Genera"
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=177245
@@ -27,12 +27,61 @@ class DataHub_BOLDS_API
         $save_path = $save_path . "BOLDS/";
         if(!is_dir($save_path)) mkdir($save_path);
         $this->dump_file = $save_path . "/datahub_bolds_taxonomy.txt";
-        if(is_file($this->dump_file)) unlink($this->dump_file);
         // */
     }
-    function start() //builds up the taxonomy list
+    function start()
+    {   //step 1
+        // self::build_taxonomy_list();
+        //step 2:
+        self::read_tsv_run_api_for_species();
+    }
+    private function read_tsv_run_api_for_species()
     {
-        // /*
+        self::parse_tsv_file($this->dump_file, "read tsv run api for species");
+    }
+    private function parse_tsv_file($file, $what)
+    {   echo "\nReading file, task: [$what] [$file]\n";
+        $i = 0; $final = array();
+        $included_ranks = array("species", "form", "variety", "subspecies", "unranked");
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(($i % 200000) == 0) echo "\n $i ";
+            if($i == 1) { $fields = explode("\t", $row); continue; }
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+            }
+
+            if($what == 'read tsv run api for species') {
+                /* Array(
+                    [taxid] => 363969
+                    [counts] => 1
+                    [sciname] => Gamasomorphinae
+                    [rank] => Subfamilies
+                    [] => 
+                ) */
+                if($rec['rank'] == 'Species') {
+                    print_r($rec);
+                    $obj = self::get_data_from_api($rec);
+                }
+            }
+        }
+    }
+    private function get_data_from_api($rec)
+    {
+        $url = $this->api . $rec['taxid']; //exit("\n$url\n");
+
+        if($json = Functions::lookup_with_cache($url, $this->download_options_BOLDS)) {
+            $obj = json_decode($json); //echo "<pre>";print_r($obj); echo "</pre>"; //exit;
+            print_r($obj); exit;
+        }
+    }
+    private function build_taxonomy_list() //builds up the taxonomy list
+    {
+        if(is_file($this->dump_file)) unlink($this->dump_file);
+        /*
         $level_1 = self::assemble_kingdom(); //print_r($level_1); exit;
         $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
         $level_1 = '';
@@ -46,12 +95,12 @@ class DataHub_BOLDS_API
         $level_5 = '';
         $level_7 = self::assemble_level_2($level_6); //print_r($level_7); //still running
         $level_6 = '';
-        // */
+        */
 
-        /* testing only
+        // /* testing only
         $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
         $level_3 = self::assemble_level_2($test); //print_r($level_3);
-        */
+        // */
 
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
     }
@@ -107,7 +156,7 @@ class DataHub_BOLDS_API
                 if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
 
                     @$this->total_calls++; echo "\nx[$this->total_calls]\n";
-                    if($this->total_calls > 15900) {
+                    if($this->total_calls > 19767) {
                         if(($this->total_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
                     }
 
@@ -275,7 +324,7 @@ class DataHub_BOLDS_API
             [subspecies] => 
             [unranked] => 
     )*/
-    private function parse_tsv_file($file, $what)
+    private function parse_tsv_file_x($file, $what)
     {   echo "\nReading file, task: [$what] [$file]\n";
         $i = 0; $final = array();
         $included_ranks = array("species", "form", "variety", "subspecies", "unranked");
