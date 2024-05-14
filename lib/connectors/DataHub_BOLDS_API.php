@@ -80,17 +80,30 @@ class DataHub_BOLDS_API
             }
         }
     }
+    private function bolds_API_result_still_validYN($str)
+    {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
+        if(stripos($str, 'have exceeded') !== false) { //string is found
+            echo "\n[$str]\n";
+            // echo "\nBOLDS special error\n"; exit("\nexit muna, remove BOLDS from the list of dbases.\n");
+            echo "\nExceeded quota\n"; sleep(60*10); //10 mins
+            @$this->BOLDS_TooManyRequests++;
+            if($this->BOLDS_TooManyRequests >= 3) exit("\nBOLDS should stop now.\n");
+        }
+    }
     private function get_data_from_api($rec)
     {
         $url = $this->api . $rec['taxid']; //exit("\n$url\n");
         // $url = $this->api . 1; //"41";
 
-        @$this->total_api_calls++; echo "\nx[$this->total_api_calls]\n";
-        if($this->total_api_calls > 1) {
+        @$this->total_api_calls++; echo "\ny[$this->total_api_calls]\n";
+        if($this->total_api_calls > 4100) {
             if(($this->total_api_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
         }
 
         if($json = Functions::lookup_with_cache($url, $this->download_options_BOLDS)) {
+
+            self::bolds_API_result_still_validYN($json);
+
             $obj = json_decode($json); //echo "<pre>";print_r($obj); echo "</pre>"; //exit;
             // print_r($obj); exit;
             foreach($obj as $taxid => $o) { //print_r($o); //exit;
@@ -154,7 +167,7 @@ class DataHub_BOLDS_API
     private function build_taxonomy_list() //builds up the taxonomy list
     {
         if(is_file($this->dump_file)) unlink($this->dump_file);
-        /*
+        // /*
         $level_1 = self::assemble_kingdom(); //print_r($level_1); exit;
         $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
         $level_1 = '';
@@ -168,7 +181,10 @@ class DataHub_BOLDS_API
         $level_5 = '';
         $level_7 = self::assemble_level_2($level_6); //print_r($level_7); //still running
         $level_6 = '';
-        */
+        $level_8 = self::assemble_level_2($level_7); //print_r($level_8); //still running
+        $level_7 = '';
+
+        // */
 
         // /* testing only
         $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
@@ -225,14 +241,14 @@ class DataHub_BOLDS_API
                 if(strtolower($rec['rank']) == "form") {echo "\nmay continue\n"; continue;}
                 if(strtolower($rec['rank']) == "forma") {echo "\nmay continue\n"; continue;}
 
-
                 if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
 
+                    self::bolds_API_result_still_validYN($html);
+
                     @$this->total_page_calls++; echo "\nx[$this->total_page_calls]\n";
-                    if($this->total_page_calls > 19767) {
+                    if($this->total_page_calls > 21715) {
                         if(($this->total_page_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
                     }
-
 
                     $left = '<div id="taxMenu">';
                     $right = '</div>';
