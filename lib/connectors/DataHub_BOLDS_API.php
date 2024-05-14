@@ -12,7 +12,7 @@ class DataHub_BOLDS_API
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
         $this->debug = array();
-        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
+        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1);
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
         $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=';
@@ -38,6 +38,7 @@ class DataHub_BOLDS_API
         
         //step 1
         // self::build_taxonomy_list();
+
         //step 2:
         self::read_tsv_run_api_for_species();
 
@@ -71,10 +72,10 @@ class DataHub_BOLDS_API
                     [rank] => Subfamilies
                     [] => 
                 ) */
-                if($rec['rank'] == 'Species') {
-                    print_r($rec);
+                if($rec['rank'] == 'Species') { // print_r($rec);
                     $obj = self::get_data_from_api($rec);
-                    break; //debug only
+                    // break; //debug only
+                    // if($i >= 60) break; //debug only
                 }
             }
         }
@@ -83,10 +84,16 @@ class DataHub_BOLDS_API
     {
         $url = $this->api . $rec['taxid']; //exit("\n$url\n");
         // $url = $this->api . 1; //"41";
+
+        @$this->total_api_calls++; echo "\nx[$this->total_api_calls]\n";
+        if($this->total_api_calls > 1) {
+            if(($this->total_api_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
+        }
+
         if($json = Functions::lookup_with_cache($url, $this->download_options_BOLDS)) {
             $obj = json_decode($json); //echo "<pre>";print_r($obj); echo "</pre>"; //exit;
             // print_r($obj); exit;
-            foreach($obj as $taxid => $o) { print_r($o); //exit;
+            foreach($obj as $taxid => $o) { //print_r($o); //exit;
                 /*stdClass Object(
                     [taxid] => 1135068
                     [taxon] => Oonopidae sp. H-AOO012
@@ -221,9 +228,9 @@ class DataHub_BOLDS_API
 
                 if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
 
-                    @$this->total_calls++; echo "\nx[$this->total_calls]\n";
-                    if($this->total_calls > 19767) {
-                        if(($this->total_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
+                    @$this->total_page_calls++; echo "\nx[$this->total_page_calls]\n";
+                    if($this->total_page_calls > 19767) {
+                        if(($this->total_page_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
                     }
 
 
