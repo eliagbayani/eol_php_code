@@ -72,7 +72,7 @@ class DataHub_GBIF_API
     private function parse_tsv_file($file, $what)
     {   echo "\nReading file, task: [$what] [$file]\n";
         $i = 0; $final = array();
-        $included_ranks = array("species", "form", "variety", "subspecies", "unranked");
+        $included_ranks = array("species", "form", "variety", "subspecies"); //"unranked" removed per: https://github.com/EOL/ContentImport/issues/6#issuecomment-2110674884
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % 200000) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
