@@ -39,13 +39,15 @@ class DataHub_BOLDS_API
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
         
         //step 1
-        // self::build_taxonomy_list();
+        self::build_taxonomy_list(); exit("\nstop muna\n");
 
         //step 2:
+        /*
         self::get_curl_errors();
         self::read_tsv_run_api_for_species();
-
         $this->archive_builder->finalize(TRUE);
+        */
+
         print_r($this->debug);
     }
     private function read_tsv_run_api_for_species()
@@ -172,7 +174,7 @@ class DataHub_BOLDS_API
     private function build_taxonomy_list() //builds up the taxonomy list
     {
         if(is_file($this->dump_file)) unlink($this->dump_file);
-        // /*
+        /*
         $level_1 = self::assemble_kingdom(); //print_r($level_1); exit;
         $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
         $level_1 = '';
@@ -188,12 +190,11 @@ class DataHub_BOLDS_API
         $level_6 = '';
         $level_8 = self::assemble_level_2($level_7); //print_r($level_8); //still running
         $level_7 = '';
-
-        // */
+        */
 
         // /* testing only
         $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
-        $level_3 = self::assemble_level_2($test); //print_r($level_3);
+        $level_3 = self::assemble_level_2($test); print_r($level_3);
         // */
 
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
@@ -251,9 +252,13 @@ class DataHub_BOLDS_API
                     self::bolds_API_result_still_validYN($html);
 
                     @$this->total_page_calls++; echo "\nx[$this->total_page_calls]\n";
-                    if($this->total_page_calls > 40469) {
+                    if($this->total_page_calls > 51321) {
                         if(($this->total_page_calls % 70) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
                     }
+
+                    // /* assemble data, write to DwCA
+                    self::assemble_data_from_html_then_write_dwca($html);
+                    // */
 
                     $left = '<div id="taxMenu">';
                     $right = '</div>';
@@ -274,12 +279,6 @@ class DataHub_BOLDS_API
                             }
                         }
 
-                        /* legacy ok
-                        $rank = self::get_rank($html2);
-                        $temp = self::get_list_items($html2, $rank); //print_r($temp);
-                        foreach($temp as $t) $list[$rank][] = $t;
-                        // print_r($list); //exit;
-                        */
                     }
                 }
                 // break; //debug only; gets the first taxon only
@@ -438,222 +437,5 @@ class DataHub_BOLDS_API
             [subspecies] => 
             [unranked] => 
     )*/
-    private function parse_tsv_file_x($file, $what)
-    {   echo "\nReading file, task: [$what] [$file]\n";
-        $i = 0; $final = array();
-        $included_ranks = array("species", "form", "variety", "subspecies", "unranked");
-        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 200000) == 0) echo "\n $i ";
-            if($i == 1) $fields = explode("\t", $row);
-            else {
-                if(!$row) continue;
-                $tmp = explode("\t", $row);
-                $rec = array(); $k = 0;
-                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
-                /*Array(
-                    [taxonKey] => 359
-                    [scientificName] => Mammalia
-                    [acceptedTaxonKey] => 359
-                    [acceptedScientificName] => Mammalia
-                    [numberOfOccurrences] => 126524
-                    [taxonRank] => CLASS
-                    [taxonomicStatus] => ACCEPTED
-                    [kingdom] => Animalia
-                    [kingdomKey] => 1
-                    [phylum] => Chordata
-                    [phylumKey] => 44
-                    [class] => Mammalia
-                    [classKey] => 359
-                    [order] => 
-                    [orderKey] => 
-                    [family] => 
-                    [familyKey] => 
-                    [genus] => 
-                    [genusKey] => 
-                    [species] => 
-                    [speciesKey] => 
-                    [iucnRedListCategory] => NE
-                )*/
-
-                $taxonID = $rec['taxonKey'];
-                $taxonomicStatus = $rec['taxonomicStatus'];
-                $this->debug['taxonomicStatus'][$taxonomicStatus] = '';
-                $rec['taxonRank'] = strtolower($rec['taxonRank']);
-                $taxonRank = $rec['taxonRank'];
-                $this->debug['taxonRank'][$taxonRank] = '';
-                /* [taxonomicStatus] => Array( [ACCEPTED] [SYNONYM] [DOUBTFUL] [] ) */
-                // if($taxonRank != 'variety') continue; //print_r($rec); //debug only
-
-                if($what == 'write DwCA') {
-                    if($taxonomicStatus == 'ACCEPTED') { //print_r($rec);
-                        $t = array();
-                        $t['id'] = $taxonID;
-                        $t['rank'] = $rec['taxonRank'];
-                        $t['name'] = $rec['scientificName'];
-
-                        if(in_array($taxonRank, $included_ranks)) {
-                            @$this->debug['counts']['species-level']++;
-                            $t['numberOfOccurrences'] = $rec['numberOfOccurrences'];
-                        }
-                        elseif(in_array($taxonRank, array('family', 'genus'))) {
-                            /*[counts] => Array( as of May 10, 2024
-                                [other-levels] => 1996
-                                [family-genus-level] => 157895
-                                [species-level] => 2572371
-                            )*/
-                            @$this->debug['counts']['family-genus-level']++;
-                            
-                            // continue; //comment in real operation since 157,895 < 187,774 from NCBIGGIqueryAPI.php
-
-                            // /* main operation
-                            // @$this->special_count++;
-                            // if(($this->special_count % 100) == 0) sleep(60); //1 min sleep for every 100 calls
-
-                            $count = $this->func_gbif->get_gbif_taxon_record_count($taxonID);
-                            if($count > 0) $t['numberOfOccurrences'] = $count;
-                            else continue;
-                            // */
-                        }
-                        else { //'kingdom', 'phylum', 'class', 'order',
-                            @$this->debug['counts']['other-levels']++;
-                            continue;
-                        }
-                        // continue; //debug only
-
-                        $ret = self::get_parent_id($rec);
-                        $t['parent_id'] = $ret['parent_id'];
-                        $t['ancestry'] = $ret['ancestry']; //print_r($t);
-                        self::prep_write_taxon($t);
-                        self::write_MoF($t);                        
-                    }
-                }
-                elseif($what == "gen taxa info") {
-                    $ret = self::get_parent_id($rec);
-                    $this->gbif_taxa_info[$taxonID] = array('s' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'p' => $ret['parent_id']);
-                }
-                else exit("\nNothing to do\n");
-            }
-            // if($i >= 10) break; //debug only
-        }
-    }
-    private function get_parent_id($rec)
-    {
-        $rank_main[1] = 'kingdom';
-        $rank_main[2] = 'phylum';
-        $rank_main[3] = 'class';
-        $rank_main[4] = 'order';
-        $rank_main[5] = 'family';
-        $rank_main[6] = 'genus';
-        $rank_main[7] = 'species';
-        $rank_main[8] = 'form';
-        $rank_main[8] = 'variety';
-        $rank_main[8] = 'subspecies';
-        $rank_main[9] = 'unranked';
-
-        $rank_pos['kingdom'] = 1;
-        $rank_pos['phylum'] = 2;
-        $rank_pos['class'] = 3;
-        $rank_pos['order'] = 4;
-        $rank_pos['family'] = 5;
-        $rank_pos['genus'] = 6;
-        $rank_pos['species'] = 7;
-        $rank_pos['form'] = 8;
-        $rank_pos['variety'] = 8;
-        $rank_pos['subspecies'] = 8;
-        $rank_pos['unranked'] = 9;
-
-        $ancestry = array();
-        $taxonRank = $rec['taxonRank'];
-        if(!$taxonRank) $pos = 7;
-        else            $pos = $rank_pos[$taxonRank] - 1;
-
-        if($pos >= 8) $pos = 7;
-
-        for($i = 1; $i <= $pos; $i++) {
-            $field = $rank_main[$i]."Key";
-            if($value = $rec[$field]) $ancestry[] = $value;
-        }
-
-        $ancestry = array_filter($ancestry); //remove null arrays
-        $ancestry = array_unique($ancestry); //make unique
-        $ancestry = array_values($ancestry); //reindex key
-        return array('ancestry' => implode("/", $ancestry), 'parent_id' => end($ancestry));
-        /* [kingdom] => Animalia
-        [kingdomKey] => 1
-        [phylum] => Chordata
-        [phylumKey] => 44
-        [class] => Mammalia
-        [classKey] => 359
-        [order] => 
-        [orderKey] => 
-        [family] => 
-        [familyKey] => 
-        [genus] => 
-        [genusKey] => 
-        [species] => 
-        [speciesKey] => */
-    }
-    private function prep_write_taxon($rec)
-    {   /*Array(
-            [id] => 47219
-            [rank] => species
-            [name] => Apis mellifera
-            [RG_count] => 411499
-            [all_counts] => 1234752
-            [parent_id] => 578086
-            [ancestry] => 48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
-        )*/
-        //step 1: 
-        $save_taxon = array();
-        $save_taxon = array('taxonID' => $rec['id'], 'scientificName' => $rec['name'], 'taxonRank' => $rec['rank'] , 'parentNameUsageID' => $rec['parent_id']);
-        self::write_taxon($save_taxon);
-        //step 2: write taxon for the ancestry
-        $ancestry = explode("/", $rec['ancestry']); //print_r($ancestry); //48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
-        $ancestry=array_reverse($ancestry); //print_r($ancestry);
-        // exit("\nstop muna 1\n");
-        $i = -1;
-        foreach($ancestry as $taxon_id) { $i++;
-            if($r = @$this->gbif_taxa_info[$taxon_id]) {
-                $save_taxon = array();
-                $save_taxon = array('taxonID' => $taxon_id, 'scientificName' => $r['s'], 'taxonRank' => $r['r'] , 'parentNameUsageID' => @$ancestry[$i+1]);
-                self::write_taxon($save_taxon);        
-            }
-        }
-    }
-
-    // =========================================================================== copied template below
-    private function parse_csv_file($csv_file, $what)
-    {
-        $i = 0; $meron = 0;
-        $file = Functions::file_open($csv_file, "r");
-        while(!feof($file)) {
-            $row = fgetcsv($file); //print_r($row);
-            if(!$row) continue; 
-            $str = implode("\t", $row);
-            // if(stripos($str, "Callisaurus	genus") !== false) { echo("\n$str\n"); }  //string found --- good debug
-            if(!$row) break;
-            $i++; if(($i % 100000) == 0) echo "\n $i ";
-            if($i == 1) {
-                $fields = $row;
-                $count = count($fields); // print_r($fields);
-            }
-            else { //main records
-                $values = $row;
-                if($count != count($values)) { //row validation - correct no. of columns
-                    echo("\nWrong CSV format for this row.\n");
-                    continue;
-                }
-                $k = 0; $rec = array();
-                foreach($fields as $field) {
-                    $rec[$field] = $values[$k];
-                    $k++;
-                }
-                print_r($rec); exit;
-                // if($what == "xxx") {}
-                // elseif($what == "xxx") {}
-            }
-        }
-    }
 }
 ?>
