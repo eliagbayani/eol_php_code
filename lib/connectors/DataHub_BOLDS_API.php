@@ -174,7 +174,7 @@ class DataHub_BOLDS_API
     private function build_taxonomy_list() //builds up the taxonomy list
     {
         if(is_file($this->dump_file)) unlink($this->dump_file);
-        /*
+        // /*
         $level_1 = self::assemble_kingdom(); //print_r($level_1); exit;
         $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
         $level_1 = '';
@@ -190,7 +190,7 @@ class DataHub_BOLDS_API
         $level_6 = '';
         $level_8 = self::assemble_level_2($level_7); //print_r($level_8); //still running
         $level_7 = '';
-        */
+        // */
 
         // /* testing only
         $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
