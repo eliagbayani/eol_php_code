@@ -257,7 +257,7 @@ class DataHub_BOLDS_API
                     }
 
                     // /* assemble data, write to DwCA
-                    self::assemble_data_from_html_then_write_dwca($html);
+                    self::assemble_data_from_html_then_write_dwca($html, $rec);
                     // */
 
                     $left = '<div id="taxMenu">';
@@ -286,12 +286,56 @@ class DataHub_BOLDS_API
         }
         return $list;
     }
-    private function get_ancestry($html)
+    private function assemble_data_from_html_then_write_dwca($html, $rec)
     {   /*<div id="subheader">
             <div class="box">
-                <table width="100%" cellspacing="0" cellpadding="0"><tr><td><h1 id="subHeaderH1">Oonopidae {family} -  <a title="phylum"href="/index.php/TaxBrowser_Taxonpage?taxid=20">Arthropoda</a>;  <a title="class"href="/index.php/TaxBrowser_Taxonpage?taxid=63">Arachnida</a>;  <a title="order"href="/index.php/TaxBrowser_Taxonpage?taxid=251">Araneae</a>; </h1></td><td class="printBtn"><button style="float:right" id="printBtn">Print</button></td></tr></table>
+                <table width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td><h1 id="subHeaderH1">Oonopidae {family} -  <a title="phylum"href="/index.php/TaxBrowser_Taxonpage?taxid=20">Arthropoda</a>;  
+                                                                   <a title="class"href="/index.php/TaxBrowser_Taxonpage?taxid=63">Arachnida</a>;  
+                                                                   <a title="order"href="/index.php/TaxBrowser_Taxonpage?taxid=251">Araneae</a>; </h1></td>
+                    <td class="printBtn"><button style="float:right" id="printBtn">Print</button></td></tr></table>
             </div>
         </div>*/
+        // print_r($rec); exit;
+        $html2 = self::get_string_between('<div id="subheader">', "</div>", $html);
+        // echo "\n$str\n";
+        $save = array();
+        $save['taxid'] = $rec['taxid'];
+        $save['sciname'] = trim(self::get_string_between('d="subHeaderH1">', "{", $html2));
+        $save['rank'] = trim(self::get_string_between('{', "}", $html2));
+        $save['pubrec'] = self::get_public_records($html);
+
+        // /* ancestry
+        $ancestry = array();
+        $left = '<a title'; $right = '</a>';
+        if(preg_match_all("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html2, $arr)) { 
+            $a = array_reverse($arr[1]); //print_r($a);
+            /*Array(
+                [0] => ="order"href="/index.php/TaxBrowser_Taxonpage?taxid=251">Araneae
+                [1] => ="class"href="/index.php/TaxBrowser_Taxonpage?taxid=63">Arachnida
+                [2] => ="phylum"href="/index.php/TaxBrowser_Taxonpage?taxid=20">Arthropoda
+            )*/
+            foreach($a as $str) {
+                $anc = array();
+                if(preg_match("/=\"(.*?)\"/ims", $str, $arr2)) $anc['rank'] = $arr2[1];
+                if(preg_match("/taxid=(.*?)\"/ims", $str, $arr2)) $anc['taxid'] = $arr2[1];
+                if(preg_match("/\">(.*?)xxx/ims", $str."xxx", $arr2)) $anc['sciname'] = $arr2[1];
+                if($anc['taxid']) $ancestry[] = $anc;
+            }
+        }
+        $save['ancestry'] = $ancestry;
+        // */
+
+        print_r($save);
+        return $save;
+        // exit("\nxxx\n");
+    }
+    private function get_public_records($html)
+    {   /*<td width="29%">Public Records:</td>
+          <td width="13%">942</td>*/
+        $left = '>Public Records:</td>'; $right = '</td>';
+        if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) return trim(strip_tags($arr[1]));          
     }
     private function get_list_items($html, $rank)
     {
@@ -315,8 +359,6 @@ class DataHub_BOLDS_API
                     $r['rank'] = $rank;
                 }
 
-                // $ret = self::get_ancestry(); //todo
-
                 $r = array_map('trim', $r); // echo "\n$t\n"; print_r($r);
                 self::save_to_dump($r, $this->dump_file);
 
@@ -325,7 +367,6 @@ class DataHub_BOLDS_API
                     [counts] => 14053
                     [sciname] => Porifera
                 )*/
-                // $final[$r['taxid']] = $r;
                 $final[] = $r;
             }                    
         }
@@ -343,7 +384,6 @@ class DataHub_BOLDS_API
     {
         if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $str, $arr)) return trim($arr[1]);
     }
-
     private function save_to_dump($rec, $filename)
     {
         $fields = array_keys($rec);
@@ -375,7 +415,6 @@ class DataHub_BOLDS_API
         Curl error (https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=1144590): The requested URL returned error: 500
         Curl error (https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=649487): Resolving timed
         [459] => https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=649487): Resolving timed out after 20529 milliseconds :: [lib/Functions.php [148]]<br>
-
         */
         $str = file_get_contents($this->save_path . "/BOLDS_consoleText.txt");
         $left = 'Curl error ('; $right = '): The requested URL';
@@ -387,55 +426,9 @@ class DataHub_BOLDS_API
         }
         // print_r($final);
         echo "\ncount: ".count($final)."\n";
-        unset($final[649487]);
         echo "\ncount: ".count($final)." - should be less 1\n";
         $this->curl_error_taxIds = $final;
         // exit("\nstop muna\n");
     }
-
-    // ========================================================= below copied template
-    function startx()
-    {   
-
-        //step 2: initialize calling of external functions
-        require_library('connectors/TraitGeneric'); 
-        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-        require_library('connectors/NCBIGGIqueryAPI'); 
-        $this->func_gbif = new NCBIGGIqueryAPI();
-
-        //step 3
-        self::parse_tsv_file($this->local_csv, "gen taxa info"); //generates $this->gbif_taxa_info
-        self::parse_tsv_file($this->local_csv, "write DwCA");
-
-        print_r($this->debug);
-        $this->archive_builder->finalize(TRUE);
-
-        // /* un-comment in real operation -- remove temp dir
-        if(stripos($temp_dir, '/eol_php_code_tmp/') !== false) { //string found
-            recursive_rmdir($temp_dir);
-            echo ("\n temporary directory removed: " . $temp_dir);    
-        }
-        // */
-    }
-    /*  [taxonomicStatus] => Array(
-            [ACCEPTED] => 
-            [SYNONYM] => 
-            [DOUBTFUL] => 
-            [] => 
-        )
-    [taxonRank] => Array(
-            [phylum] => 
-            [kingdom] => 
-            [class] => 
-            [order] => 
-            [family] => 
-            [genus] => 
-
-            [species] => 
-            [form] => 
-            [variety] => 
-            [subspecies] => 
-            [unranked] => 
-    )*/
 }
 ?>
