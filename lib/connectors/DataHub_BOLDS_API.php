@@ -192,10 +192,10 @@ class DataHub_BOLDS_API
         $level_7 = '';
         // */
 
-        // /* testing only
+        /* testing only
         $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
         $level_3 = self::assemble_level_2($test); print_r($level_3);
-        // */
+        */
 
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
     }
@@ -217,7 +217,11 @@ class DataHub_BOLDS_API
         $final = array();
         $groups = array('Animal', 'Plant', 'Fungi', 'Protist'); //main operation
         $groups = array('Animal');
+        // $groups = array('Plant');
+        $groups = array('Fungi', 'Protist');
+
         foreach($groups as $group) { $left = '<div id="'.$group.'Div"'; $right = '</div>';
+            $this->group = $group;
             if($html = Functions::lookup_with_cache($this->start_page, $options)) {
                 if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
                     $html2 = $arr[1];
@@ -231,6 +235,11 @@ class DataHub_BOLDS_API
     }
     private function assemble_level_2($level_1)
     {
+        $limit['Animal'] = 52640;
+        $limit['Plant'] = 500;
+        $limit['Fungi'] = 500;
+        $limit['Protist'] = 500;
+
         $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;
         $list = array();
         foreach($level_1 as $rekords) {
@@ -251,14 +260,16 @@ class DataHub_BOLDS_API
 
                     self::bolds_API_result_still_validYN($html);
 
-                    @$this->total_page_calls++; echo "\nx[$this->total_page_calls]\n";
-                    if($this->total_page_calls > 51321) {
-                        if(($this->total_page_calls % 70) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
+                    @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group\n";
+
+                
+                    if($this->total_page_calls > $limit[$this->group]) {
+                        if(($this->total_page_calls % 80) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
                     }
 
-                    // /* assemble data, write to DwCA
+                    /* assemble data, write to DwCA works OK
                     self::assemble_data_from_html_then_write_dwca($html, $rec);
-                    // */
+                    */
 
                     $left = '<div id="taxMenu">';
                     $right = '</div>';
