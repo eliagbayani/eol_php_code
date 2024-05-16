@@ -13,6 +13,7 @@ class DataHub_BOLDS_API
         }
         $this->debug = array();
         $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
+        $this->download_options_BOLDS['expire_seconds'] = false; //May 2024
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
         $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=';
@@ -28,6 +29,7 @@ class DataHub_BOLDS_API
         $save_path = $save_path . "BOLDS/";
         if(!is_dir($save_path)) mkdir($save_path);
         $this->dump_file = $save_path . "/datahub_bolds_taxonomy.txt";
+        $this->save_path = $save_path;
         // */
     }
     function start()
@@ -40,6 +42,7 @@ class DataHub_BOLDS_API
         // self::build_taxonomy_list();
 
         //step 2:
+        self::get_curl_errors();
         self::read_tsv_run_api_for_species();
 
         $this->archive_builder->finalize(TRUE);
@@ -73,9 +76,11 @@ class DataHub_BOLDS_API
                     [] => 
                 ) */
                 if($rec['rank'] == 'Species') { // print_r($rec);
-                    $obj = self::get_data_from_api($rec);
-                    // break; //debug only
-                    // if($i >= 310) break; //debug only
+                    if(!isset($this->curl_error_taxIds[$rec['taxid']])) {
+                        $obj = self::get_data_from_api($rec);
+                        // break; //debug only
+                        // if($i >= 310) break; //debug only    
+                    }
                 }
             }
         }
@@ -366,12 +371,32 @@ class DataHub_BOLDS_API
         //     fclose($WRITE);
         // }
     }
+    private function get_curl_errors()
+    {   /*
+        Curl error (https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=1144590): The requested URL returned error: 500
+        Curl error (https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=649487): Resolving timed
+        [459] => https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=649487): Resolving timed out after 20529 milliseconds :: [lib/Functions.php [148]]<br>
 
+        */
+        $str = file_get_contents($this->save_path . "/BOLDS_consoleText.txt");
+        $left = 'Curl error ('; $right = '): The requested URL';
+                                $right = '):';
+        if(preg_match_all("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $str, $arr2)) { //print_r($arr2[1]); exit;
+            foreach($arr2[1] as $url) {
+                if(preg_match("/taxId=(.*?)xxx/ims", $url.'xxx', $arr)) $final[$arr[1]] = '';
+            }
+        }
+        // print_r($final);
+        echo "\ncount: ".count($final)."\n";
+        unset($final[649487]);
+        echo "\ncount: ".count($final)." - should be less 1\n";
+        $this->curl_error_taxIds = $final;
+        // exit("\nstop muna\n");
+    }
 
     // ========================================================= below copied template
     function startx()
-    {   //step 1
-        $temp_dir = self::download_extract_gbif_zip_file();
+    {   
 
         //step 2: initialize calling of external functions
         require_library('connectors/TraitGeneric'); 
@@ -596,106 +621,8 @@ class DataHub_BOLDS_API
             }
         }
     }
-    private function download_extract_gbif_zip_file()
-    {
-        echo "\ndownload_extract_gbif_zip_file...\n";
-        // /* un-comment in real operation
-        require_library('connectors/INBioAPI');
-        $func = new INBioAPI();
-        $options = $this->download_options_GBIF;
-        $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
-        $paths = $func->extract_zip_file($this->remote_csv, $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        // print_r($paths); exit; //debug only
-        // */
-
-        /* sample output:
-        Array(
-            [extracted_file]    => /Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/0000495-240506114902167
-            [temp_dir]          => /Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/
-            [temp_file_path]    => /Volumes/AKiTiO4/eol_php_code_tmp/dir_44814/0000495-240506114902167.zip
-        )*/
-
-        /* development only
-        $paths = Array(
-            'extracted_file' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_09405/0000495-240506114902167',
-            'temp_dir'       => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_09405/'
-        );
-        */
-
-        $temp_dir = $paths['temp_dir'];
-        $this->local_csv = $paths['extracted_file'].".csv";
-        return $temp_dir;
-        /* un-comment in real operation -- remove temp dir
-        recursive_rmdir($temp_dir);
-        echo ("\n temporary directory removed: " . $temp_dir);
-        */
-    }
 
     // =========================================================================== copied template below
-    function parse_tsv_then_generate_dwca()
-    {
-        $this->debug = array();
-        require_library('connectors/TraitGeneric'); 
-        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-
-        foreach($this->quality_grades as $grade) $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt"; //file variable assignment
-
-        // step 1: reads iNat taxonomy and gen. info taxa list
-        self::gen_iNat_info_taxa_using_DwCA(); //generates $this->inat_taxa_info
-
-        // step 2: loop each tsv file ('research', 'needs_id', 'casual'), and create info_list for DwCA writing
-        self::assemble_data_from_3TSVs();
-        // print_r($this->assembled); exit;
-
-        // step 3: write DwCA from the big assembled array $this->assembled
-        self::write_dwca_from_assembled_array();
-
-        /*
-        // step ?: loop a tsv dump and write taxon and MoF archive --- if u want to gen. a DwCA from one dump
-        self::parse_tsv_file($this->dump_file['research'], "process research grade tsv"); 
-        */
-        
-        $this->archive_builder->finalize(TRUE);
-        print_r($this->debug);
-    }
-    private function gen_iNat_info_taxa_using_DwCA()
-    {
-        echo "\nGenerate taxon info list...\n";
-        // /* un-comment in real operation
-        require_library('connectors/INBioAPI');
-        $func = new INBioAPI();
-        $options = $this->download_options_GBIF;
-        $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
-        $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        // print_r($paths); exit; //debug only
-        // */
-
-        /* development only
-        $paths = Array(
-            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/',
-            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/'
-        );
-        */
-
-        $archive_path = $paths['archive_path'];
-        $temp_dir = $paths['temp_dir'];
-        $harvester = new ContentArchiveReader(NULL, $archive_path);
-        $tables = $harvester->tables;
-
-        self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxa info');
-
-        /* un-comment in real operation -- remove temp dir
-        recursive_rmdir($temp_dir);
-        echo ("\n temporary directory removed: " . $temp_dir);
-        */
-    }
-    private function assemble_data_from_3TSVs()
-    {
-        $grades = array('research', 'needs_id', 'casual');
-        foreach($grades as $grade) {
-            self::parse_tsv_file($this->dump_file[$grade], "assemble data from 3 TSVs", $grade);
-        }
-    }
     private function parse_csv_file($csv_file, $what)
     {
         $i = 0; $meron = 0;
