@@ -12,7 +12,7 @@ class DataHub_BOLDS_API
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
         $this->debug = array();
-        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1);
+        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
         $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
         $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
         $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=';
@@ -75,7 +75,7 @@ class DataHub_BOLDS_API
                 if($rec['rank'] == 'Species') { // print_r($rec);
                     $obj = self::get_data_from_api($rec);
                     // break; //debug only
-                    // if($i >= 60) break; //debug only
+                    // if($i >= 310) break; //debug only
                 }
             }
         }
@@ -96,7 +96,7 @@ class DataHub_BOLDS_API
         // $url = $this->api . 1; //"41";
 
         @$this->total_api_calls++; echo "\ny[$this->total_api_calls]\n";
-        if($this->total_api_calls > 4100) {
+        if($this->total_api_calls > 45273) {
             if(($this->total_api_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
         }
 
@@ -246,8 +246,8 @@ class DataHub_BOLDS_API
                     self::bolds_API_result_still_validYN($html);
 
                     @$this->total_page_calls++; echo "\nx[$this->total_page_calls]\n";
-                    if($this->total_page_calls > 21715) {
-                        if(($this->total_page_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
+                    if($this->total_page_calls > 40469) {
+                        if(($this->total_page_calls % 70) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
                     }
 
                     $left = '<div id="taxMenu">';
