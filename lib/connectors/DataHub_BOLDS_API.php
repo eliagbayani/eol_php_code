@@ -299,14 +299,13 @@ class DataHub_BOLDS_API
         </div>*/
         // print_r($rec); exit;
         $html2 = self::get_string_between('<div id="subheader">', "</div>", $html);
-        // echo "\n$str\n";
         $save = array();
         $save['taxid'] = $rec['taxid'];
         $save['sciname'] = trim(self::get_string_between('d="subHeaderH1">', "{", $html2));
         $save['rank'] = trim(self::get_string_between('{', "}", $html2));
         $save['pubrec'] = self::get_public_records($html);
 
-        // /* ancestry
+        // /* ----- ancestry -----
         $ancestry = array();
         $left = '<a title'; $right = '</a>';
         if(preg_match_all("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html2, $arr)) { 
@@ -321,12 +320,13 @@ class DataHub_BOLDS_API
                 if(preg_match("/=\"(.*?)\"/ims", $str, $arr2)) $anc['rank'] = $arr2[1];
                 if(preg_match("/taxid=(.*?)\"/ims", $str, $arr2)) $anc['taxid'] = $arr2[1];
                 if(preg_match("/\">(.*?)xxx/ims", $str."xxx", $arr2)) $anc['sciname'] = $arr2[1];
+                $anc = array_map('trim', $anc);
                 if($anc['taxid']) $ancestry[] = $anc;
             }
         }
+        $save['parentID'] = @$ancestry[0]['taxid'];
         $save['ancestry'] = $ancestry;
-        // */
-
+        // ----- end ----- */
         print_r($save);
         return $save;
         // exit("\nxxx\n");
