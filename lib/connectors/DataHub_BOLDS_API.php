@@ -39,7 +39,7 @@ class DataHub_BOLDS_API
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
         
         //step 1
-        self::build_taxonomy_list(); exit("\nstop muna\n");
+        self::build_taxonomy_list(); exit("\nstop muna 100\n");
 
         //step 2:
         /*
@@ -226,19 +226,43 @@ class DataHub_BOLDS_API
                 if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
                     $html2 = $arr[1];
                     $tmp = self::get_list_items($html2, 'phylum');
-                    foreach($tmp as $t) $final['phylums_Eli'][] = $t;
+                    $i = 0;
+                    foreach($tmp as $t) { $i++;
+                        // /* orig
+                        $final['phylums_Eli'][] = $t;
+                        // */
+
+                        // if($i <= 3) $final['phylums_Eli'][] = $t;
+                        // if($i > 3) $final['phylums_Eli'][] = $t;
+
+
+                        // if($i <= 5) $final['phylums_Eli'][] = $t; //running...
+                        // if($i > 10) $final['phylums_Eli'][] = $t;
+
+                        // if($i <= 3) $final['phylums_Eli'][] = $t;
+                        // if($i > 3) $final['phylums_Eli'][] = $t;
+                    }
                 }    
             }            
         }
-        // print_r($final);
+
+        // $final['wala lang'][] = array (
+        //     'taxid' => 26033,
+        //     'counts' => 5952,
+        //     'sciname' => Tardigrada,
+        //     'rank' => phylum
+        // );
+
+
+        // print_r($final); exit;
         return $final;
     }
     private function assemble_level_2($level_1)
     {
-        $limit['Animal'] = 57952;
-        $limit['Plant'] = 1298;
-        $limit['Fungi'] = 4954;
-        $limit['Protist'] = 4954;
+        $limit['Animal'] = 1000000;
+        $limit['Plant'] = 1000000;
+        $limit['Fungi'] = 1000000;
+        $limit['Protist'] = 1000000;
 
         $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;
         $list = array();
@@ -264,7 +288,7 @@ class DataHub_BOLDS_API
 
                 
                     if($this->total_page_calls > $limit[$this->group]) {
-                        if(($this->total_page_calls % 80) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
+                        if(($this->total_page_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
                     }
 
                     /* assemble data, write to DwCA works OK
