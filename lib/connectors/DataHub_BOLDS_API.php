@@ -217,8 +217,8 @@ class DataHub_BOLDS_API
         $final = array();
         $groups = array('Animal', 'Plant', 'Fungi', 'Protist'); //main operation
         $groups = array('Animal');
-        // $groups = array('Plant');
-        $groups = array('Fungi', 'Protist');
+        $groups = array('Plant');
+        // $groups = array('Fungi', 'Protist');
 
         foreach($groups as $group) { $left = '<div id="'.$group.'Div"'; $right = '</div>';
             $this->group = $group;
@@ -235,10 +235,10 @@ class DataHub_BOLDS_API
     }
     private function assemble_level_2($level_1)
     {
-        $limit['Animal'] = 52640;
-        $limit['Plant'] = 500;
-        $limit['Fungi'] = 500;
-        $limit['Protist'] = 500;
+        $limit['Animal'] = 57952;
+        $limit['Plant'] = 1298;
+        $limit['Fungi'] = 4954;
+        $limit['Protist'] = 4954;
 
         $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;
         $list = array();
