@@ -1,6 +1,7 @@
 <?php 
 namespace php_active_record;
-/*  datahub_gbif.php
+/*  datahub_gbif.php 
+Status: this wasn't used as main operation.
 */
 class DataHub_BOLDS_API
 {
@@ -100,7 +101,7 @@ class DataHub_BOLDS_API
     private function get_data_from_api($rec)
     {
         $url = $this->api . $rec['taxid']; //exit("\n$url\n");
-        // $url = $this->api . 1; //"41";
+        // $url = $this->api . 1; //"41"; //force assign
 
         @$this->total_api_calls++; echo "\ny[$this->total_api_calls]\n";
         if($this->total_api_calls > 45273) {
@@ -184,11 +185,11 @@ class DataHub_BOLDS_API
         $level_3 = '';
         $level_5 = self::assemble_level_2($level_4); //print_r($level_5);
         $level_4 = '';
-        $level_6 = self::assemble_level_2($level_5); //print_r($level_6); //still running
+        $level_6 = self::assemble_level_2($level_5); //print_r($level_6);
         $level_5 = '';
-        $level_7 = self::assemble_level_2($level_6); //print_r($level_7); //still running
+        $level_7 = self::assemble_level_2($level_6); //print_r($level_7);
         $level_6 = '';
-        $level_8 = self::assemble_level_2($level_7); //print_r($level_8); //still running
+        $level_8 = self::assemble_level_2($level_7); //print_r($level_8);
         $level_7 = '';
         // */
 
@@ -217,7 +218,7 @@ class DataHub_BOLDS_API
         $final = array();
         $groups = array('Animal', 'Plant', 'Fungi', 'Protist'); //main operation
         $groups = array('Animal');
-        $groups = array('Plant');
+        // $groups = array('Plant');
         // $groups = array('Fungi', 'Protist');
 
         foreach($groups as $group) { $left = '<div id="'.$group.'Div"'; $right = '</div>';
@@ -228,38 +229,32 @@ class DataHub_BOLDS_API
                     $tmp = self::get_list_items($html2, 'phylum');
                     $i = 0;
                     foreach($tmp as $t) { $i++;
-                        // /* orig
+                        // /* orig, main operation
                         $final['phylums_Eli'][] = $t;
                         // */
 
-                        // if($i <= 3) $final['phylums_Eli'][] = $t;
+                        /* use ranges:
+                        if($i <= 3) $final['phylums_Eli'][] = $t;
                         // if($i > 3) $final['phylums_Eli'][] = $t;
-
-
-                        // if($i <= 5) $final['phylums_Eli'][] = $t; //running...
-                        // if($i > 10) $final['phylums_Eli'][] = $t;
-
-                        // if($i <= 3) $final['phylums_Eli'][] = $t;
-                        // if($i > 3) $final['phylums_Eli'][] = $t;
+                        */
                     }
                 }    
             }            
         }
-
-        // $final['wala lang'][] = array (
-        //     'taxid' => 26033,
-        //     'counts' => 5952,
-        //     'sciname' => Tardigrada,
-        //     'rank' => phylum
-        // );
-
-
+        /* force assignment, dev only
+        $final['wala lang'][] = array (
+            'taxid' => 26033,
+            'counts' => 5952,
+            'sciname' => Tardigrada,
+            'rank' => phylum
+        );
+        */
         // print_r($final); exit;
         return $final;
     }
     private function assemble_level_2($level_1)
     {
-        $limit['Animal'] = 1000000;
+        $limit['Animal'] = 80089;
         $limit['Plant'] = 1000000;
         $limit['Fungi'] = 1000000;
         $limit['Protist'] = 1000000;
