@@ -1,9 +1,9 @@
-<?php 
+<?php
 namespace php_active_record;
 /*  datahub_gbif.php 
 Status: this wasn't used as main operation.
 */
-class DataHub_BOLDS_API
+class DataHub_BOLDS_API_v2
 {
     function __construct($folder = false)
     {
@@ -15,13 +15,7 @@ class DataHub_BOLDS_API
         $this->debug = array();
         $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
         $this->download_options_BOLDS['expire_seconds'] = false; //May 2024
-        $this->start_page = 'https://v3.boldsystems.org/index.php/TaxBrowser_Home';
-        $this->next_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
-        $this->api = 'https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=';
         $this->taxon_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
-
-        // special case with: "Tribes" and "Genera"
-        // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=177245
 
         // /*
         if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
@@ -29,9 +23,9 @@ class DataHub_BOLDS_API
         if(!is_dir($save_path)) mkdir($save_path);
         $save_path = $save_path . "BOLDS/";
         if(!is_dir($save_path)) mkdir($save_path);
-        $this->dump_file = $save_path . "/datahub_bolds_taxonomy.txt";
-        $this->save_path = $save_path;
+        $this->tsv_files = $save_path.'Public_count_XGROUP_updated.tsv'; //e.g. Public_count_family_updated.tsv
         // */
+
     }
     function start()
     {   
@@ -39,21 +33,20 @@ class DataHub_BOLDS_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
         
-        //step 1
-        self::build_taxonomy_list(); exit("\nstop muna 100\n");
-
-        //step 2:
-        /*
-        self::get_curl_errors();
         self::read_tsv_run_api_for_species();
         $this->archive_builder->finalize(TRUE);
-        */
 
         print_r($this->debug);
     }
     private function read_tsv_run_api_for_species()
     {
-        self::parse_tsv_file($this->dump_file, "read tsv run api for species");
+        $groups = array('family', 'genus', 'species');
+        // $groups = array('family');
+        foreach($groups as $group) {
+            $this->group = $group;
+            $url = str_replace("XGROUP", $group, $this->tsv_files);
+            self::parse_tsv_file($url, "read tsv write dwca");
+        }
     }
     private function parse_tsv_file($file, $what)
     {   echo "\nReading file, task: [$what] [$file]\n";
@@ -67,24 +60,29 @@ class DataHub_BOLDS_API
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+                $rec = array_map('trim', $rec); print_r($rec); //exit("\nstop muna\n");
             }
 
-            if($what == 'read tsv run api for species') {
+            if($what == 'read tsv write dwca') {
                 /* Array(
-                    [taxid] => 363969
-                    [counts] => 1
-                    [sciname] => Gamasomorphinae
-                    [rank] => Subfamilies
+                    [count] => 14
+                    [family] => Rosaceae
+                    [tax id] => 989646
+                    [parent id] => 100947
                     [] => 
-                ) */
-                if($rec['rank'] == 'Species') { // print_r($rec);
-                    if(!isset($this->curl_error_taxIds[$rec['taxid']])) {
-                        $obj = self::get_data_from_api($rec);
-                        // break; //debug only
-                        // if($i >= 310) break; //debug only    
-                    }
-                }
+                )*/
+                
+                $save = array();
+                $save['taxonID'] = $rec['tax id'];
+                $save['scientificName'] = $rec[$this->group];
+                $save['taxonRank'] = $this->group;
+                $save['parentNameUsageID'] = $rec['parent id'];
+                self::write_taxon($save);
+                self::write_MoF($rec);
+
+                break; //debug only
+                // if($i >= 310) break; //debug only    
+
             }
         }
     }
@@ -136,13 +134,6 @@ class DataHub_BOLDS_API
                             [barcodespecies] => 1
                         )
                 )*/
-                $save = array();
-                $save['taxonID'] = $o->taxid;
-                $save['scientificName'] = $o->taxon;
-                $save['taxonRank'] = $o->tax_rank;
-                $save['parentNameUsageID'] = $o->parentid;
-                self::write_taxon($save);
-                self::write_MoF($o);
             }
         }
     }
@@ -159,16 +150,16 @@ class DataHub_BOLDS_API
             $this->archive_builder->write_object_to_file($taxon);
         }
     }
-    private function write_MoF($o)
+    private function write_MoF($rec)
     {   //print_r($o); exit;
-        $taxonID = $o->taxid;
+        $taxonID = $rec['tax id'];
         $save = array();
         $save['taxon_id'] = $taxonID;
         $save['source'] = $this->taxon_page . $taxonID;
         // $save['bibliographicCitation'] = '';
         // $save['measurementRemarks'] = ""; 
         $mType = 'http://eol.org/schema/terms/NumberPublicRecordsInBOLD';
-        $mValue = $o->stats->publicrecords;
+        $mValue = $rec['count'];
         $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
@@ -200,61 +191,9 @@ class DataHub_BOLDS_API
 
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
     }
-    private function assemble_kingdom()
-    {   /*
-        <div id="AnimalDiv"> <div id="PlantDiv"> <div id="FungiDiv" > <div id="ProtistDiv">
-        <div id="ProtistDiv">
-            <strong>Protists:</strong><br>
-            <ul>
-                <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=316986">Chlorarachniophyta [67]</a></li>
-                <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=72834">Ciliophora [821]</a></li>
-                <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=53944">Heterokontophyta [8757]</a></li>
-                <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=317010">Pyrrophycophyta [2339]</a></li>
-                <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=48327">Rhodophyta [61640]</a></li>
-            </ul>
-        </div>
-        */
-        $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;
-        $final = array();
-        $groups = array('Animal', 'Plant', 'Fungi', 'Protist'); //main operation
-        $groups = array('Animal');
-        // $groups = array('Plant');
-        // $groups = array('Fungi', 'Protist');
-
-        foreach($groups as $group) { $left = '<div id="'.$group.'Div"'; $right = '</div>';
-            $this->group = $group;
-            if($html = Functions::lookup_with_cache($this->start_page, $options)) {
-                if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
-                    $html2 = $arr[1];
-                    $tmp = self::get_list_items($html2, 'phylum');
-                    $i = 0;
-                    foreach($tmp as $t) { $i++;
-                        // /* orig, main operation
-                        $final['phylums_Eli'][] = $t;
-                        // */
-
-                        /* use ranges:
-                        if($i <= 3) $final['phylums_Eli'][] = $t;
-                        // if($i > 3) $final['phylums_Eli'][] = $t;
-                        */
-                    }
-                }    
-            }            
-        }
-        /* force assignment, dev only
-        $final['wala lang'][] = array (
-            'taxid' => 26033,
-            'counts' => 5952,
-            'sciname' => Tardigrada,
-            'rank' => phylum
-        );
-        */
-        // print_r($final); exit;
-        return $final;
-    }
     private function assemble_level_2($level_1)
     {
-        $limit['Animal'] = 81500;
+        $limit['Animal'] = 80089;
         $limit['Plant'] = 1000000;
         $limit['Fungi'] = 1000000;
         $limit['Protist'] = 1000000;
@@ -277,39 +216,6 @@ class DataHub_BOLDS_API
 
                 if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
 
-                    self::bolds_API_result_still_validYN($html);
-
-                    @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group\n";
-
-                
-                    if($this->total_page_calls > $limit[$this->group]) {
-                        if(($this->total_page_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
-                    }
-
-                    /* assemble data, write to DwCA works OK
-                    self::assemble_data_from_html_then_write_dwca($html, $rec);
-                    */
-
-                    $left = '<div id="taxMenu">';
-                    $right = '</div>';
-                    if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
-                        $html2 = $arr[1]; // echo "\n$html2\n"; //exit;
-                        /*<lh>Classes (3) </lh><ol><li><a href="/index.php/Taxbrowser_Taxonpage?taxid=95135">Clitellata [72690]</a></li>
-                        <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=24489">Polychaeta [67251]</a></li>
-                        <li><a href="/index.php/Taxbrowser_Taxonpage?taxid=15">Sipuncula [1668]</a></li></ol>
-                        <lh>Orders (1) </lh><br/>
-                        <ol><li><a href="/index.php/Taxbrowser_Taxonpage?taxid=532042">Myzostomida [196]</a></li></ol>*/
-
-                        if(preg_match_all("/<lh>(.*?)<\/ol>/ims", $html2, $arr2)) { // print_r($arr2[1]); exit;
-                            foreach($arr2[1] as $html3) {
-                                $html3 = "<lh>".$html3; echo "\n$html3\n"; //exit;
-                                $rank = self::get_rank($html3);
-                                $temp = self::get_list_items($html3, $rank); print_r($temp);
-                                foreach($temp as $t) $list['Elix'][] = $t;
-                            }
-                        }
-
-                    }
                 }
                 // break; //debug only; gets the first taxon only
             }
