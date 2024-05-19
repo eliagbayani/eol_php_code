@@ -1,6 +1,7 @@
 <?php
 namespace php_active_record;
-/*  datahub_inat_v2.php
+/*  datahub_inat_v3.php
+https://content.eol.org/resources/1219
 */
 class DataHub_INAT_API_v3
 {
