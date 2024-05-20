@@ -88,8 +88,8 @@ class DataHub_BOLDS_API_v2
                 self::write_taxon($save);
                 self::write_MoF($rec);
 
-                break; //debug only
-                // if($i >= 5) break; //debug only    
+                // break; //debug only
+                if($i >= 5) break; //debug only    
 
             }
             elseif($what == "generate taxa info list") {
@@ -97,6 +97,19 @@ class DataHub_BOLDS_API_v2
                 $this->taxa_info[$tax_id]['n'] = $sciname;
                 $this->taxa_info[$tax_id]['r'] = $this->group;
             }
+        }
+    }
+    private function write_taxa_4_ancestry($ancestry)
+    {
+        // print_r($ancestry); exit("\nelix 1\n");
+        foreach($ancestry as $tax_id) {
+            if($tax_id == 1) break;
+            $save = array();
+            $save['taxonID'] = $tax_id;
+            $save['scientificName'] = $this->taxa_info[$tax_id]['n'];
+            $save['taxonRank'] = $this->taxa_info[$tax_id]['r'];
+            $save['parentNameUsageID'] = $this->taxa_info[$tax_id]['p'];
+            self::write_taxon($save);
         }
     }
     private function write_taxon($rec)
@@ -114,6 +127,7 @@ class DataHub_BOLDS_API_v2
 
         // add ancestry to taxon.tab
         $ancestry = self::get_ancestry_for_taxonID($taxonID);
+        if($ancestry) self::write_taxa_4_ancestry($ancestry);
     }
     private function get_ancestry_for_taxonID($taxonID)
     {
@@ -133,7 +147,7 @@ class DataHub_BOLDS_API_v2
                 }
             }
         }
-        echo "\nancestry: "; print_r($final); //exit;
+        // echo "\nancestry: "; print_r($final); //exit;
         return $final;
     }
     private function get_ancestry_thru_api($taxonID)
