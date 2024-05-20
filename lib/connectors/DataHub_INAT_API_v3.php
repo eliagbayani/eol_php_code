@@ -41,6 +41,7 @@ class DataHub_INAT_API_v3
 
         // from iNat, not recognized by our harvest: May 20, 2024
         $this->rank_set_2_blank = array('stateofmatter', 'zoosection', 'complex', 'section', 'parvorder', 'zoosubsection', 'hybrid', 'subsection', 'genushybrid');
+        this->with_breaks_YN = false;
     }
     function start()
     {
@@ -54,16 +55,20 @@ class DataHub_INAT_API_v3
                     foreach($this->groups as $group) {
                         echo "\nProcessing [$group]...[$grade]...[$include_rank]\n";
                         self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
-                        echo "\nEvery group, sleep 2 min.\n";
-                        sleep(60*2); //mins interval per group
+                        if($this->with_breaks_YN) {
+                            echo "\nEvery group, sleep 2 min.\n";
+                            sleep(60*2); //mins interval per group    
+                        }
                     }            
                 }
                 else { //family and genus
                     echo "\nProcessing [$grade]...[$include_rank]\n";
                     $group = false;
                     self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
-                    echo "\nEvery group, sleep 2 min.\n";
-                    sleep(60*2); //mins interval per group
+                    if($this->with_breaks_YN) {
+                        echo "\nEvery group, sleep 2 min.\n";
+                        sleep(60*2); //mins interval per group    
+                    }
                 }
             }
         }
@@ -87,9 +92,11 @@ class DataHub_INAT_API_v3
 
         for($page = 1; $page <= $pages; $page++) {
 
-            if(($page % 50) == 0) {
-                echo "\nEvery 50 calls, sleep 2 min.\n";
-                sleep(60*2); //mins interval
+            if($this->with_breaks_YN) {
+                if(($page % 50) == 0) {
+                    echo "\nEvery 50 calls, sleep 2 min.\n";
+                    sleep(60*2); //mins interval
+                }    
             }
 
             $url = str_replace("XPAGE", $page, $main_url);
