@@ -35,13 +35,12 @@ class DataHub_INAT_API_v3
         $this->include_ranks = array('species', 'family', 'genus'); //orig;
         // $this->include_ranks = array('species'); //orig;
 
-
         $this->inat_api['family_genus'] = 'https://api.inaturalist.org/v1/observations/species_counts?rank=XRANK&page=XPAGE';
         $this->debug = array();
 
         // from iNat, not recognized by our harvest: May 20, 2024
         $this->rank_set_2_blank = array('stateofmatter', 'zoosection', 'complex', 'section', 'parvorder', 'zoosubsection', 'hybrid', 'subsection', 'genushybrid');
-        $this->with_breaks_YN = false;
+        $this->with_breaks_YN = true; //true for periodic normal operation //false if cached already
     }
     function start()
     {
