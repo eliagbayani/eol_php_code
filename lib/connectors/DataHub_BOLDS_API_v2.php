@@ -89,7 +89,7 @@ class DataHub_BOLDS_API_v2
                 self::write_MoF($rec);
 
                 // break; //debug only
-                if($i >= 5) break; //debug only    
+                if($i >= 1000) break; //debug only    
 
             }
             elseif($what == "generate taxa info list") {
@@ -113,7 +113,7 @@ class DataHub_BOLDS_API_v2
         }
     }
     private function write_taxon($rec)
-    {   print_r($rec);
+    {   //print_r($rec);
         $taxonID = $rec['taxonID'];
         $taxon = new \eol_schema\Taxon();
         $taxon->taxonID             = $taxonID;
@@ -155,6 +155,12 @@ class DataHub_BOLDS_API_v2
         $options = $this->download_options_BOLDS;
         $options['resource_id'] = 'BOLDS_ancestry';
         $url = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
+
+        @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group\n";
+        if($this->total_page_calls > 1) {
+            if(($this->total_page_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
+        }
+
         if($json = Functions::lookup_with_cache($url.$taxonID, $this->download_options_BOLDS)) {
             $obj = json_decode($json);
             // print_r($obj); exit;
