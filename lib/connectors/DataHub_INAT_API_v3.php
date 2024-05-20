@@ -54,7 +54,7 @@ class DataHub_INAT_API_v3
                     foreach($this->groups as $group) {
                         echo "\nProcessing [$group]...[$grade]...[$include_rank]\n";
                         self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
-                        echo "\nEvery group, sleep 5 min.\n";
+                        echo "\nEvery group, sleep 2 min.\n";
                         sleep(60*2); //mins interval per group
                     }            
                 }
@@ -62,7 +62,7 @@ class DataHub_INAT_API_v3
                     echo "\nProcessing [$grade]...[$include_rank]\n";
                     $group = false;
                     self::get_iNat_taxa_observation_using_API($group, $grade, $include_rank);
-                    echo "\nEvery group, sleep 5 min.\n";
+                    echo "\nEvery group, sleep 2 min.\n";
                     sleep(60*2); //mins interval per group
                 }
             }
@@ -88,7 +88,7 @@ class DataHub_INAT_API_v3
         for($page = 1; $page <= $pages; $page++) {
 
             if(($page % 50) == 0) {
-                echo "\nEvery 50 calls, sleep 5 min.\n";
+                echo "\nEvery 50 calls, sleep 2 min.\n";
                 sleep(60*2); //mins interval
             }
 
