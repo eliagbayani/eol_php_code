@@ -38,6 +38,9 @@ class DataHub_INAT_API_v3
 
         $this->inat_api['family_genus'] = 'https://api.inaturalist.org/v1/observations/species_counts?rank=XRANK&page=XPAGE';
         $this->debug = array();
+
+        // from iNat, not recognized by our harvest: May 20, 2024
+        $this->rank_set_2_blank = array('stateofmatter', 'zoosection', 'complex', 'section', 'parvorder', 'zoosubsection', 'hybrid', 'subsection', 'genushybrid');
     }
     function start()
     {
@@ -348,11 +351,13 @@ class DataHub_INAT_API_v3
     }
     private function write_taxon($rec)
     {
+        $rank = in_array($rec['taxonRank'], $this->rank_set_2_blank) ? "" : $rec['taxonRank'];
+
         $taxonID = $rec['taxonID'];
         $taxon = new \eol_schema\Taxon();
         $taxon->taxonID             = $taxonID;
         $taxon->scientificName      = $rec['scientificName'];
-        $taxon->taxonRank           = $rec['taxonRank'];
+        $taxon->taxonRank           = $rank;
         $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
         if(!isset($this->taxonIDs[$taxonID])) {
             $this->taxonIDs[$taxonID] = '';
