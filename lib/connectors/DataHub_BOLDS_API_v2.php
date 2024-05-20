@@ -32,20 +32,24 @@ class DataHub_BOLDS_API_v2
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
-        
-        self::read_tsv_run_api_for_species();
+        // step 1: build taxon info list
+        self::read_tsv_files_do_task("generate taxa info list");
+        // print_r($this->taxa_info); exit;
+
+        // step 2:
+        self::read_tsv_files_do_task("read tsv write dwca");
         $this->archive_builder->finalize(TRUE);
 
         print_r($this->debug);
     }
-    private function read_tsv_run_api_for_species()
+    private function read_tsv_files_do_task($task)
     {
         $groups = array('family', 'genus', 'species');
-        // $groups = array('family');
+        $groups = array('species');
         foreach($groups as $group) {
             $this->group = $group;
             $url = str_replace("XGROUP", $group, $this->tsv_files);
-            self::parse_tsv_file($url, "read tsv write dwca");
+            self::parse_tsv_file($url, $task);
         }
     }
     private function parse_tsv_file($file, $what)
@@ -60,8 +64,12 @@ class DataHub_BOLDS_API_v2
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); print_r($rec); //exit("\nstop muna\n");
+                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
             }
+
+            $tax_id = $rec['tax id'];
+            $parent_id = $rec['parent id'];
+            $sciname = $rec[$this->group];
 
             if($what == 'read tsv write dwca') {
                 /* Array(
@@ -73,72 +81,26 @@ class DataHub_BOLDS_API_v2
                 )*/
                 
                 $save = array();
-                $save['taxonID'] = $rec['tax id'];
-                $save['scientificName'] = $rec[$this->group];
+                $save['taxonID'] = $tax_id;
+                $save['scientificName'] = $sciname;
                 $save['taxonRank'] = $this->group;
-                $save['parentNameUsageID'] = $rec['parent id'];
+                $save['parentNameUsageID'] = $parent_id;
                 self::write_taxon($save);
                 self::write_MoF($rec);
 
                 break; //debug only
-                // if($i >= 310) break; //debug only    
+                // if($i >= 5) break; //debug only    
 
             }
-        }
-    }
-    private function bolds_API_result_still_validYN($str)
-    {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
-        if(stripos($str, 'have exceeded') !== false) { //string is found
-            echo "\n[$str]\n";
-            // echo "\nBOLDS special error\n"; exit("\nexit muna, remove BOLDS from the list of dbases.\n");
-            echo "\nExceeded quota\n"; sleep(60*10); //10 mins
-            @$this->BOLDS_TooManyRequests++;
-            if($this->BOLDS_TooManyRequests >= 3) exit("\nBOLDS should stop now.\n");
-        }
-    }
-    private function get_data_from_api($rec)
-    {
-        $url = $this->api . $rec['taxid']; //exit("\n$url\n");
-        // $url = $this->api . 1; //"41"; //force assign
-
-        @$this->total_api_calls++; echo "\ny[$this->total_api_calls]\n";
-        if($this->total_api_calls > 45273) {
-            if(($this->total_api_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
-        }
-
-        if($json = Functions::lookup_with_cache($url, $this->download_options_BOLDS)) {
-
-            self::bolds_API_result_still_validYN($json);
-
-            $obj = json_decode($json); //echo "<pre>";print_r($obj); echo "</pre>"; //exit;
-            // print_r($obj); exit;
-            foreach($obj as $taxid => $o) { //print_r($o); //exit;
-                /*stdClass Object(
-                    [taxid] => 1135068
-                    [taxon] => Oonopidae sp. H-AOO012
-                    [tax_rank] => species
-                    [tax_division] => Animalia
-                    [parentid] => 285425
-                    [parentname] => Oonopidae
-                    [stats] => stdClass Object(
-                            [publicrecords] => 3
-                            [publicbins] => 0
-                            [publicspecies] => 1
-                            [publicmarkersequences] => stdClass Object(
-                                    [COI-5P] => 3
-                                )
-                            [specimenrecords] => 3
-                            [sequencedspecimens] => 3
-                            [barcodespecimens] => 0
-                            [species] => 1
-                            [barcodespecies] => 1
-                        )
-                )*/
+            elseif($what == "generate taxa info list") {
+                $this->taxa_info[$tax_id]['p'] = $parent_id;
+                $this->taxa_info[$tax_id]['n'] = $sciname;
+                $this->taxa_info[$tax_id]['r'] = $this->group;
             }
         }
     }
     private function write_taxon($rec)
-    {
+    {   print_r($rec);
         $taxonID = $rec['taxonID'];
         $taxon = new \eol_schema\Taxon();
         $taxon->taxonID             = $taxonID;
@@ -149,6 +111,49 @@ class DataHub_BOLDS_API_v2
             $this->taxonIDs[$taxonID] = '';
             $this->archive_builder->write_object_to_file($taxon);
         }
+
+        // add ancestry to taxon.tab
+        $ancestry = self::get_ancestry_for_taxonID($taxonID);
+    }
+    private function get_ancestry_for_taxonID($taxonID)
+    {
+        $final = array();
+        while(true) {
+            if($val = @$this->taxa_info[$taxonID]['p']) {
+                $final[] = $val;
+                $taxonID = $val;
+            }
+            else {
+                if($taxonID == 1) break;
+                else {
+                    if($val = self::get_ancestry_thru_api($taxonID)) {
+                        $final[] = $val;
+                        $taxonID = $val;
+                    }
+                }
+            }
+        }
+        echo "\nancestry: "; print_r($final); //exit;
+        return $final;
+    }
+    private function get_ancestry_thru_api($taxonID)
+    {
+        $options = $this->download_options_BOLDS;
+        $options['resource_id'] = 'BOLDS_ancestry';
+        $url = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
+        if($json = Functions::lookup_with_cache($url.$taxonID, $this->download_options_BOLDS)) {
+            $obj = json_decode($json);
+            // print_r($obj); exit;
+            // /* build taxa info list
+            foreach($obj as $o) {
+                $tax_id = $o->taxid;
+                $this->taxa_info[$tax_id]['p'] = $o->parentid;
+                $this->taxa_info[$tax_id]['n'] = $o->taxon;
+                $this->taxa_info[$tax_id]['r'] = $o->tax_rank;
+            }
+            // */
+        }
+        return $this->taxa_info[$taxonID]['p'];
     }
     private function write_MoF($rec)
     {   //print_r($o); exit;
@@ -162,6 +167,17 @@ class DataHub_BOLDS_API_v2
         $mValue = $rec['count'];
         $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         $this->func->add_string_types($save, $mValue, $mType, "true");    
+    }
+    // ======================================================================= copied template below
+    private function bolds_API_result_still_validYN($str)
+    {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
+        if(stripos($str, 'have exceeded') !== false) { //string is found
+            echo "\n[$str]\n";
+            // echo "\nBOLDS special error\n"; exit("\nexit muna, remove BOLDS from the list of dbases.\n");
+            echo "\nExceeded quota\n"; sleep(60*10); //10 mins
+            @$this->BOLDS_TooManyRequests++;
+            if($this->BOLDS_TooManyRequests >= 3) exit("\nBOLDS should stop now.\n");
+        }
     }
     private function build_taxonomy_list() //builds up the taxonomy list
     {
@@ -190,37 +206,6 @@ class DataHub_BOLDS_API_v2
         */
 
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
-    }
-    private function assemble_level_2($level_1)
-    {
-        $limit['Animal'] = 80089;
-        $limit['Plant'] = 1000000;
-        $limit['Fungi'] = 1000000;
-        $limit['Protist'] = 1000000;
-
-        $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;
-        $list = array();
-        foreach($level_1 as $rekords) {
-            foreach($rekords as $rec) {
-                print_r($rec); //exit;
-                /*Array(
-                    [taxid] => 11
-                    [counts] => 3027
-                    [sciname] => Acanthocephala
-                )*/
-                if(strtolower($rec['rank']) == "species") {echo "\nmay continue\n"; continue;}
-                if(strtolower($rec['rank']) == "subspecies") {echo "\nmay continue\n"; continue;}
-                if(strtolower($rec['rank']) == "variety") {echo "\nmay continue\n"; continue;}
-                if(strtolower($rec['rank']) == "form") {echo "\nmay continue\n"; continue;}
-                if(strtolower($rec['rank']) == "forma") {echo "\nmay continue\n"; continue;}
-
-                if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
-
-                }
-                // break; //debug only; gets the first taxon only
-            }
-        }
-        return $list;
     }
     private function assemble_data_from_html_then_write_dwca($html, $rec)
     {   /*<div id="subheader">
