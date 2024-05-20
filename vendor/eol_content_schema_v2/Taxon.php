@@ -103,63 +103,29 @@ class Taxon extends DarwinCoreExtensionBase
         return true;
     }
     
-    static $ranks = array(
-        'species',
-        'superkingdom',
-        'kingdom',
-        'regnum',
-        'subkingdom',
-        'infrakingdom',
-        'subregnum',
-        'division',
-        'superphylum',
-        'phylum',
-        'divisio',
-        'subdivision',
-        'subphylum',
-        'infraphylum',
-        'parvphylum',
-        'subdivisio',
-        'superclass',
-        'class',
-        'classis',
-        'infraclass',
-        'subclass',
-        'subclassis',
-        'superorder',
-        'order',
-        'ordo',
-        'infraorder',
-        'suborder',
-        'subordo',
-        'superfamily',
-        'family',
-        'familia',
-        'subfamily',
-        'subfamilia',
-        'tribe',
-        'tribus',
-        'subtribe',
-        'subtribus',
-        'genus',
-        'subgenus',
-        'section',
-        'sectio',
-        'subsection',
-        'subsectio',
-        'series',
-        'subseries',
-        'species',
-        'subspecies',
-        'infraspecies',
-        'variety',
-        'varietas',
-        'subvariety',
-        'subvarietas',
-        'form',
-        'forma',
-        'subform',
-        'subforma');
+    // original list, legacy from the beginning...
+    // static $ranks = array(
+    //     'species', 'superkingdom', 'kingdom', 'regnum', 'subkingdom', 'infrakingdom', 'subregnum', 'division',
+    //     'superphylum', 'phylum', 'divisio', 'subdivision', 'subphylum', 'infraphylum', 'parvphylum', 'subdivisio',
+    //     'superclass', 'class', 'classis', 'infraclass', 'subclass', 'subclassis', 'superorder', 'order',
+    //     'ordo', 'infraorder', 'suborder', 'subordo', 'superfamily', 'family', 'familia', 'subfamily',
+    //     'subfamilia', 'tribe', 'tribus', 'subtribe', 'subtribus', 'genus', 'subgenus', 'section',
+    //     'sectio', 'subsection', 'subsectio', 'series', 'subseries', 'species', 'subspecies', 'infraspecies',
+    //     'variety', 'varietas', 'subvariety', 'subvarietas', 'form', 'forma', 'subform', 'subforma');
+
+    // from Jeremy used by harvesting: May 20, 2024
+    static $ranks = array('class', 'class_group', 'cohort', 'cohort_group', 'division', 'division_group', 'domain', 'domain_group', 'epiclass', 'epicohort', 'epidivision', 'epidomain', 'epifamily', 'epiform', 'epigenus', 
+        'epikingdom', 'epiorder', 'epiphylum', 'epispecies', 'epitribe', 'epivariety', 'family', 'family_group', 'form', 'form_group', 'genus', 'genus_group', 'infraclass', 'infracohort', 'infradivision', 
+        'infradomain', 'infrafamily', 'infraform', 'infragenus', 'infrakingdom', 'infraorder', 'infraphylum', 'infraspecies', 'infratribe', 'infravariety', 'kingdom', 'kingdom_group', 'megaclass', 'megacohort', 
+        'megadivision', 'megadomain', 'megafamily', 'megaform', 'megagenus', 'megakingdom', 'megaorder', 'megaphylum', 'megaspecies', 'megatribe', 'megavariety', 'order', 'order_group', 'phylum', 'phylum_group', 
+        'species', 'species_group', 'subclass', 'subcohort', 'subdivision', 'subdomain', 'subfamily', 'subform', 'subgenus', 'subkingdom', 'suborder', 'subphylum', 'subspecies', 'subterclass', 'subtercohort', 
+        'subterdivision', 'subterdomain', 'subterfamily', 'subterform', 'subtergenus', 'subterkingdom', 'subterorder', 'subterphylum', 'subterspecies', 'subtertribe', 'subtervariety', 'subtribe', 'subvariety', 
+        'superclass', 'supercohort', 'superdivision', 'superdomain', 'superfamily', 'superform', 'supergenus', 'superkingdom', 'superorder', 'superphylum', 'superspecies', 'supertribe', 'supervariety', 'tribe', 
+        'tribe_group', 'variety', 'variety_group');
+
+    // from iNat, not recognized by our harvest: May 20, 2024
+    // 'stateofmatter', 'zoosection', 'complex', 'section', 'parvorder', 'zoosubsection', 'hybrid', 'subsection', 'genushybrid'
+
     public static function valid_rank($v)
     {
         if($v && !in_array(strtolower($v), self::$ranks))
