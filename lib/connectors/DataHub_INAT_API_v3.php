@@ -41,7 +41,7 @@ class DataHub_INAT_API_v3
 
         // from iNat, not recognized by our harvest: May 20, 2024
         $this->rank_set_2_blank = array('stateofmatter', 'zoosection', 'complex', 'section', 'parvorder', 'zoosubsection', 'hybrid', 'subsection', 'genushybrid');
-        this->with_breaks_YN = false;
+        $this->with_breaks_YN = false;
     }
     function start()
     {
