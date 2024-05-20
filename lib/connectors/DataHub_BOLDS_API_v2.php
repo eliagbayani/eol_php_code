@@ -29,6 +29,15 @@ class DataHub_BOLDS_API_v2
     }
     function start()
     {   
+
+        echo "\nranks_php_code_base: ".count(self::$ranks_php_code_base)."\n";
+        echo "\nranks_eol_org: ".count(self::$ranks_eol_org)."\n";
+        
+        // $subset=array_diff(self::$ranks_eol_org, self::$ranks_php_code_base); echo "\nsubset: ".count($subset)."\n";
+        // $subset=array_diff(self::$ranks_php_code_base, self::$ranks_eol_org); echo "\nsubset: ".count($subset)."\n";
+
+        exit("\n");
+
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
@@ -104,6 +113,7 @@ class DataHub_BOLDS_API_v2
         // print_r($ancestry); exit("\nelix 1\n");
         foreach($ancestry as $tax_id) {
             if($tax_id == 1) break;
+            if(!@$this->taxa_info[$tax_id]['n']) continue;
             $save = array();
             $save['taxonID'] = $tax_id;
             $save['scientificName'] = $this->taxa_info[$tax_id]['n'];
@@ -141,9 +151,11 @@ class DataHub_BOLDS_API_v2
                 if($taxonID == 1) break;
                 else {
                     if($val = self::get_ancestry_thru_api($taxonID)) {
+                        echo " [$val] ";
                         $final[] = $val;
                         $taxonID = $val;
                     }
+                    else break;
                 }
             }
         }
@@ -157,7 +169,7 @@ class DataHub_BOLDS_API_v2
         $url = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
 
         @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group\n";
-        if($this->total_page_calls > 1) {
+        if($this->total_page_calls > 66) {
             if(($this->total_page_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
         }
 
@@ -165,7 +177,8 @@ class DataHub_BOLDS_API_v2
             $obj = json_decode($json);
             // print_r($obj); exit;
             // /* build taxa info list
-            foreach($obj as $o) {
+            foreach($obj as $o) { 
+                if(!@$o->taxid) { $this->debug['not found in api'][$taxonID] = ''; continue;}
                 $tax_id = $o->taxid;
                 $this->taxa_info[$tax_id]['p'] = $o->parentid;
                 $this->taxa_info[$tax_id]['n'] = $o->taxon;
@@ -173,7 +186,7 @@ class DataHub_BOLDS_API_v2
             }
             // */
         }
-        return $this->taxa_info[$taxonID]['p'];
+        return @$this->taxa_info[$taxonID]['p'];
     }
     private function write_MoF($rec)
     {   //print_r($o); exit;
@@ -188,6 +201,27 @@ class DataHub_BOLDS_API_v2
         $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
+
+
+    static $ranks_php_code_base = array(
+        'species', 'superkingdom', 'kingdom', 'regnum', 'subkingdom', 'infrakingdom', 'subregnum', 'division',
+        'superphylum', 'phylum', 'divisio', 'subdivision', 'subphylum', 'infraphylum', 'parvphylum', 'subdivisio',
+        'superclass', 'class', 'classis', 'infraclass', 'subclass', 'subclassis', 'superorder', 'order',
+        'ordo', 'infraorder', 'suborder', 'subordo', 'superfamily', 'family', 'familia', 'subfamily',
+        'subfamilia', 'tribe', 'tribus', 'subtribe', 'subtribus', 'genus', 'subgenus', 'section',
+        'sectio', 'subsection', 'subsectio', 'series', 'subseries', 'species', 'subspecies', 'infraspecies',
+        'variety', 'varietas', 'subvariety', 'subvarietas', 'form', 'forma', 'subform', 'subforma');
+
+    static $ranks_eol_org = array('class', 'class_group', 'cohort', 'cohort_group', 'division', 'division_group', 'domain', 'domain_group', 'epiclass', 'epicohort', 'epidivision', 'epidomain', 'epifamily', 'epiform', 'epigenus', 
+        'epikingdom', 'epiorder', 'epiphylum', 'epispecies', 'epitribe', 'epivariety', 'family', 'family_group', 'form', 'form_group', 'genus', 'genus_group', 'infraclass', 'infracohort', 'infradivision', 
+        'infradomain', 'infrafamily', 'infraform', 'infragenus', 'infrakingdom', 'infraorder', 'infraphylum', 'infraspecies', 'infratribe', 'infravariety', 'kingdom', 'kingdom_group', 'megaclass', 'megacohort', 
+        'megadivision', 'megadomain', 'megafamily', 'megaform', 'megagenus', 'megakingdom', 'megaorder', 'megaphylum', 'megaspecies', 'megatribe', 'megavariety', 'order', 'order_group', 'phylum', 'phylum_group', 
+        'species', 'species_group', 'subclass', 'subcohort', 'subdivision', 'subdomain', 'subfamily', 'subform', 'subgenus', 'subkingdom', 'suborder', 'subphylum', 'subspecies', 'subterclass', 'subtercohort', 
+        'subterdivision', 'subterdomain', 'subterfamily', 'subterform', 'subtergenus', 'subterkingdom', 'subterorder', 'subterphylum', 'subterspecies', 'subtertribe', 'subtervariety', 'subtribe', 'subvariety', 
+        'superclass', 'supercohort', 'superdivision', 'superdomain', 'superfamily', 'superform', 'supergenus', 'superkingdom', 'superorder', 'superphylum', 'superspecies', 'supertribe', 'supervariety', 'tribe', 
+        'tribe_group', 'variety', 'variety_group');
+
+
     // ======================================================================= copied template below
     private function bolds_API_result_still_validYN($str)
     {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
