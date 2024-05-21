@@ -28,19 +28,17 @@ class DataHub_BOLDS_API_v2
 
     }
     function start()
-    {   
-
-        echo "\nranks_php_code_base: ".count(self::$ranks_php_code_base)."\n";
-        echo "\nranks_eol_org: ".count(self::$ranks_eol_org)."\n";
-        
+    {   /* just a utility
+        // echo "\nranks_php_code_base: ".count(self::$ranks_php_code_base)."\n";
+        // echo "\nranks_eol_org: ".count(self::$ranks_eol_org)."\n";
         // $subset=array_diff(self::$ranks_eol_org, self::$ranks_php_code_base); echo "\nsubset: ".count($subset)."\n";
         // $subset=array_diff(self::$ranks_php_code_base, self::$ranks_eol_org); echo "\nsubset: ".count($subset)."\n";
-
         exit("\n");
+        */
 
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
-        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
+        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
         // step 1: build taxon info list
         self::read_tsv_files_do_task("generate taxa info list");
         // print_r($this->taxa_info); exit;
@@ -98,7 +96,7 @@ class DataHub_BOLDS_API_v2
                 self::write_MoF($rec);
 
                 // break; //debug only
-                if($i >= 1000) break; //debug only    
+                if($i >= 2000) break; //debug only    
 
             }
             elseif($what == "generate taxa info list") {
@@ -112,14 +110,24 @@ class DataHub_BOLDS_API_v2
     {
         // print_r($ancestry); exit("\nelix 1\n");
         foreach($ancestry as $tax_id) {
-            if($tax_id == 1) break;
-            if(!@$this->taxa_info[$tax_id]['n']) continue;
-            $save = array();
-            $save['taxonID'] = $tax_id;
-            $save['scientificName'] = $this->taxa_info[$tax_id]['n'];
-            $save['taxonRank'] = $this->taxa_info[$tax_id]['r'];
-            $save['parentNameUsageID'] = $this->taxa_info[$tax_id]['p'];
-            self::write_taxon($save);
+            if($tax_id == 1) { // the parentmost, the root
+                $save = array();
+                $save['taxonID'] = $tax_id;
+                $save['scientificName'] = 'root';
+                $save['taxonRank'] = '';
+                $save['parentNameUsageID'] = '';
+                self::write_taxon($save);    
+                break;
+            }
+            else {
+                if(!@$this->taxa_info[$tax_id]['n']) continue;
+                $save = array();
+                $save['taxonID'] = $tax_id;
+                $save['scientificName'] = $this->taxa_info[$tax_id]['n'];
+                $save['taxonRank'] = $this->taxa_info[$tax_id]['r'];
+                $save['parentNameUsageID'] = $this->taxa_info[$tax_id]['p'];
+                self::write_taxon($save);    
+            }
         }
     }
     private function write_taxon($rec)
@@ -169,11 +177,12 @@ class DataHub_BOLDS_API_v2
         $url = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
 
         @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group\n";
-        if($this->total_page_calls > 66) {
+        if($this->total_page_calls > 200) {
             if(($this->total_page_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
         }
 
         if($json = Functions::lookup_with_cache($url.$taxonID, $this->download_options_BOLDS)) {
+            self::bolds_API_result_still_validYN($json);
             $obj = json_decode($json);
             // print_r($obj); exit;
             // /* build taxa info list
@@ -201,8 +210,7 @@ class DataHub_BOLDS_API_v2
         $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
-
-
+    /*
     static $ranks_php_code_base = array(
         'species', 'superkingdom', 'kingdom', 'regnum', 'subkingdom', 'infrakingdom', 'subregnum', 'division',
         'superphylum', 'phylum', 'divisio', 'subdivision', 'subphylum', 'infraphylum', 'parvphylum', 'subdivisio',
@@ -220,13 +228,13 @@ class DataHub_BOLDS_API_v2
         'subterdivision', 'subterdomain', 'subterfamily', 'subterform', 'subtergenus', 'subterkingdom', 'subterorder', 'subterphylum', 'subterspecies', 'subtertribe', 'subtervariety', 'subtribe', 'subvariety', 
         'superclass', 'supercohort', 'superdivision', 'superdomain', 'superfamily', 'superform', 'supergenus', 'superkingdom', 'superorder', 'superphylum', 'superspecies', 'supertribe', 'supervariety', 'tribe', 
         'tribe_group', 'variety', 'variety_group');
-
-
+    */
     // ======================================================================= copied template below
     private function bolds_API_result_still_validYN($str)
     {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
         if(stripos($str, 'have exceeded') !== false) { //string is found
             echo "\n[$str]\n";
+            exit("\nProgram terminated by Eli.\n");
             // echo "\nBOLDS special error\n"; exit("\nexit muna, remove BOLDS from the list of dbases.\n");
             echo "\nExceeded quota\n"; sleep(60*10); //10 mins
             @$this->BOLDS_TooManyRequests++;
@@ -302,7 +310,7 @@ class DataHub_BOLDS_API_v2
         $save['parentID'] = @$ancestry[0]['taxid'];
         $save['ancestry'] = $ancestry;
         // ----- end ----- */
-        print_r($save);
+        // print_r($save);
         return $save;
         // exit("\nxxx\n");
     }
@@ -375,15 +383,6 @@ class DataHub_BOLDS_API_v2
         if(!($WRITE = Functions::file_open($filename, "a"))) return;
         fwrite($WRITE, $data . "\n");
         fclose($WRITE);    
-
-
-        // copied template
-        // else {
-        //     if(!($WRITE = Functions::file_open($filename, "a"))) return;
-        //     if($rec && is_array($rec)) fwrite($WRITE, json_encode($rec) . "\n");
-        //     else                       fwrite($WRITE, $rec . "\n");
-        //     fclose($WRITE);
-        // }
     }
     private function get_curl_errors()
     {   /*
