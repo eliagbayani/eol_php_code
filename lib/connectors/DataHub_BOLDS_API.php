@@ -191,6 +191,9 @@ class DataHub_BOLDS_API
         $level_6 = '';
         $level_8 = self::assemble_level_2($level_7); //print_r($level_8);
         $level_7 = '';
+        $level_9 = self::assemble_level_2($level_8); print_r($level_9);
+        $level_8 = '';
+
         // */
 
         /* testing only
@@ -254,7 +257,7 @@ class DataHub_BOLDS_API
     }
     private function assemble_level_2($level_1)
     {
-        $limit['Animal'] = 85872;
+        $limit['Animal'] = 1000000;
         $limit['Plant'] = 1000000;
         $limit['Fungi'] = 1000000;
         $limit['Protist'] = 1000000;
