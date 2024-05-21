@@ -40,7 +40,7 @@ class DataHub_BOLDS_API
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
         
         //step 1
-        self::build_taxonomy_list(); exit("\nstop muna 100\n");
+        self::build_taxonomy_list(); exit("\nstop muna 100\n"); //CACHING FINISHED OK! MAY 21, 2024
 
         //step 2:
         /*
@@ -220,7 +220,7 @@ class DataHub_BOLDS_API
         $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;
         $final = array();
         $groups = array('Animal', 'Plant', 'Fungi', 'Protist'); //main operation
-        $groups = array('Animal');
+        // $groups = array('Animal');
         // $groups = array('Plant');
         // $groups = array('Fungi', 'Protist');
 
@@ -229,7 +229,7 @@ class DataHub_BOLDS_API
             if($html = Functions::lookup_with_cache($this->start_page, $options)) {
                 if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
                     $html2 = $arr[1];
-                    $tmp = self::get_list_items($html2, 'phylum');
+                    $tmp = self::get_list_items($html2, 'phylum', 1);
                     $i = 0;
                     foreach($tmp as $t) { $i++;
                         // /* orig, main operation
@@ -266,12 +266,15 @@ class DataHub_BOLDS_API
         $list = array();
         foreach($level_1 as $rekords) {
             foreach($rekords as $rec) {
-                print_r($rec); //exit;
+                // print_r($rec); exit("elix 2");
                 /*Array(
                     [taxid] => 11
-                    [counts] => 3027
+                    [counts] => 3027 ----------- number seems wrong
                     [sciname] => Acanthocephala
+                    [rank] => phylum
                 )*/
+                $will_be_parent = $rec['taxid'];
+
                 if(strtolower($rec['rank']) == "species") {echo "\nmay continue\n"; continue;}
                 if(strtolower($rec['rank']) == "subspecies") {echo "\nmay continue\n"; continue;}
                 if(strtolower($rec['rank']) == "variety") {echo "\nmay continue\n"; continue;}
@@ -279,6 +282,7 @@ class DataHub_BOLDS_API
                 if(strtolower($rec['rank']) == "forma") {echo "\nmay continue\n"; continue;}
 
                 if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
+                    // exit("\n-------------------\n$html\n--------------------------\n");
 
                     self::bolds_API_result_still_validYN($html);
 
@@ -307,7 +311,7 @@ class DataHub_BOLDS_API
                             foreach($arr2[1] as $html3) {
                                 $html3 = "<lh>".$html3; echo "\n$html3\n"; //exit;
                                 $rank = self::get_rank($html3);
-                                $temp = self::get_list_items($html3, $rank); print_r($temp);
+                                $temp = self::get_list_items($html3, $rank, $will_be_parent); print_r($temp);
                                 foreach($temp as $t) $list['Elix'][] = $t;
                             }
                         }
@@ -360,7 +364,7 @@ class DataHub_BOLDS_API
         $save['parentID'] = @$ancestry[0]['taxid'];
         $save['ancestry'] = $ancestry;
         // ----- end ----- */
-        print_r($save);
+        // print_r($save);
         return $save;
         // exit("\nxxx\n");
     }
@@ -370,8 +374,8 @@ class DataHub_BOLDS_API
         $left = '>Public Records:</td>'; $right = '</td>';
         if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) return trim(strip_tags($arr[1]));          
     }
-    private function get_list_items($html, $rank)
-    {
+    private function get_list_items($html, $rank, $will_be_parent)
+    {   //exit($html); exit;
         $final = array(); $left = '<li>'; $right = '</li>';
         if(preg_match_all("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr2)) { // print_r($arr2[1]);
             /*Array(
@@ -390,6 +394,7 @@ class DataHub_BOLDS_API
                     $ret = str_replace("[".$r['counts']."]", "", $ret);
                     $r['sciname'] = trim($ret);
                     $r['rank'] = $rank;
+                    $r['parentNameUsageID'] = $will_be_parent;
                 }
 
                 $r = array_map('trim', $r); // echo "\n$t\n"; print_r($r);
