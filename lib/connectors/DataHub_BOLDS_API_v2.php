@@ -25,7 +25,7 @@ class DataHub_BOLDS_API_v2
         if(!is_dir($save_path)) mkdir($save_path);
         $this->tsv_files = $save_path.'Public_count_XGROUP_updated.tsv'; //e.g. Public_count_family_updated.tsv
         // */
-
+        $this->Eli_cached_taxonomy = $save_path.'datahub_bolds_taxonomy_2024_05_21.txt';
     }
     function start()
     {   /* just a utility
@@ -39,7 +39,11 @@ class DataHub_BOLDS_API_v2
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-        // step 1: build taxon info list
+
+        // step 0.5 Use Eli's cache to generate $var[taxid] = parent_id
+        self::parse_tsv_file($this->Eli_cached_taxonomy, 'use cached taxonomy build taxon info list');
+
+        // step 1: build taxon info list using Rebekah's spreadsheets
         self::read_tsv_files_do_task("generate taxa info list");
         // print_r($this->taxa_info); exit;
 
@@ -74,11 +78,15 @@ class DataHub_BOLDS_API_v2
                 $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
             }
 
-            $tax_id = $rec['tax id'];
-            $parent_id = $rec['parent id'];
-            $sciname = $rec[$this->group];
+            if(in_array($what, array('read tsv write dwca', 'generate taxa info list'))) {
+                $tax_id = $rec['tax id'];
+                $parent_id = $rec['parent id'];
+                $sciname = $rec[$this->group];    
+            }
 
             if($what == 'read tsv write dwca') {
+                if(($i % 100) == 0) echo "\n main $i ";
+
                 /* Array(
                     [count] => 14
                     [family] => Rosaceae
@@ -96,13 +104,26 @@ class DataHub_BOLDS_API_v2
                 self::write_MoF($rec);
 
                 // break; //debug only
-                if($i >= 2000) break; //debug only    
-
+                // if($i >= 3000) break; //debug only
             }
             elseif($what == "generate taxa info list") {
                 $this->taxa_info[$tax_id]['p'] = $parent_id;
                 $this->taxa_info[$tax_id]['n'] = $sciname;
                 $this->taxa_info[$tax_id]['r'] = $this->group;
+            }
+            elseif($what == "use cached taxonomy build taxon info list") { // print_r($rec); exit;
+                /*Array(
+                    [taxid] => 11
+                    [counts] => 3027
+                    [sciname] => Acanthocephala
+                    [rank] => phylum
+                    [parentNameUsageID] => 1
+                    [] => 
+                )*/
+                $taxid = $rec['taxid'];
+                $this->taxa_info[$taxid]['p'] = $rec['parentNameUsageID'];
+                $this->taxa_info[$taxid]['n'] = $rec['sciname'];
+                $this->taxa_info[$taxid]['r'] = $rec['rank'];
             }
         }
     }
@@ -176,8 +197,8 @@ class DataHub_BOLDS_API_v2
         $options['resource_id'] = 'BOLDS_ancestry';
         $url = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
 
-        @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group\n";
-        if($this->total_page_calls > 200) {
+        @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group batch\n";
+        if($this->total_page_calls > 600) {
             if(($this->total_page_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
         }
 
