@@ -1,6 +1,7 @@
 <?php
 namespace php_active_record;
 /*  datahub_gbif.php
+https://content.eol.org/resources/1220
 */
 class DataHub_GBIF_API
 {
