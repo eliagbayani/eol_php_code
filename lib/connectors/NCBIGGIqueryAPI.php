@@ -78,8 +78,21 @@ class NCBIGGIqueryAPI
         */
 
         // NCBI service
-        $this->family_service_ncbi = "http://www.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&usehistory=y&term=";
-        // $this->family_service_ncbi = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&usehistory=y&term=";
+        /*
+        Guidelines for Scripting Calls to NCBI Servers
+        Do not overload NCBI's systems. Users intending to send numerous queries and/or retrieve large numbers of records should comply with the following:
+
+- Run retrieval scripts on weekends or between 9 pm and 5 am Eastern Time weekdays for any series of more than 100 requests.
+- Send E-utilities requests to https://eutils.ncbi.nlm.nih.gov, not the standard NCBI Web address.
+- Make no more than 3 requests every 1 second.
+- Use the URL parameter email, and tool for distributed software, so that we can track your project and contact you if there is a problem. 
+For more information, please see the Usage Guidelines and Requirements section in the Entrez Programming Utilities Help Manual.
+- NCBI's Disclaimer and Copyright notice must be evident to users of your service. NLM does not claim the copyright on the abstracts in PubMed; 
+however, journal publishers or authors may. NLM provides no legal advice concerning distribution of copyrighted materials, consult your legal counsel.
+        */
+        
+        // $this->family_service_ncbi =    "http://www.ncbi.nlm.nih.gov   /entrez/eutils/esearch.fcgi?db=nucleotide&usehistory=y&term=";
+        $this->family_service_ncbi =    "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&usehistory=y&term="; //always use this not above
         /* to be used if u want to get all Id's, that is u will loop to get all Id's so server won't be overwhelmed: &retmax=10&retstart=0 */
 
         // GGBN data portal:

@@ -85,7 +85,7 @@ class DataHub_BOLDS_API_v2
             }
 
             if($what == 'read tsv write dwca') {
-                if(($i % 100) == 0) echo "\n main $i ";
+                if(($i % 200) == 0) echo "\n main $i ";
 
                 /* Array(
                     [count] => 14
@@ -157,7 +157,18 @@ class DataHub_BOLDS_API_v2
         $taxon = new \eol_schema\Taxon();
         $taxon->taxonID             = $taxonID;
         $taxon->scientificName      = $rec['scientificName'];
-        $taxon->taxonRank           = $rec['taxonRank'];
+
+        $transform['Genera'] = 'genus';
+        $transform['Families'] = 'family';
+        $transform['Orders'] = 'order';
+        $transform['Classes'] = 'class';
+        $transform['Tribes'] = 'tribe';
+        $transform['Subfamilies'] = 'subfamily';
+        
+        if($val = @$transform[$rec['taxonRank']]) $final_rank = $val;
+        else $final_rank = strtolower($rec['taxonRank']);
+
+        $taxon->taxonRank           = $final_rank;
         $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
         if(!isset($this->taxonIDs[$taxonID])) {
             $this->taxonIDs[$taxonID] = '';
@@ -198,7 +209,7 @@ class DataHub_BOLDS_API_v2
         $url = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
 
         @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group batch\n";
-        if($this->total_page_calls > 600) {
+        if($this->total_page_calls > 1927) {
             if(($this->total_page_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
         }
 
