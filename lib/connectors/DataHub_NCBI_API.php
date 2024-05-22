@@ -48,9 +48,17 @@ class DataHub_NCBI_API
         // step 1: assemble taxa
         self::gen_NCBI_info_taxa_using_ZIP_file();
 
+        // step 2:
+        // [genus] => 109270
+        // [species] => 2117681
+        // [family] => 10403
+        
+        check how NCBIGGIqueryAPI.php does it. So we can use the same cache.
+
+
         print_r($this->debug);
         // print_r($this->taxID_name_info); 
-        echo "\ncount taxID_name_info: ".count($this->taxID_name_info)."\n";
+        echo "\ncount taxID_name_info: ".count($this->taxa_info)."\n";
     }
     private function gen_NCBI_info_taxa_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";
@@ -175,8 +183,9 @@ class DataHub_NCBI_API
                         [comments] => code compliant; specified
                     )*/
                     $taxid = $rec['tax_id'];
-                    $rank = $rec['rank'];
-                    $this->debug['rank values'][$rank] = '';
+                    $rank = $rec['rank'];                    
+                    @$this->debug['rank totals'][$rank]++;
+
                     $this->taxa_info[$taxid]['p'] = $rec['parent tax_id'];
                     $this->taxa_info[$taxid]['r'] = $rank;
 
@@ -186,7 +195,7 @@ class DataHub_NCBI_API
                         $rek["rank"]                = $rank;
                         $rek["name"]                = $this->taxa_info[$taxid]['n'];
                         $rek["parent_id"]           = $this->taxa_info[$taxid]['p'];
-                        self::save_to_dump($rek, $this->dump_file);
+                        // self::save_to_dump($rek, $this->dump_file);
 
                     }
                 }
