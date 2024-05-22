@@ -48,6 +48,7 @@ class DataHub_NCBI_API
         self::gen_NCBI_info_taxa_using_ZIP_file();
 
         print_r($this->debug);
+        print_r($this->taxID_name_info); echo "\ncount taxID_name_info: ".count($this->taxID_name_info)."\n";
     }
     private function gen_NCBI_info_taxa_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";
@@ -70,8 +71,8 @@ class DataHub_NCBI_API
         // */
 
         $temp_dir = $paths['temp_dir'];
-        self::parse_tsv_file($temp_dir . 'names.dmp', "process names.dmp");
-
+        // self::parse_tsv_file($temp_dir . 'names.dmp', "process names.dmp");
+        self::parse_tsv_file($temp_dir . 'nodes.dmp', "process nodes.dmp");
 
         /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
@@ -89,18 +90,52 @@ class DataHub_NCBI_API
             // tax_id		-- the id of node associated with this name
             // name_txt	    -- name itself
             // unique name  -- the unique variant of this name if name not unique
-            // name class	-- (synonym, common name, ...)        
+            // name class	-- (synonym, common name, ...)
+            /*Array([name class values] => Array(
+                        [synonym] => 
+                        [scientific name] => 
+                        [blast name] => 
+                        [authority] => 
+                        [genbank common name] => 
+                        [in-part] => 
+                        [type material] => 
+                        [equivalent name] => 
+                        [includes] => 
+                        [common name] => 
+                        [acronym] => 
+                        [genbank acronym] => 
+                    )
+            )*/
+        }
+        elseif($what == 'process nodes.dmp') {
+            /* nodes.dmp file consists of taxonomy nodes. The description for each node includes the following
+            fields:
+                tax_id					-- node id in GenBank taxonomy database
+                parent tax_id				-- parent node id in GenBank taxonomy database
+                rank					-- rank of this node (superkingdom, kingdom, ...) 
+                embl code				-- locus-name prefix; not unique
+                division id				-- see division.dmp file
+                inherited div flag  (1 or 0)		-- 1 if node inherits division from parent
+                genetic code id				-- see gencode.dmp file
+                inherited GC  flag  (1 or 0)		-- 1 if node inherits genetic code from parent
+                mitochondrial genetic code id		-- see gencode.dmp file
+                inherited MGC flag  (1 or 0)		-- 1 if node inherits mitochondrial gencode from parent
+                GenBank hidden flag (1 or 0)            -- 1 if name is suppressed in GenBank entry lineage
+                hidden subtree root flag (1 or 0)       -- 1 if this subtree has no sequence data yet
+                comments				-- free-text comments and citations
+            */
+            $fields = array('tax_id', 'parent tax_id', 'rank', 'embl code', 'division id', 'inherited div flag', 'genetic code id', 'inherited GC flag', 'mitochondrial genetic code id', 'inherited MGC flag', 'GenBank hidden flag', 'hidden subtree root flag', 'comments');
         }
 
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 50000) == 0) echo "\n $i ";
+            if(($i % 500000) == 0) echo "\n $i ";
             // if($i == 1) $fields = explode($separator, $row);
             if(true) {
                 if(!$row) continue;
                 $tmp = explode($separator, $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); print_r($rec); exit("\nstop muna\n");
+                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
                 if($what == 'xxx write dwca') {
                     /* copied template
                     self::prep_write_taxon($rec);
@@ -115,6 +150,30 @@ class DataHub_NCBI_API
                         [name class] => synonym
                     )*/
                     $this->debug['name class values'][$rec['name class']] = '';
+                    $tax_id = $rec['tax_id'];
+                    if($rec['name class'] == 'scientific name') $this->taxID_name_info[$tax_id]['sn'] = $rec['name_txt'];
+                }
+                elseif($what == 'process nodes.dmp') {
+                    /*Array(
+                        [tax_id] => 33434
+                        [parent tax_id] => 33416
+                        [rank] => species
+                        [embl code] => HC
+                        [division id] => 1
+                        [inherited div flag] => 1
+                        [genetic code id] => 1
+                        [inherited GC flag] => 1
+                        [mitochondrial genetic code id] => 5
+                        [inherited MGC flag] => 1
+                        [GenBank hidden flag] => 1
+                        [hidden subtree root flag] => 0
+                        [comments] => code compliant; specified
+                    )*/
+                    $tax_id = $rec['tax_id'];
+                    $rank = $rec['rank'];
+                    $this->debug['rank values'][$rank] = '';
+                    $this->taxID_name_info[$tax_id]['p'] = $rec['parent tax_id'];
+                    $this->taxID_name_info[$tax_id]['r'] = $rank;
                 }
             }
         }
