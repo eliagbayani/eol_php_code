@@ -21,6 +21,7 @@ class DataHub_NCBI_API
         $save_path = $save_path . "NCBI/";
         if(!is_dir($save_path)) mkdir($save_path);
         $this->save_path = $save_path;
+        $this->dump_file = $this->save_path . "/compiled_taxa.txt";
 
         $this->reports_path = $save_path;
         $this->taxon_page = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id="; //e.g. 8045
@@ -48,7 +49,8 @@ class DataHub_NCBI_API
         self::gen_NCBI_info_taxa_using_ZIP_file();
 
         print_r($this->debug);
-        print_r($this->taxID_name_info); echo "\ncount taxID_name_info: ".count($this->taxID_name_info)."\n";
+        // print_r($this->taxID_name_info); 
+        echo "\ncount taxID_name_info: ".count($this->taxID_name_info)."\n";
     }
     private function gen_NCBI_info_taxa_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";
@@ -71,7 +73,8 @@ class DataHub_NCBI_API
         // */
 
         $temp_dir = $paths['temp_dir'];
-        // self::parse_tsv_file($temp_dir . 'names.dmp', "process names.dmp");
+        if(is_file($this->dump_file)) unlink($this->dump_file);
+        self::parse_tsv_file($temp_dir . 'names.dmp', "process names.dmp");
         self::parse_tsv_file($temp_dir . 'nodes.dmp', "process nodes.dmp");
 
         /* un-comment in real operation -- remove temp dir
@@ -150,8 +153,10 @@ class DataHub_NCBI_API
                         [name class] => synonym
                     )*/
                     $this->debug['name class values'][$rec['name class']] = '';
-                    $tax_id = $rec['tax_id'];
-                    if($rec['name class'] == 'scientific name') $this->taxID_name_info[$tax_id]['sn'] = $rec['name_txt'];
+                    $taxid = $rec['tax_id'];
+                    if($rec['name class'] == 'scientific name') {
+                        $this->taxa_info[$taxid]['n'] = $rec['name_txt'];
+                    }
                 }
                 elseif($what == 'process nodes.dmp') {
                     /*Array(
@@ -169,14 +174,41 @@ class DataHub_NCBI_API
                         [hidden subtree root flag] => 0
                         [comments] => code compliant; specified
                     )*/
-                    $tax_id = $rec['tax_id'];
+                    $taxid = $rec['tax_id'];
                     $rank = $rec['rank'];
                     $this->debug['rank values'][$rank] = '';
-                    $this->taxID_name_info[$tax_id]['p'] = $rec['parent tax_id'];
-                    $this->taxID_name_info[$tax_id]['r'] = $rank;
+                    $this->taxa_info[$taxid]['p'] = $rec['parent tax_id'];
+                    $this->taxa_info[$taxid]['r'] = $rank;
+
+                    if(in_array($rank, array('family', 'genus', 'species'))) {
+                        $rek = array();
+                        $rek["id"]                  = $taxid;
+                        $rek["rank"]                = $rank;
+                        $rek["name"]                = $this->taxa_info[$taxid]['n'];
+                        $rek["parent_id"]           = $this->taxa_info[$taxid]['p'];
+                        self::save_to_dump($rek, $this->dump_file);
+
+                    }
                 }
             }
         }
+    }
+    private function save_to_dump($rec, $filename)
+    {
+        $fields = array_keys($rec);
+        $data = "";
+
+        if(!is_file($filename)) {
+            foreach($fields as $field) $data .= $field . "\t";
+            if(!($WRITE = Functions::file_open($filename, "a"))) return;
+            fwrite($WRITE, $data . "\n");
+            fclose($WRITE);    
+        }
+        $data = "";
+        foreach($fields as $field) $data .= $rec[$field] . "\t";
+        if(!($WRITE = Functions::file_open($filename, "a"))) return;
+        fwrite($WRITE, $data . "\n");
+        fclose($WRITE);    
     }
 
     // ================================================================= below copied template
@@ -267,24 +299,6 @@ class DataHub_NCBI_API
             }
             // if($page >= 6) break; //dev only
         } //end for loop
-    }
-    private function save_to_dump($rec, $filename)
-    {
-        if(isset($rec["observations_count"]) && is_array($rec)) {
-            $fields = array_keys($rec);
-            $data = "";
-            if(!is_file($filename)) {
-                foreach($fields as $field) $data .= $field . "\t";
-                if(!($WRITE = Functions::file_open($filename, "a"))) return;
-                fwrite($WRITE, $data . "\n");
-                fclose($WRITE);    
-            }
-            $data = "";
-            foreach($fields as $field) $data .= $rec[$field] . "\t";
-            if(!($WRITE = Functions::file_open($filename, "a"))) return;
-            fwrite($WRITE, $data . "\n");
-            fclose($WRITE);
-        }
     }
     // =========================================================================== start 2nd part
     function parse_tsv_then_generate_dwca()
