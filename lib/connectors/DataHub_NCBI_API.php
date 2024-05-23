@@ -50,22 +50,24 @@ class DataHub_NCBI_API
         // step 1: assemble taxa
         // self::gen_NCBI_info_taxa_using_ZIP_file();
 
+        // step x: process genus and family; use API
+
         // step 2:
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
+        /*
         // step 3: process the big file
         self::parse_tsv_file($this->big_file, "process big file");
-        echo "\n 8049".$this->totals[8049]."\n";
-        echo "\n 454919".$this->totals[454919]."\n";
-        echo "\n 21".$this->totals[21]."\n";
-
-
+        echo "\n 8049: ".$this->totals[8049]."\n";
+        echo "\n 454919: ".$this->totals[454919]."\n";
+        echo "\n 21: ".$this->totals[21]."\n";
+        */
 
         print_r($this->debug);
-        // print_r($this->taxID_name_info); 
-        echo "\ncount taxID_name_info: ".count($this->taxa_info)."\n";
+        // print_r($this->taxa_info); 
+        echo "\ncount taxa_info: ".count(@$this->taxa_info)."\n";
     }
     private function gen_NCBI_info_taxa_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";
