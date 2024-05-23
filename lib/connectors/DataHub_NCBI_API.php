@@ -234,17 +234,19 @@ class DataHub_NCBI_API
         $rank = $rec['rank'];
         if(!in_array($rank, array('genus', 'family'))) return;
 
-        if(!self::correct_time_2call_api_YN()) {
-            echo "\nNot correct time to call api\n";
-            // return;
+        if(self::correct_time_2call_api_YN()) {
+            echo "\nCorrect time to call api\n";
+            self::proceec_call_api($rec);
         } 
-        else echo "\ncorrect time to call api\n";
-        exit;
+        else {
+            echo "\nNot correct time to call api\n";
+            return;
+        }
     }
     private function correct_time_2call_api_YN()
     {
         date_default_timezone_set('America/New_York');
-        // date_default_timezone_set('Asia/Taipei');
+        date_default_timezone_set('Asia/Taipei');
         // /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         // */
