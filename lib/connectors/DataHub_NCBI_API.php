@@ -29,21 +29,6 @@ class DataHub_NCBI_API
         $this->debug = array();
 
         $this->big_file = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';
-
-        /* copied template
-        $this->quality_grades = array('research', 'needs_id', 'casual'); //orig; obsolete
-        $this->quality_grades = array('research'); //new orig
-
-        $this->groups = array("Insecta", "Plantae", "Actinopterygii", "Amphibia", "Arachnida", "Aves", "Chromista", "Fungi", "Mammalia", "Mollusca", "Reptilia", "Protozoa", "unknown"); //orig
-
-        $this->include_ranks = array('species', 'family', 'genus'); //orig;
-        // $this->include_ranks = array('species'); //orig;
-
-        $this->NCBI_api['family_genus'] = 'https://api.NCBI.org/v1/observations/species_counts?rank=XRANK&page=XPAGE';
-
-        // from NCBI, not recognized by our harvest: May 20, 2024
-        $this->with_breaks_YN = true; //true for periodic normal operation //false if cached already
-        */
     }
     function start()
     {
@@ -51,6 +36,7 @@ class DataHub_NCBI_API
         // self::gen_NCBI_info_taxa_using_ZIP_file();
 
         // step x: process genus and family; use API
+        self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
 
         // step 2:
         // [genus] => 109270
@@ -151,11 +137,14 @@ class DataHub_NCBI_API
             $separator = "\t";
             $modulo = 1000000;
         }
+        elseif($what == 'process genus family from compiled taxonomy') {
+            $separator = "\t";
+        }
 
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % $modulo) == 0) echo "\n $i ";
 
-            if($what == 'process big file') {
+            if(in_array($what, array('process big file', 'process genus family from compiled taxonomy'))) {
                 if($i == 1) {
                     $fields = explode($separator, $row); 
                     continue;
@@ -230,7 +219,59 @@ class DataHub_NCBI_API
                     $accession = $rec['accession'];
                     @$this->totals[$taxid]++;
                 }
+                elseif($what == 'process genus family from compiled taxonomy') self::process_genus_family($rec);
             }
+        }
+    }
+    private function process_genus_family($rec)
+    {   /*Array(
+            [id] => 6
+            [rank] => genus
+            [name] => Azorhizobium
+            [parent_id] => 335928
+            [] => 
+        )*/
+        $rank = $rec['rank'];
+        if(!in_array($rank, array('genus', 'family'))) return;
+
+        if(!self::correct_time_2call_api_YN()) {
+            echo "\nNot correct time to call api\n";
+            // return;
+        } 
+        else echo "\ncorrect time to call api\n";
+        exit;
+    }
+    private function correct_time_2call_api_YN()
+    {
+        date_default_timezone_set('America/New_York');
+        // date_default_timezone_set('Asia/Taipei');
+        // /* good debug
+        if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
+        // */
+
+        if(date('D') == 'Sat' || date('D') == 'Sun') { 
+            echo "\nToday is Saturday or Sunday."; 
+            return true;
+        } 
+        else {
+            echo "\nToday is not Saturday or Sunday but ". date('D') .".\n";
+            // should be between 9:00 PM and 5:00 AM
+            // if PM should be > 21:00:00 and if AM should be < 05:00:00
+            $date = date('Y-m-d H:i:s A');
+            $am_pm = date('A');
+            $time = date('H:i:s');
+            echo "\ndate: $date";
+            echo "\nam_pm: $am_pm";
+            echo "\ntime: $time\n";
+            if($am_pm == 'AM') {
+                if($time < '05:00:00') return true;
+                else return false;
+            }
+            elseif($am_pm == 'PM') {
+                if($time > '21:00:00') return true;
+                else return false;
+            }
+            return false; //doesn't go here anyway
         }
     }
     private function save_to_dump($rec, $filename)
