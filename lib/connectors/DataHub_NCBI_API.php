@@ -263,9 +263,9 @@ class DataHub_NCBI_API
     }
     private function correct_time_2call_api_YN()
     {
-        // /* good debug
+        /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
-        // */
+        */
 
         if(date('D') == 'Sat' || date('D') == 'Sun') { 
             // echo "\nToday is Saturday or Sunday.";
@@ -278,9 +278,9 @@ class DataHub_NCBI_API
             $date = date('Y-m-d H:i:s A');
             $am_pm = date('A');
             $time = date('H:i:s');
-            echo "\ndate: $date";
-            echo "\nam_pm: $am_pm";
-            echo "\ntime: $time\n";
+            // echo "\ndate: $date";
+            // echo "\nam_pm: $am_pm";
+            // echo "\ntime: $time\n";
             if($am_pm == 'AM') {
                 if($time < '05:00:00') return true;
                 else return false;
