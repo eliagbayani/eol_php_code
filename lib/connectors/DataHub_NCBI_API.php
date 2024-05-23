@@ -28,6 +28,8 @@ class DataHub_NCBI_API
         $this->dwca['NCBI-taxonomy'] = "https://ftp.ncbi.nih.gov/pub/taxonomy/taxdmp.zip";
         $this->debug = array();
 
+        $this->big_file = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';
+
         /* copied template
         $this->quality_grades = array('research', 'needs_id', 'casual'); //orig; obsolete
         $this->quality_grades = array('research'); //new orig
@@ -46,14 +48,19 @@ class DataHub_NCBI_API
     function start()
     {
         // step 1: assemble taxa
-        self::gen_NCBI_info_taxa_using_ZIP_file();
+        // self::gen_NCBI_info_taxa_using_ZIP_file();
 
         // step 2:
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
-        
-        check how NCBIGGIqueryAPI.php does it. So we can use the same cache.
+
+        // step 3: process the big file
+        self::parse_tsv_file($this->big_file, "process big file");
+        echo "\n 8049".$this->totals[8049]."\n";
+        echo "\n 454919".$this->totals[454919]."\n";
+        echo "\n 21".$this->totals[21]."\n";
+
 
 
         print_r($this->debug);
@@ -95,7 +102,7 @@ class DataHub_NCBI_API
         $i = 0; $final = array();
         $separator = "	|	";
         $separator = "	|";
-
+        $modulo = 500000;
         if($what == 'process names.dmp') {
             $fields = array('tax_id', 'name_txt', 'unique name', 'name class');
             // tax_id		-- the id of node associated with this name
@@ -137,16 +144,28 @@ class DataHub_NCBI_API
             */
             $fields = array('tax_id', 'parent tax_id', 'rank', 'embl code', 'division id', 'inherited div flag', 'genetic code id', 'inherited GC flag', 'mitochondrial genetic code id', 'inherited MGC flag', 'GenBank hidden flag', 'hidden subtree root flag', 'comments');
         }
+        elseif($what == 'process big file') { //per: https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/README
+            // $fields = array('accession', 'accession.version', 'taxid', 'gi');
+            $separator = "\t";
+            $modulo = 1000000;
+        }
 
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 500000) == 0) echo "\n $i ";
-            // if($i == 1) $fields = explode($separator, $row);
+            if(($i % $modulo) == 0) echo "\n $i ";
+
+            if($what == 'process big file') {
+                if($i == 1) {
+                    $fields = explode($separator, $row); 
+                    continue;
+                }
+            }
+            
             if(true) {
                 if(!$row) continue;
                 $tmp = explode($separator, $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
+                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
                 if($what == 'xxx write dwca') {
                     /* copied template
                     self::prep_write_taxon($rec);
@@ -195,9 +214,19 @@ class DataHub_NCBI_API
                         $rek["rank"]                = $rank;
                         $rek["name"]                = $this->taxa_info[$taxid]['n'];
                         $rek["parent_id"]           = $this->taxa_info[$taxid]['p'];
-                        // self::save_to_dump($rek, $this->dump_file);
-
+                        self::save_to_dump($rek, $this->dump_file);
                     }
+                }
+                elseif($what == 'process big file') {
+                    /*Array(
+                        [accession] => A00001
+                        [accession.version] => A00001.1
+                        [taxid] => 10641
+                        [gi] => 58418
+                    )*/
+                    $taxid = $rec['taxid'];
+                    $accession = $rec['accession'];
+                    @$this->totals[$taxid]++;
                 }
             }
         }
