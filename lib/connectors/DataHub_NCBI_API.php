@@ -26,9 +26,13 @@ class DataHub_NCBI_API
         $this->reports_path = $save_path;
         $this->taxon_page = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id="; //e.g. 8045
         $this->dwca['NCBI-taxonomy'] = "https://ftp.ncbi.nih.gov/pub/taxonomy/taxdmp.zip";
+        $this->api_call = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=txidXXTAXIDXX[Organism:exp]';
         $this->debug = array();
 
         $this->big_file = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';
+
+        date_default_timezone_set('America/New_York');
+        // date_default_timezone_set('Asia/Taipei');
     }
     function start()
     {
@@ -219,7 +223,10 @@ class DataHub_NCBI_API
                     $accession = $rec['accession'];
                     @$this->totals[$taxid]++;
                 }
-                elseif($what == 'process genus family from compiled taxonomy') self::process_genus_family($rec);
+                elseif($what == 'process genus family from compiled taxonomy') {                    
+                    self::process_genus_family($rec);
+                    if($i > 5) break;
+                }
             }
         }
     }
@@ -236,27 +243,34 @@ class DataHub_NCBI_API
 
         if(self::correct_time_2call_api_YN()) {
             echo "\nCorrect time to call api\n";
-            self::proceec_call_api($rec);
+            self::proceed_call_api($rec);
         } 
         else {
             echo "\nNot correct time to call api\n";
             return;
         }
     }
+    private function proceed_call_api($rec)
+    {
+        $url = str_replace("XXTAXIDXX", $rec['id'], $this->api_call);
+        $xml = Functions::lookup_with_cache($url, $this->download_options_NCBI);
+        // <Count>367603</Count>1
+        $save = array();
+        if(preg_match("/<Count>(.*?)<\/Count>/ims", $xml, $arr)) $save['count'] = $arr[1];
+        // print_r($save); exit;
+    }
     private function correct_time_2call_api_YN()
     {
-        date_default_timezone_set('America/New_York');
-        date_default_timezone_set('Asia/Taipei');
         // /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         // */
 
         if(date('D') == 'Sat' || date('D') == 'Sun') { 
-            echo "\nToday is Saturday or Sunday."; 
+            // echo "\nToday is Saturday or Sunday.";
             return true;
         } 
         else {
-            echo "\nToday is not Saturday or Sunday but ". date('D') .".\n";
+            // echo "\nToday is not Saturday or Sunday but ". date('D') .".\n";
             // should be between 9:00 PM and 5:00 AM
             // if PM should be > 21:00:00 and if AM should be < 05:00:00
             $date = date('Y-m-d H:i:s A');
