@@ -225,7 +225,7 @@ class DataHub_NCBI_API
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
                     self::process_genus_family($rec);
-                    if($i > 5) break;
+                    // if($i > 5) break;
                 }
             }
         }
@@ -247,7 +247,8 @@ class DataHub_NCBI_API
         } 
         else {
             echo "\nNot correct time to call api\n";
-            sleep(60*60*1); echo "\nsleep 1 hr.\n";
+            echo "\nsleep 1 hr.\n";
+            sleep(60*60*1);
             return;
         }
     }
