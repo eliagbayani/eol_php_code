@@ -247,6 +247,7 @@ class DataHub_NCBI_API
         } 
         else {
             echo "\nNot correct time to call api\n";
+            sleep(60*60*1); echo "\nsleep 1 hr.\n";
             return;
         }
     }
