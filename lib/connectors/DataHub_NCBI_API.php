@@ -48,7 +48,7 @@ class DataHub_NCBI_API
         // [family] => 10403
 
         /*
-        // step 3: process the big file
+        // step 3: process the big file - for species-level taxa
         self::parse_tsv_file($this->big_file, "process big file");
         echo "\n 8049: ".$this->totals[8049]."\n";
         echo "\n 454919: ".$this->totals[454919]."\n";
@@ -212,7 +212,7 @@ class DataHub_NCBI_API
                         self::save_to_dump($rek, $this->dump_file);
                     }
                 }
-                elseif($what == 'process big file') {
+                elseif($what == 'process big file') { //for species-level taxa
                     /*Array(
                         [accession] => A00001
                         [accession.version] => A00001.1
