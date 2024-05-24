@@ -471,9 +471,21 @@ class ResourceUtility
                     $field = pathinfo($uri, PATHINFO_BASENAME);
                     $o->$field = $rec[$uri];
                 }
+
+                // /* new: May 25, 2024 - Save only recognized ranks
+                $o = self::use_only_recognized_ranks($o);
+                // */
+
                 $this->archive_builder->write_object_to_file($o);
             }
         }
+    }
+    private function use_only_recognized_ranks($o)
+    {
+        if($val = @$o->taxonRank) {
+            if(!in_array($val, \eol_schema\Taxon::$ranks)) $o->taxonRank = '';
+        }
+        return $o;
     }
     /*============================================================ ENDS remove_taxa_without_MoF ==================================================*/
     /*================================================== STARTS report_4_Wikipedia_EN_traits ===============================================*/

@@ -36,7 +36,7 @@ class DataHub_NCBI_API
     }
     function start()
     {
-        /* works OK
+        /* works OK. A way to reference a function from: vendor/eol_content_schema_v2
         print_r(\eol_schema\Taxon::$ranks); exit;
         */
 
