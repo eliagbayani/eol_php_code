@@ -258,8 +258,21 @@ class DataHub_NCBI_API
         $xml = Functions::lookup_with_cache($url, $this->download_options_NCBI);
         // <Count>367603</Count>1
         $save = array();
-        if(preg_match("/<Count>(.*?)<\/Count>/ims", $xml, $arr)) $save['count'] = $arr[1];
-        // print_r($save); exit;
+        if(preg_match("/<Count>(.*?)<\/Count>/ims", $xml, $arr)){
+            $save['count'] = $arr[1];
+            echo " -[".$save['count']."]- ";
+            // print_r($save); exit;
+        }
+
+        // /* NCBI special case - will check it this works
+        if(stripos($xml, 'error') !== false) { //           --- //string is found
+            echo "\n[$xml]\n";
+            echo "\nNCBI special error: Too Many Requests\n"; exit("\nExit muna, Investigate error.\n");
+            sleep(60*10); //10 mins
+            @$this->TooManyRequests++;
+            if($this->TooManyRequests >= 3) exit("\nToo Many Requests error (429)!\n");
+        }
+        // */
     }
     private function correct_time_2call_api_YN()
     {
