@@ -242,11 +242,11 @@ class DataHub_NCBI_API
         if(!in_array($rank, array('genus', 'family'))) return;
 
         if(self::correct_time_2call_api_YN()) {
-            echo "\nCorrect time to call api\n";
+            echo " [OK time to call API] ";
             self::proceed_call_api($rec);
         } 
         else {
-            echo "\nNot correct time to call api\n";
+            echo "\nNot correct time to call API\n";
             echo "\nsleep 1 hr.\n";
             sleep(60*60*1);
             return;
@@ -265,7 +265,7 @@ class DataHub_NCBI_API
         }
 
         // /* NCBI special case - will check it this works
-        if(stripos($xml, 'error') !== false) { //           --- //string is found
+        if(stripos($xml, 'exceed') !== false) { //           --- //string is found
             echo "\n[$xml]\n";
             echo "\nNCBI special error: Too Many Requests\n"; exit("\nExit muna, Investigate error.\n");
             sleep(60*10); //10 mins
