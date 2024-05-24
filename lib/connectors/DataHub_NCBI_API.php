@@ -291,7 +291,7 @@ class DataHub_NCBI_API
             $date = date('Y-m-d H:i:s A');
             $am_pm = date('A');
             $time = date('H:i:s');
-            // echo "\ndate: $date";
+            echo " [date: $date] ";
             // echo "\nam_pm: $am_pm";
             // echo "\ntime: $time\n";
             if($am_pm == 'AM') {
