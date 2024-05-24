@@ -36,8 +36,14 @@ class DataHub_NCBI_API
     }
     function start()
     {
+        /* works OK
+        print_r(\eol_schema\Taxon::$ranks); exit;
+        */
+
+        /* Was first run in MacStudio and just scp the taxonomy to eol-archive.
         // step 1: assemble taxa
-        // self::gen_NCBI_info_taxa_using_ZIP_file();
+        self::gen_NCBI_taxonomy_using_ZIP_file();
+        */
 
         // step x: process genus and family; use API
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
@@ -59,7 +65,7 @@ class DataHub_NCBI_API
         // print_r($this->taxa_info); 
         echo "\ncount taxa_info: ".count(@$this->taxa_info)."\n";
     }
-    private function gen_NCBI_info_taxa_using_ZIP_file()
+    private function gen_NCBI_taxonomy_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";
         /* un-comment in real operation
         require_library('connectors/INBioAPI');
