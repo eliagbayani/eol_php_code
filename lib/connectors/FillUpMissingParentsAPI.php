@@ -207,6 +207,11 @@ class FillUpMissingParentsAPI
                 }
                 if(!isset($this->taxon_ids[$o->taxonID])) {
                     $this->taxon_ids[$o->taxonID] = '';
+
+                    // /* new: May 25, 2024 - Save only recognized ranks
+                    $o = Functions::use_only_recognized_ranks($o);
+                    // */
+                    
                     $this->archive_builder->write_object_to_file($o);
                 }
             }

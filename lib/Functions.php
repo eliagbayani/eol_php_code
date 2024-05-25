@@ -2646,5 +2646,12 @@ class Functions
         }
         return true;
     }
+    public static function use_only_recognized_ranks($o)
+    {
+        if($val = @$o->taxonRank) {
+            if(!in_array($val, \eol_schema\Taxon::$ranks)) $o->taxonRank = '';
+        }
+        return $o;
+    }
 }
 ?>
