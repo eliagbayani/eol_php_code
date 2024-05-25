@@ -236,6 +236,11 @@ class FillUpMissingParentsAPI
         $t->source = "https://www.wikidata.org/wiki/".$t->taxonID;
         if(!isset($this->taxon_ids[$t->taxonID])) {
             $this->taxon_ids[$t->taxonID] = '';
+
+            // /* new: May 25, 2024 - Save only recognized ranks
+            $t = Functions::use_only_recognized_ranks($t);
+            // */
+
             $this->archive_builder->write_object_to_file($t);
         }
     }
