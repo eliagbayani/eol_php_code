@@ -20,7 +20,16 @@ $resource_id = $param['resource_id'];
 print_r($param);
 
 $extension = ".tar.gz";
-if($resource_id == "TRY_temp2") $extension = ".zip"; //e.g. TRY_temp2.zip
+
+// /* ===== customize part =====
+if($resource_id == "TRY_temp2") {
+    $extension = ".zip"; //e.g. TRY_temp2.zip
+    /* In May 26, 2024 we manually replaced ECOCORE_00000013 (34,194 cases) with ECOCORE_00000130 in TRY_temp2.zip. Per Jen: https://github.com/EOL/ContentImport/issues/7#issuecomment-2131242791
+    http://purl.obolibrary.org/obo/ECOCORE_00000013
+    http://purl.obolibrary.org/obo/ECOCORE_00000130
+    */
+}
+// ===== end ===== */
 
 // /*
 if(Functions::is_production()) $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . "/$resource_id" . $extension; //".tar.gz";
