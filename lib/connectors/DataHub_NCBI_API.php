@@ -29,7 +29,8 @@ class DataHub_NCBI_API
         $this->api_call = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=txidXXTAXIDXX[Organism:exp]';
         $this->debug = array();
 
-        $this->big_file = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';
+        $this->big_file  = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';  //12.47 GB
+        $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB
 
         date_default_timezone_set('America/New_York');
         // date_default_timezone_set('Asia/Taipei');
@@ -45,21 +46,29 @@ class DataHub_NCBI_API
         self::gen_NCBI_taxonomy_using_ZIP_file();
         */
 
-        // step x: process genus and family; use API
+        /*
+        // step x: process genus and family; loop tsv file and use API
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-
+        */
         // step 2:
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
-        /*
+        // /*
         // step 3: process the big file - for species-level taxa
         self::parse_tsv_file($this->big_file, "process big file");
+        self::parse_tsv_file($this->big_file2, "process big file");
+
         echo "\n 8049: ".$this->totals[8049]."\n";
+        echo "\n 8049: ".count($this->taxid_accession[8049])."\n";
+
         echo "\n 454919: ".$this->totals[454919]."\n";
+        echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
+
         echo "\n 21: ".$this->totals[21]."\n";
-        */
+        echo "\n 21: ".count($this->taxid_accession[21])."\n";
+        // */
 
         print_r($this->debug);
         // print_r($this->taxa_info); 
@@ -229,6 +238,7 @@ class DataHub_NCBI_API
                     $taxid = $rec['taxid'];
                     $accession = $rec['accession'];
                     @$this->totals[$taxid]++;
+                    $this->taxid_accession[$taxid][$accession] = '';
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
                     self::process_genus_family($rec);
