@@ -7,7 +7,7 @@ class DataHub_NCBI_API
     function __construct($folder = false)
     {
         $this->download_options_NCBI = array('resource_id' => "723_ncbi", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
-        // $this->download_options_NCBI['expire_seconds'] = 60*60*24;
+        // $this->download_options_NCBI['expire_seconds'] = false;
         if($folder) {
             $this->resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
@@ -149,6 +149,7 @@ class DataHub_NCBI_API
         }
         elseif($what == 'process genus family from compiled taxonomy') {
             $separator = "\t";
+            $modulo = 100000;
         }
 
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
