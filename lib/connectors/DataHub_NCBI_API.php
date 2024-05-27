@@ -245,7 +245,9 @@ class DataHub_NCBI_API
             [] => 
         )*/
         $rank = $rec['rank'];
-        if(!in_array($rank, array('genus', 'family'))) return;
+        // if(!in_array($rank, array('genus', 'family'))) return; //orig main operation
+        if(!in_array($rank, array('family'))) return; //during caching only
+
 
         if(self::correct_time_2call_api_YN()) {
             echo " [OK time to call API] ";
@@ -266,7 +268,7 @@ class DataHub_NCBI_API
         $save = array();
         if(preg_match("/<Count>(.*?)<\/Count>/ims", $xml, $arr)){
             $save['count'] = $arr[1];
-            echo " -[".$save['count']."]- ";
+            echo " -[".$save['count']."] ".$rec['rank']." - ";
             // print_r($save); exit;
         }
 
