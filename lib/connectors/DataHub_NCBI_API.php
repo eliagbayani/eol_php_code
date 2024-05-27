@@ -246,9 +246,8 @@ class DataHub_NCBI_API
             [] => 
         )*/
         $rank = $rec['rank'];
-        // if(!in_array($rank, array('genus', 'family'))) return; //orig main operation
-        if(!in_array($rank, array('family'))) return; //during caching only
-
+        if(!in_array($rank, array('genus', 'family'))) return; //orig main operation
+        // if(!in_array($rank, array('genus'))) return; //during caching only
 
         if(self::correct_time_2call_api_YN()) {
             echo " [OK time to call API] ";
