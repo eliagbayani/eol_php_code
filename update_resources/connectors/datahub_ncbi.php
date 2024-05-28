@@ -14,10 +14,10 @@ $func = new DataHub_NCBI_API($resource_id);
 $func->start(); 
 // */
 
-/*
-$func->parse_tsv_then_generate_dwca();
+// /*
+// $func->parse_tsv_then_generate_dwca();
 Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.
-*/
+// */
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";

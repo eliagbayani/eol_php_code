@@ -30,7 +30,7 @@ class DataHub_NCBI_API
         $this->debug = array();
 
         $this->big_file  = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';  //12.47 GB
-        $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB
+        // $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
 
         date_default_timezone_set('America/New_York');
         // date_default_timezone_set('Asia/Taipei');
@@ -41,29 +41,30 @@ class DataHub_NCBI_API
         print_r(\eol_schema\Taxon::$ranks); exit;
         */
 
-        /* Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
+        require_library('connectors/TraitGeneric'); 
+        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
+
+        // /* Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         // step 1: assemble taxa
         self::gen_NCBI_taxonomy_using_ZIP_file();
-        */
+        // --- end step 1 --- */
 
-        // /*
-        // step x: process genus and family; loop tsv file and use API
+        // /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        // */
-        // step 2:
+        // --- end step 2 --- */
+
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
-        /*
-        // step 3: process the big file - for species-level taxa
+        /* step 3: process the big file - for species-level taxa
         self::parse_tsv_file($this->big_file, "process big file");      //the correct tsv file to use --- generates $this->totals[taxid] = count
 
         echo "\n 8049: ".$this->totals[8049]."\n";
         echo "\n 454919: ".$this->totals[454919]."\n";
         echo "\n 21: ".$this->totals[21]."\n";
 
-        self::parse_tsv_file($this->big_file2, "process big file");  //NOT to be used --- generates $this->taxid_accession
+        // self::parse_tsv_file($this->big_file2, "process big file");  //NOT to be used --- generates $this->taxid_accession
         echo "\n 8049: ".$this->totals[8049]."\n";
         echo "\n 454919: ".$this->totals[454919]."\n";
         echo "\n 21: ".$this->totals[21]."\n";
@@ -73,7 +74,7 @@ class DataHub_NCBI_API
         // echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
         // echo "\n 21: ".count($this->taxid_accession[21])."\n";
 
-        */
+        --- end step 3 --- */
 
         /*
         8049: 367455
@@ -83,6 +84,7 @@ class DataHub_NCBI_API
         print_r($this->debug);
         // print_r($this->taxa_info); 
         echo "\ncount taxa_info: ".count(@$this->taxa_info)."\n";
+        $this->archive_builder->finalize(TRUE);
     }
     private function gen_NCBI_taxonomy_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";
@@ -187,13 +189,8 @@ class DataHub_NCBI_API
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                 $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
-                if($what == 'xxx write dwca') {
-                    /* copied template
-                    self::prep_write_taxon($rec);
-                    self::write_MoF($rec);
-                    */
-                }
-                elseif($what == 'process names.dmp') {
+
+                if($what == 'process names.dmp') {
                     /*Array(
                         [tax_id] => 1
                         [name_txt] => all
@@ -223,20 +220,21 @@ class DataHub_NCBI_API
                         [comments] => code compliant; specified
                     )*/
                     $taxid = $rec['tax_id'];
+                    if($taxid == 1 || $this->taxa_info[$taxid]['n'] == 'root') $rec['parent tax_id'] = ""; //important line
                     $rank = $rec['rank'];                    
                     @$this->debug['rank totals'][$rank]++;
 
                     $this->taxa_info[$taxid]['p'] = $rec['parent tax_id'];
                     $this->taxa_info[$taxid]['r'] = $rank;
 
-                    if(in_array($rank, array('family', 'genus', 'species'))) {
+                    // if(in_array($rank, array('family', 'genus', 'species'))) {
                         $rek = array();
                         $rek["id"]                  = $taxid;
                         $rek["rank"]                = $rank;
                         $rek["name"]                = $this->taxa_info[$taxid]['n'];
                         $rek["parent_id"]           = $this->taxa_info[$taxid]['p'];
                         self::save_to_dump($rek, $this->dump_file);
-                    }
+                    // }
                 }
                 elseif($what == 'process big file') { //for species-level taxa
                     /*Array(
@@ -252,7 +250,7 @@ class DataHub_NCBI_API
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
                     self::process_genus_family($rec);
-                    if($i > 5) break;
+                    if($i > 15) break;
                 }
             }
         }
@@ -282,14 +280,15 @@ class DataHub_NCBI_API
     }
     private function proceed_call_api($rec)
     {
+        //print_r($rec); exit("\nelix 1\n");
         $url = str_replace("XXTAXIDXX", $rec['id'], $this->api_call);
         $xml = Functions::lookup_with_cache($url, $this->download_options_NCBI);
         // <Count>367603</Count>1
         $save = array();
         if(preg_match("/<Count>(.*?)<\/Count>/ims", $xml, $arr)){
-            $save['count'] = $arr[1];
-            echo " -[".$save['count']."] ".$rec['rank']." - ";
-            // print_r($save); exit;
+            $rec['count'] = trim($arr[1]);
+            echo " -[".$rec['count']."] ".$rec['rank']." - ";
+            // print_r($rec); exit;
         }
 
         // /* NCBI special case - will check it this works
@@ -301,9 +300,104 @@ class DataHub_NCBI_API
             if($this->TooManyRequests >= 3) exit("\nToo Many Requests error (429)!\n");
         }
         // */
+
+        /* Array(
+            [id] => 6
+            [rank] => genus
+            [name] => Azorhizobium
+            [parent_id] => 335928
+            [] => 
+        )*/
+        $save = array();
+        $save['taxonID'] = $rec['id'];
+        $save['scientificName'] = $rec['name'];
+        $save['taxonRank'] = $rec['rank'];
+        $save['parentNameUsageID'] = $rec['parent_id'];
+        self::write_taxon($save);
+        self::write_MoF($rec);
+    }
+    private function write_taxon($rec)
+    {   //print_r($rec);
+        $taxonID = $rec['taxonID'];
+        $taxon = new \eol_schema\Taxon();
+        $taxon->taxonID             = $taxonID;
+        $taxon->scientificName      = $rec['scientificName'];
+        $taxon->taxonRank           = $rec['taxonRank'];
+        $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
+        if(!isset($this->taxonIDs[$taxonID])) {
+            $this->taxonIDs[$taxonID] = '';
+            $this->archive_builder->write_object_to_file($taxon);
+        }
+        // add ancestry to taxon.tab
+        $ancestry = self::get_ancestry_for_taxonID($taxonID);
+        if($ancestry) self::write_taxa_4_ancestry($ancestry);
+    }
+    public function get_ancestry_for_taxonID($taxonID)
+    {
+        $final = array();
+        while(true) {
+            if($val = @$this->taxa_info[$taxonID]['p']) {
+                $final[] = $val;
+                $taxonID = $val;
+            }
+            else {
+                if($taxonID == 1) break;
+                else {
+                    $this->debug['get_ancestry_thru_api'][$taxonID] = '';
+                    echo "\nwent to get_ancestry_thru_api [$taxonID]\n"; break;
+                    /*
+                    if($val = self::get_ancestry_thru_api($taxonID)) { //normal operation
+                        echo " [$val] ";
+                        $final[] = $val;
+                        $taxonID = $val;
+                    }
+                    else break;
+                    */
+                }
+            }
+        }
+        // echo "\nancestry: "; print_r($final); //exit;
+        return $final;
+    }
+    public function write_taxa_4_ancestry($ancestry)
+    {
+        // print_r($ancestry); exit("\nelix 1\n");
+        foreach($ancestry as $tax_id) {
+            if($tax_id == 1) { // the parentmost, the root
+                $save = array();
+                $save['taxonID'] = $tax_id;
+                $save['scientificName'] = 'root';
+                $save['taxonRank'] = '';
+                $save['parentNameUsageID'] = '';
+                self::write_taxon($save);    
+                break;
+            }
+            else {
+                if(!@$this->taxa_info[$tax_id]['n']) continue;
+                $save = array();
+                $save['taxonID'] = $tax_id;
+                $save['scientificName'] = $this->taxa_info[$tax_id]['n'];
+                $save['taxonRank'] = $this->taxa_info[$tax_id]['r'];
+                $save['parentNameUsageID'] = $this->taxa_info[$tax_id]['p'];
+                self::write_taxon($save);    
+            }
+        }
+    }
+    private function write_MoF($rec)
+    {   //print_r($o); exit;
+        $taxonID = $rec['id'];
+        $save = array();
+        $save['taxon_id'] = $taxonID;
+        $save['source'] = $this->taxon_page . $taxonID;
+        // $save['bibliographicCitation'] = '';
+        // $save['measurementRemarks'] = ""; 
+        $mType = 'http://eol.org/schema/terms/NumberOfSequencesInGenBank';
+        $mValue = $rec['count'];
+        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
+        $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
     private function correct_time_2call_api_YN()
-    {
+    {   return true; //debug only
         /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         */
@@ -440,183 +534,5 @@ class DataHub_NCBI_API
             // if($page >= 6) break; //dev only
         } //end for loop
     }
-    // =========================================================================== start 2nd part
-    function parse_tsv_then_generate_dwca()
-    {
-        $this->debug = array();
-        require_library('connectors/TraitGeneric'); 
-        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-
-        foreach($this->quality_grades as $grade) $this->dump_file[$grade] = $this->save_path . "/datahub_NCBI_grade_".$grade.".txt"; //file variable assignment
-
-        // step 1: reads NCBI taxonomy and gen. info taxa list
-        self::gen_NCBI_info_taxa_using_DwCA(); //generates $this->NCBI_taxa_info
-
-        // step 2: loop a tsv dump and write taxon and MoF archive --- if u want to gen. a DwCA from one dump
-        self::parse_tsv_file($this->dump_file['research'], "process research grade tsv"); 
-
-        /* OBSOLETE
-        // step 2: loop each tsv file ('research', 'needs_id', 'casual'), and create info_list for DwCA writing
-        self::assemble_data_from_3TSVs();
-        // print_r($this->assembled); exit;
-
-        // step 3: write DwCA from the big assembled array $this->assembled
-        self::write_dwca_from_assembled_array();
-        */
-        
-        $this->archive_builder->finalize(TRUE);
-        print_r($this->debug);
-    }
-    private function assemble_data_from_3TSVs()
-    {
-        $grades = array('research', 'needs_id', 'casual');
-        foreach($grades as $grade) {
-            self::parse_tsv_file($this->dump_file[$grade], "assemble data from 3 TSVs", $grade);
-        }
-    }
-    private function process_table($meta, $what, $local_dwca = false)
-    {
-        if($meta)           $csv_file = $meta->file_uri;
-        elseif($local_dwca) $csv_file = $local_dwca;
-        $i = 0; $meron = 0;
-        $file = Functions::file_open($csv_file, "r");
-        while(!feof($file)) {
-            $row = fgetcsv($file); //print_r($row);
-            if(!$row) continue; 
-            $str = implode("\t", $row);
-            // if(stripos($str, "Callisaurus	genus") !== false) {echo("\n$str\n");}  //string found --- good debug                
-            if(!$row) break;
-            $i++; if(($i % 100000) == 0) echo "\n $i ";
-            if($i == 1) {
-                $fields = $row;
-                $count = count($fields); // print_r($fields);
-            }
-            else { //main records
-                $values = $row;
-                if($count != count($values)) { //row validation - correct no. of columns
-                    echo("\nWrong CSV format for this row.\n");
-                    continue;
-                }
-                $k = 0; $rec = array();
-                foreach($fields as $field) {
-                    $rec[$field] = $values[$k];
-                    $k++;
-                }
-                // print_r($rec); //exit;
-                /*Array(
-                    [id] => 27459
-                    [taxonID] => https://www.NCBI.org/taxa/27459
-                    [identifier] => https://www.NCBI.org/taxa/27459
-                    [parentNameUsageID] => https://www.NCBI.org/taxa/27444
-                    [kingdom] => Animalia
-                    [phylum] => Chordata
-                    [class] => Amphibia
-                    [order] => Caudata
-                    [family] => Plethodontidae
-                    [genus] => Batrachoseps
-                    [specificEpithet] => attenuatus
-                    [infraspecificEpithet] => 
-                    [modified] => 2019-11-23T09:42:54Z
-                    [scientificName] => Batrachoseps attenuatus
-                    [taxonRank] => species
-                    [references] => http://research.amnh.org/vz/herpetology/amphibia/?action=names&taxon=Batrachoseps+attenuatus
-                )*/
-                if($what == "gen taxa info") $this->NCBI_taxa_info[$rec['id']] = array('s' => $rec['scientificName'], 'r' => $rec['taxonRank'], 'p' => pathinfo($rec['parentNameUsageID'], PATHINFO_FILENAME));
-                elseif($what == "xxx") {}
-            }
-        }
-    }
-    private function write_MoF($rec)
-    {   //print_r($rec); exit;
-        /*Array(
-            [id] => 47219
-            [rank] => species
-            [name] => Apis mellifera
-            [observations_count] => 411499
-            [count] => 393719
-            [iconic_taxon_name] => Insecta
-            [parent_id] => 578086
-            [ancestry] => 48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
-            [] => 
-        )*/
-        $taxonID = $rec['id'];
-        $save = array();
-        $save['taxon_id'] = $taxonID;
-        $save['source'] = $this->taxon_page . $taxonID;
-        // $save['bibliographicCitation'] = '';
-        // $save['measurementRemarks'] = ""; 
-
-        if($rec['rank'] == 'species') {
-            $mType = 'http://eol.org/schema/terms/NumberOfSequencesInGenBank';
-            $mValue = $rec['count']; //
-            $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
-            $this->func->add_string_types($save, $mValue, $mType, "true");    
-        }
-
-        $mType = 'http://eol.org/schema/terms/NumberOfSequencesInGenBank';
-        $mValue = $rec['observations_count'];
-        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
-        $this->func->add_string_types($save, $mValue, $mType, "true");
-    }
-    private function prep_write_taxon($rec)
-    {   /*Array(
-            [id] => 47219
-            [rank] => species
-            [name] => Apis mellifera
-            [RG_count] => 411499
-            [all_counts] => 1234752
-            [parent_id] => 578086
-            [ancestry] => 48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
-        )*/
-        //step 1: 
-        $save_taxon = array();
-        $save_taxon = array('taxonID' => $rec['id'], 'scientificName' => $rec['name'], 'taxonRank' => $rec['rank'] , 'parentNameUsageID' => $rec['parent_id']);
-        self::write_taxon($save_taxon);
-        //step 2: write taxon for the ancestry
-        $ancestry = explode("/", $rec['ancestry']); //print_r($ancestry); //48460/1/47120/372739/47158/184884/47201/124417/326777/47222/630955/47221/199939/538904/47220/578086
-        $ancestry=array_reverse($ancestry); //print_r($ancestry);
-        // exit("\nstop muna 1\n");
-        $i = -1;
-        foreach($ancestry as $taxon_id) { $i++;
-            if($r = @$this->NCBI_taxa_info[$taxon_id]) {
-                $save_taxon = array();
-                $save_taxon = array('taxonID' => $taxon_id, 'scientificName' => $r['s'], 'taxonRank' => $r['r'] , 'parentNameUsageID' => @$ancestry[$i+1]);
-                self::write_taxon($save_taxon);        
-            }
-        }
-    }
-    private function write_taxon($rec)
-    {
-        $rank = in_array($rec['taxonRank'], $this->rank_set_2_blank) ? "" : $rec['taxonRank'];
-
-        $taxonID = $rec['taxonID'];
-        $taxon = new \eol_schema\Taxon();
-        $taxon->taxonID             = $taxonID;
-        $taxon->scientificName      = $rec['scientificName'];
-        $taxon->taxonRank           = $rank;
-        $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
-        if(!isset($this->taxonIDs[$taxonID])) {
-            $this->taxonIDs[$taxonID] = '';
-            $this->archive_builder->write_object_to_file($taxon);
-        }
-    }
-    // private function process_table($meta, $task)
-    // {   //print_r($meta);
-    //     echo "\n\nRunning $task..."; $i = 0;
-    //     foreach(new FileIterator($meta->file_uri) as $line => $row) {
-    //         $i++; if(($i % 300000) == 0) echo "\n".number_format($i);
-    //         if($meta->ignore_header_lines && $i == 1) continue;
-    //         if(!$row) continue;
-    //         // $row = Functions::conv_to_utf8($row); //possibly to fix special chars. but from copied template
-    //         $tmp = explode("\t", $row);
-    //         $rec = array(); $k = 0;
-    //         foreach($meta->fields as $field) {
-    //             if(!$field['term']) continue;
-    //             $rec[$field['term']] = $tmp[$k];
-    //             $k++;
-    //         }
-    //         print_r($rec); exit;
-    //     }
-    // }
 }
 ?>
