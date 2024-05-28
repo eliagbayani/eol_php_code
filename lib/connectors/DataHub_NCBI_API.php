@@ -166,7 +166,7 @@ class DataHub_NCBI_API
         elseif($what == 'process big file') { //per: https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/README
             // $fields = array('accession', 'accession.version', 'taxid', 'gi');
             $separator = "\t";
-            $modulo = 1000000;
+            $modulo = 5000000;
         }
         elseif($what == 'process genus family from compiled taxonomy') {
             $separator = "\t";
@@ -174,7 +174,7 @@ class DataHub_NCBI_API
         }
 
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % $modulo) == 0) echo "\n $i ";
+            if(($i % $modulo) == 0) echo "\n [$what] $i ";
 
             if(in_array($what, array('process big file', 'process genus family from compiled taxonomy'))) {
                 if($i == 1) {
@@ -317,8 +317,10 @@ class DataHub_NCBI_API
         self::write_MoF($rec);
     }
     private function write_species_level_MoF()
-    {
-        foreach($this->totals as $taxid => $count) {
+    {   echo "\nStart write species-level...\n";
+        $total = count($this->totals); $i = 0;
+        foreach($this->totals as $taxid => $count) { $i++;
+            if(($i % 50000) == 0) echo "\n species-level $i ";
             if($sciname = @$this->taxa_info[$taxid]['n']) {
                 $save = array();
                 $save['taxonID'] = $taxid;
@@ -416,7 +418,7 @@ class DataHub_NCBI_API
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
     private function correct_time_2call_api_YN()
-    {   //return true; //debug only
+    {   return true; //debug only
         /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         */
