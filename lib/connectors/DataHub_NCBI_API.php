@@ -57,24 +57,24 @@ class DataHub_NCBI_API
         // [species] => 2117681
         // [family] => 10403
 
-        /* step 3: process the big file - for species-level taxa
+        // /* step 3: process the big file - for species-level taxa
         self::parse_tsv_file($this->big_file, "process big file");      //the correct tsv file to use --- generates $this->totals[taxid] = count
-
         echo "\n 8049: ".$this->totals[8049]."\n";
         echo "\n 454919: ".$this->totals[454919]."\n";
         echo "\n 21: ".$this->totals[21]."\n";
+        self::write_species_level_MoF();
 
         // self::parse_tsv_file($this->big_file2, "process big file");  //NOT to be used --- generates $this->taxid_accession
-        echo "\n 8049: ".$this->totals[8049]."\n";
-        echo "\n 454919: ".$this->totals[454919]."\n";
-        echo "\n 21: ".$this->totals[21]."\n";
+        // echo "\n 8049: ".$this->totals[8049]."\n";
+        // echo "\n 454919: ".$this->totals[454919]."\n";
+        // echo "\n 21: ".$this->totals[21]."\n";
 
         // below not used at all:
         // echo "\n 8049: ".count($this->taxid_accession[8049])."\n";
         // echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
         // echo "\n 21: ".count($this->taxid_accession[21])."\n";
 
-        --- end step 3 --- */
+        // --- end step 3 --- */
 
         /*
         8049: 367455
@@ -316,6 +316,25 @@ class DataHub_NCBI_API
         self::write_taxon($save);
         self::write_MoF($rec);
     }
+    private function write_species_level_MoF()
+    {
+        foreach($this->totals as $taxid => $count) {
+            if($sciname = @$this->taxa_info[$taxid]['n']) {
+                $save = array();
+                $save['taxonID'] = $taxid;
+                $save['scientificName']     = $sciname;
+                $save['taxonRank']          = @$this->taxa_info[$taxid]['r'];
+                $save['parentNameUsageID']  = @$this->taxa_info[$taxid]['p'];
+                self::write_taxon($save);
+    
+                $rec = array();
+                $rec['id'] = $taxid;
+                $rec['count'] = $count;
+                self::write_MoF($rec);    
+            }
+            else $this->debug['species-level taxid not found'][$taxid] = '';
+        }
+    }
     private function write_taxon($rec)
     {   //print_r($rec);
         $taxonID = $rec['taxonID'];
@@ -397,15 +416,11 @@ class DataHub_NCBI_API
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
     private function correct_time_2call_api_YN()
-    {   return true; //debug only
+    {   //return true; //debug only
         /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         */
-
-        if(date('D') == 'Sat' || date('D') == 'Sun') { 
-            // echo "\nToday is Saturday or Sunday.";
-            return true;
-        } 
+        if(date('D') == 'Sat' || date('D') == 'Sun') return true; //echo "\nToday is Saturday or Sunday.";
         else {
             // echo "\nToday is not Saturday or Sunday but ". date('D') .".\n";
             // should be between 9:00 PM and 5:00 AM
@@ -414,8 +429,8 @@ class DataHub_NCBI_API
             $am_pm = date('A');
             $time = date('H:i:s');
             echo " [date: $date] ";
-            // echo "\nam_pm: $am_pm";
-            // echo "\ntime: $time\n";
+            // echo "\n am_pm: $am_pm";
+            // echo "\n time: $time\n";
             if($am_pm == 'AM') {
                 if($time < '05:00:00') return true;
                 else return false;
@@ -431,7 +446,6 @@ class DataHub_NCBI_API
     {
         $fields = array_keys($rec);
         $data = "";
-
         if(!is_file($filename)) {
             foreach($fields as $field) $data .= $field . "\t";
             if(!($WRITE = Functions::file_open($filename, "a"))) return;
@@ -443,96 +457,6 @@ class DataHub_NCBI_API
         if(!($WRITE = Functions::file_open($filename, "a"))) return;
         fwrite($WRITE, $data . "\n");
         fclose($WRITE);    
-    }
-
-    // ================================================================= below copied template
-    function startx()
-    {
-        foreach($this->quality_grades as $grade) { //delete old files
-            $this->dump_file[$grade] = $this->save_path . "/datahub_NCBI_grade_".$grade.".txt";
-            if(is_file($this->dump_file[$grade])) unlink($this->dump_file[$grade]);    
-        }
-        foreach($this->quality_grades as $grade) { //start main operation: get observation via API and save into TSV dumps.
-            foreach($this->include_ranks as $include_rank) {
-                if($include_rank == 'species') {
-                    foreach($this->groups as $group) {
-                        echo "\nProcessing [$group]...[$grade]...[$include_rank]\n";
-                        self::get_NCBI_taxa_observation_using_API($group, $grade, $include_rank);
-                        if($this->with_breaks_YN) {
-                            echo "\nEvery group, sleep 2 min.\n";
-                            sleep(60*2); //mins interval per group    
-                        }
-                    }            
-                }
-                else { //family and genus
-                    echo "\nProcessing [$grade]...[$include_rank]\n";
-                    $group = false;
-                    self::get_NCBI_taxa_observation_using_API($group, $grade, $include_rank);
-                    if($this->with_breaks_YN) {
-                        echo "\nEvery group, sleep 2 min.\n";
-                        sleep(60*2); //mins interval per group    
-                    }
-                }
-            }
-        }
-    }
-    function get_NCBI_taxa_observation_using_API($group, $grade, $include_rank) //not advisable to use, bec. of the 10,000 limit page coverage
-    {
-        if($include_rank == 'species') {
-            $main_url = str_replace("XGROUP", $group, $this->NCBI_api['taxa']);
-            $main_url = str_replace("XGRADE", $grade, $main_url);
-            $main_url = str_replace("XRANK", $include_rank, $main_url);
-        }
-        else $main_url = str_replace("XRANK", $include_rank, $this->NCBI_api['family_genus']); //for 'family' and 'genus'
-
-        $page = 1;
-        $url = str_replace("XPAGE", $page, $main_url);
-
-        $json = Functions::lookup_with_cache($url, $this->download_options_NCBI);
-        $obj = json_decode($json); // print_r($obj); //exit;
-        $total = $obj->total_results;
-        $pages = ceil($total / 500);  echo "\ntotal_results: [$total]\ntotal pages: [$pages]\n";
-
-        for($page = 1; $page <= $pages; $page++) {
-
-            if($this->with_breaks_YN) {
-                if(($page % 50) == 0) {
-                    echo "\nEvery 50 calls, sleep 2 min.\n";
-                    sleep(60*2); //mins interval
-                }    
-            }
-
-            $url = str_replace("XPAGE", $page, $main_url);
-            if($json = Functions::lookup_with_cache($url, $this->download_options_NCBI)) {
-
-                /* NCBI special case - not reliable needs more test
-                if(stripos($json, 'error') !== false) { //Too Many Requests           --- //string is found
-                    echo "\n[$json]\n";
-                    echo "\nNCBI special error: Too Many Requests\n"; exit("\nexit muna, remove NCBI from the list of dbases.\n");
-                    sleep(60*10); //10 mins
-                    @$this->TooManyRequests++;
-                    if($this->TooManyRequests >= 3) exit("\nToo Many Requests error (429)!\n");
-                }
-                */
-
-                $obj = json_decode($json); //print_r($obj); exit;
-                /**/
-                foreach($obj->results as $r) {
-                    $t = $r->taxon;
-                    $rek = array();
-                    $rek["id"]                  = $t->id;
-                    $rek["rank"]                = $t->rank;
-                    $rek["name"]                = $t->name;
-                    $rek["observations_count"]  = $t->observations_count;
-                    $rek["count"]               = $r->count;
-                    $rek["iconic_taxon_name"]   = @$t->iconic_taxon_name ? $t->iconic_taxon_name : "unknown";
-                    $rek["parent_id"]           = $t->parent_id;
-                    $rek["ancestry"]            = $t->ancestry;
-                    self::save_to_dump($rek, $this->dump_file[$grade]);    
-                }
-            }
-            // if($page >= 6) break; //dev only
-        } //end for loop
     }
 }
 ?>
