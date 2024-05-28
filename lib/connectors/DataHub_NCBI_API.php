@@ -41,35 +41,45 @@ class DataHub_NCBI_API
         print_r(\eol_schema\Taxon::$ranks); exit;
         */
 
-        /* Was first run in MacStudio and just scp the taxonomy to eol-archive.
+        /* Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         // step 1: assemble taxa
         self::gen_NCBI_taxonomy_using_ZIP_file();
         */
 
-        /*
+        // /*
         // step x: process genus and family; loop tsv file and use API
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        */
+        // */
         // step 2:
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
-        // /*
+        /*
         // step 3: process the big file - for species-level taxa
-        self::parse_tsv_file($this->big_file, "process big file");
-        self::parse_tsv_file($this->big_file2, "process big file");
+        self::parse_tsv_file($this->big_file, "process big file");      //the correct tsv file to use --- generates $this->totals[taxid] = count
 
         echo "\n 8049: ".$this->totals[8049]."\n";
-        echo "\n 8049: ".count($this->taxid_accession[8049])."\n";
-
         echo "\n 454919: ".$this->totals[454919]."\n";
-        echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
-
         echo "\n 21: ".$this->totals[21]."\n";
-        echo "\n 21: ".count($this->taxid_accession[21])."\n";
-        // */
 
+        self::parse_tsv_file($this->big_file2, "process big file");  //NOT to be used --- generates $this->taxid_accession
+        echo "\n 8049: ".$this->totals[8049]."\n";
+        echo "\n 454919: ".$this->totals[454919]."\n";
+        echo "\n 21: ".$this->totals[21]."\n";
+
+        // below not used at all:
+        // echo "\n 8049: ".count($this->taxid_accession[8049])."\n";
+        // echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
+        // echo "\n 21: ".count($this->taxid_accession[21])."\n";
+
+        */
+
+        /*
+        8049: 367455
+        454919: 40
+        21: 5
+        */
         print_r($this->debug);
         // print_r($this->taxa_info); 
         echo "\ncount taxa_info: ".count(@$this->taxa_info)."\n";
@@ -238,11 +248,11 @@ class DataHub_NCBI_API
                     $taxid = $rec['taxid'];
                     $accession = $rec['accession'];
                     @$this->totals[$taxid]++;
-                    $this->taxid_accession[$taxid][$accession] = '';
+                    // $this->taxid_accession[$taxid][$accession] = ''; //dev only
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
                     self::process_genus_family($rec);
-                    // if($i > 5) break;
+                    if($i > 5) break;
                 }
             }
         }
@@ -283,7 +293,7 @@ class DataHub_NCBI_API
         }
 
         // /* NCBI special case - will check it this works
-        if(stripos($xml, 'exceed') !== false) { //           --- //string is found
+        if(stripos($xml, 'exceed') !== false) { //string is found
             echo "\n[$xml]\n";
             echo "\nNCBI special error: Too Many Requests\n"; exit("\nExit muna, Investigate error.\n");
             sleep(60*10); //10 mins
