@@ -320,7 +320,8 @@ class DataHub_NCBI_API
     {   echo "\nStart write species-level...\n";
         $total = count($this->totals); $i = 0;
         foreach($this->totals as $taxid => $count) { $i++;
-            if(($i % 1000) == 0) echo "\n species-level $i ";
+            // if(($i % 1000) == 0) 
+            echo "\n species-level $i of $total [$taxid] ";
             if($sciname = @$this->taxa_info[$taxid]['n']) {
                 $save = array();
                 $save['taxonID'] = $taxid;
@@ -365,9 +366,11 @@ class DataHub_NCBI_API
             if($val = @$this->taxa_info[$taxonID]['p']) {
                 $final[] = $val;
                 $taxonID = $val;
+                if($taxonID == 1) break; //newly added
             }
             else {
                 if($taxonID == 1) break;
+                elseif($taxonID == "") break;
                 else {
                     $this->debug['get_ancestry_thru_api'][$taxonID] = '';
                     echo "\nwent to get_ancestry_thru_api [$taxonID]\n"; break;
