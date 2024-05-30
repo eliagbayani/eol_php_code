@@ -7,7 +7,7 @@ class DataHub_NCBI_API
     function __construct($folder = false)
     {
         $this->download_options_NCBI = array('resource_id' => "723_ncbi", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
-        // $this->download_options_NCBI['expire_seconds'] = false;
+        $this->download_options_NCBI['expire_seconds'] = false;
         if($folder) {
             $this->resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
@@ -44,14 +44,27 @@ class DataHub_NCBI_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        // /* Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
-        // step 1: assemble taxa
+        // /* step 1: assemble taxa
+        // Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
+        print_r($this->taxa_info[1]); //exit("\nelix 2\n");
+
+        /* testing only
+        $test_species = array(9913, 32630, 1423, 5076, 562);
+        // $test_species = array(9913);
+        foreach($test_species as $taxid) { echo "\n ----- processing [$taxid]\n";
+            $ancestry = self::get_ancestry_for_taxonID($taxid);
+            print_r($ancestry);
+            echo "\n ----- end [$taxid]";
+        }        
+        exit("\nelix 3\n");
+        */
+
         // --- end step 1 --- */
 
-        // /* step 2: process genus and family; loop tsv file and use API        
+        /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        // --- end step 2 --- */
+        --- end step 2 --- */
 
         // [genus] => 109270
         // [species] => 2117681
@@ -245,7 +258,9 @@ class DataHub_NCBI_API
                     )*/
                     $taxid = $rec['taxid'];
                     $accession = $rec['accession'];
-                    @$this->totals[$taxid]++;
+                    if($val = @$this->taxa_info[$taxid]['r']) {
+                        if(in_array($val, array('species'))) @$this->totals[$taxid]++;
+                    }
                     // $this->taxid_accession[$taxid][$accession] = ''; //dev only
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
@@ -329,13 +344,18 @@ class DataHub_NCBI_API
                 $save['taxonRank']          = @$this->taxa_info[$taxid]['r'];
                 $save['parentNameUsageID']  = @$this->taxa_info[$taxid]['p'];
                 self::write_taxon($save);
-    
+
+                // add ancestry to taxon.tab
+                $ancestry = self::get_ancestry_for_taxonID($taxid);
+                if($ancestry) self::write_taxa_4_ancestry($ancestry);
+                
                 $rec = array();
                 $rec['id'] = $taxid;
                 $rec['count'] = $count;
                 self::write_MoF($rec);    
             }
             else $this->debug['species-level taxid not found'][$taxid] = '';
+            // if($i >= 5) break; //debug only
         }
     }
     private function write_taxon($rec)
@@ -350,15 +370,16 @@ class DataHub_NCBI_API
             $this->taxonIDs[$taxonID] = '';
             $this->archive_builder->write_object_to_file($taxon);
         }
-        // add ancestry to taxon.tab
-        $ancestry = self::get_ancestry_for_taxonID($taxonID);
-        if($ancestry) self::write_taxa_4_ancestry($ancestry);
     }
     public function get_ancestry_for_taxonID($taxonID)
     {
         $final = array(); $i = 0;
-        while(true) { $i++;
+        while(true) { $i++; //echo "~[$i][$taxonID]~";
+            if($taxonID == 1) break;
+            elseif($taxonID == "") break;
+
             if($i >= 100) {
+                $i = 0;
                 $this->debug['reached 100'][$taxonID] = '';
                 break;
             }
@@ -367,6 +388,7 @@ class DataHub_NCBI_API
                 $final[] = $val;
                 $taxonID = $val;
                 if($taxonID == 1) break; //newly added
+                elseif($taxonID == "") break;
             }
             else {
                 if($taxonID == 1) break;
