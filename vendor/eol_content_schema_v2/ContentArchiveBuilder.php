@@ -144,6 +144,7 @@ class ContentArchiveBuilder
             {
                 if($p['property'] == $property)
                 {
+                    $p = $this->only_accept_recognized_ranks($p); //NEW: May 31, 2024
                     $this_line .= self::escape_string($p['value']);
                     $written_properties[] = $p['property'];
                 }
@@ -153,6 +154,7 @@ class ContentArchiveBuilder
 
         foreach($object_properties as $p)
         {
+            $p = $this->only_accept_recognized_ranks($p); //NEW: May 31, 2024
             if(in_array($p['property'], $written_properties)) continue;
             $this_line .= self::escape_string($p['value']) . "\t";
             $this->file_columns[$object_class][] = $p['property'];
@@ -161,7 +163,22 @@ class ContentArchiveBuilder
         if(substr($this_line, -1) == "\t") $this_line = substr($this_line, 0, -1);
         fwrite($FILE, $this_line . "\n");
     }
-
+    private function only_accept_recognized_ranks($p)
+    {   // print_r($p);
+        /* Array(
+            [property] => Array(
+                    [name] => taxonRank
+                    [namespace] => http://rs.tdwg.org/dwc/terms
+                    [uri] => http://rs.tdwg.org/dwc/terms/taxonRank
+                )
+            [value] => genus
+        )*/
+        if($p['property']['name'] == 'taxonRank') {
+            $temp_rank = $p['value'];
+            if(!in_array($temp_rank, \eol_schema\Taxon::$ranks)) $p['value'] = ""; //set to blank
+        }
+        return $p;
+    }
     private function get_file_handle($object_class, $final_version = false)
     {
         $class = preg_replace("/^.*\\\\/", "", $object_class);

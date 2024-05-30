@@ -62,15 +62,15 @@ class DataHub_NCBI_API
 
         // --- end step 1 --- */
 
-        /* step 2: process genus and family; loop tsv file and use API        
+        // /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        --- end step 2 --- */
+        // --- end step 2 --- */
 
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
-        // /* step 3: process the big file - for species-level taxa
+        /* step 3: process the big file - for species-level taxa
         self::parse_tsv_file($this->big_file, "process big file");      //the correct tsv file to use --- generates $this->totals[taxid] = count
         echo "\n 8049: ".$this->totals[8049]."\n";
         echo "\n 454919: ".$this->totals[454919]."\n";
@@ -87,7 +87,7 @@ class DataHub_NCBI_API
         // echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
         // echo "\n 21: ".count($this->taxid_accession[21])."\n";
 
-        // --- end step 3 --- */
+        --- end step 3 --- */
 
         /*
         8049: 367455
@@ -362,7 +362,7 @@ class DataHub_NCBI_API
         $taxonID = $rec['taxonID'];
         $taxon = new \eol_schema\Taxon();
         $taxon->taxonID             = $taxonID;
-        $taxon->scientificName      = $rec['scientificName'];
+        $taxon->scientificName      = $rec['scientificName'];        
         $taxon->taxonRank           = $rec['taxonRank'];
         $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
         if(!isset($this->taxonIDs[$taxonID])) {
