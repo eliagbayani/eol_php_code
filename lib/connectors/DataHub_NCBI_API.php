@@ -44,22 +44,20 @@ class DataHub_NCBI_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        // /* step 1: assemble taxa
+        /* step 1: assemble taxa
         // Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
         print_r($this->taxa_info[1]); //exit("\nelix 2\n");
-
-        /* testing only
-        $test_species = array(9913, 32630, 1423, 5076, 562);
-        // $test_species = array(9913);
-        foreach($test_species as $taxid) { echo "\n ----- processing [$taxid]\n";
-            $ancestry = self::get_ancestry_for_taxonID($taxid);
-            print_r($ancestry);
-            echo "\n ----- end [$taxid]";
-        }        
-        exit("\nelix 3\n");
-        */
-
+                /* testing only
+                $test_species = array(9913, 32630, 1423, 5076, 562);
+                // $test_species = array(9913);
+                foreach($test_species as $taxid) { echo "\n ----- processing [$taxid]\n";
+                    $ancestry = self::get_ancestry_for_taxonID($taxid);
+                    print_r($ancestry);
+                    echo "\n ----- end [$taxid]";
+                }        
+                exit("\nelix 3\n");
+                */
         // --- end step 1 --- */
 
         // /* step 2: process genus and family; loop tsv file and use API        
@@ -265,7 +263,7 @@ class DataHub_NCBI_API
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
                     self::process_genus_family($rec);
-                    if($i > 15) break;
+                    // if($i > 15) break; //debug only
                 }
             }
         }
@@ -279,8 +277,8 @@ class DataHub_NCBI_API
             [] => 
         )*/
         $rank = $rec['rank'];
-        if(!in_array($rank, array('genus', 'family'))) return; //orig main operation
-        // if(!in_array($rank, array('genus'))) return; //during caching only
+        // if(!in_array($rank, array('genus', 'family'))) return; //orig main operation
+        if(!in_array($rank, array('species'))) return; //during caching only
 
         if(self::correct_time_2call_api_YN()) {
             echo " [OK time to call API] ";
@@ -447,7 +445,7 @@ class DataHub_NCBI_API
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
     private function correct_time_2call_api_YN()
-    {   return true; //debug only
+    {   //return true; //debug only
         /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         */
