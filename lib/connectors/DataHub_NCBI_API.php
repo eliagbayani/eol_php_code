@@ -335,7 +335,7 @@ class DataHub_NCBI_API
     {   echo "\nStart write species-level...\n";
         $total = count($this->totals); $i = 0;
         foreach($this->totals as $taxid => $count) { $i++;
-            if(($i % 200000) == 0) echo "\n species-level $i of $total [$taxid] ";
+            if(($i % 500000) == 0) echo "\n species-level $i of $total [$taxid] ";
             if($sciname = @$this->taxa_info[$taxid]['n']) {
                 $save = array();
                 $save['taxonID'] = $taxid;
