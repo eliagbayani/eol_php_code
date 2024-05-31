@@ -44,7 +44,7 @@ class DataHub_NCBI_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        // /* step 1: assemble taxa
+        /* step 1: assemble taxa
         // Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
         print_r($this->taxa_info[1]); //exit("\nelix 2\n");
@@ -60,15 +60,15 @@ class DataHub_NCBI_API
                 */
         // --- end step 1 --- */
 
-        /* step 2: process genus and family; loop tsv file and use API        
+        // /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        --- end step 2 --- */
+        // --- end step 2 --- */
 
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
-        // /* step 3: process the big file - for species-level taxa
+        /* step 3: process the big file - for species-level taxa
         self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
         echo "\n 8049: ".$this->totals[8049]."\n";
         echo "\n 454919: ".$this->totals[454919]."\n";
@@ -85,7 +85,7 @@ class DataHub_NCBI_API
         // echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
         // echo "\n 21: ".count($this->taxid_accession[21])."\n";
 
-        // --- end step 3 --- */
+        --- end step 3 --- */
 
         /*
         8049: 367455
@@ -244,7 +244,7 @@ class DataHub_NCBI_API
                         $rek["rank"]                = $rank;
                         $rek["name"]                = $this->taxa_info[$taxid]['n'];
                         $rek["parent_id"]           = $this->taxa_info[$taxid]['p'];
-                        self::save_to_dump($rek, $this->dump_file);
+                        if(self::valid_string_name($rek["name"])) self::save_to_dump($rek, $this->dump_file);
                     // }
                 }
                 elseif($what == 'proc big file gen. totals[taxid]') { //for species-level taxa
@@ -255,9 +255,12 @@ class DataHub_NCBI_API
                         [gi] => 58418
                     )*/
                     $taxid = $rec['taxid'];
-                    if($val = @$this->taxa_info[$taxid]['r']) {
-                        if(in_array($val, array('species'))) @$this->totals[$taxid]++;
+                    $tmp_name = @$this->taxa_info[$taxid]['n'];
+                    $tmp_rank = @$this->taxa_info[$taxid]['r'];
+                    if($tmp_rank == 'species') {
+                        if(self::valid_string_name($tmp_name)) @$this->totals[$taxid]++;
                     }
+
                     // $accession = $rec['accession'];
                     // $this->taxid_accession[$taxid][$accession] = ''; //dev only
                 }
@@ -267,6 +270,43 @@ class DataHub_NCBI_API
                 }
             }
         }
+    }
+    private function valid_string_name($tmp_name)
+    {
+        if($tmp_name) {
+            if(!ctype_upper(substr($tmp_name,0,1))) return false;
+            if(stripos($tmp_name, ' sp.') !== false) return false; //string is found
+            if(stripos($tmp_name, ' aff.') !== false) return false; //string is found
+            if(stripos($tmp_name, ' cf.') !== false) return false; //string is found
+            if(stripos($tmp_name, ' of ') !== false) return false; //string is found
+            if(stripos($tmp_name, ' x ') !== false) return false; //string is found
+            if(stripos($tmp_name, 'unidentified') !== false) return false; //string is found
+            if(stripos($tmp_name, 'unclassified') !== false) return false; //string is found
+            if(stripos($tmp_name, 'uncultured') !== false) return false; //string is found
+            if(stripos($tmp_name, 'undetermined') !== false) return false; //string is found
+            if(stripos($tmp_name, 'undescribed') !== false) return false; //string is found
+            if(stripos($tmp_name, 'uncultivated') !== false) return false; //string is found
+            if(stripos($tmp_name, 'unculturable') !== false) return false; //string is found
+            if(stripos($tmp_name, 'unspecified') !== false) return false; //string is found
+            if(stripos($tmp_name, 'unknown') !== false) return false; //string is found
+            if(stripos($tmp_name, 'untyped') !== false) return false; //string is found
+            if(stripos($tmp_name, 'vector') !== false) return false; //string is found
+            if(stripos($tmp_name, 'bacterium') !== false) return false; //string is found
+            if(stripos($tmp_name, 'phage') !== false) return false; //string is found
+            if(stripos($tmp_name, 'virus') !== false) return false; //string is found
+            if(stripos($tmp_name, 'Human ') !== false) return false; //string is found
+            if(stripos($tmp_name, 'synthetic') !== false) return false; //string is found
+            if(stripos($tmp_name, 'artificial') !== false) return false; //string is found
+            if(stripos($tmp_name, 'construct') !== false) return false; //string is found
+            if(stripos($tmp_name, 'sequence') !== false) return false; //string is found
+            if(stripos($tmp_name, 'incertae') !== false) return false; //string is found
+            if(stripos($tmp_name, 'modified') !== false) return false; //string is found
+            if(stripos($tmp_name, 'other ') !== false) return false; //string is found
+            if(stripos($tmp_name, 'strain ') !== false) return false; //string is found
+            if(stripos($tmp_name, 'clone ') !== false) return false; //string is found
+            return true;
+        }
+        return false;
     }
     private function process_genus_family($rec)
     {   /*Array(
@@ -278,7 +318,8 @@ class DataHub_NCBI_API
         )*/
         $rank = $rec['rank'];
         // if(!in_array($rank, array('genus', 'family'))) return; //orig main operation
-        if(!in_array($rank, array('species'))) return; //during caching only
+        // if(!in_array($rank, array('species'))) return; //during caching only
+        if(!in_array($rank, array('genus', 'family', 'species'))) return; //orig main operation
 
         if(self::correct_time_2call_api_YN()) {
             echo " [OK time to call API] ";
