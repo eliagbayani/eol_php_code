@@ -44,7 +44,7 @@ class DataHub_NCBI_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        /* step 1: assemble taxa
+        // /* step 1: assemble taxa
         // Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
         print_r($this->taxa_info[1]); //exit("\nelix 2\n");
@@ -60,22 +60,22 @@ class DataHub_NCBI_API
                 */
         // --- end step 1 --- */
 
-        // /* step 2: process genus and family; loop tsv file and use API        
+        /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        // --- end step 2 --- */
+        --- end step 2 --- */
 
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
-        /* step 3: process the big file - for species-level taxa
-        self::parse_tsv_file($this->big_file, "process big file");      //the correct tsv file to use --- generates $this->totals[taxid] = count
+        // /* step 3: process the big file - for species-level taxa
+        self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
         echo "\n 8049: ".$this->totals[8049]."\n";
         echo "\n 454919: ".$this->totals[454919]."\n";
         echo "\n 21: ".$this->totals[21]."\n";
         self::write_species_level_MoF();
 
-        // self::parse_tsv_file($this->big_file2, "process big file");  //NOT to be used --- generates $this->taxid_accession
+        // self::parse_tsv_file($this->big_file2, "proc big file gen. totals[taxid]");  //NOT to be used --- generates $this->taxid_accession
         // echo "\n 8049: ".$this->totals[8049]."\n";
         // echo "\n 454919: ".$this->totals[454919]."\n";
         // echo "\n 21: ".$this->totals[21]."\n";
@@ -85,7 +85,7 @@ class DataHub_NCBI_API
         // echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
         // echo "\n 21: ".count($this->taxid_accession[21])."\n";
 
-        --- end step 3 --- */
+        // --- end step 3 --- */
 
         /*
         8049: 367455
@@ -174,7 +174,7 @@ class DataHub_NCBI_API
             */
             $fields = array('tax_id', 'parent tax_id', 'rank', 'embl code', 'division id', 'inherited div flag', 'genetic code id', 'inherited GC flag', 'mitochondrial genetic code id', 'inherited MGC flag', 'GenBank hidden flag', 'hidden subtree root flag', 'comments');
         }
-        elseif($what == 'process big file') { //per: https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/README
+        elseif($what == 'proc big file gen. totals[taxid]') { //per: https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/README
             // $fields = array('accession', 'accession.version', 'taxid', 'gi');
             $separator = "\t";
             $modulo = 5000000;
@@ -187,7 +187,7 @@ class DataHub_NCBI_API
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % $modulo) == 0) echo "\n [$what] $i ";
 
-            if(in_array($what, array('process big file', 'process genus family from compiled taxonomy'))) {
+            if(in_array($what, array('proc big file gen. totals[taxid]', 'process genus family from compiled taxonomy'))) {
                 if($i == 1) {
                     $fields = explode($separator, $row); 
                     continue;
@@ -247,7 +247,7 @@ class DataHub_NCBI_API
                         self::save_to_dump($rek, $this->dump_file);
                     // }
                 }
-                elseif($what == 'process big file') { //for species-level taxa
+                elseif($what == 'proc big file gen. totals[taxid]') { //for species-level taxa
                     /*Array(
                         [accession] => A00001
                         [accession.version] => A00001.1
@@ -255,10 +255,10 @@ class DataHub_NCBI_API
                         [gi] => 58418
                     )*/
                     $taxid = $rec['taxid'];
-                    $accession = $rec['accession'];
                     if($val = @$this->taxa_info[$taxid]['r']) {
                         if(in_array($val, array('species'))) @$this->totals[$taxid]++;
                     }
+                    // $accession = $rec['accession'];
                     // $this->taxid_accession[$taxid][$accession] = ''; //dev only
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
