@@ -32,19 +32,18 @@ class DataHub_NCBI_API
         $this->big_file  = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';  //12.47 GB
         // $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
 
-        date_default_timezone_set('America/New_York');
+        date_default_timezone_set('America/New_York'); //used in main operation
         // date_default_timezone_set('Asia/Taipei');
     }
+    /* works OK. A way to reference a function from: vendor/eol_content_schema_v2
+    print_r(\eol_schema\Taxon::$ranks); exit;
+    */
     function start()
     {
-        /* works OK. A way to reference a function from: vendor/eol_content_schema_v2
-        print_r(\eol_schema\Taxon::$ranks); exit;
-        */
-
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        /* step 1: assemble taxa
+        // /* step 1: assemble taxa
         // Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
         print_r($this->taxa_info[1]); //exit("\nelix 2\n");
@@ -68,7 +67,7 @@ class DataHub_NCBI_API
         // [species] => 2117681
         // [family] => 10403
 
-        /* step 3: process the big file - for species-level taxa
+        /* step 3: process the big file - for species-level taxa. No API call but just read the big dump file.
         self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
         echo "\n 8049: ".$this->totals[8049]."\n";
         echo "\n 454919: ".$this->totals[454919]."\n";
@@ -84,7 +83,6 @@ class DataHub_NCBI_API
         // echo "\n 8049: ".count($this->taxid_accession[8049])."\n";
         // echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
         // echo "\n 21: ".count($this->taxid_accession[21])."\n";
-
         --- end step 3 --- */
 
         /*
@@ -266,7 +264,7 @@ class DataHub_NCBI_API
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
                     self::process_genus_family($rec);
-                    // if($i > 15) break; //debug only
+                    if($i > 15) break; //debug only
                 }
             }
         }
