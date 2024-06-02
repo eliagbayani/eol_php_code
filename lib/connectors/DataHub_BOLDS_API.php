@@ -40,7 +40,7 @@ class DataHub_BOLDS_API
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
         
         //step 1
-        self::build_taxonomy_list(); exit("\nstop muna 100\n"); //CACHING FINISHED OK! MAY 21, 2024
+        self::build_taxonomy_list(); exit("\nstop muna, hanggang dito lang.\n"); //CACHING FINISHED OK! MAY 21, 2024
 
         //step 2:
         /*
@@ -177,21 +177,21 @@ class DataHub_BOLDS_API
         if(is_file($this->dump_file)) unlink($this->dump_file);
         // /*
         $level_1 = self::assemble_kingdom(); //print_r($level_1); exit;
-        $level_2 = self::assemble_level_2($level_1); //print_r($level_2); exit;
+        $level_2 = self::assemble_level_2($level_1, 1); //print_r($level_2); exit;
         $level_1 = '';
-        $level_3 = self::assemble_level_2($level_2); //print_r($level_3);
+        $level_3 = self::assemble_level_2($level_2, 2); //print_r($level_3);
         $level_2 = '';
-        $level_4 = self::assemble_level_2($level_3); //print_r($level_4);
+        $level_4 = self::assemble_level_2($level_3, 3); //print_r($level_4);
         $level_3 = '';
-        $level_5 = self::assemble_level_2($level_4); //print_r($level_5);
+        $level_5 = self::assemble_level_2($level_4, 4); //print_r($level_5);
         $level_4 = '';
-        $level_6 = self::assemble_level_2($level_5); //print_r($level_6);
+        $level_6 = self::assemble_level_2($level_5, 5); //print_r($level_6);
         $level_5 = '';
-        $level_7 = self::assemble_level_2($level_6); //print_r($level_7);
+        $level_7 = self::assemble_level_2($level_6, 6); //print_r($level_7);
         $level_6 = '';
-        $level_8 = self::assemble_level_2($level_7); //print_r($level_8);
+        $level_8 = self::assemble_level_2($level_7, 7); //print_r($level_8);
         $level_7 = '';
-        $level_9 = self::assemble_level_2($level_8); print_r($level_9);
+        $level_9 = self::assemble_level_2($level_8, 8); print_r($level_9);
         $level_8 = '';
         // */
 
@@ -296,7 +296,7 @@ class DataHub_BOLDS_API
         );
         */
 
-        $final = array(); //comment in real operation. Uncomment during dev only debug only
+        // $final = array(); //comment in real operation. Uncomment during caching... dev only debug only
         $ret = self::search_families_not_found();
         foreach($ret as $r) {
             $final['phylums_Eli'][] = $r;
@@ -305,7 +305,7 @@ class DataHub_BOLDS_API
         // print_r($final); exit;
         return $final;
     }
-    private function assemble_level_2($level_1)
+    private function assemble_level_2($level_1, $level_num)
     {
         $limit['Animal'] = 1000000;
         $limit['Plant'] = 1000000;
@@ -336,10 +336,11 @@ class DataHub_BOLDS_API
 
                     self::bolds_API_result_still_validYN($html);
 
-                    @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group\n";
+                    @$this->total_page_calls++; echo "\nx[$this->total_page_calls] [L-$level_num] $this->group\n";
 
                 
-                    if($this->total_page_calls > $limit[$this->group]) {
+                    // if($this->total_page_calls > $limit[$this->group]) {     //orig
+                    if($this->total_page_calls > 1000000) {                       //for those families not found
                         if(($this->total_page_calls % 100) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
                     }
 
@@ -518,7 +519,7 @@ class DataHub_BOLDS_API
         $this->curl_error_taxIds = $final;
         // exit("\nstop muna\n");
     }
-    public function search_families_not_found()
+    public function search_families_not_found() //this gets the phylum info of families not found.
     {
         $final = array();
         $options = $this->download_options_BOLDS; $options['expire_seconds'] = false;

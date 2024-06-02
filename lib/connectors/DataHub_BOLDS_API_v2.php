@@ -1,6 +1,6 @@
 <?php
 namespace php_active_record;
-/*  datahub_gbif.php 
+/*  datahub_bolds_v2.php 
 Status: this wasn't used as main operation.
 */
 class DataHub_BOLDS_API_v2
@@ -53,14 +53,34 @@ class DataHub_BOLDS_API_v2
         */
 
         // step 3: process family-level
+
+        /*
         $this->group = 'family';
         $url = str_replace("XGROUP", 'family', $this->tsv_files);
-        self::parse_tsv_file($url, 'process family-level');
+        self::parse_tsv_file($url, 'process family-level'); //generates $this->totals
+        */
+
+        $this->group = 'genus';
+        $url = str_replace("XGROUP", 'genus', $this->tsv_files);
+        self::parse_tsv_file($url, 'process family-level'); //generates $this->totals
         // print_r($this->totals); exit;
+
         foreach($this->totals as $sciname => $count) {
             if(!$sciname) continue;
             if($taxid = @$this->name_id[$sciname]) {
                 echo "\n[$sciname] [$taxid] [$count]";
+
+                $save = array();
+                $save['taxonID'] = $taxid;
+                $save['scientificName'] = $sciname;
+                $save['taxonRank'] = $this->group;
+                $save['parentNameUsageID'] = $this->taxa_info[$taxid]['p'];
+                self::write_taxon($save);
+
+                $rec = array();
+                $rec['tax id'] = $taxid;
+                $rec['count'] = $count;
+                self::write_MoF($rec);
             }
             else $this->debug['sciname not found'][$sciname] = '';
         }
@@ -152,8 +172,10 @@ class DataHub_BOLDS_API_v2
                     [parent id] => 100947       - wrong assignment
                     [] => 
                 )*/
-                $family_name = $rec['family'];
-                $this->totals[$family_name] = @$this->totals[$family_name] + $rec['count'];
+                if($family_genus_name = @$rec['family']) {}
+                elseif($family_genus_name = @$rec['genus']) {}
+                else exit("\nShould not go here. Investigate.\n");
+                $this->totals[$family_genus_name] = @$this->totals[$family_genus_name] + $rec['count'];
             }
         }
     }
