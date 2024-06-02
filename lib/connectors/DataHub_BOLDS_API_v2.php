@@ -43,20 +43,34 @@ class DataHub_BOLDS_API_v2
         // step 0.5 Use Eli's cache to generate $var[taxid] = parent_id
         self::parse_tsv_file($this->Eli_cached_taxonomy, 'use cached taxonomy build taxon info list');
 
-        // step 1: build taxon info list using Rebekah's spreadsheets
+        /*
+        // step 1: build taxon info list using Rebekah's spreadsheets   FOR SPECIES-LEVEL ONLY
         self::read_tsv_files_do_task("generate taxa info list");
         // print_r($this->taxa_info); exit;
 
-        // step 2:
+        // step 2:                                                      FOR SPECIES-LEVEL ONLY
         self::read_tsv_files_do_task("read tsv write dwca");
-        $this->archive_builder->finalize(TRUE);
+        */
 
+        // step 3: process family-level
+        $this->group = 'family';
+        $url = str_replace("XGROUP", 'family', $this->tsv_files);
+        self::parse_tsv_file($url, 'process family-level');
+        // print_r($this->totals); exit;
+        foreach($this->totals as $sciname => $count) {
+            if(!$sciname) continue;
+            if($taxid = @$this->name_id[$sciname]) {
+                echo "\n[$sciname] [$taxid] [$count]";
+            }
+            else $this->debug['sciname not found'][$sciname] = '';
+        }
+
+        $this->archive_builder->finalize(TRUE);
         print_r($this->debug);
     }
     private function read_tsv_files_do_task($task)
     {
-        $groups = array('family', 'genus', 'species');
-        $groups = array('species');
+        $groups = array('species'); //this is exclusive for species-level only
         foreach($groups as $group) {
             $this->group = $group;
             $url = str_replace("XGROUP", $group, $this->tsv_files);
@@ -84,7 +98,7 @@ class DataHub_BOLDS_API_v2
                 $sciname = $rec[$this->group];    
             }
 
-            if($what == 'read tsv write dwca') {
+            if($what == 'read tsv write dwca') { //species-level only
                 if(($i % 200) == 0) echo "\n main $i ";
 
                 /* Array(
@@ -95,6 +109,8 @@ class DataHub_BOLDS_API_v2
                     [] => 
                 )*/
                 
+                if(stripos($sciname, 'sp.') !== false) continue; //string is found
+
                 $save = array();
                 $save['taxonID'] = $tax_id;
                 $save['scientificName'] = $sciname;
@@ -106,7 +122,7 @@ class DataHub_BOLDS_API_v2
                 // break; //debug only
                 // if($i >= 3000) break; //debug only
             }
-            elseif($what == "generate taxa info list") {
+            elseif($what == "generate taxa info list") { //species-level only
                 $this->taxa_info[$tax_id]['p'] = $parent_id;
                 $this->taxa_info[$tax_id]['n'] = $sciname;
                 $this->taxa_info[$tax_id]['r'] = $this->group;
@@ -124,6 +140,20 @@ class DataHub_BOLDS_API_v2
                 $this->taxa_info[$taxid]['p'] = $rec['parentNameUsageID'];
                 $this->taxa_info[$taxid]['n'] = $rec['sciname'];
                 $this->taxa_info[$taxid]['r'] = $rec['rank'];
+
+                if($rec['rank'] == 'Families' || $rec['rank'] == 'Genera') $this->name_id[$rec['sciname']] = $taxid;
+            }
+            elseif($what == "process family-level") {
+                // print_r($rec); exit("\n fam exit muna \n");
+                /* Array(
+                    [count] => 14               - wrong assignment
+                    [family] => Rosaceae
+                    [tax id] => 989646          - wrong assignment
+                    [parent id] => 100947       - wrong assignment
+                    [] => 
+                )*/
+                $family_name = $rec['family'];
+                $this->totals[$family_name] = @$this->totals[$family_name] + $rec['count'];
             }
         }
     }
