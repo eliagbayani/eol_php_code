@@ -300,7 +300,7 @@ class DataHub_BOLDS_API
         );
         */
 
-        $final = array(); //comment in real operation. Uncomment during caching... dev only debug only
+        // $final = array(); //comment in real operation. Uncomment during caching... dev only debug only
         $ret = self::search_families_not_found();
         foreach($ret as $r) {
             $final['phylums_Eli'][] = $r;
