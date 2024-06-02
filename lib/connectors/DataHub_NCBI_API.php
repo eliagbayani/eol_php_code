@@ -490,17 +490,18 @@ class DataHub_NCBI_API
         /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         */
-        if(date('D') == 'Sat' || date('D') == 'Sun') return true; //echo "\nToday is Saturday or Sunday.";
+
+        $day_3_letter = date('D'); //e.g. Sun or Sat or Wed
+        $date = date('Y-m-d H:i:s A');
+        $am_pm = date('A');
+        $time = date('H:i:s');
+        echo " [date: $date] ";
+
+        if(in_array($day_3_letter, array('Sat', 'Sun'))) return true; //echo "\nToday is Saturday or Sunday.";
         else {
-            // echo "\nToday is not Saturday or Sunday but ". date('D') .".\n";
+            // echo "\nToday is not Saturday nor Sunday but ". date('D') .".\n";
             // should be between 9:00 PM and 5:00 AM
             // if PM should be > 21:00:00 and if AM should be < 05:00:00
-            $date = date('Y-m-d H:i:s A');
-            $am_pm = date('A');
-            $time = date('H:i:s');
-            echo " [date: $date] ";
-            // echo "\n am_pm: $am_pm";
-            // echo "\n time: $time\n";
             if($am_pm == 'AM') {
                 if($time < '05:00:00') return true;
                 else return false;
