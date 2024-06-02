@@ -25,7 +25,7 @@ class DataHub_BOLDS_API_v2
         if(!is_dir($save_path)) mkdir($save_path);
         $this->tsv_files = $save_path.'Public_count_XGROUP_updated.tsv'; //e.g. Public_count_family_updated.tsv
         // */
-        $this->Eli_cached_taxonomy = $save_path.'datahub_bolds_taxonomy_2024_05_21.txt';
+        $this->Eli_cached_taxonomy = $save_path.'datahub_bolds_taxonomy_2024_06_03.txt';
     }
     function start()
     {   /* just a utility
@@ -60,9 +60,12 @@ class DataHub_BOLDS_API_v2
         self::parse_tsv_file($url, 'process family-level'); //generates $this->totals
         */
 
+        // /*
         $this->group = 'genus';
         $url = str_replace("XGROUP", 'genus', $this->tsv_files);
         self::parse_tsv_file($url, 'process family-level'); //generates $this->totals
+        // */
+
         // print_r($this->totals); exit;
 
         foreach($this->totals as $sciname => $count) {
@@ -174,7 +177,10 @@ class DataHub_BOLDS_API_v2
                 )*/
                 if($family_genus_name = @$rec['family']) {}
                 elseif($family_genus_name = @$rec['genus']) {}
-                else exit("\nShould not go here. Investigate.\n");
+                else  { //it actually can happen
+                    // print_r($rec);
+                    // exit("\nShould not go here. Investigate.\n");
+                }
                 $this->totals[$family_genus_name] = @$this->totals[$family_genus_name] + $rec['count'];
             }
         }
