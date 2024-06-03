@@ -40,7 +40,18 @@ class DataHub_BOLDS_API
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);        
         
         //step 1
-        self::build_taxonomy_list(); exit("\nstop muna, hanggang dito lang.\n"); //CACHING FINISHED OK! MAY 21, 2024
+        self::build_taxonomy_list();
+        $this->debug2 = $this->debug;
+        print_r($this->debug2);
+        $this->debug = array();
+
+        self::build_taxonomy_list();
+        $this->debug2 = $this->debug;
+        print_r($this->debug2);
+        $this->debug = array();
+
+        echo "\nwith outage: ".count($this->debug2['outage'])."\n";
+        exit("\nstop muna, hanggang dito lang.\n"); //CACHING FINISHED OK! MAY 21, 2024
 
         //step 2:
         /*
@@ -191,14 +202,13 @@ class DataHub_BOLDS_API
         $level_6 = '';
         $level_8 = self::assemble_level_2($level_7, 7); //print_r($level_8);
         $level_7 = '';
-        $level_9 = self::assemble_level_2($level_8, 8); print_r($level_9);
+        $level_9 = self::assemble_level_2($level_8, 8); //print_r($level_9);
         $level_8 = '';
-        $level_10 = self::assemble_level_2($level_9, 9); print_r($level_10);
+        $level_10 = self::assemble_level_2($level_9, 9); //print_r($level_10);
         $level_9 = '';
-        $level_11 = self::assemble_level_2($level_10, 10); print_r($level_11);
+        $level_11 = self::assemble_level_2($level_10, 10); //print_r($level_11);
         $level_10 = '';
         // */
-
         /* testing only
         $test['xxx'][0] = array('taxid' => 285425, 'counts' => 173, 'sciname' => 'eli_name', 'rank' => 'eli_rank');
         $level_3 = self::assemble_level_2($test); print_r($level_3);
@@ -251,6 +261,7 @@ class DataHub_BOLDS_API
                 }    
             }            
         }
+
         /* force assignment, dev only
         $final['wala lang'][] = array (
             'taxid' => 26033,
@@ -342,13 +353,32 @@ class DataHub_BOLDS_API
                 if(strtolower($rec['rank']) == "form") {echo "\nmay continue $level_num \n"; continue;}
                 if(strtolower($rec['rank']) == "forma") {echo "\nmay continue $level_num \n"; continue;}
 
-                if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $options)) {
-                    // exit("\n-------------------\n$html\n--------------------------\n");
+                if(isset($this->debug2['outage'][$rec['taxid']])) {
+                    $new_options = $options;
+                    $new_options['expire_seconds'] = 0;
+                }
+                else $new_options = $options;
+
+                /* good debug if you have undefined genus 
+                if($rec['taxid'] == 627 || $rec['taxid'] == 28377) {
+                    $new_options = $options;
+                    $new_options['expire_seconds'] = 0;
+                }
+                */
+
+                if($html = Functions::lookup_with_cache($this->next_page.$rec['taxid'], $new_options)) {
+                    // if($rec['taxid'] == 389141) exit("\n-------------------\n$html\n--------------------------\n");
+                    
+                    // ditox eli
+                    // temporary outage
+                    if(stripos($html, 'outage') !== false) { //string is found
+                        exit("\nmay outage\n");
+                        $this->debug['outage'][$rec['taxid']] = '';
+                    }
 
                     self::bolds_API_result_still_validYN($html);
 
                     @$this->total_page_calls++; echo "\nx[$this->total_page_calls] [L-$level_num] $this->group\n";
-
                 
                     // if($this->total_page_calls > $limit[$this->group]) {     //orig
                     if($this->total_page_calls > 1000000) {                       //for those families not found
@@ -538,37 +568,49 @@ class DataHub_BOLDS_API
         $fams_not_found = array("Characeae", "Coronaviridae", "Bacillariaceae", "Acetobacteraceae", "Rickettsiaceae", "Prochlorococcaceae", "Streptomycetaceae", "Peniaceae", "Acrobolbaceae", "Scapaniaceae", "Pallaviciniaceae", "Neocallimastigaceae", "Dendrocerotaceae", "Lejeuneaceae", "Dictyotaceae", "Gymnomitriaceae", "Porellaceae", "Zamiaceae", "Chordariaceae", "Aneuraceae", "Bacillaceae", "Halomonadaceae", "Rhodobacteraceae", "Laminariaceae", "Chaetonotidae", "Plasmodiidae", "Plagiochilaceae", "Cycadaceae", "Comamonadaceae", "Solenostomataceae", "Chaetocerotaceae", "Halobacteriales_incertae_sedis", "Halobacteriaceae", "Redudasyidae", "Cephalodasyidae", "Cephaloziaceae", "Sporochnaceae", "Acinetosporaceae", "Enterobacteriaceae", "Macrodasyidae", "Coleochaetaceae", "Frullaniaceae", "Anthocerotaceae", "Hummondasyidae", "Sarcocystidae", "Sellaphoraceae", "Adelanthaceae", "Alcanivoracaceae", "Mycobacteriaceae", "Harpanthaceae", "Thalassiosiraceae", "Tribonemataceae", "Microcystaceae", "Catenulaceae", "Micrococcaceae", "Flavobacteriaceae", "Sulfuricellaceae", "Naviculaceae", "Schistochilaceae", "Jungermanniaceae", "Vaucheriaceae", "Chroomonadaceae", "Cymatosiraceae", "Ricciaceae", "Sargassaceae", "Phaeocystaceae", "Lepicoleaceae", "Desmidiaceae", "Alariaceae", "Microbacteriaceae", "Klebsormidiaceae", "Radulaceae", "Burkholderiaceae", "Achnanthaceae", "Paraliaceae", "Anastrophyllaceae", "Phoronidae", "Vibrionaceae", "Caulobacteraceae", "Synechococcales_family_incertae_sedis", "Gnetaceae", "Ectocarpaceae", "Lepidoziaceae", "Geocalycaceae", "Gordiidae", "Zygnemataceae", "Bolinopsidae", "Fragilariaceae", "Prymnesiaceae", "Synuraceae", "Euplokamidae", "Ptilidiaceae", "Platysiphonaceae", "Geobacteraceae", "Aytoniaceae", "Pinnulariaceae", "Babesiidae", "Entomoneidaceae", "Fucaceae", "Aphanizomenonaceae", "Chrysocapsaceae", "Pseudoalteromonadaceae", "Biddulphiaceae", "Oxalobacteraceae", "Corynebacteriaceae", "Leucocytozoidae", "Hyphomicrobiaceae", "Aulacoseiraceae", "Herbertaceae", "Rhabdonemataceae", "Sphacelariaceae", "Nitrosopumilaceae", "Acanthamoebidae", "Phyllothalliaceae", "Bradyrhizobiaceae", "Ephedraceae", "Nocardiaceae", "Pseudomonadaceae", "Deinococcaceae", "Calypogeiaceae", "Tilopteraceae", "Lophocoleaceae", "Intrasporangiaceae", "Xanthomonadaceae", "Ralfsiaceae", "Wiesnerellaceae", "Paramoebidae", "Alcaligenaceae", "Jubulaceae", "Roseiflexaceae", "Fossombroniaceae", "Rhodocyclaceae", "Kofleriaceae", "Aulacoctenidae", "Cephaloziellaceae", "Pedinellaceae", "Cymbellaceae", "Moerckiaceae", "Chromulinaceae", "Cryptomonadaceae", "Actinomycetales_incertae_sedis", "Xenotrichulidae", "Methylophilaceae", "Geodermatophilaceae", "Sarcinochrysidaceae", "Notothyladaceae", "Desmarestiaceae", "Scytosiphonaceae", "Cardiobacteriaceae", "Monodopsidaceae", "Targioniaceae", "Leptocylindraceae", "Rhizobiaceae", "Striatellaceae", "Elakatotrichaceae", "Aeromonadaceae", "Chromobacteriaceae", "Chordodidae", "Streptosporangiaceae", "Nostocaceae", "Pseudanabaenaceae", "Mesotaeniaceae", "Echinoderidae", "Berkeleyaceae", "Bdellovibrionaceae", "Seirococcaceae", "Stypocaulaceae", "Promicromonosporaceae", "Sphingomonadaceae", "Leptospiraceae", "Alteromonadaceae", "Cytophagaceae", "Delamareaceae", "Nitrosomonadaceae", "Rhizosoleniaceae", "Flammeovirgaceae", "Moritellaceae", "Chordaceae", "Ktedonobacteraceae", "Hymenophytaceae", "Hyphomonadaceae", "Pyrenomonadaceae", "Gonatozygaceae", "Dicyemidae", "Thermaceae", "Bartonellaceae", "Pseudonocardiaceae", "Synechococcaceae", "Marchantiaceae", "Lessoniaceae", "Thalassionemataceae", "Arnelliaceae", "Phaeothamniaceae", "Cystobacteraceae", "Coscinodiscaceae", "Melioribacteraceae", "Eimeriidae", "Acidobacteriaceae", "Haplomitriaceae", "Oscillatoriaceae", "Stephanodiscaceae", "Phyllobacteriaceae", "Balantiopsaceae", "Hyalodiscaceae", "Hahellaceae", "Closteriaceae", "Thaumastodermatidae", "Trichotemnomataceae", "Picrophilaceae", "Phaeostrophiaceae", "Mallomonadaceae", "Tricertiaceae", "Brucellaceae", "Cellulomonadaceae", "Vandiemeniaceae", "Gomphonemataceae", "Lampoctenidae", "Paenibacillaceae", "Propionibacteriaceae", "Puniceicoccaceae", "Hemiselmidaceae", "Geminigeraceae", "Neodasyidae", "Histionidae", "Stauroneidaceae", "Malawimonadidae", "Psilotaceae", "Jubulopsaceae", "Anaplasmataceae", "Allisoniaceae", "Lunulariaceae", "Dactylopodolidae", "Durvillaeaceae", "Catenulisporaceae", "Trichocoleaceae", "Beroidae", "Mastigophoraceae", "Plagiogrammaceae", "Glaucocystaceae", "Attheyaceae", "Lepidolaenaceae", "Desulfobacteraceae", "Barentsiidae", "Moraxellaceae", "Campylomonadaceae", "Piscirickettsiaceae", "Chloroflexales_incertae_sedis", "Mesostigmataceae", "Goebeliellaceae", "Dinobryaceae", "Eunotiaceae", "Actinomycetaceae", "Sphingobacteriaceae", "Microcoleaceae", "Thermoproteaceae", "Pseudoralfsiaceae", "Chaetosphaeridiaceae", "Rhodospirillaceae", "Gyrothyraceae", "Metzgeriaceae", "Desulfovibrionaceae", "Chromatiaceae", "Punctariaceae", "Skeletonemataceae", "Neocentrophyidae", "Sphaerobacteraceae", "Phaeosaccionaceae", "Gephyrocapsaceae", "Makinoaceae", "Ectothiorhodospiraceae", "Sulfolobaceae", "Planococcaceae", "Coccolithaceae", "Sphaerocarpaceae", "Shewanellaceae", "Myxococcaceae", "Clostridiales_incertae_sedis", "Chrysotilaceae", "Agaraceae", "Lophoziaceae", "Planodasyidae", "Nectonematidae", "Acidimicrobiaceae", "Mariprofundaceae", "Turbanellidae", "Hemidiscaceae", "Burkholderiales_incertae_sedis", "Waddliaceae", "Riellaceae", "Methylobacteriaceae", "Legionellaceae", "Chitinophagaceae", "Gordoniaceae", "Streptococcaceae", "Lampeidae", "Cleveaceae", "Euglenaceae", "Polyplacotomidae", "Arthrothamnaceae", "Phyllariaceae", "Cutleriaceae", "Lepidodasyidae", "Neoralfsiaceae", "Stephanopyxidaceae", "Isochrysidaceae", "Campylobacteraceae", "Arthrocladiaceae", "Lactobacillaceae", "Loxosomatidae", "Virgulinellidae", "Neotrichocoleaceae", "Prevotellaceae", "Erythrobacteraceae", "Porphyromonadaceae", "Pleurobrachiidae", "Lithodermataceae", "Conexibacteraceae", "Monocleaceae", "Bathocyroidae", "Rivulariaceae", "Vahlkampfiidae", "Blasiaceae", "Neisseriaceae", "Dermabacteraceae", "Cryomorphaceae", "Leptolyngbyaceae", "Myliaceae", "Rhaphoneidaceae", "Anaerolineaceae", "Muselliferidae", "Planctomycetaceae", "Micromonosporacea", "Welwitschiaceae", "Coxiellaceae", "Semnoderidae", "Exormothecaceae", "Neogosseidae", "Heliopeltaceae", "Ocyropsidae", "Pelobacteraceae", "Ochromonadaceae", "Pleuroziaceae", "Gloeotrichiaceae", "Tabellariaceae", "Hemiaulaceae", "Melosiraceae", "Xanthobacteraceae", "Achnanthidiaceae", "Rhodobiaceae", "Brevianthaceae", "Petrodermataceae", "Methylocystaceae", "Hydrogenophilaceae", "Dermacoccaceae", "Adenocystaceae", "Brevibacteriaceae", "Xenoturbellidae", "Diadesmidaceae", "Opitutaceae", "Flexibacteraceae", "Aphanothecaceae", "Methylacidiphilaceae", "Jakobidae", "Tsukamurellaceae", "Vetaformaceae", "Ralfsiaceae_GWS2", "Hartmannellidae", "Hormosiraceae", "Dracoderidae", "Mertensiidae", "Halosiphonaceae", "Parachlamydiaceae", "Eurhamphaeidae", "Corethraceae", "Blepharostomataceae", "Glycomycetaceae", "Discosporangiaceae", "Myrionemataceae", "Lithodesmiaceae", "Sulfolobales_incertae_sedis", "Cestidae", "Pycnophyidae", "Lauderiaceae", "Dactylopodida_incertae_sedis", "Aquificaceae", "Pleurosigmataceae", "Trueperaceae", "Methylococcaceae", "Pleurocapsales incertae sedis", "Himanthaliaceae", "Campyloderidae", "Dasydytidae", "Dryodoridae", "Pseudolepicoleaceae", "Corsiniaceae", "Phacaceae", "Pelliaceae", "Elachistaceae", "Colwelliaceae", "Chlorokybaceae", "Coeloplanidae", "Psychromonadaceae", "Listeriaceae", "Paulinellidae", "Chnoosporaceae", "Acidithiobacillaceae", "Ferrimonadaceae", "Hapalosiphonaceae", "Cyclobacteriaceae", "Xenodasyidae", "Hymenomodaceae", "Bacteriovoracaceae", "Conocephalaceae", "Bathyctenidae", "Streptothecaceae", "Saprospiraceae", "Leucotheidae", "Myxococcales_incertae_sedis", "Rhodothermaceae", "Desulfurococcaceae", "Thalassocalycidae", "Beijerinckiaceae", "Treubiaceae", "Erwiniaceae", "Placozoa_family_incertae_sedis", "Splachnidiaceae", "Eubacteriaceae", "Thermomonosporaceae", "Pedicellinidae", "Ferroplasmaceae", "Staphylococcaceae", "Stangeriaceae", "Nocardiopsaceae", "Aurantimonadaceae", "Sinobacteraceae", "Caldilineaceae", "Scytothamnaceae", "Acidothermaceae", "Nocardioidaceae", "Antheliaceae", "Desulfobulbaceae", "Syntrophaceae", "Blepharidophyllaceae", "Sanguibacteraceae", "Jackiellaceae", "Lyroctenidae", "Chaetophyllopsaceae", "Syracosphaeraceae", "Chlamydiaceae", "Chroococcaceae", "Symbiobacteriaceae", "Idiomarinaceae", "Dermatophilaceae", "Desulfomicrobiaceae", "Pelagomonadaceae", "Prolixibacteraceae", "Chlorobiaceae", "Deferribacteraceae", "Glugeidae", "Chromerida_family_incertae_sedis", "Kineosporiaceae", "Chattonellaceae", "Gemmatimonadaceae", "Monosoleniaceae", "Carnobacteriaceae", "Tilopteridaceae", "Phycisphaeraceae", "Rubrivivax", "Haeckeliidae", "Merismopediaceae", "Mizutaniaceae", "Cladostephaceae", "Hydruraceae", "Actinosynnemataceae", "Beutenbergiaceae", "Petalophyllaceae", "Gloeobacterales_incertae_sedis", "Xiphophoraceae", "Parvularculaceae", "Ginkgoaceae", "Hapalospongidiaceae", "Peptococcaceae", "Salinisphaeraceae", "Haemogregarinidae", "Oscillochloridaceae", "Ascoseiraceae", "Phaeodactylaceae", "Segniliparaceae", "Helicosphaeraceae", "Oceanospirillales_incertae_sedis", "Alicyclobacillaceae", "Thermomicrobiaceae", "Oxymitraceae", "Holosporaceae", "Cryptosporangiaceae", "Notheaceae", "Pavlovaceae", "Jonesiaceae", "Halothiobacillaceae", "Polyangiaceae");
         $genus_not_found = array("Ablabus", "Achthosus", "Acolophus", "Akis", "Alaephus", "Alaudes", "Allobitoma", "Alobates", "Alphasida", "Alphitobius", "Amarygmus", "Amiantus", "Androsus", "Anepsius", "Apentanodes", "Apsena", "Apterotheca", "Araeoschizus", "Argoporis", "Armalia", "Artystona", "Asbolus", "Asida", "Auchmobius", "Aulonium", "Aurearena", "Bassianus", "Bitoma", "Bius", "Bolidomonas", "Bolitophagus", "Bolitotherus", "Boreosaragus", "Boromorphus", "Bothrotes", "Bradymerus", "Branchus", "Brinckia", "Byrsax", "Callismilax", "Callyntra", "Calymmochilus", "Calymmus", "Calyptopsis", "Celibe", "Centronopus", "Cephalostenus", "Ceratanisus", "Cerenopus", "Cerodolus", "Chalcopteroides", "Chariotheca", "Cheirodes", "Chilometopon", "Chlorocamma", "Chorasus", "Chrysopeplus", "Ciconissus", "Coelocnemis", "Coelus", "Colobicus", "Colydium", "Coniontis", "Coxelus", "Cryptoglossa", "Cyphaleus", "Cyrtosoma", "Dailognatha", "Decoriplus", "Derosphaerus", "Diaclina", "Dichillus", "Dichomma", "Dichtha", "Docalis", "Edrotes", "Eleates", "Eledona", "Eledonoprius", "Emmallodera", "Endeitoma", "Endophloeus", "Enhypnon", "Epipedonota", "Epiphysa", "Episopus", "Epistranodes", "Epistranus", "Epitragodes", "Epitragus", "Erodius", "Ethelema", "Eucicones", "Eupsophulus", "Eusattus", "Eustolopus", "Eustrophopsis", "Eustrophus", "Eutagenia", "Eutreptopelma", "Fausta", "Fimbriimonas", "Glenentela", "Haplandrus", "Heterargus", "Holostrophus", "Hydissus", "Hylithus", "Hypaulax", "Hyporhagus", "Iphthiminus", "Isopus", "Isotarphius", "Langelandia", "Lasconotus", "Latheticus", "Latometus", "Leaus", "Lepidocnemeplatia", "Leptoderis", "Leptynoderes", "Lobometopon", "Lyphia", "Machla", "Megataphrus", "Melanastus", "Melanimon", "Menephilus", "Meneristes", "Meracantha", "Merinus", "Mesostena", "Metaclisa", "Metopoloba", "Metoponium", "Microdera", "Microtelus", "Misolampidius", "Misolampus", "Mitragenius", "Moluris", "Morica", "Munaria", "Namunaria", "Neatus", "Neotrichus", "Norix", "Nothadelphia", "Notocoxelus", "Nyctelia", "Nyctoporis", "Nyctozoilus", "Ocnodes", "Oectosis", "Omolipus", "Onymacris", "Orthocerodes", "Orthocerus", "Pachychila", "Pachycoelia", "Pachyscelis", "Palorus", "Parabolitophagus", "Paranemonia", "Paraphanes", "Pathocerus", "Pechalius", "Penichrus", "Pentacladia", "Phegoneus", "Phellopsis", "Philolithus", "Phloeodes", "Phorminx", "Physadesmia", "Physophrynus", "Pimelia", "Platybolium", "Plesiophthalmus", "Polopinus", "Praocis", "Prionotheca", "Pristoderus", "Promethis", "Psammetichus", "Psammodes", "Pseudandrosus", "Pseudoholostrophus", "Pseudotarphius", "Pterohelaeus", "Pycnomerodes", "Pycnomerus", "Pyrinomonas", "Renatiella", "Reylus", "Rhagodera", "Rhipidandrus", "Rytinotus", "Sample", "Scaurus", "Scotobius", "Scotoderus", "Sepidium", "Sesaspis", "Somaticus", "Stenocara", "Stenochinus", "Stenomorpha", "Stenophanes", "Stenosis", "Strongylium", "Sympetes", "Syncalus", "Synchita", "Synstrophus", "Tarphiablabus", "Tarphiomimus", "Tarphionivea", "Tarphius", "Tarsocnodes", "Tatakiteana", "Tenebrio", "Tentyria", "Tentyrina", "Tetragonomenes", "Thriptera", "Titaena", "Toxicum", "Trachyderma", "Trimytis", "Triorophus", "Uloma", "Upis", "Usechus", "Verodes", "Xenanastatus", "Xylopinus", "Zebitoma", "Zopherus", "Zophobas", "Zophophilus", "Zophosis");
         $not_found = array_merge($fams_not_found, $genus_not_found);
-
         // print_r($not_found); exit;
+        // $not_found = array('Fausta', 'Paranemonia');
 
-        foreach($not_found as $sciname) {
-            $url = str_replace('FAM_NAME', $sciname, $page_url);
-            if($html = Functions::lookup_with_cache($url, $options)) {
-                // <a title="phylum"href="/index.php/TaxBrowser_Taxonpage?taxid=18">Chordata</a>
-            $left = 'title="phylum"href="/index.php/TaxBrowser_Taxonpage?taxid=';
-            $right = '"';
-            if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
-                    $phylum_id = $arr[1];
-                    echo "\n[$sciname] [".$phylum_id."]\n";
 
-                    $left = 'taxid='.$phylum_id.'">';
-                    $right = '</a>';
+        $groups = array('phylum', 'tribe', 'family', 'subfamily');
+        // $groups = array('family');
+
+        foreach($groups as $eli) {
+            foreach($not_found as $sciname) {
+                $url = str_replace('FAM_NAME', $sciname, $page_url);
+                if($html = Functions::lookup_with_cache($url, $options)) {
+    
+                    if(stripos($html, 'outage') !== false) exit("\noutage: $url \n"); //string is found
+        
+                    // <a title="phylum"href="/index.php/TaxBrowser_Taxonpage?taxid=18">Chordata</a>
+                    $left = 'title="'.$eli.'"href="/index.php/TaxBrowser_Taxonpage?taxid=';
+                    $right = '"';
                     if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
-                        $phylum_name = $arr[1];
-                        $final[] = array
-                        (
-                            "taxid" => $phylum_id,
-                            "counts" => 0,
-                            "sciname" => $phylum_name,
-                            "rank" => "phylum",
-                            "parentNameUsageID" => 1,
-                        );    
+                            $phylum_id = $arr[1];
+                            echo "\n[$sciname] [".$phylum_id."]\n";
+        
+                            $left = 'taxid='.$phylum_id.'">';
+                            $right = '</a>';
+                            if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
+                                $phylum_name = $arr[1];
+                                $final[] = array
+                                (
+                                    "taxid" => $phylum_id,
+                                    "counts" => 0,
+                                    "sciname" => $phylum_name,
+                                    "rank" => $eli,
+                                    "parentNameUsageID" => 1,
+                                );    
+                            }
                     }
+                    else echo "\n[$sciname] not found\n";
                 }
-                else echo "\n[$sciname] not found\n";
-            }
-            // break; //debug only
-        }
+                // break; //debug only
+            } //end inside foreach    
+        } //end outside foreach
+
+        // <a title="tribe"href="/index.php/TaxBrowser_Taxonpage?taxid=1126203">Zophosini</a>
+
         // print_r($final); exit;
         return $final;
     }
