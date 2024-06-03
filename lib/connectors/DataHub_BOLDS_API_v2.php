@@ -319,7 +319,6 @@ class DataHub_BOLDS_API_v2
         'superclass', 'supercohort', 'superdivision', 'superdomain', 'superfamily', 'superform', 'supergenus', 'superkingdom', 'superorder', 'superphylum', 'superspecies', 'supertribe', 'supervariety', 'tribe', 
         'tribe_group', 'variety', 'variety_group');
     */
-    // ======================================================================= copied template below
     private function bolds_API_result_still_validYN($str)
     {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
         if(stripos($str, 'have exceeded') !== false) { //string is found
@@ -331,6 +330,7 @@ class DataHub_BOLDS_API_v2
             if($this->BOLDS_TooManyRequests >= 3) exit("\nBOLDS should stop now.\n");
         }
     }
+    // ======================================================================= copied template below
     private function z_build_taxonomy_list() //builds up the taxonomy list
     {
         if(is_file($this->dump_file)) unlink($this->dump_file);
