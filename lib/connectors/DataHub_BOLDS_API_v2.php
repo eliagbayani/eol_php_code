@@ -42,31 +42,30 @@ class DataHub_BOLDS_API_v2
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        // step 0.5 Use Eli's cache to generate $var[taxid] = parent_id
+        // step 1 Use Eli's cache to generate $var[taxid] = parent_id
         self::parse_tsv_file($this->Eli_cached_taxonomy, 'use cached taxonomy build taxon info list');
 
-        /*
-        // step 1: build taxon info list using Rebekah's spreadsheets   FOR SPECIES-LEVEL ONLY
+        // /* step 2
+        // step 2.1: build taxon info list using Rebekah's spreadsheets   FOR SPECIES-LEVEL ONLY
         self::read_tsv_files_do_task("generate taxa info list");
         // print_r($this->taxa_info); exit;
 
-        // step 2:                                                      FOR SPECIES-LEVEL ONLY
+        // step 2.2:                                                      FOR SPECIES-LEVEL ONLY
         self::read_tsv_files_do_task("read tsv write dwca");
-        */
+        // */
 
-        // step 3: process family-level
-
+        // step 3: process family-genus-level
         /*
         $this->group = 'family';
         $url = str_replace("XGROUP", 'family', $this->tsv_files);
-        self::parse_tsv_file($url, 'process family-level'); //generates $this->totals
+        self::parse_tsv_file($url, 'process family-genus-level'); //generates $this->totals
         */
 
-        // /*
+        /*
         $this->group = 'genus';
         $url = str_replace("XGROUP", 'genus', $this->tsv_files);
-        self::parse_tsv_file($url, 'process family-level'); //generates $this->totals
-        // */
+        self::parse_tsv_file($url, 'process family-genus-level'); //generates $this->totals
+        */
 
         // print_r($this->totals); exit;
 
@@ -124,7 +123,7 @@ class DataHub_BOLDS_API_v2
             }
 
             if($what == 'read tsv write dwca') { //species-level only
-                if(($i % 200) == 0) echo "\n main $i ";
+                if(($i % 20000) == 0) echo "\n main $i ";
 
                 /* Array(
                     [count] => 14
@@ -168,7 +167,7 @@ class DataHub_BOLDS_API_v2
 
                 if($rec['rank'] == 'Families' || $rec['rank'] == 'Genera') $this->name_id[$rec['sciname']] = $taxid;
             }
-            elseif($what == "process family-level") {
+            elseif($what == "process family-genus-level") {
                 // print_r($rec); exit("\n fam exit muna \n");
                 /* Array(
                     [count] => 14               - wrong assignment
@@ -333,7 +332,7 @@ class DataHub_BOLDS_API_v2
             if($this->BOLDS_TooManyRequests >= 3) exit("\nBOLDS should stop now.\n");
         }
     }
-    private function build_taxonomy_list() //builds up the taxonomy list
+    private function z_build_taxonomy_list() //builds up the taxonomy list
     {
         if(is_file($this->dump_file)) unlink($this->dump_file);
         // /*
@@ -361,7 +360,7 @@ class DataHub_BOLDS_API_v2
 
         // https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=285425   //good test
     }
-    private function assemble_data_from_html_then_write_dwca($html, $rec)
+    private function z_assemble_data_from_html_then_write_dwca($html, $rec)
     {   /*<div id="subheader">
             <div class="box">
                 <table width="100%" cellspacing="0" cellpadding="0">
@@ -406,13 +405,13 @@ class DataHub_BOLDS_API_v2
         return $save;
         // exit("\nxxx\n");
     }
-    private function get_public_records($html)
+    private function z_get_public_records($html)
     {   /*<td width="29%">Public Records:</td>
           <td width="13%">942</td>*/
         $left = '>Public Records:</td>'; $right = '</td>';
         if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) return trim(strip_tags($arr[1]));          
     }
-    private function get_list_items($html, $rank)
+    private function z_get_list_items($html, $rank)
     {
         $final = array(); $left = '<li>'; $right = '</li>';
         if(preg_match_all("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr2)) { // print_r($arr2[1]);
@@ -447,7 +446,7 @@ class DataHub_BOLDS_API_v2
         }
         return $final;
     }
-    private function get_rank($html)
+    private function z_get_rank($html)
     {   // <lh>Classes (4) </lh>...
         if(preg_match("/<lh>(.*?)<\/lh>/ims", $html, $arr)) {
             $new = trim(preg_replace('/\s*\([^)]*\)/', '', $arr[1])); //remove parenthesis OK
@@ -455,11 +454,11 @@ class DataHub_BOLDS_API_v2
         }
         return "cannot parse rank";
     }
-    private function get_string_between($left, $right, $str)
+    private function z_get_string_between($left, $right, $str)
     {
         if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $str, $arr)) return trim($arr[1]);
     }
-    private function save_to_dump($rec, $filename)
+    private function z_save_to_dump($rec, $filename)
     {
         $fields = array_keys($rec);
         $data = "";
@@ -476,7 +475,7 @@ class DataHub_BOLDS_API_v2
         fwrite($WRITE, $data . "\n");
         fclose($WRITE);    
     }
-    private function get_curl_errors()
+    private function z_get_curl_errors()
     {   /*
         Curl error (https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=1144590): The requested URL returned error: 500
         Curl error (https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic,stats&includeTree=true&taxId=649487): Resolving timed
