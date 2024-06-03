@@ -1,7 +1,7 @@
 <?php 
 namespace php_active_record;
-/*  datahub_gbif.php 
-Status: this wasn't used as main operation.
+/*  datahub_bolds.php 
+RUN THIS IN LOCAL MAC-STUDIO ONLY. This generates the BOLDS taxonomy and just scp it to eol-archive.
 */
 class DataHub_BOLDS_API
 {
@@ -51,7 +51,7 @@ class DataHub_BOLDS_API
         $this->debug = array();
 
         echo "\nwith outage: ".count($this->debug2['outage'])."\n";
-        exit("\nstop muna, hanggang dito lang.\n"); //CACHING FINISHED OK! MAY 21, 2024
+        exit("\nStops here. Up to this point only.\n"); //CACHING FINISHED OK! MAY 21, 2024, JUN 3, 2024
 
         //step 2:
         /*

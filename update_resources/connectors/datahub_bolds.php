@@ -10,17 +10,14 @@ $timestart = time_elapsed();
 $resource_id = 'BOLDS';
 $func = new DataHub_BOLDS_API($resource_id);
 
+// RUN THIS IN LOCAL MAC-STUDIO ONLY
+
 // /*
 $func->start(); 
 // */
 
 /* a utility
 $func->search_families_not_found();
-*/
-
-
-/* main part that generates the DwCA
-Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.
 */
 
 $elapsed_time_sec = time_elapsed() - $timestart;

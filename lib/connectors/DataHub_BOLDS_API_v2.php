@@ -55,17 +55,17 @@ class DataHub_BOLDS_API_v2
         // */
 
         // step 3: process family-genus-level
-        /*
+        // /*
         $this->group = 'family';
         $url = str_replace("XGROUP", 'family', $this->tsv_files);
         self::parse_tsv_file($url, 'process family-genus-level'); //generates $this->totals
-        */
+        // */
 
-        /*
+        // /*
         $this->group = 'genus';
         $url = str_replace("XGROUP", 'genus', $this->tsv_files);
         self::parse_tsv_file($url, 'process family-genus-level'); //generates $this->totals
-        */
+        // */
 
         // print_r($this->totals); exit;
 
