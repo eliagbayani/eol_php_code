@@ -268,14 +268,13 @@ class DataHub_BOLDS_API_v2
         $url = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
 
         @$this->total_page_calls++; echo "\nx[$this->total_page_calls] $this->group batch\n";
-        if($this->total_page_calls > 1927) {
+        if($this->total_page_calls > 1) {
             if(($this->total_page_calls % 50) == 0) { echo "\nsleep 60 secs.\n"; sleep(60); }
         }
 
         if($json = Functions::lookup_with_cache($url.$taxonID, $this->download_options_BOLDS)) {
             self::bolds_API_result_still_validYN($json);
-            $obj = json_decode($json);
-            // print_r($obj); exit;
+            $obj = json_decode($json); // print_r($obj); exit;
             // /* build taxa info list
             foreach($obj as $o) { 
                 if(!@$o->taxid) { $this->debug['not found in api'][$taxonID] = ''; continue;}
