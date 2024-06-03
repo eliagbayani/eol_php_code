@@ -72,7 +72,7 @@ class DataHub_BOLDS_API_v2
         foreach($this->totals as $sciname => $count) {
             if(!$sciname) continue;
             if($taxid = @$this->name_id[$sciname]) {
-                echo "\n[$sciname] [$taxid] [$count]";
+                // echo "\n[$sciname] [$taxid] [$count]";
 
                 $save = array();
                 $save['taxonID'] = $taxid;

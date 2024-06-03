@@ -50,7 +50,7 @@ class DataHub_BOLDS_API
         print_r($this->debug2);
         $this->debug = array();
 
-        echo "\nwith outage: ".count($this->debug2['outage'])."\n";
+        echo "\nwith outage: ".count(@$this->debug2['outage'])."\n";
         exit("\nStops here. Up to this point only.\n"); //CACHING FINISHED OK! MAY 21, 2024, JUN 3, 2024
 
         //step 2:
