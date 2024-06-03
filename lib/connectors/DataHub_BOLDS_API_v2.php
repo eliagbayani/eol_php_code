@@ -26,6 +26,8 @@ class DataHub_BOLDS_API_v2
         $this->tsv_files = $save_path.'Public_count_XGROUP_updated.tsv'; //e.g. Public_count_family_updated.tsv
         // */
         $this->Eli_cached_taxonomy = $save_path.'datahub_bolds_taxonomy_2024_06_03.txt';
+        $this->Eli_cached_taxonomy = $save_path.'datahub_bolds_taxonomy_2024_06_04.txt';
+
     }
     function start()
     {   /* just a utility

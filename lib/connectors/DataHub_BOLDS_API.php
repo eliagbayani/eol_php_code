@@ -235,6 +235,10 @@ class DataHub_BOLDS_API
                     $tmp = self::get_list_items($html2, 'phylum', 1);
                     $i = 0;
                     foreach($tmp as $t) { $i++;
+
+                        if(isset($all_phylums[$t['taxid']])) continue;
+                        $all_phylums[$t['taxid']] = '';
+
                         // /* orig, main operation
                         $final['phylums_Eli'][] = $t;
                         // */
@@ -303,10 +307,13 @@ class DataHub_BOLDS_API
         // $final = array(); //comment in real operation. Uncomment during caching... dev only debug only
         $ret = self::search_families_not_found();
         foreach($ret as $r) {
+            if(isset($all_phylums[$r['taxid']])) continue;
+            $all_phylums[$r['taxid']] = '';
+
             $final['phylums_Eli'][] = $r;
         }
 
-        // print_r($final); exit;
+        // print_r($final); echo "\n".count($final['phylums_Eli'])."\n"; exit;
         return $final;
     }
     private function assemble_level_2($level_1, $level_num)

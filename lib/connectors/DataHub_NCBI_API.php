@@ -43,21 +43,19 @@ class DataHub_NCBI_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        // /* step 1: assemble taxa
+        /* step 1: assemble taxa
         // Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
         print_r($this->taxa_info[1]); //exit("\nelix 2\n");
-                /* testing only
-                $test_species = array(9913, 32630, 1423, 5076, 562);
-                // $test_species = array(9913);
-                foreach($test_species as $taxid) { echo "\n ----- processing [$taxid]\n";
-                    $ancestry = self::get_ancestry_for_taxonID($taxid);
-                    print_r($ancestry);
-                    echo "\n ----- end [$taxid]";
-                }        
-                exit("\nelix 3\n");
-                */
-        // --- end step 1 --- */
+                // testing only
+                // $test_species = array(9913, 32630, 1423, 5076, 562);
+                // foreach($test_species as $taxid) { echo "\n ----- processing [$taxid]\n";
+                //     $ancestry = self::get_ancestry_for_taxonID($taxid);
+                //     print_r($ancestry);
+                //     echo "\n ----- end [$taxid]";
+                // }        
+                // exit("\nelix 3\n");
+        --- end step 1 --- */
 
         // /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
@@ -264,7 +262,7 @@ class DataHub_NCBI_API
                 }
                 elseif($what == 'process genus family from compiled taxonomy') {                    
                     self::process_genus_family($rec);
-                    if($i > 15) break; //debug only
+                    // if($i > 15) break; //debug only
                 }
             }
         }
