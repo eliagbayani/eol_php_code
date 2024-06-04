@@ -37,23 +37,20 @@ class DataHub_GGBN
     }
     function start()
     {
+        $this->debug = array();
+        require_library('connectors/TraitGeneric'); 
+        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
+        // --------------------------------------------------------------------------------- 
         $sampleTypes = array('DNA', 'specimen');
-        $sampleTypes = array('specimen');
-
+        // $sampleTypes = array('specimen'); //dev only
         foreach($sampleTypes as $sampleType) {
+            $this->sampleType = $sampleType;
             $json = file_get_contents($this->json_dump[$sampleType]);
-            $obj = json_decode($json, true); print_r($obj); exit;
+            $obj = json_decode($json, true); //print_r($obj); exit;
             $groups = array_keys($obj); print_r($groups);
             /*Array(
-                [0] => method
-                [1] => filters
-                [2] => familia
-                [3] => genus
-                [4] => species
-                [5] => classis
-                [6] => ordo
-                [7] => phylum
-                [8] => regnum
+                [0] => method       [1] => filters      [2] => familia      [3] => genus
+                [4] => species      [5] => classis      [6] => ordo         [7] => phylum   [8] => regnum
             )*/
             self::process_taxa($obj);
         }
@@ -71,12 +68,14 @@ class DataHub_GGBN
         $rank_label['regnum'] = 'kingdom';
 
         foreach($obj as $group => $recs) {
-            if(in_array($group, array('familia', 'genus', 'species', 'classis', 'ordo', 'phylum', 'regnum'))) {
+            if(in_array($group, array('familia', 'genus', 'species', 'classis', 'ordo', 'phylum', 'regnum'))) { echo "\nprocess [$group]\n";
                 $taxonRank = $rank_label[$group];
-                foreach($recs as $sciname => $count) {
+                $i = 0;
+                foreach($recs as $sciname => $count) { $i++; if(($i % 20000) == 0) echo "\n $i ";
+                    // echo "\n[$sciname] [$count]\n"; exit;
                     if(!self::valid_name($sciname)) continue;
                     $save = array();
-                    $save['taxonID'] = strtolower(str_replace($sciname, "", "_"));
+                    $save['taxonID'] = strtolower(str_replace(" ", "_", $sciname));
                     $save['scientificName'] = $sciname;
                     $save['taxonRank'] = $taxonRank;
                     self::write_taxon($save);
@@ -84,11 +83,40 @@ class DataHub_GGBN
                     $rec = array();
                     $rec['tax id'] = $save['taxonID'];
                     $rec['count'] = $count;
+                    $rec['sciname'] = $sciname;
                     self::write_MoF($rec);
                 }
             }
         }
     }
+    private function write_taxon($rec)
+    {   //print_r($rec);
+        $taxonID = $rec['taxonID'];
+        $taxon = new \eol_schema\Taxon();
+        $taxon->taxonID             = $taxonID;
+        $taxon->scientificName      = $rec['scientificName'];
+        $taxon->taxonRank           = $rec['taxonRank'];
+        if(!isset($this->taxonIDs[$taxonID])) {
+            $this->taxonIDs[$taxonID] = '';
+            $this->archive_builder->write_object_to_file($taxon);
+        }
+    }
+
+    private function write_MoF($rec)
+    {   //print_r($o); exit;
+        $taxonID = $rec['tax id'];
+        $save = array();
+        $save['taxon_id'] = $taxonID;
+        $save['source'] = $this->taxon_page . urlencode($rec['sciname']);
+        // $save['bibliographicCitation'] = '';
+        // $save['measurementRemarks'] = ""; 
+        if    ($this->sampleType == 'DNA')      $mType = 'http://eol.org/schema/terms/NumberDNARecordsInGGBN';
+        elseif($this->sampleType == 'specimen') $mType = 'http://eol.org/schema/terms/NumberSpecimensInGGBN';
+        $mValue = $rec['count'];
+        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
+        $this->func->add_string_types($save, $mValue, $mType, "true");    
+    }
+
     private function valid_name($sciname)
     {
         if($sciname == 'N/A') return false;
@@ -276,34 +304,6 @@ class DataHub_GGBN
             }
         }
     }
-    private function write_taxon($rec)
-    {   //print_r($rec);
-        $taxonID = $rec['taxonID'];
-        $taxon = new \eol_schema\Taxon();
-        $taxon->taxonID             = $taxonID;
-        $taxon->scientificName      = $rec['scientificName'];
-
-        $transform['Genera'] = 'genus';
-        $transform['Families'] = 'family';
-        $transform['Orders'] = 'order';
-        $transform['Classes'] = 'class';
-        $transform['Tribes'] = 'tribe';
-        $transform['Subfamilies'] = 'subfamily';
-        
-        if($val = @$transform[$rec['taxonRank']]) $final_rank = $val;
-        else $final_rank = strtolower($rec['taxonRank']);
-
-        $taxon->taxonRank           = $final_rank;
-        $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
-        if(!isset($this->taxonIDs[$taxonID])) {
-            $this->taxonIDs[$taxonID] = '';
-            $this->archive_builder->write_object_to_file($taxon);
-        }
-
-        // add ancestry to taxon.tab
-        $ancestry = self::get_ancestry_for_taxonID($taxonID);
-        if($ancestry) self::write_taxa_4_ancestry($ancestry);
-    }
     private function get_ancestry_for_taxonID($taxonID)
     {
         $final = array();
@@ -353,38 +353,6 @@ class DataHub_GGBN
         }
         return @$this->taxa_info[$taxonID]['p'];
     }
-    private function write_MoF($rec)
-    {   //print_r($o); exit;
-        $taxonID = $rec['tax id'];
-        $save = array();
-        $save['taxon_id'] = $taxonID;
-        $save['source'] = $this->taxon_page . $taxonID;
-        // $save['bibliographicCitation'] = '';
-        // $save['measurementRemarks'] = ""; 
-        $mType = 'http://eol.org/schema/terms/NumberPublicRecordsInBOLD';
-        $mValue = $rec['count'];
-        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
-        $this->func->add_string_types($save, $mValue, $mType, "true");    
-    }
-    /*
-    static $ranks_php_code_base = array(
-        'species', 'superkingdom', 'kingdom', 'regnum', 'subkingdom', 'infrakingdom', 'subregnum', 'division',
-        'superphylum', 'phylum', 'divisio', 'subdivision', 'subphylum', 'infraphylum', 'parvphylum', 'subdivisio',
-        'superclass', 'class', 'classis', 'infraclass', 'subclass', 'subclassis', 'superorder', 'order',
-        'ordo', 'infraorder', 'suborder', 'subordo', 'superfamily', 'family', 'familia', 'subfamily',
-        'subfamilia', 'tribe', 'tribus', 'subtribe', 'subtribus', 'genus', 'subgenus', 'section',
-        'sectio', 'subsection', 'subsectio', 'series', 'subseries', 'species', 'subspecies', 'infraspecies',
-        'variety', 'varietas', 'subvariety', 'subvarietas', 'form', 'forma', 'subform', 'subforma');
-
-    static $ranks_eol_org = array('class', 'class_group', 'cohort', 'cohort_group', 'division', 'division_group', 'domain', 'domain_group', 'epiclass', 'epicohort', 'epidivision', 'epidomain', 'epifamily', 'epiform', 'epigenus', 
-        'epikingdom', 'epiorder', 'epiphylum', 'epispecies', 'epitribe', 'epivariety', 'family', 'family_group', 'form', 'form_group', 'genus', 'genus_group', 'infraclass', 'infracohort', 'infradivision', 
-        'infradomain', 'infrafamily', 'infraform', 'infragenus', 'infrakingdom', 'infraorder', 'infraphylum', 'infraspecies', 'infratribe', 'infravariety', 'kingdom', 'kingdom_group', 'megaclass', 'megacohort', 
-        'megadivision', 'megadomain', 'megafamily', 'megaform', 'megagenus', 'megakingdom', 'megaorder', 'megaphylum', 'megaspecies', 'megatribe', 'megavariety', 'order', 'order_group', 'phylum', 'phylum_group', 
-        'species', 'species_group', 'subclass', 'subcohort', 'subdivision', 'subdomain', 'subfamily', 'subform', 'subgenus', 'subkingdom', 'suborder', 'subphylum', 'subspecies', 'subterclass', 'subtercohort', 
-        'subterdivision', 'subterdomain', 'subterfamily', 'subterform', 'subtergenus', 'subterkingdom', 'subterorder', 'subterphylum', 'subterspecies', 'subtertribe', 'subtervariety', 'subtribe', 'subvariety', 
-        'superclass', 'supercohort', 'superdivision', 'superdomain', 'superfamily', 'superform', 'supergenus', 'superkingdom', 'superorder', 'superphylum', 'superspecies', 'supertribe', 'supervariety', 'tribe', 
-        'tribe_group', 'variety', 'variety_group');
-    */
     private function bolds_API_result_still_validYN($str)
     {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
         if(stripos($str, 'have exceeded') !== false) { //string is found
