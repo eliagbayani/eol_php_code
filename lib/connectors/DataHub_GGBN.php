@@ -27,8 +27,8 @@ class DataHub_GGBN
         if(!is_dir($save_path)) mkdir($save_path);
         $save_path = $save_path . "GGBN/";
         if(!is_dir($save_path)) mkdir($save_path);
-        $this->json_dump['DNA']      = $save_path.'z_getClassification_sampleType_DNA.txt';
-        $this->json_dump['specimen'] = $save_path.'z_getClassification_sampleType_specimen.txt';
+        $this->json_dump['DNA']      = $save_path.'getClassification_sampleType_DNA.txt';
+        $this->json_dump['specimen'] = $save_path.'getClassification_sampleType_specimen.txt';
         // */
     }
     function start()
