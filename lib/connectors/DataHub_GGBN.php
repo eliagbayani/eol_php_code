@@ -33,7 +33,6 @@ class DataHub_GGBN
         $this->json_dump['DNA']      = $save_path.'getClassification_sampleType_DNA.txt';
         $this->json_dump['specimen'] = $save_path.'getClassification_sampleType_specimen.txt';
         // */
-
     }
     function start()
     {
@@ -101,7 +100,6 @@ class DataHub_GGBN
             $this->archive_builder->write_object_to_file($taxon);
         }
     }
-
     private function write_MoF($rec)
     {   //print_r($o); exit;
         $taxonID = $rec['tax id'];
@@ -116,7 +114,6 @@ class DataHub_GGBN
         $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
-
     private function valid_name($sciname)
     {
         if($sciname == 'N/A') return false;
@@ -186,7 +183,7 @@ class DataHub_GGBN
         $this->archive_builder->finalize(TRUE);
         print_r($this->debug);
     }
-    private function read_tsv_files_do_task($task)
+    private function x_read_tsv_files_do_task($task)
     {
         $groups = array('species'); //this is exclusive for species-level only
         foreach($groups as $group) {
@@ -195,7 +192,7 @@ class DataHub_GGBN
             self::parse_tsv_file($url, $task);
         }
     }
-    private function parse_tsv_file($file, $what)
+    private function x_parse_tsv_file($file, $what)
     {   echo "\nReading file, task: [$what] [$file]\n";
         $i = 0; $final = array();
         $included_ranks = array("species", "form", "variety", "subspecies", "unranked");
@@ -280,7 +277,7 @@ class DataHub_GGBN
             }
         }
     }
-    private function write_taxa_4_ancestry($ancestry)
+    private function x_write_taxa_4_ancestry($ancestry)
     {
         // print_r($ancestry); exit("\nelix 1\n");
         foreach($ancestry as $tax_id) {
@@ -304,7 +301,7 @@ class DataHub_GGBN
             }
         }
     }
-    private function get_ancestry_for_taxonID($taxonID)
+    private function x_get_ancestry_for_taxonID($taxonID)
     {
         $final = array();
         while(true) {
@@ -327,7 +324,7 @@ class DataHub_GGBN
         // echo "\nancestry: "; print_r($final); //exit;
         return $final;
     }
-    private function get_ancestry_thru_api($taxonID)
+    private function x_get_ancestry_thru_api($taxonID)
     {
         $options = $this->download_options_BOLDS;
         $options['resource_id'] = 'BOLDS_ancestry';
@@ -353,7 +350,7 @@ class DataHub_GGBN
         }
         return @$this->taxa_info[$taxonID]['p'];
     }
-    private function bolds_API_result_still_validYN($str)
+    private function x_bolds_API_result_still_validYN($str)
     {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@boldsystems.org for instruction on the process. 
         if(stripos($str, 'have exceeded') !== false) { //string is found
             echo "\n[$str]\n";
