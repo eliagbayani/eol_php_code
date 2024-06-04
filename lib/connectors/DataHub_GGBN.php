@@ -1,9 +1,9 @@
 <?php
 namespace php_active_record;
-/*  datahub_bolds_v2.php 
-https://content.eol.org/resources/1221
+/*  datahub_ggbn.php 
+https://content.eol.org/resources/xxx
 */
-class DataHub_BOLDS_API_v2
+class DataHub_GGBN
 {
     function __construct($folder = false)
     {
@@ -13,23 +13,89 @@ class DataHub_BOLDS_API_v2
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
         $this->debug = array();
-        $this->download_options_BOLDS = array('resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
-        $this->download_options_BOLDS['expire_seconds'] = false; //May 2024
-        $this->taxon_page = 'https://v3.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
+        $this->download_options_GGBN = array('resource_id' => 'GGBN', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
+        $this->download_options_GGBN['expire_seconds'] = false; //May 2024
+        $this->taxon_page = 'https://www.ggbn.org/ggbn_portal/search/result?fullScientificName='; //e.g. Gadus+morhua
+
+
+        $this->api_call = "https://www.ggbn.org/ggbn_portal/api/search?getClassification&sampleType="; //DNA or specimen (or tissue; notused)
+        /* 
+        You can use both data.ggbn.org and www.ggbn.org.
+        source for list of sampleTypes: https://www.ggbn.org/ggbn_portal/api/search?getCounts
+        */
 
         // /*
         if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
         else                           $save_path = "/Volumes/Crucial_2TB/other_files2/dumps_GGI/";
         if(!is_dir($save_path)) mkdir($save_path);
-        $save_path = $save_path . "BOLDS/";
+        $save_path = $save_path . "GGBN/";
         if(!is_dir($save_path)) mkdir($save_path);
-        $this->tsv_files = $save_path.'Public_count_XGROUP_updated.tsv'; //e.g. Public_count_family_updated.tsv
+        $this->json_dump['DNA']      = $save_path.'getClassification_sampleType_DNA.txt';
+        $this->json_dump['specimen'] = $save_path.'getClassification_sampleType_specimen.txt';
         // */
-        $this->Eli_cached_taxonomy = $save_path.'datahub_bolds_taxonomy_2024_06_03.txt';
-        $this->Eli_cached_taxonomy = $save_path.'datahub_bolds_taxonomy_2024_06_04.txt';
 
     }
     function start()
+    {
+        $sampleTypes = array('DNA', 'specimen');
+        $sampleTypes = array('specimen');
+
+        foreach($sampleTypes as $sampleType) {
+            $json = file_get_contents($this->json_dump[$sampleType]);
+            $obj = json_decode($json, true); print_r($obj); exit;
+            $groups = array_keys($obj); print_r($groups);
+            /*Array(
+                [0] => method
+                [1] => filters
+                [2] => familia
+                [3] => genus
+                [4] => species
+                [5] => classis
+                [6] => ordo
+                [7] => phylum
+                [8] => regnum
+            )*/
+            self::process_taxa($obj);
+        }
+        $this->archive_builder->finalize(TRUE);
+        print_r($this->debug);
+    }
+    private function process_taxa($obj)
+    {
+        $rank_label['familia'] = 'family';
+        $rank_label['genus'] = 'genus';
+        $rank_label['species'] = 'species';
+        $rank_label['classis'] = 'class';
+        $rank_label['ordo'] = 'order';
+        $rank_label['phylum'] = 'phylum';
+        $rank_label['regnum'] = 'kingdom';
+
+        foreach($obj as $group => $recs) {
+            if(in_array($group, array('familia', 'genus', 'species', 'classis', 'ordo', 'phylum', 'regnum'))) {
+                $taxonRank = $rank_label[$group];
+                foreach($recs as $sciname => $count) {
+                    if(!self::valid_name($sciname)) continue;
+                    $save = array();
+                    $save['taxonID'] = strtolower(str_replace($sciname, "", "_"));
+                    $save['scientificName'] = $sciname;
+                    $save['taxonRank'] = $taxonRank;
+                    self::write_taxon($save);
+
+                    $rec = array();
+                    $rec['tax id'] = $save['taxonID'];
+                    $rec['count'] = $count;
+                    self::write_MoF($rec);
+                }
+            }
+        }
+    }
+    private function valid_name($sciname)
+    {
+        if($sciname == 'N/A') return false;
+        return true;
+    }
+    // =================================================below copied template
+    function x_start()
     {   /* just a utility
         // echo "\nranks_php_code_base: ".count(self::$ranks_php_code_base)."\n";
         // echo "\nranks_eol_org: ".count(self::$ranks_eol_org)."\n";
@@ -494,5 +560,17 @@ class DataHub_BOLDS_API_v2
         $this->curl_error_taxIds = $final;
         // exit("\nstop muna\n");
     }
+    /* On Wed, May 29, 2024 at 4:14 PM Dröge, Gabriele <G.Droege@bo.berlin> wrote:
+    Dear Eli,
+    Thanks a lot for your request and interest in GGBN!
+    You can use the method getClassification using sampleType as filter. E.g. https://www.ggbn.org/ggbn_portal/api/search?getClassification&sampleType=DNA
+    This will give you all families, phyla, species etc. we have for sampletype = DNA. So it is not a full dump, but at least only one call per sampleType.
+    However it might be, that species will cause a little problem because of the sheer amount. Please do let me know if that’s the case. You can use both data.ggbn.org and www.ggbn.org.
+    Which kind of sampletypes we have you can find out through “samples” in the result of https://www.ggbn.org/ggbn_portal/api/search?getCounts
+    Let me know if this is what you were looking for or if you’ll need any other calls. We are currently developing a new portal for GGBN and if we can improve our API for users like EOL we are happy to do that.
+    We are also linking out to EOL from our individual sample pages using, e.g. http://eol.org/search/?q=Tamias+dorsalis This has been used for years now. I wonder if there is a better way to make this connection? It seems, as your page is very slow at the moment and it can’t resolve the url.
+    Example GGBN page: https://www.ggbn.org/ggbn_portal/search/record?unitID=MSB%3AMamm%3A283479&collectioncode=Mamm&institutioncode=MSB&guid=http%3A%2F%2Farctos.database.museum%2Fguid%2FMSB%3AMamm%3A283479%3Fpid%3D27237793
+    Best,
+    Gabi */
 }
 ?>
