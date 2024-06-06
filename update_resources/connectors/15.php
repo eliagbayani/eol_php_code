@@ -23,6 +23,9 @@ namespace php_active_record;
 
 Jenkins sched: 5,7,9,11,1,3 *
 May Jul Sep Nov Jan Mar
+
+Jun 6, 2024 ---> Remove in Flickr Group:
+ea0a7840e37dd7d1c1c021a891039723	Wolfgang Bettighofer	photographer	http://www.flickr.com/photos/152958044@N03
 */
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
@@ -43,23 +46,23 @@ if(!($resource_file = Functions::file_open(CONTENT_RESOURCE_LOCAL_PATH . $resour
 // start the resource file with the XML header
 fwrite($resource_file, \SchemaDocument::xml_header());
 
-// query Flickr and write results to file
+log_step("STEP 1: query Flickr and write results to file");
 // FlickrAPI::get_all_eol_photos($auth_token, $resource_file); //orig
 FlickrAPI::get_all_eol_photos($auth_token, $resource_file, NULL, NULL, NULL, $resource_id);
 
-// write the resource footer
+log_step("STEP 2: write the resource footer");
 fwrite($resource_file, \SchemaDocument::xml_footer());
 fclose($resource_file);
 
-// cache the previous version and make this new version the current version
+log_step("STEP 3: cache the previous version and make this new version the current version");
 @unlink(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . "_previous.xml");
 Functions::file_rename(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml", CONTENT_RESOURCE_LOCAL_PATH . $resource_id . "_previous.xml");
 Functions::file_rename(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . "_temp.xml", CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml");
 
-// set Flickr to Harvest Requested
+log_step("STEP 4: set Flickr to Harvest Requested");
 if(filesize(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml") > 600) Functions::set_resource_status_to_harvest_requested($resource_id);
 
-//fix bad characters
+log_step("STEP 5: fix bad characters");
 $xml_string = file_get_contents(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml");
 $xml_string = Functions::remove_invalid_bytes_in_XML($xml_string);
 if(($fhandle = Functions::file_open(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml", "w")))
@@ -68,10 +71,18 @@ if(($fhandle = Functions::file_open(CONTENT_RESOURCE_LOCAL_PATH . $resource_id .
     fclose($fhandle);
 }
 
-//compress resource xml
+log_step("STEP 6: compress resource xml");
 Functions::gzip_resource_xml($resource_id); //un-comment if you want to investigate the XML file
 
+log_step("STEP 7: call_xml_2_dwca");
 require_library('ResourceDataObjectElementsSetting');
 $nmnh = new ResourceDataObjectElementsSetting($resource_id);
 $nmnh->call_xml_2_dwca($resource_id, "Flickr files", false, $timestart); //3rd param false means it is not NMNH resource.
+
+function log_step($str)
+{
+    echo "\n-----------------------------------";
+    echo "\n".$str;
+    echo "\n-----------------------------------\n";
+}
 ?>

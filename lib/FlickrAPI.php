@@ -42,6 +42,8 @@ define("OPENTREE_ID", "92803392@N02"); // OpenTree photostream - http://www.flic
 
 define("ANDREAS_KAY_ID",        "75374522@N06"); // Andreas Kay photostream (DATA-1843) - https://www.flickr.com/photos/andreaskay/ OR https://www.flickr.com/photos/75374522@N06/
 define("USGS_BEE_INVENTORY_ID", "54563451@N08"); // Bee Inventory photostream (DATA-1855) - https://www.flickr.com/photos/usgsbiml/ OR https://www.flickr.com/photos/54563451@N08/
+define("WOLFGANG_B_ID",         "152958044@N03"); // ea0a7840e37dd7d1c1c021a891039723	Wolfgang Bettighofer	photographer	http://www.flickr.com/photos/152958044@N03
+
 
 // $GLOBALS['flickr_cache_path'] = DOC_ROOT . "/update_resources/connectors/files/flickr_cache";    //old cache path
 // $GLOBALS['flickr_cache_path'] = DOC_ROOT . "/public/tmp/flickr_cache";                           //old cache path
@@ -117,7 +119,7 @@ class FlickrAPI
         global $used_image_ids;
         $response = self::pools_get_photos(FLICKR_EOL_GROUP_ID, "", $per_page, $page, $auth_token, $user_id, $start_date, $end_date);
         if(isset($response->photos->photo)) {
-            echo "\n page " . $response->photos->page . " of " . $response->photos->pages . " | total taxa =  " . $response->photos->total . "\n";
+            echo "\n page " . $response->photos->page . " of " . $response->photos->pages . " | total taxa =  " . $response->photos->total . " | ".$GLOBALS['resource_id']." \n";
             echo "\n -- response count: " . count($response);
             echo "\n -- response photos count per page: " . count($response->photos->photo) . "\n";
         }
@@ -157,6 +159,7 @@ class FlickrAPI
                 if($GLOBALS['resource_id'] == 15) { //meaning regular Flickr resource
                     if($photo->owner == ANDREAS_KAY_ID) continue; //exclude images from this photostream
                     elseif($photo->owner == USGS_BEE_INVENTORY_ID) continue; //exclude images from this photostream
+                    elseif($photo->owner == WOLFGANG_B_ID) continue; //exclude images from Wolfgang protisten.de
                 }
                 // end: DATA-1843 */
                 

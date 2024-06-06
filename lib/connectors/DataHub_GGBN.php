@@ -1,7 +1,7 @@
 <?php
 namespace php_active_record;
 /*  datahub_ggbn.php 
-https://content.eol.org/resources/xxx
+https://content.eol.org/resources/1222
 */
 class DataHub_GGBN
 {
