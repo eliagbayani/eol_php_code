@@ -26,6 +26,7 @@ class DataHub_BHL_API
         $save_path = $save_path . "Data/";          if(!is_dir($save_path)) mkdir($save_path);
         $this->tsv_file = $save_path.'pagename.txt';
         // */
+        // "http://eol.org/schema/terms/NumberReferencesInBHL"
     }
 
     function start()
