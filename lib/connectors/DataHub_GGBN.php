@@ -62,7 +62,7 @@ class DataHub_GGBN
         $this->archive_builder->finalize(TRUE);
         print_r($this->debug);
     }
-    private function save_dump_files($url, $target)
+    function save_dump_files($url, $target)
     {   //wget -nc http://www.boldsystems.org/pics/KANB/USNM_442211_photograph_KB17_037_155mmSL_LRP_17_07+1507842962.JPG -O /Volumes/AKiTiO4/other_files/xxx/file.ext
         $cmd = WGET_PATH . " '$url' -O "."'$target'"; //wget -nc --> means 'no overwrite'
         $cmd .= " 2>&1";

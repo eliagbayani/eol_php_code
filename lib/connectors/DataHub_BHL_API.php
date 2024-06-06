@@ -23,18 +23,40 @@ class DataHub_BHL_API
         if(!is_dir($save_path)) mkdir($save_path);
         $save_path = $save_path . "BHL/";           if(!is_dir($save_path)) mkdir($save_path);
         $save_path = $save_path . "BHL_hosted/";    if(!is_dir($save_path)) mkdir($save_path);
+        $this->download_path = $save_path;
         $save_path = $save_path . "Data/";          if(!is_dir($save_path)) mkdir($save_path);
         $this->tsv_file = $save_path.'pagename.txt';
+
+        $this->dump_file = 'https://www.biodiversitylibrary.org/data/hosted/data.zip';
+        $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip';
+
         // */
         // "http://eol.org/schema/terms/NumberReferencesInBHL"
     }
+    private function download_bhl_dump()
+    {   /* from: https://about.biodiversitylibrary.org/tools-and-services/developer-and-data-tools/
+        click: Data Exports
+        click: TSV
 
+        Here is the download URL for the best source of counts per taxa:
+        wget -c https://www.biodiversitylibrary.org/data/hosted/data.zip
+
+        Complete collection : https://www.biodiversitylibrary.org/data/data.zip
+        BHL-hosted material only : https://www.biodiversitylibrary.org/data/hosted/data.zip */
+
+        require_library('connectors/DataHub_GGBN'); 
+        $func = new DataHub_GGBN(null, null);
+        $func->save_dump_files($this->dump_file, $this->download_path."downloaded_data.zip");
+    }
     function start()
     {
+
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
+        // step 0: download dump
+        // self::download_bhl_dump(); exit("\ndownload done.\n");
         // step 1:
         self::parse_tsv_file($this->tsv_file, 'compute_totals_per_taxon');
         // exit;
@@ -88,7 +110,7 @@ class DataHub_BHL_API
                 $NameConfirmed = $rec['NameConfirmed'];
                 $NameBankID = $rec['NameBankID'];
                 if($PageID && $NameConfirmed) $this->totals[$NameConfirmed][$PageID] = '';
-                $this->debug['values']['NameBankID'][$NameBankID] = '';
+                // $this->debug['values']['NameBankID'][$NameBankID] = ''; //debug only; for stats only
             }
         }
     }
