@@ -1,6 +1,8 @@
 <?php
 namespace php_active_record;
-/* 
+/* BOLDS two interfaces:
+https://www.boldsystems.org/index.php/TaxBrowser_Home
+https://v3.boldsystems.org/index.php/TaxBrowser_Home
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/DataHub_BOLDS_API_v2');

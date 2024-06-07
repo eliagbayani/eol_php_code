@@ -60,8 +60,9 @@ Functions::file_rename(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml", CONT
 Functions::file_rename(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . "_temp.xml", CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml");
 
 log_step("STEP 4: set Flickr to Harvest Requested");
+/* not needed anymore
 if(filesize(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml") > 600) Functions::set_resource_status_to_harvest_requested($resource_id);
-
+*/
 log_step("STEP 5: fix bad characters");
 $xml_string = file_get_contents(CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".xml");
 $xml_string = Functions::remove_invalid_bytes_in_XML($xml_string);
