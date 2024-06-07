@@ -4,7 +4,7 @@ namespace php_active_record;
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/DataHub_BHL_API');
-ini_set('memory_limit','28096M'); //15096M
+ini_set('memory_limit','15096M'); //15096M
 $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 $resource_id = 'BHL';
@@ -14,9 +14,9 @@ $func = new DataHub_BHL_API($resource_id);
 $func->start(); 
 // */
 
-/* main part that generates the DwCA
+// /* main part that generates the DwCA
 Functions::finalize_dwca_resource($resource_id, false, true); //false here means not a big file, true means delete working folder.
-*/
+// */
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";

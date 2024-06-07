@@ -15,7 +15,7 @@ class DataHub_BHL_API
         $this->debug = array();
         $this->download_options_BHL = array('resource_id' => 'BHL', 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1);
         $this->download_options_BHL['expire_seconds'] = false; //May 2024
-        $this->taxon_page = 'https://v3.BHLystems.org/index.php/Taxbrowser_Taxonpage?taxid=';
+        $this->taxon_page = 'https://www.biodiversitylibrary.org/name/';
 
         // /*
         if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
@@ -29,9 +29,7 @@ class DataHub_BHL_API
 
         $this->dump_file = 'https://www.biodiversitylibrary.org/data/hosted/data.zip';
         $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip';
-
         // */
-        // "http://eol.org/schema/terms/NumberReferencesInBHL"
     }
     private function download_bhl_dump()
     {   /* from: https://about.biodiversitylibrary.org/tools-and-services/developer-and-data-tools/
@@ -50,40 +48,41 @@ class DataHub_BHL_API
     }
     function start()
     {
-
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-
+        /*
         // step 0: download dump
-        // self::download_bhl_dump(); exit("\ndownload done.\n");
+        self::download_bhl_dump(); exit("\ndownload done.\n");
+        */
+
         // step 1:
-        self::parse_tsv_file($this->tsv_file, 'compute_totals_per_taxon');
-        // exit;
+        self::parse_tsv_file($this->tsv_file, 'compute_totals_per_taxon'); // exit;
+
         // step 2:
-        // foreach($this->totals as $sciname => $page_ids) {
-        //     if(!$sciname) continue;
-        //     if($taxid = @$this->name_id[$sciname]) {
-        //         // echo "\n[$sciname] [$taxid] [$count]";
+        foreach($this->totals as $sciname => $count) {
+            if(!$sciname) continue;
+            $taxid = @$this->name_id[$sciname];
+            if(!$taxid) $taxid = strtolower(str_replace(" ", "_", $sciname));
 
-        //         $save = array();
-        //         $save['taxonID'] = $taxid;
-        //         $save['scientificName'] = $sciname;
-        //         $save['taxonRank'] = $this->group;
-        //         $save['parentNameUsageID'] = $this->taxa_info[$taxid]['p'];
-        //         self::write_taxon($save);
+            // echo "\n[$sciname] [$taxid] [$count]";
 
-        //         $rec = array();
-        //         $rec['tax id'] = $taxid;
-        //         $rec['count'] = $count;
-        //         self::write_MoF($rec);
-        //     }
-        //     else $this->debug['sciname not found'][$sciname] = '';
-        // }
+            $save = array();
+            $save['taxonID'] = $taxid;
+            $save['scientificName'] = $sciname;
+            // $save['taxonRank'] = ;                                       //not provided in BHL
+            // $save['parentNameUsageID'] = $this->taxa_info[$taxid]['p'];  //not provided in BHL    
+            self::write_taxon($save);
 
+            $rec = array();
+            $rec['tax id'] = $taxid;
+            $rec['count'] = $count;
+            $rec['scientificName'] = $sciname;
+            self::write_MoF($rec);
+        }
         
+        $this->archive_builder->finalize(TRUE);
         print_r($this->debug);
-        exit;
     }
     private function parse_tsv_file($file, $what)
     {   echo "\nReading file, task: [$what] [$file]\n";
@@ -91,29 +90,82 @@ class DataHub_BHL_API
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % 1000000) == 0) echo "\n $i ";
             $row = Functions::remove_utf8_bom($row);
+            if(!Functions::is_utf8($row)) exit("\nmeron not utf8\n"); //continue;
+                    
             if($i == 1) { $fields = explode("\t", $row); continue; }
             else {
                 if(!$row) continue;
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
             }
             if($what == 'compute_totals_per_taxon') {
-                /*Array(
+                /*Array
+                (
                     [NameBankID] => 
-                    [NameConfirmed] => × Ackersteinia
-                    [PageID] => 56992135
-                    [CreationDate] => 2020-07-02 23:57
+                    [NameConfirmed] => × Acanthinopsis
+                    [PageID] => 42403819
+                    [CreationDate] => 2023-04-22 00:27
                 )*/
                 $PageID = $rec['PageID'];
                 $NameConfirmed = $rec['NameConfirmed'];
                 $NameBankID = $rec['NameBankID'];
-                if($PageID && $NameConfirmed) $this->totals[$NameConfirmed][$PageID] = '';
-                // $this->debug['values']['NameBankID'][$NameBankID] = ''; //debug only; for stats only
+
+                $NameConfirmed = self::format_sciname($NameConfirmed);
+                if(!self::valid_string_name($NameConfirmed)) continue;
+
+                if($PageID && $NameConfirmed) {
+                    @$this->totals[$NameConfirmed]++;
+                    if($NameBankID) $this->name_id[$NameConfirmed] = $NameBankID;
+                }
             }
+            if($i >= 10000) break; //debug only
+        } //end foreach()
+    }
+    private function format_sciname($sciname)
+    {
+        $sciname = trim(str_replace("Ã—", "", $sciname));
+        return $sciname;
+    }
+    private function valid_string_name($sciname)
+    {   // × Colmanara
+        // if(stripos($sciname, "× ") !== false) return false; //string is found
+        if(stripos($sciname, "×") !== false) return false; //string is found
+        return true;
+    }
+    private function write_taxon($rec)
+    {   //print_r($rec);
+        $taxonID = $rec['taxonID'];
+        $taxon = new \eol_schema\Taxon();
+        $taxon->taxonID             = $taxonID;
+        $taxon->scientificName      = $rec['scientificName'];
+
+        /* not provided in BHL
+        $final_rank = strtolower($rec['taxonRank']);
+        $taxon->taxonRank           = $final_rank;
+        $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
+        */
+
+        if(!isset($this->taxonIDs[$taxonID])) {
+            $this->taxonIDs[$taxonID] = '';
+            $this->archive_builder->write_object_to_file($taxon);
         }
     }
+    private function write_MoF($rec)
+    {   //print_r($o); exit;
+        $taxonID = $rec['tax id'];
+        $save = array();
+        $save['taxon_id'] = $taxonID;
+        $save['source'] = $this->taxon_page . strtolower(str_replace(" ", "_", $rec['scientificName']));
+        // $save['bibliographicCitation'] = '';
+        // $save['measurementRemarks'] = ""; 
+        $mType = 'http://eol.org/schema/terms/NumberReferencesInBHL';
+        $mValue = $rec['count'];
+        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
+        $this->func->add_string_types($save, $mValue, $mType, "true");    
+    }
+
     // ======================================================================= copied template below
     function x_start()
     {   /* just a utility
@@ -293,34 +345,6 @@ class DataHub_BHL_API
             }
         }
     }
-    private function write_taxon($rec)
-    {   //print_r($rec);
-        $taxonID = $rec['taxonID'];
-        $taxon = new \eol_schema\Taxon();
-        $taxon->taxonID             = $taxonID;
-        $taxon->scientificName      = $rec['scientificName'];
-
-        $transform['Genera'] = 'genus';
-        $transform['Families'] = 'family';
-        $transform['Orders'] = 'order';
-        $transform['Classes'] = 'class';
-        $transform['Tribes'] = 'tribe';
-        $transform['Subfamilies'] = 'subfamily';
-        
-        if($val = @$transform[$rec['taxonRank']]) $final_rank = $val;
-        else $final_rank = strtolower($rec['taxonRank']);
-
-        $taxon->taxonRank           = $final_rank;
-        $taxon->parentNameUsageID   = $rec['parentNameUsageID'];
-        if(!isset($this->taxonIDs[$taxonID])) {
-            $this->taxonIDs[$taxonID] = '';
-            $this->archive_builder->write_object_to_file($taxon);
-        }
-
-        // add ancestry to taxon.tab
-        $ancestry = self::get_ancestry_for_taxonID($taxonID);
-        if($ancestry) self::write_taxa_4_ancestry($ancestry);
-    }
     private function get_ancestry_for_taxonID($taxonID)
     {
         $final = array();
@@ -370,38 +394,6 @@ class DataHub_BHL_API
         }
         return @$this->taxa_info[$taxonID]['p'];
     }
-    private function write_MoF($rec)
-    {   //print_r($o); exit;
-        $taxonID = $rec['tax id'];
-        $save = array();
-        $save['taxon_id'] = $taxonID;
-        $save['source'] = $this->taxon_page . $taxonID;
-        // $save['bibliographicCitation'] = '';
-        // $save['measurementRemarks'] = ""; 
-        $mType = 'http://eol.org/schema/terms/NumberPublicRecordsInBOLD';
-        $mValue = $rec['count'];
-        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
-        $this->func->add_string_types($save, $mValue, $mType, "true");    
-    }
-    /*
-    static $ranks_php_code_base = array(
-        'species', 'superkingdom', 'kingdom', 'regnum', 'subkingdom', 'infrakingdom', 'subregnum', 'division',
-        'superphylum', 'phylum', 'divisio', 'subdivision', 'subphylum', 'infraphylum', 'parvphylum', 'subdivisio',
-        'superclass', 'class', 'classis', 'infraclass', 'subclass', 'subclassis', 'superorder', 'order',
-        'ordo', 'infraorder', 'suborder', 'subordo', 'superfamily', 'family', 'familia', 'subfamily',
-        'subfamilia', 'tribe', 'tribus', 'subtribe', 'subtribus', 'genus', 'subgenus', 'section',
-        'sectio', 'subsection', 'subsectio', 'series', 'subseries', 'species', 'subspecies', 'infraspecies',
-        'variety', 'varietas', 'subvariety', 'subvarietas', 'form', 'forma', 'subform', 'subforma');
-
-    static $ranks_eol_org = array('class', 'class_group', 'cohort', 'cohort_group', 'division', 'division_group', 'domain', 'domain_group', 'epiclass', 'epicohort', 'epidivision', 'epidomain', 'epifamily', 'epiform', 'epigenus', 
-        'epikingdom', 'epiorder', 'epiphylum', 'epispecies', 'epitribe', 'epivariety', 'family', 'family_group', 'form', 'form_group', 'genus', 'genus_group', 'infraclass', 'infracohort', 'infradivision', 
-        'infradomain', 'infrafamily', 'infraform', 'infragenus', 'infrakingdom', 'infraorder', 'infraphylum', 'infraspecies', 'infratribe', 'infravariety', 'kingdom', 'kingdom_group', 'megaclass', 'megacohort', 
-        'megadivision', 'megadomain', 'megafamily', 'megaform', 'megagenus', 'megakingdom', 'megaorder', 'megaphylum', 'megaspecies', 'megatribe', 'megavariety', 'order', 'order_group', 'phylum', 'phylum_group', 
-        'species', 'species_group', 'subclass', 'subcohort', 'subdivision', 'subdomain', 'subfamily', 'subform', 'subgenus', 'subkingdom', 'suborder', 'subphylum', 'subspecies', 'subterclass', 'subtercohort', 
-        'subterdivision', 'subterdomain', 'subterfamily', 'subterform', 'subtergenus', 'subterkingdom', 'subterorder', 'subterphylum', 'subterspecies', 'subtertribe', 'subtervariety', 'subtribe', 'subvariety', 
-        'superclass', 'supercohort', 'superdivision', 'superdomain', 'superfamily', 'superform', 'supergenus', 'superkingdom', 'superorder', 'superphylum', 'superspecies', 'supertribe', 'supervariety', 'tribe', 
-        'tribe_group', 'variety', 'variety_group');
-    */
     private function BHL_API_result_still_validYN($str)
     {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@BHLystems.org for instruction on the process. 
         if(stripos($str, 'have exceeded') !== false) { //string is found
