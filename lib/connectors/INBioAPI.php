@@ -430,5 +430,66 @@ class INBioAPI
         $output = shell_exec("unzip -oj $remote_zip_file -d $destination_folder"); //-o overwrites; -j removes upper directory; -d destination
         return $output;
     }
+    function save_dump_files($url, $target)
+    {   //wget -nc http://www.boldsystems.org/pics/KANB/USNM_442211_photograph_KB17_037_155mmSL_LRP_17_07+1507842962.JPG -O /Volumes/AKiTiO4/other_files/xxx/file.ext
+        $cmd = WGET_PATH . " '$url' -O "."'$target'"; //wget -nc --> means 'no overwrite'
+        $cmd .= " 2>&1";
+        echo "\nurl: [$url]";   echo "\ntarget: [$target]"; echo "\ncmd: [$cmd]\n";
+        $shell_debug = shell_exec($cmd);
+        if(stripos($shell_debug, "ERROR 404: Not Found") !== false) echo("\n<i>URL path does not exist.\n$url</i>\n\n"); //string is found
+        echo "\n---\n".trim($shell_debug)."\n---\n";
+    }
+    function extract_local_file($dwca_file, $temp_dir, $check_file_or_folder_name)
+    {   //1st client: extracting a local downloaded file from: https://www.biodiversitylibrary.org/data/hosted/data.zip (DataHub_BHL_API.php)
+        debug("Please wait, extract_local_file ...");
+        $temp_dir = create_temp_dir() . "/";
+        debug($temp_dir);
+        if(true) {
+            $temp_file_path = $dwca_file;
+            debug("temp_dir: $temp_dir");
+            debug("Extracting... $temp_file_path");
+            if(preg_match("/^(.*)\.(tar.gz|tgz)$/", $dwca_file, $arr)) {
+                $cur_dir = getcwd();
+                chdir($temp_dir);
+                shell_exec("tar -zxvf $temp_file_path");
+                chdir($cur_dir);
+                $archive_path = str_ireplace(".tar.gz", "", $temp_file_path);
+                $archive_path = str_ireplace(".tgz", "", $temp_file_path);
+            }
+            elseif(preg_match("/^(.*)\.(gz|gzip)$/", $dwca_file, $arr)) {
+                shell_exec("gunzip -f $temp_file_path");
+                $archive_path = str_ireplace(".gz", "", $temp_file_path);
+            }
+            elseif(preg_match("/^(.*)\.(zip)$/", $dwca_file, $arr) || preg_match("/mcz_for_eol(.*?)/ims", $dwca_file, $arr)) {
+                shell_exec("unzip -ad $temp_dir $temp_file_path");
+                $archive_path = str_ireplace(".zip", "", $temp_file_path);
+            } 
+            else {
+                debug("-- archive not gzip or zip. [$dwca_file]");
+                return;
+            }
+            debug("archive path: [" . $archive_path . "]");
+        }
+        else {
+            debug("Connector terminated. Remote files are not ready.");
+            return;
+        }
+        //TODO: make it automatic to detect .... the likes of dwca/ and Data/
+        if    (file_exists($temp_dir . $check_file_or_folder_name))                 return array('archive_path' => $temp_dir,               'temp_dir' => $temp_dir);
+        elseif(file_exists($archive_path . "/" . $check_file_or_folder_name))       return array('archive_path' => $archive_path,           'temp_dir' => $temp_dir);
+        elseif(file_exists($temp_dir ."dwca/". $check_file_or_folder_name))         return array('archive_path' => $temp_dir."dwca/",       'temp_dir' => $temp_dir);
+        elseif(file_exists($temp_dir ."Data/". $check_file_or_folder_name))         return array('archive_path' => $temp_dir."Data/",       'temp_dir' => $temp_dir); //e.g. https://www.biodiversitylibrary.org/data/hosted/data.zip
+        elseif(file_exists($temp_dir ."$tmpfolder/". $check_file_or_folder_name))   return array('archive_path' => $temp_dir."$tmpfolder/", 'temp_dir' => $temp_dir);
+        else {
+            echo "\n1. ".$temp_dir . $check_file_or_folder_name."\n";
+            echo "\n2. ".$archive_path . "/" . $check_file_or_folder_name."\n";
+            echo "\n3. ".$temp_dir ."dwca/". $check_file_or_folder_name."\n";
+            echo "\n4. ".$temp_dir ."Data/". $check_file_or_folder_name."\n";
+            echo "\n5. ".$temp_dir ."$tmpfolder/". $check_file_or_folder_name."\n";
+            debug("Can't find check_file_or_folder_name [$check_file_or_folder_name].");
+            recursive_rmdir($temp_dir); //un-comment in real operation
+            return false;
+        }
+    }
 }
 ?>

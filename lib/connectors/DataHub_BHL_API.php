@@ -24,11 +24,12 @@ class DataHub_BHL_API
         $save_path = $save_path . "BHL/";           if(!is_dir($save_path)) mkdir($save_path);
         $save_path = $save_path . "BHL_hosted/";    if(!is_dir($save_path)) mkdir($save_path);
         $this->download_path = $save_path;
-        $save_path = $save_path . "Data/";          if(!is_dir($save_path)) mkdir($save_path);
-        $this->tsv_file = $save_path.'pagename.txt';
+
+        // $save_path = $save_path . "Data/";          if(!is_dir($save_path)) mkdir($save_path);
+        // $this->tsv_file = $save_path.'pagename.txt';
 
         $this->dump_file = 'https://www.biodiversitylibrary.org/data/hosted/data.zip';
-        $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip';
+        $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip'; //dev only
         // */
 
         // with special chars:
@@ -50,19 +51,34 @@ class DataHub_BHL_API
         -> latest API doc; Not used at all.
         */
 
-        require_library('connectors/DataHub_GGBN'); 
-        $func = new DataHub_GGBN(null, null);
-        $func->save_dump_files($this->dump_file, $this->download_path."downloaded_data.zip");
+        // /*
+        $destination = $this->download_path."downloaded_data.zip";
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        //1. download remote file
+        $func->save_dump_files($this->dump_file, $destination);
+        //2. extract downloaded local file
+        $paths = $func->extract_local_file($destination, $this->download_path, 'creatoridentifier.txt');
+        print_r($paths); //exit;
+        /*
+        $paths = Array(
+            "archive_path" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/Data/", 
+            "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/"
+        );
+        */
+        $this->tsv_file = $paths['archive_path'].'pagename.txt';
+        return $paths;
     }
     function start()
     {
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-        /*
+        // /*
         // step 0: download dump
-        self::download_bhl_dump(); exit("\ndownload done.\n");
-        */
+        $paths = self::download_bhl_dump(); exit("\ndownload done.\n");
+        $temp_dir = $paths['temp_dir'];
+        // */
 
         // step 1:
         self::parse_tsv_file($this->tsv_file, 'compute_totals_per_taxon'); // exit;
@@ -91,6 +107,8 @@ class DataHub_BHL_API
         
         $this->archive_builder->finalize(TRUE);
         print_r($this->debug);
+        // remove temp dir
+        // recursive_rmdir($temp_dir);
     }
     private function parse_tsv_file($file, $what)
     {   echo "\nReading file, task: [$what] [$file]\n";
@@ -142,11 +160,11 @@ class DataHub_BHL_API
         $sciname = trim(str_replace("Î²", "", $sciname));
         $sciname = trim(str_replace("α", "", $sciname));
         $sciname = trim(str_replace("Î±", "", $sciname));
-        return $sciname;
+        return Functions::remove_whitespace($sciname);
     }
     private function valid_string_name($sciname)
     {   // × Colmanara
-        // if(stripos($sciname, "× ") !== false) return false; //string is found
+        if(stripos($sciname, "× ") !== false) return false; //string is found
         if(stripos($sciname, "×") !== false) return false; //string is found
         return true;
     }
