@@ -40,7 +40,11 @@ class DataHub_BHL_API
         wget -c https://www.biodiversitylibrary.org/data/hosted/data.zip
 
         Complete collection : https://www.biodiversitylibrary.org/data/data.zip
-        BHL-hosted material only : https://www.biodiversitylibrary.org/data/hosted/data.zip */
+        BHL-hosted material only : https://www.biodiversitylibrary.org/data/hosted/data.zip 
+        
+        https://www.biodiversitylibrary.org/docs/api3.html
+        -> latest API doc; Not used at all.
+        */
 
         require_library('connectors/DataHub_GGBN'); 
         $func = new DataHub_GGBN(null, null);
@@ -88,7 +92,7 @@ class DataHub_BHL_API
     {   echo "\nReading file, task: [$what] [$file]\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 1000000) == 0) echo "\n $i ";
+            if(($i % 5000000) == 0) echo "\n $i ";
             $row = Functions::remove_utf8_bom($row);
             if(!Functions::is_utf8($row)) exit("\nmeron not utf8\n"); //continue;
                     
@@ -120,12 +124,20 @@ class DataHub_BHL_API
                     if($NameBankID) $this->name_id[$NameConfirmed] = $NameBankID;
                 }
             }
-            if($i >= 10000) break; //debug only
+            // if($i >= 10000) break; //debug only
         } //end foreach()
     }
     private function format_sciname($sciname)
     {
         $sciname = trim(str_replace("Ã—", "", $sciname));
+        // β fragile
+        // Î² fragile
+        // α acicola
+        // Î± acicola
+        $sciname = trim(str_replace("β", "", $sciname));
+        $sciname = trim(str_replace("Î²", "", $sciname));
+        $sciname = trim(str_replace("α", "", $sciname));
+        $sciname = trim(str_replace("Î±", "", $sciname));
         return $sciname;
     }
     private function valid_string_name($sciname)
