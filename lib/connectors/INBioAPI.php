@@ -432,11 +432,11 @@ class INBioAPI
     }
     function save_dump_files($url, $target)
     {   //wget -nc http://www.boldsystems.org/pics/KANB/USNM_442211_photograph_KB17_037_155mmSL_LRP_17_07+1507842962.JPG -O /Volumes/AKiTiO4/other_files/xxx/file.ext
-        $cmd = WGET_PATH . " '$url' -O "."'$target'"; //wget -nc --> means 'no overwrite'
+        $cmd = WGET_PATH . " '$url' -nv -O "."'$target'"; //wget -nc --no-clobber --> means 'no overwrite' | -nv   --no-verbose | -q --quiet (no output) | -v --verbose (default)
         $cmd .= " 2>&1";
         echo "\nurl: [$url]";   echo "\ntarget: [$target]"; echo "\ncmd: [$cmd]\n";
         $shell_debug = shell_exec($cmd);
-        if(stripos($shell_debug, "ERROR 404: Not Found") !== false) echo("\n<i>URL path does not exist.\n$url</i>\n\n"); //string is found
+        if(stripos($shell_debug, "ERROR 404: Not Found") !== false) echo("\nURL path does not exist.\n$url\n\n"); //string is found
         echo "\n---\n".trim($shell_debug)."\n---\n";
     }
     function extract_local_file($dwca_file, $temp_dir, $check_file_or_folder_name)
