@@ -30,6 +30,10 @@ class DataHub_BHL_API
         $this->dump_file = 'https://www.biodiversitylibrary.org/data/hosted/data.zip';
         $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip';
         // */
+
+        // with special chars:
+        // Sphaerophoron coralloides
+        // Peridermium pini        
     }
     private function download_bhl_dump()
     {   /* from: https://about.biodiversitylibrary.org/tools-and-services/developer-and-data-tools/
