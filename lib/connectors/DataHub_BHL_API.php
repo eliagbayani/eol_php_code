@@ -35,6 +35,7 @@ class DataHub_BHL_API
         // with special chars:
         // Sphaerophoron coralloides
         // Peridermium pini        
+        // Sphaerophoron coralloides β fragile
     }
     private function download_bhl_dump()
     {   /* from: https://about.biodiversitylibrary.org/tools-and-services/developer-and-data-tools/
@@ -130,8 +131,7 @@ class DataHub_BHL_API
                 $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
             }
             if($what == 'compute_totals_per_taxon') {
-                /*Array
-                (
+                /*Array(
                     [NameBankID] => 
                     [NameConfirmed] => × Acanthinopsis
                     [PageID] => 42403819
@@ -153,16 +153,21 @@ class DataHub_BHL_API
         } //end foreach()
     }
     private function format_sciname($sciname)
-    {
-        $sciname = trim(str_replace("Ã—", "", $sciname));
-        // β fragile
-        // Î² fragile
-        // α acicola
-        // Î± acicola
-        $sciname = trim(str_replace("β", "", $sciname));
-        $sciname = trim(str_replace("Î²", "", $sciname));
-        $sciname = trim(str_replace("α", "", $sciname));
-        $sciname = trim(str_replace("Î±", "", $sciname));
+    {   /*
+            "× "
+            "Ã— "
+            β fragile
+            Î² fragile
+            α acicola
+            Î± acicola
+        */
+        // $sciname = trim(str_replace("Ã—", "", $sciname));
+        // $sciname = trim(str_replace("β", "", $sciname));
+        // $sciname = trim(str_replace("Î²", "", $sciname));
+        // $sciname = trim(str_replace("α", "", $sciname));
+        // $sciname = trim(str_replace("Î±", "", $sciname));
+
+        $sciname = preg_replace('/[^\x20-\x7E]/', '', $sciname); //very important: removes chars with diacritical markings and others. Per: https://stackoverflow.com/questions/8781911/remove-non-ascii-characters-from-string
         return Functions::remove_whitespace($sciname);
     }
     private function valid_string_name($sciname)
