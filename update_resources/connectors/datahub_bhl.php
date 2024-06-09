@@ -4,7 +4,7 @@ namespace php_active_record;
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/DataHub_BHL_API');
-ini_set('memory_limit','30096M'); //15096M
+ini_set('memory_limit','15096M'); //15096M
 $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 $resource_id = 'BHL';

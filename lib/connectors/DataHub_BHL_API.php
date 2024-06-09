@@ -29,7 +29,7 @@ class DataHub_BHL_API
         // $this->tsv_file = $save_path.'pagename.txt';
 
         $this->dump_file = 'https://www.biodiversitylibrary.org/data/hosted/data.zip';
-        $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip'; //dev only
+        // $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip'; //dev only
         // */
 
         // with special chars:
@@ -66,7 +66,6 @@ class DataHub_BHL_API
             "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/"
         );
         */
-        $this->tsv_file = $paths['archive_path'].'pagename.txt';
         return $paths;
     }
     function start()
@@ -76,8 +75,12 @@ class DataHub_BHL_API
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
         // /*
         // step 0: download dump
-        $paths = self::download_bhl_dump(); exit("\ndownload done.\n");
-        $temp_dir = $paths['temp_dir'];
+        $paths = self::download_bhl_dump(); //exit("\ndownload done.\n");
+        if($paths['archive_path'] && $paths['temp_dir']) {
+            $this->tsv_file = $paths['archive_path'].'pagename.txt';
+            $temp_dir       = $paths['temp_dir'];    
+        }
+        else exit("\nTerminated. Files are not ready.\n");
         // */
 
         // step 1:
@@ -108,7 +111,7 @@ class DataHub_BHL_API
         $this->archive_builder->finalize(TRUE);
         print_r($this->debug);
         // remove temp dir
-        // recursive_rmdir($temp_dir);
+        recursive_rmdir($temp_dir);
     }
     private function parse_tsv_file($file, $what)
     {   echo "\nReading file, task: [$what] [$file]\n";
