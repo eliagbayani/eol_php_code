@@ -56,11 +56,14 @@ class DataHub_BHL_API
         $destination = $this->download_path."downloaded_data.zip";
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
+        // /* un-comment in real operation
         //1. download remote file
         $func->save_dump_files($this->dump_file, $destination);
         //2. extract downloaded local file
         $paths = $func->extract_local_file($destination, $this->download_path, 'creatoridentifier.txt');
         print_r($paths); //exit;
+        // */
+
         /*
         $paths = Array(
             "archive_path" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/Data/", 
@@ -74,8 +77,7 @@ class DataHub_BHL_API
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-        // /*
-        // step 0: download dump
+        // /* step 0: download dump
         $paths = self::download_bhl_dump(); //exit("\ndownload done.\n");
         if($paths['archive_path'] && $paths['temp_dir']) {
             $this->tsv_file = $paths['archive_path'].'pagename.txt';
@@ -141,40 +143,31 @@ class DataHub_BHL_API
                 $NameConfirmed = $rec['NameConfirmed'];
                 $NameBankID = $rec['NameBankID'];
 
-                $NameConfirmed = self::format_sciname($NameConfirmed);
                 if(!self::valid_string_name($NameConfirmed)) continue;
+                $NameConfirmed = self::format_sciname($NameConfirmed);
 
                 if($PageID && $NameConfirmed) {
                     @$this->totals[$NameConfirmed]++;
-                    if($NameBankID) $this->name_id[$NameConfirmed] = $NameBankID;
+                    // if($NameBankID) $this->name_id[$NameConfirmed] = $NameBankID; //did not use it.
                 }
             }
             // if($i >= 10000) break; //debug only
         } //end foreach()
     }
     private function format_sciname($sciname)
-    {   /*
-            "× "
-            "Ã— "
-            β fragile
-            Î² fragile
-            α acicola
-            Î± acicola
-        */
-        // $sciname = trim(str_replace("Ã—", "", $sciname));
-        // $sciname = trim(str_replace("β", "", $sciname));
-        // $sciname = trim(str_replace("Î²", "", $sciname));
-        // $sciname = trim(str_replace("α", "", $sciname));
-        // $sciname = trim(str_replace("Î±", "", $sciname));
-
+    {   /*  "× "        "Ã— "
+            β fragile   Î² fragile
+            α acicola   Î± acicola  */
         $sciname = preg_replace('/[^\x20-\x7E]/', '', $sciname); //very important: removes chars with diacritical markings and others. Per: https://stackoverflow.com/questions/8781911/remove-non-ascii-characters-from-string
         return Functions::remove_whitespace($sciname);
     }
     private function valid_string_name($sciname)
-    {   // × Colmanara
-        if(stripos($sciname, "× ") !== false) return false; //string is found
-        if(stripos($sciname, "×") !== false) return false; //string is found
-        return true;
+    {   
+        $sciname = Functions::remove_whitespace($sciname);
+        $new_name = preg_replace('/[^\x20-\x7E]/', '', $sciname); //very important: removes chars with diacritical markings and others. Per: https://stackoverflow.com/questions/8781911/remove-non-ascii-characters-from-string
+        $new_name = Functions::remove_whitespace($new_name);
+        if($sciname != $new_name) return false;
+        else return true;
     }
     private function write_taxon($rec)
     {   //print_r($rec);
@@ -199,7 +192,14 @@ class DataHub_BHL_API
         $taxonID = $rec['tax id'];
         $save = array();
         $save['taxon_id'] = $taxonID;
-        $save['source'] = $this->taxon_page . strtolower(str_replace(" ", "_", $rec['scientificName']));
+
+        $sciname = strtolower(str_replace(" ", "_", $rec['scientificName']));
+        $sciname = str_replace(".", "%24", $sciname);
+        $sciname = str_replace(",", "%2c", $sciname);
+        // $sciname = str_replace("&", "%26", $sciname); //NOT the correct assignment. Don't use this.
+        $sciname = str_replace("&", "%7e", $sciname);    //weird assignment but that is what BHL do: e.g. https://www.biodiversitylibrary.org/name/heuchera_rubescens_var%24_rydbergiana_rosendahl%2c_butters_%7e_lakela
+
+        $save['source'] = $this->taxon_page . $sciname;
         // $save['bibliographicCitation'] = '';
         // $save['measurementRemarks'] = ""; 
         $mType = 'http://eol.org/schema/terms/NumberReferencesInBHL';
@@ -209,67 +209,7 @@ class DataHub_BHL_API
     }
 
     // ======================================================================= copied template below
-    function x_start()
-    {   /* just a utility
-        // echo "\nranks_php_code_base: ".count(self::$ranks_php_code_base)."\n";
-        // echo "\nranks_eol_org: ".count(self::$ranks_eol_org)."\n";
-        // $subset=array_diff(self::$ranks_eol_org, self::$ranks_php_code_base); echo "\nsubset: ".count($subset)."\n";
-        // $subset=array_diff(self::$ranks_php_code_base, self::$ranks_eol_org); echo "\nsubset: ".count($subset)."\n";
-        exit("\n");
-        */
-
-
-        // step 1 Use Eli's cache to generate $var[taxid] = parent_id
-        self::parse_tsv_file($this->Eli_cached_taxonomy, 'use cached taxonomy build taxon info list');
-
-        // /* step 2
-        // step 2.1: build taxon info list using Rebekah's spreadsheets   FOR SPECIES-LEVEL ONLY
-        self::read_tsv_files_do_task("generate taxa info list");
-        // print_r($this->taxa_info); exit;
-
-        // step 2.2:                                                      FOR SPECIES-LEVEL ONLY
-        self::read_tsv_files_do_task("read tsv write dwca");
-        // */
-
-        // step 3: process family-genus-level
-        // /*
-        $this->group = 'family';
-        $url = str_replace("XGROUP", 'family', $this->tsv_files);
-        self::parse_tsv_file($url, 'process family-genus-level'); //generates $this->totals
-        // */
-
-        // /*
-        $this->group = 'genus';
-        $url = str_replace("XGROUP", 'genus', $this->tsv_files);
-        self::parse_tsv_file($url, 'process family-genus-level'); //generates $this->totals
-        // */
-
-        // print_r($this->totals); exit;
-
-        foreach($this->totals as $sciname => $count) {
-            if(!$sciname) continue;
-            if($taxid = @$this->name_id[$sciname]) {
-                // echo "\n[$sciname] [$taxid] [$count]";
-
-                $save = array();
-                $save['taxonID'] = $taxid;
-                $save['scientificName'] = $sciname;
-                $save['taxonRank'] = $this->group;
-                $save['parentNameUsageID'] = $this->taxa_info[$taxid]['p'];
-                self::write_taxon($save);
-
-                $rec = array();
-                $rec['tax id'] = $taxid;
-                $rec['count'] = $count;
-                self::write_MoF($rec);
-            }
-            else $this->debug['sciname not found'][$sciname] = '';
-        }
-
-        $this->archive_builder->finalize(TRUE);
-        print_r($this->debug);
-    }
-    private function read_tsv_files_do_task($task)
+    private function x_read_tsv_files_do_task($task)
     {
         $groups = array('species'); //this is exclusive for species-level only
         foreach($groups as $group) {
@@ -278,116 +218,7 @@ class DataHub_BHL_API
             self::parse_tsv_file($url, $task);
         }
     }
-    private function x_parse_tsv_file($file, $what)
-    {   echo "\nReading file, task: [$what] [$file]\n";
-        $i = 0; $final = array();
-        $included_ranks = array("species", "form", "variety", "subspecies", "unranked");
-        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 200000) == 0) echo "\n $i ";
-            if($i == 1) { $fields = explode("\t", $row); continue; }
-            else {
-                if(!$row) continue;
-                $tmp = explode("\t", $row);
-                $rec = array(); $k = 0;
-                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
-            }
-
-            if(in_array($what, array('read tsv write dwca', 'generate taxa info list'))) {
-                $tax_id = $rec['tax id'];
-                $parent_id = $rec['parent id'];
-                $sciname = $rec[$this->group];    
-            }
-
-            if($what == 'read tsv write dwca') { //species-level only
-                if(($i % 20000) == 0) echo "\n main $i ";
-
-                /* Array(
-                    [count] => 14
-                    [family] => Rosaceae
-                    [tax id] => 989646
-                    [parent id] => 100947
-                    [] => 
-                )*/
-                
-                if(stripos($sciname, 'sp.') !== false) continue; //string is found
-
-                $save = array();
-                $save['taxonID'] = $tax_id;
-                $save['scientificName'] = $sciname;
-                $save['taxonRank'] = $this->group;
-                $save['parentNameUsageID'] = $parent_id;
-                self::write_taxon($save);
-                self::write_MoF($rec);
-
-                // break; //debug only
-                // if($i >= 3000) break; //debug only
-            }
-            elseif($what == "generate taxa info list") { //species-level only
-                $this->taxa_info[$tax_id]['p'] = $parent_id;
-                $this->taxa_info[$tax_id]['n'] = $sciname;
-                $this->taxa_info[$tax_id]['r'] = $this->group;
-            }
-            elseif($what == "use cached taxonomy build taxon info list") { // print_r($rec); exit;
-                /*Array(
-                    [taxid] => 11
-                    [counts] => 3027
-                    [sciname] => Acanthocephala
-                    [rank] => phylum
-                    [parentNameUsageID] => 1
-                    [] => 
-                )*/
-                $taxid = $rec['taxid'];
-                $this->taxa_info[$taxid]['p'] = $rec['parentNameUsageID'];
-                $this->taxa_info[$taxid]['n'] = $rec['sciname'];
-                $this->taxa_info[$taxid]['r'] = $rec['rank'];
-
-                if($rec['rank'] == 'Families' || $rec['rank'] == 'Genera') $this->name_id[$rec['sciname']] = $taxid;
-            }
-            elseif($what == "process family-genus-level") {
-                // print_r($rec); exit("\n fam exit muna \n");
-                /* Array(
-                    [count] => 14               - wrong assignment
-                    [family] => Rosaceae
-                    [tax id] => 989646          - wrong assignment
-                    [parent id] => 100947       - wrong assignment
-                    [] => 
-                )*/
-                if($family_genus_name = @$rec['family']) {}
-                elseif($family_genus_name = @$rec['genus']) {}
-                else  { //it actually can happen
-                    // print_r($rec);
-                    // exit("\nShould not go here. Investigate.\n");
-                }
-                $this->totals[$family_genus_name] = @$this->totals[$family_genus_name] + $rec['count'];
-            }
-        }
-    }
-    private function write_taxa_4_ancestry($ancestry)
-    {
-        // print_r($ancestry); exit("\nelix 1\n");
-        foreach($ancestry as $tax_id) {
-            if($tax_id == 1) { // the parentmost, the root
-                $save = array();
-                $save['taxonID'] = $tax_id;
-                $save['scientificName'] = 'root';
-                $save['taxonRank'] = '';
-                $save['parentNameUsageID'] = '';
-                self::write_taxon($save);    
-                break;
-            }
-            else {
-                if(!@$this->taxa_info[$tax_id]['n']) continue;
-                $save = array();
-                $save['taxonID'] = $tax_id;
-                $save['scientificName'] = $this->taxa_info[$tax_id]['n'];
-                $save['taxonRank'] = $this->taxa_info[$tax_id]['r'];
-                $save['parentNameUsageID'] = $this->taxa_info[$tax_id]['p'];
-                self::write_taxon($save);    
-            }
-        }
-    }
-    private function get_ancestry_for_taxonID($taxonID)
+    private function x_get_ancestry_for_taxonID($taxonID)
     {
         $final = array();
         while(true) {
@@ -410,7 +241,7 @@ class DataHub_BHL_API
         // echo "\nancestry: "; print_r($final); //exit;
         return $final;
     }
-    private function get_ancestry_thru_api($taxonID)
+    private function x_get_ancestry_thru_api($taxonID)
     {
         $options = $this->download_options_BHL;
         $options['resource_id'] = 'BHL_ancestry';
@@ -436,7 +267,7 @@ class DataHub_BHL_API
         }
         return @$this->taxa_info[$taxonID]['p'];
     }
-    private function BHL_API_result_still_validYN($str)
+    private function x_BHL_API_result_still_validYN($str)
     {   // You have exceeded your allowed request quota. If you wish to download large volume of data, please contact support@BHLystems.org for instruction on the process. 
         if(stripos($str, 'have exceeded') !== false) { //string is found
             echo "\n[$str]\n";
