@@ -170,7 +170,7 @@ however, journal publishers or authors may. NLM provides no legal advice concern
         // $this->ggi_databases = array("gbif"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bhl"); //debug - use to process 1 database - OK Apr 2024
         // $this->ggi_databases = array("bolds"); //debug - use to process 1 database - OK Apr 2024
-        // $this->ggi_databases = array("inat"); //debug - use to process 1 database - OK Apr 2024 NEW
+        $this->ggi_databases = array("inat"); //debug - use to process 1 database - OK Apr 2024 NEW
 
         $this->ggi_path = DOC_ROOT . "temp/GGI/";
         $this->blacklist_bhl_csv_call = $this->ggi_path."blacklist_bhl_csv_call.txt";
@@ -286,7 +286,8 @@ however, journal publishers or authors may. NLM provides no legal advice concern
 
             // /* working, a round-robin option of server load - per 100 calls each server
             $k = 0; $m = count($families)/6; // before 9646/6
-            $calls = 10; //orig is 100
+            // $calls = 10; //orig is 100
+            $calls = 2;
             for ($i = $k; $i <= count($families)+$calls; $i=$i+$calls) { //orig value of i is 0
                 echo "\n[$i] - ";
                 /* breakdown when caching
@@ -307,8 +308,8 @@ however, journal publishers or authors may. NLM provides no legal advice concern
                     $this->families_with_no_data = array_keys($this->families_with_no_data);
                     if($this->families_with_no_data) self::create_instances_from_taxon_object($this->families_with_no_data, true, $database);
                 }
-                // break;              //debug only - process just a subset, just the 1st cycle
-                // if($i >= 20) break; //debug only - just the first 20 cycles
+                break;              //debug only - process just a subset, just the 1st cycle
+                // if($i >= 2) break; //debug only - just the first 20 cycles
             }
             // */
 
