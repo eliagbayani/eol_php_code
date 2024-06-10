@@ -159,11 +159,20 @@ class DataHub_BHL_API
     }
     private function valid_string_name($sciname)
     {   
+        // case 1:
         $sciname = Functions::remove_whitespace($sciname);
         $new_name = preg_replace('/[^\x20-\x7E]/', '', $sciname); //very important: removes chars with diacritical markings and others. Per: https://stackoverflow.com/questions/8781911/remove-non-ascii-characters-from-string
         $new_name = Functions::remove_whitespace($new_name);
         if($sciname != $new_name) return false;
-        else return true;
+
+        // case 2: A. nyassensis
+        $parts = explode(" ", $sciname);
+        $first = @$parts[0];
+        if(strlen($first) == 2) {
+            if(substr($first,1,1) == ".") return false;
+        }
+        // therefore return true;
+        return true;
     }
     private function write_taxon($rec)
     {   //print_r($rec);
