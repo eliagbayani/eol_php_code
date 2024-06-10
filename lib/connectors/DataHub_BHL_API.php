@@ -25,9 +25,6 @@ class DataHub_BHL_API
         $save_path = $save_path . "BHL_hosted/";    if(!is_dir($save_path)) mkdir($save_path);
         $this->download_path = $save_path;
 
-        // $save_path = $save_path . "Data/";          if(!is_dir($save_path)) mkdir($save_path);
-        // $this->tsv_file = $save_path.'pagename.txt';
-
         $this->dump_file = 'https://www.biodiversitylibrary.org/data/hosted/data.zip';
         // $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip'; //dev only
         // */
@@ -86,15 +83,14 @@ class DataHub_BHL_API
         else exit("\nTerminated. Files are not ready.\n");
         // */
 
-        // step 1:
+        // step 1: generate totals info
         self::parse_tsv_file($this->tsv_file, 'compute_totals_per_taxon'); // exit;
 
-        // step 2:
+        // step 2: write DwCA
         foreach($this->totals as $sciname => $count) {
             if(!$sciname) continue;
             $taxid = @$this->name_id[$sciname];
             if(!$taxid) $taxid = strtolower(str_replace(" ", "_", $sciname));
-
             // echo "\n[$sciname] [$taxid] [$count]";
 
             $save = array();
