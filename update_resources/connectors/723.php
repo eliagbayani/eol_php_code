@@ -17,6 +17,8 @@ require_library('connectors/NCBIGGIqueryAPI');
 $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 
+exit("\nThis is now obsolete: [NCBIGGIqueryAPI.php]\n");
+
 // print_r($argv);
 $params['jenkins_or_cron'] = @$argv[1]; //not needed here
 $param                     = json_decode(@$argv[2], true);
