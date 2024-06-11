@@ -61,7 +61,7 @@ class DataHub_BHL_API
         print_r($paths); //exit;
         // */
 
-        /*
+        /* dev only
         $paths = Array(
             "archive_path" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/Data/", 
             "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/"
@@ -168,8 +168,11 @@ class DataHub_BHL_API
         // case 2: A. nyassensis
         $parts = explode(" ", $sciname);
         $first = @$parts[0];
-        if(strlen($first) == 2) {
+        if(strlen($first) == 2) {   //A. longifilis
             if(substr($first,1,1) == ".") return false;
+        }
+        if(strlen($first) == 3) {   //Ab. malmundariense
+            if(substr($first,2,1) == ".") return false;
         }
         // therefore return true;
         return true;
