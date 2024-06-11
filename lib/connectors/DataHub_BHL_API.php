@@ -158,8 +158,7 @@ class DataHub_BHL_API
         return Functions::remove_whitespace($sciname);
     }
     private function valid_string_name($sciname)
-    {   
-        // case 1:
+    {   // case 1:
         $sciname = Functions::remove_whitespace($sciname);
         $new_name = preg_replace('/[^\x20-\x7E]/', '', $sciname); //very important: removes chars with diacritical markings and others. Per: https://stackoverflow.com/questions/8781911/remove-non-ascii-characters-from-string
         $new_name = Functions::remove_whitespace($new_name);
@@ -168,12 +167,9 @@ class DataHub_BHL_API
         // case 2: A. nyassensis
         $parts = explode(" ", $sciname);
         $first = @$parts[0];
-        if(strlen($first) == 2) {   //A. longifilis
-            if(substr($first,1,1) == ".") return false;
-        }
-        if(strlen($first) == 3) {   //Ab. malmundariense
-            if(substr($first,2,1) == ".") return false;
-        }
+        if(strlen($first) == 2) { if(substr($first,1,1) == ".") return false; } //A. longifilis
+        if(strlen($first) == 3) { if(substr($first,2,1) == ".") return false; } //Ab. malmundariense
+        if(strlen($first) == 4) { if(substr($first,3,1) == ".") return false; } //Abx. xxxxxx
         // therefore return true;
         return true;
     }
