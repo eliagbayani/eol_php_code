@@ -74,6 +74,7 @@ class DataHub_BHL_API
         $this->debug = array();
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
+        
         // /* step 0: download dump
         $paths = self::download_bhl_dump(); //exit("\ndownload done.\n");
         if($paths['archive_path'] && $paths['temp_dir']) {
