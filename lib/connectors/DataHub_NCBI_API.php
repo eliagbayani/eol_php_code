@@ -14,7 +14,6 @@ class DataHub_NCBI_API
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));    
         }
 
-        $this->NCBI_api['taxa'] = "https://api.NCBI.org/v1/observations/species_counts?taxon_is_active=true&hrank=XRANK&lrank=XRANK&iconic_taxa=XGROUP&quality_grade=XGRADE&page=XPAGE"; //defaults to per_page = 500
         if(Functions::is_production()) $save_path = "/extra/other_files/dumps_GGI/";
         else                           $save_path = "/Volumes/Crucial_2TB/other_files2/dumps_GGI/";
         if(!is_dir($save_path)) mkdir($save_path);
@@ -24,9 +23,14 @@ class DataHub_NCBI_API
         $this->dump_file = $this->save_path . "/compiled_taxa.txt";
 
         $this->reports_path = $save_path;
-        $this->taxon_page = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id="; //e.g. 8045
-        $this->dwca['NCBI-taxonomy'] = "https://ftp.ncbi.nih.gov/pub/taxonomy/taxdmp.zip";
-        $this->api_call = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=txidXXTAXIDXX[Organism:exp]';
+        $this->taxon_page               = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id="; //e.g. 8045
+                                        // https://www.ncbi.nlm.nih.gov/nuccore/?term=txid11[Organism:exp]
+                                        
+                                        // https://www.ncbi.nlm.nih.gov/nuccore/?term=txid24[Organism:exp]
+                                        // https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=txid24%5BOrganism:exp%5D
+
+        $this->dwca['NCBI-taxonomy']    = "https://ftp.ncbi.nih.gov/pub/taxonomy/taxdmp.zip";
+        $this->api_call                 = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=txidXXTAXIDXX[Organism:exp]';
         $this->debug = array();
 
         $this->big_file  = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';  //12.47 GB
