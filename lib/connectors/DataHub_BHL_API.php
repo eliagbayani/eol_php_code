@@ -1,7 +1,7 @@
 <?php
 namespace php_active_record;
 /*  datahub_bhl.php 
-https://content.eol.org/resources/xxx
+https://content.eol.org/resources/1223
 */
 class DataHub_BHL_API
 {
