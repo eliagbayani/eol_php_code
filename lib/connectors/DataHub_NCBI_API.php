@@ -23,7 +23,8 @@ class DataHub_NCBI_API
         $this->dump_file = $this->save_path . "/compiled_taxa.txt";
 
         $this->reports_path = $save_path;
-        $this->taxon_page               = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id="; //e.g. 8045
+        $this->taxon_page  = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=";                //e.g. 8045 -- safe choice
+        $this->taxon_page2 = "https://www.ncbi.nlm.nih.gov/nucleotide/?term=txidXXTAXIDXX[Organism:exp]";   //e.g. 8045 -- suggested choice
 
         /* suggested source URL: taxon_page : Can't fully use it since the count from dump file doesn't tally
         https://www.ncbi.nlm.nih.gov/nucleotide/?term=txid11[Organism:exp]
@@ -38,7 +39,26 @@ class DataHub_NCBI_API
         $this->debug = array();
 
         $this->big_file  = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';  //12.47 GB
-        // $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
+        $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
+        /*
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.1.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.2.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.3.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.4.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.5.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.6.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.7.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.8.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.9.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.10.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.11.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.12.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.13.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.14.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.15.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.16.gz
+        wget https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.17.gz
+        */
 
         date_default_timezone_set('America/New_York'); //used in main operation
         // date_default_timezone_set('Asia/Taipei');
@@ -73,7 +93,7 @@ class DataHub_NCBI_API
         // [family] => 10403
 
         // /* step 3: process the big file - for species-level taxa. No API call but just read the big dump file.
-        self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
+        self::parse_tsv_file($this->big_file2, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
         // echo "\n 8049: ".$this->totals[8049]."\n";
         // echo "\n 454919: ".$this->totals[454919]."\n";
         // echo "\n 21: ".$this->totals[21]."\n";
@@ -503,7 +523,8 @@ class DataHub_NCBI_API
         $taxonID = $rec['id'];
         $save = array();
         $save['taxon_id'] = $taxonID;
-        $save['source'] = $this->taxon_page . $taxonID;
+        $save['source'] = $this->taxon_page . $taxonID;                             //safe choice
+        $save['source'] = str_replace("XXTAXIDXX", $taxonID, $this->taxon_page2);   //suggested choice
         // $save['bibliographicCitation'] = '';
         // $save['measurementRemarks'] = ""; 
         $mType = 'http://eol.org/schema/terms/NumberOfSequencesInGenBank';
