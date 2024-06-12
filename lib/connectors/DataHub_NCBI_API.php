@@ -51,8 +51,7 @@ class DataHub_NCBI_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        /* step 1: assemble taxa
-        // Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
+        // /* step 1: assemble taxa: Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
         print_r($this->taxa_info[1]); //exit("\nelix 2\n");
                 // testing only
@@ -63,21 +62,44 @@ class DataHub_NCBI_API
                 //     echo "\n ----- end [$taxid]";
                 // }        
                 // exit("\nelix 3\n");
-        --- end step 1 --- */
+        // --- end step 1 --- */
 
-        // /* step 2: process genus and family; loop tsv file and use API        
+        /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        // --- end step 2 --- */
+        --- end step 2 --- */
 
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
-        /* step 3: process the big file - for species-level taxa. No API call but just read the big dump file.
+        // /* step 3: process the big file - for species-level taxa. No API call but just read the big dump file.
         self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
-        echo "\n 8049: ".$this->totals[8049]."\n";
-        echo "\n 454919: ".$this->totals[454919]."\n";
-        echo "\n 21: ".$this->totals[21]."\n";
+        // echo "\n 8049: ".$this->totals[8049]."\n";
+        // echo "\n 454919: ".$this->totals[454919]."\n";
+        // echo "\n 21: ".$this->totals[21]."\n";
+
+        // /* check results
+        $tests_id_count['6'] = 6259;
+        $tests_id_count['7'] = 926;
+        $tests_id_count['9'] = 7770;
+        $tests_id_count['10'] = 1512;
+        $tests_id_count['11'] = 19;
+        $tests_id_count['13'] = 417;
+        $tests_id_count['14'] = 143;
+        $tests_id_count['16'] = 1425;
+        $tests_id_count['17'] = 303;
+        $tests_id_count['18'] = 617;
+        $tests_id_count['19'] = 28;
+        $tests_id_count['22'] = 99857;
+        $tests_id_count['23'] = 1763;
+        $tests_id_count['24'] = 2974;
+        foreach($tests_id_count as $id => $count) {
+            echo "\n $id: | dump: ".@$this->totals[$id]." | API: ".$count."\n";
+        }
+        exit("\n-end test-\n");
+        // */
+
+
         self::write_species_level_MoF();
 
         // self::parse_tsv_file($this->big_file2, "proc big file gen. totals[taxid]");  //NOT to be used --- generates $this->taxid_accession
@@ -89,7 +111,7 @@ class DataHub_NCBI_API
         // echo "\n 8049: ".count($this->taxid_accession[8049])."\n";
         // echo "\n 454919: ".count($this->taxid_accession[454919])."\n";
         // echo "\n 21: ".count($this->taxid_accession[21])."\n";
-        --- end step 3 --- */
+        // --- end step 3 --- */
 
         /*
         8049: 367455
