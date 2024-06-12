@@ -24,8 +24,7 @@ class DataHub_NCBI_API
 
         $this->reports_path = $save_path;
         $this->taxon_page               = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id="; //e.g. 8045
-                                        // https://www.ncbi.nlm.nih.gov/nucleotide/?term=txid8045[Organism:exp]
-                                        // -> suggested to use this as source URL
+
         /* suggested source URL: taxon_page : Can't fully use it since the count from dump file doesn't tally
         https://www.ncbi.nlm.nih.gov/nucleotide/?term=txid11[Organism:exp]
         https://www.ncbi.nlm.nih.gov/nucleotide/?term=txid24[Organism:exp]
