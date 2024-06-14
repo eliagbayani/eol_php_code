@@ -71,7 +71,7 @@ class DataHub_NCBI_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        // /* step 1: assemble taxa: Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
+        /* step 1: assemble taxa: Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
         print_r($this->taxa_info[1]); //exit("\nelix 2\n");
                 // testing only
@@ -82,11 +82,12 @@ class DataHub_NCBI_API
                 //     echo "\n ----- end [$taxid]";
                 // }        
                 // exit("\nelix 3\n");
-        // --- end step 1 --- */
+        --- end step 1 --- */
 
-        /* step 2: process genus and family; loop tsv file and use API        
+        // /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        --- end step 2 --- */
+        exit("\n-caching ends-\n"); //comment in real operation
+        // --- end step 2 --- */
 
         // [genus] => 109270
         // [species] => 2117681
