@@ -1172,14 +1172,15 @@ class DwCA_Utility
             // print_r($rec); exit;
             $unique[$rec[$column]] = '';
         }
-        // print_r($unique);
-        return $unique;
 
-        /* un-comment in real operation
+        // /* un-comment in real operation
         // remove temp dir
         recursive_rmdir($temp_dir);
         echo ("\n temporary directory removed: " . $temp_dir);
-        */
+        // */
+
+        // print_r($unique);
+        return $unique;
     }
 
     function get_uri_value($raw, $uri_values) //$raw e.g. "Philippines" ---- good func but not yet used, soon...
