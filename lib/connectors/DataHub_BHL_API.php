@@ -159,8 +159,14 @@ class DataHub_BHL_API
         return Functions::remove_whitespace($sciname);
     }
     private function valid_string_name($sciname)
-    {   // case 1:
+    {   
         $sciname = Functions::remove_whitespace($sciname);
+
+        // case 0: remove monomials: per https://github.com/EOL/ContentImport/issues/6#issuecomment-2164163467
+        $words = explode(" ", $sciname);
+        if(count($words) == 1) return false; //exclude monomials
+
+        // case 1:
         $new_name = preg_replace('/[^\x20-\x7E]/', '', $sciname); //very important: removes chars with diacritical markings and others. Per: https://stackoverflow.com/questions/8781911/remove-non-ascii-characters-from-string
         $new_name = Functions::remove_whitespace($new_name);
         if($sciname != $new_name) return false;
@@ -171,6 +177,7 @@ class DataHub_BHL_API
         if(strlen($first) == 2) { if(substr($first,1,1) == ".") return false; } //A. longifilis
         if(strlen($first) == 3) { if(substr($first,2,1) == ".") return false; } //Ab. malmundariense
         if(strlen($first) == 4) { if(substr($first,3,1) == ".") return false; } //Abx. xxxxxx
+
         // therefore return true;
         return true;
     }
