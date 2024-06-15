@@ -26,7 +26,7 @@ class DataHub_BHL_API
         $this->download_path = $save_path;
 
         $this->dump_file = 'https://www.biodiversitylibrary.org/data/hosted/data.zip';
-        $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip'; //dev only
+        // $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip'; //dev only
         // */
 
         // with special chars:
