@@ -240,7 +240,14 @@ class DataHub_NCBI_API
                     continue;
                 }
             }
-            
+
+            // /* during cache only, dev only
+            if(in_array($what, array('process genus family from compiled taxonomy'))) {
+                if($i <= 300000) continue;
+            }
+            // */
+
+
             if(true) {
                 if(!$row) continue;
                 $tmp = explode($separator, $row);
@@ -409,19 +416,22 @@ class DataHub_NCBI_API
             [parent_id] => 335928
             [] => 
         )*/
-        $save = array();
-        $save['taxonID'] = $rec['id'];
-        $save['scientificName'] = $rec['name'];
-        $save['taxonRank'] = $rec['rank'];
-        $save['parentNameUsageID'] = $rec['parent_id'];
-        self::write_taxon($save);
-        self::write_MoF($rec);
+        if($rec['count']) {
+            $save = array();
+            $save['taxonID'] = $rec['id'];
+            $save['scientificName'] = $rec['name'];
+            $save['taxonRank'] = $rec['rank'];
+            $save['parentNameUsageID'] = $rec['parent_id'];
+            self::write_taxon($save);
+            self::write_MoF($rec);    
+        }
     }
     private function write_species_level_MoF()
     {   echo "\nStart write species-level...\n";
         $total = count($this->totals); $i = 0;
         foreach($this->totals as $taxid => $count) { $i++;
             if(($i % 500000) == 0) echo "\n species-level $i of $total [$taxid] ";
+            if(!$count) continue;
             if($sciname = @$this->taxa_info[$taxid]['n']) {
                 $save = array();
                 $save['taxonID'] = $taxid;
