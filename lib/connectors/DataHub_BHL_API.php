@@ -72,12 +72,12 @@ class DataHub_BHL_API
         -> latest API doc; Not used at all.
         */
         // /* step 0: download dump
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+
         $source_remote_url          = $this->dump_file;
         $destination_file           = $this->download_path."downloaded_data.zip";
         $check_file_or_folder_name  = 'creatoridentifier.txt';
-
-        require_library('connectors/INBioAPI');
-        $func = new INBioAPI();
 
         $paths = $func->download_general_dump($source_remote_url, $destination_file, $this->download_path, $check_file_or_folder_name); //exit("\ndownload done.\n");
         if($paths['archive_path'] && $paths['temp_dir']) {
