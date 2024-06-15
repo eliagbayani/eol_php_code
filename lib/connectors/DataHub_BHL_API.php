@@ -79,7 +79,7 @@ class DataHub_BHL_API
         $paths = self::download_bhl_dump(); //exit("\ndownload done.\n");
         if($paths['archive_path'] && $paths['temp_dir']) {
             $this->tsv_file = $paths['archive_path'].'pagename.txt';
-            $temp_dir       = $paths['temp_dir'];    
+            $temp_dir       = $paths['temp_dir'];
         }
         else exit("\nTerminated. Files are not ready.\n");
         // */
