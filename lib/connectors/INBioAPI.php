@@ -430,13 +430,13 @@ class INBioAPI
         $output = shell_exec("unzip -oj $remote_zip_file -d $destination_folder"); //-o overwrites; -j removes upper directory; -d destination
         return $output;
     }
-    function download_general_dump($source_remote_url, $destination_file, $check_file_or_folder_name) //now a public function
+    function download_general_dump($source_remote_url, $destination_file, $download_path, $check_file_or_folder_name) //now a public function
     {   
         // /* un-comment in real operation
         //1. download remote file
         self::save_dump_files($source_remote_url, $destination_file);
         //2. extract downloaded local file
-        $paths = self::extract_local_file($destination_file, $this->download_path, $check_file_or_folder_name); //'creatoridentifier.txt'
+        $paths = self::extract_local_file($destination_file, $download_path, $check_file_or_folder_name); //'creatoridentifier.txt'
         print_r($paths); //exit;
         // */
 

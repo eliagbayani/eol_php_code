@@ -26,7 +26,7 @@ class DataHub_BHL_API
         $this->download_path = $save_path;
 
         $this->dump_file = 'https://www.biodiversitylibrary.org/data/hosted/data.zip';
-        // $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip'; //dev only
+        $this->dump_file = 'http://localhost/eol_php_code/tmp2/data.zip'; //dev only
         // */
 
         // with special chars:
@@ -79,7 +79,7 @@ class DataHub_BHL_API
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
 
-        $paths = $func->download_general_dump($source_remote_url, $destination_file, $check_file_or_folder_name); //exit("\ndownload done.\n");
+        $paths = $func->download_general_dump($source_remote_url, $destination_file, $this->download_path, $check_file_or_folder_name); //exit("\ndownload done.\n");
         if($paths['archive_path'] && $paths['temp_dir']) {
             $this->tsv_file = $paths['archive_path'].'pagename.txt';
             $temp_dir       = $paths['temp_dir'];
