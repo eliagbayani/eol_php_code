@@ -19,8 +19,8 @@ class DataHub_NCBI_API
         if(!is_dir($save_path)) mkdir($save_path);
         $save_path = $save_path . "NCBI/";
         if(!is_dir($save_path)) mkdir($save_path);
-        $this->save_path = $save_path;
-        $this->dump_file = $this->save_path . "/compiled_taxa.txt";
+        $this->download_path = $save_path;
+        $this->dump_file = $save_path . "/compiled_taxa.txt";
 
         $this->reports_path = $save_path;
         $this->taxon_page  = "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=";                //e.g. 8045 -- safe choice
@@ -39,7 +39,11 @@ class DataHub_NCBI_API
         $this->debug = array();
 
         $this->big_file  = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';  //12.47 GB
-        $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
+        // $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
+
+        $this->dumpfile["prot.accession2taxid"] = "https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.INDEX-NUM.gz";
+        $this->dumpfile["prot.accession2taxid"] = "http://localhost/other_files2/dumps_GGI/NCBI/prot/prot.accession2taxid.FULL.INDEX-NUM.gz"; //dev only
+
         /* will add this to jenkins
         wget -c https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.1.gz
         wget -c https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.2.gz
@@ -84,26 +88,26 @@ class DataHub_NCBI_API
                 // exit("\nelix 3\n");
         --- end step 1 --- */
 
-        // /* step 2: process genus and family; loop tsv file and use API        
+        /* step 2: process genus and family; loop tsv file and use API        
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
         exit("\n-caching ends-\n"); //comment in real operation
-        // --- end step 2 --- */
+        --- end step 2 --- */
 
         // [genus] => 109270
         // [species] => 2117681
         // [family] => 10403
 
-        // /* step 3: process the big file - for species-level taxa. No API call but just read the big dump file.
+        /* step 3: process the big file - for species-level taxa. No API call but just read the big dump file.
         self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
-        // echo "\n 8049: ".$this->totals[8049]."\n";
-        // echo "\n 454919: ".$this->totals[454919]."\n";
-        // echo "\n 21: ".$this->totals[21]."\n";
+        */
 
         // /* step 4: loop the many files dump 
-        1 - 17
-        http://localhost/other_files2/dumps_GGI/NCBI/prot/prot.accession2taxid.FULL.1.gz
+        for($i = 1; $i <= 17; $i++) {
+            $url = str_replace('INDEX-NUM', $i, $this->dumpfile["prot.accession2taxid"]);
+            echo "\n$i. $url\n";
+            self::process_dump_file($url, $i);
+        }
         // */
-
 
         // /* check results
         $tests_id_count['6'] = 6259;
@@ -120,6 +124,10 @@ class DataHub_NCBI_API
         $tests_id_count['22'] = 99857;
         $tests_id_count['23'] = 1763;
         $tests_id_count['24'] = 2974;
+        $tests_id_count['8049'] = 0;
+        $tests_id_count['454919'] = 0;
+        $tests_id_count['21'] = 0;
+
         foreach($tests_id_count as $id => $count) {
             echo "\n $id: | dump: ".@$this->totals[$id]." | API: ".$count."\n";
         }
@@ -149,6 +157,35 @@ class DataHub_NCBI_API
         // print_r($this->taxa_info); 
         echo "\ncount taxa_info: ".count(@$this->taxa_info)."\n";
         $this->archive_builder->finalize(TRUE);
+    }
+    private function process_dump_file($url, $index_num)
+    {
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+
+        $source_remote_url          = $url;
+        $destination_file           = $this->download_path."downloaded_".$index_num.".gz";
+        $check_file_or_folder_name  = "prot.accession2taxid.FULL." . $index_num;
+        $check_file_or_folder_name  = "downloaded_" . $index_num;
+
+        $paths = $func->download_general_dump($source_remote_url, $destination_file, $this->download_path, $check_file_or_folder_name); //exit("\ndownload done.\n");
+        if($paths['archive_path'] && $paths['temp_dir']) {
+            $this->tsv_file = $paths['archive_path']; //this is a file not a folder
+            $temp_dir       = $paths['temp_dir']; //actually not used here. No files inside.
+            self::parse_tsv_file($this->tsv_file, "proc big file gen. totals[taxid]");
+
+            // "archive_path"  => "/Volumes/Crucial_2TB/other_files2/dumps_GGI/NCBI/downloaded_1", //this is a file not a folder.
+            // "temp_dir"      => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_42492/"
+
+            unlink($this->tsv_file);
+            // remove temp dir
+            recursive_rmdir($temp_dir);
+
+        }
+        else exit("\nTerminated. Files are not ready.\n");
+
+
+
     }
     private function gen_NCBI_taxonomy_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";
@@ -313,11 +350,15 @@ class DataHub_NCBI_API
                         [accession.version] => A00001.1
                         [taxid] => 10641
                         [gi] => 58418
+                    )
+                    Array(
+                        [accession.version] => 0308206A
+                        [taxid] => 8058
                     )*/
                     $taxid = $rec['taxid'];
                     $tmp_name = @$this->taxa_info[$taxid]['n'];
                     $tmp_rank = @$this->taxa_info[$taxid]['r'];
-                    if($tmp_rank == 'species') {
+                    if($tmp_rank == 'species' && $tmp_name) {
                         if(self::valid_string_name($tmp_name)) @$this->totals[$taxid]++;
                     }
 
