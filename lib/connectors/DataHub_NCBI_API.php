@@ -232,7 +232,7 @@ class DataHub_NCBI_API
         }
 
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % $modulo) == 0) echo "\n [$what] $i ";
+            if(($i % $modulo) == 0) echo "\n [$what] row: $i ";
 
             if(in_array($what, array('proc big file gen. totals[taxid]', 'process genus family from compiled taxonomy'))) {
                 if($i == 1) {
