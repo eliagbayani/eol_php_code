@@ -94,10 +94,16 @@ class DataHub_NCBI_API
         // [family] => 10403
 
         // /* step 3: process the big file - for species-level taxa. No API call but just read the big dump file.
-        self::parse_tsv_file($this->big_file2, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
+        self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
         // echo "\n 8049: ".$this->totals[8049]."\n";
         // echo "\n 454919: ".$this->totals[454919]."\n";
         // echo "\n 21: ".$this->totals[21]."\n";
+
+        // /* step 4: loop the many files dump 
+        1 - 17
+        http://localhost/other_files2/dumps_GGI/NCBI/prot/prot.accession2taxid.FULL.1.gz
+        // */
+
 
         // /* check results
         $tests_id_count['6'] = 6259;
