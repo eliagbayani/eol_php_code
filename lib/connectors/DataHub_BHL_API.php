@@ -34,8 +34,31 @@ class DataHub_BHL_API
         // Peridermium pini        
         // Sphaerophoron coralloides β fragile
     }
-    private function download_bhl_dump()
-    {   /* from: https://about.biodiversitylibrary.org/tools-and-services/developer-and-data-tools/
+    /* was moved to INBioAPI.php; refactored this function so it can be re-used.
+    function download_general_dump($source_remote_url, $destination_file, $check_file_or_folder_name) //now a public function
+    {   
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        //1. download remote file
+        $func->save_dump_files($source_remote_url, $destination_file);
+        //2. extract downloaded local file
+        $paths = $func->extract_local_file($destination_file, $this->download_path, $check_file_or_folder_name); //'creatoridentifier.txt'
+        print_r($paths); //exit;
+        // dev only
+        // $paths = Array(
+        //     "archive_path" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/Data/", 
+        //     "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/"
+        // );
+        return $paths;
+    }*/
+    function start()
+    {
+        $this->debug = array();
+        require_library('connectors/TraitGeneric'); 
+        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
+
+        /* How to get the dump file:
+        from: https://about.biodiversitylibrary.org/tools-and-services/developer-and-data-tools/
         click: Data Exports
         click: TSV
 
@@ -48,35 +71,15 @@ class DataHub_BHL_API
         https://www.biodiversitylibrary.org/docs/api3.html
         -> latest API doc; Not used at all.
         */
+        // /* step 0: download dump
+        $source_remote_url          = $this->dump_file;
+        $destination_file           = $this->download_path."downloaded_data.zip";
+        $check_file_or_folder_name  = 'creatoridentifier.txt';
 
-        // /*
-        $destination = $this->download_path."downloaded_data.zip";
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
-        // /* un-comment in real operation
-        //1. download remote file
-        $func->save_dump_files($this->dump_file, $destination);
-        //2. extract downloaded local file
-        $paths = $func->extract_local_file($destination, $this->download_path, 'creatoridentifier.txt');
-        print_r($paths); //exit;
-        // */
 
-        /* dev only
-        $paths = Array(
-            "archive_path" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/Data/", 
-            "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/"
-        );
-        */
-        return $paths;
-    }
-    function start()
-    {
-        $this->debug = array();
-        require_library('connectors/TraitGeneric'); 
-        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-        
-        // /* step 0: download dump
-        $paths = self::download_bhl_dump(); //exit("\ndownload done.\n");
+        $paths = $func->download_general_dump($source_remote_url, $destination_file, $check_file_or_folder_name); //exit("\ndownload done.\n");
         if($paths['archive_path'] && $paths['temp_dir']) {
             $this->tsv_file = $paths['archive_path'].'pagename.txt';
             $temp_dir       = $paths['temp_dir'];

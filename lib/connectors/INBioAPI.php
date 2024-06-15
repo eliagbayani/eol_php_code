@@ -430,6 +430,24 @@ class INBioAPI
         $output = shell_exec("unzip -oj $remote_zip_file -d $destination_folder"); //-o overwrites; -j removes upper directory; -d destination
         return $output;
     }
+    function download_general_dump($source_remote_url, $destination_file, $check_file_or_folder_name) //now a public function
+    {   
+        // /* un-comment in real operation
+        //1. download remote file
+        self::save_dump_files($source_remote_url, $destination_file);
+        //2. extract downloaded local file
+        $paths = self::extract_local_file($destination_file, $this->download_path, $check_file_or_folder_name); //'creatoridentifier.txt'
+        print_r($paths); //exit;
+        // */
+
+        /* dev only
+        $paths = Array(
+            "archive_path" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/Data/", 
+            "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/"
+        );
+        */
+        return $paths;
+    }
     function save_dump_files($url, $target)
     {   //wget -nc http://www.boldsystems.org/pics/KANB/USNM_442211_photograph_KB17_037_155mmSL_LRP_17_07+1507842962.JPG -O /Volumes/AKiTiO4/other_files/xxx/file.ext
         $cmd = WGET_PATH . " '$url' -nv -O "."'$target'"; //wget -nc --no-clobber --> means 'no overwrite' | -nv   --no-verbose | -q --quiet (no output) | -v --verbose (default)
