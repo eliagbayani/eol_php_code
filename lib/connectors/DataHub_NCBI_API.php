@@ -183,9 +183,6 @@ class DataHub_NCBI_API
 
         }
         else exit("\nTerminated. Files are not ready.\n");
-
-
-
     }
     private function gen_NCBI_taxonomy_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";

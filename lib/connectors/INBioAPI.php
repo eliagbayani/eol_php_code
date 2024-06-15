@@ -440,12 +440,21 @@ class INBioAPI
         print_r($paths); //exit;
         // */
 
-        /* dev only
+        /* dev only - datahub_bhl.php
         $paths = Array(
             "archive_path" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/Data/", 
             "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_97485/"
         );
         */
+
+        /* dev only - datahub_ncbi.php
+        $paths = Array(
+            "archive_path" => "/Volumes/Crucial_2TB/other_files2/dumps_GGI/NCBI/downloaded_1", //this is a file not a folder.
+            "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_42492/"
+        );
+        */
+
+
         return $paths;
     }
     function save_dump_files($url, $target)
@@ -460,6 +469,12 @@ class INBioAPI
     function extract_local_file($dwca_file, $temp_dir, $check_file_or_folder_name)
     {   //1st client: extracting a local downloaded file from: https://www.biodiversitylibrary.org/data/hosted/data.zip (DataHub_BHL_API.php)
         debug("Please wait, extract_local_file ...");
+
+        // /* New May 12, 2021 - another option to detect $check_file_or_folder_name
+        $tmp = pathinfo($dwca_file, PATHINFO_BASENAME);
+        $tmpfolder = str_replace('.tar.gz', '', $tmp); //exit("\n[$tmpfolder]\n");
+        // */
+
         $temp_dir = create_temp_dir() . "/";
         debug($temp_dir);
         if(true) {
@@ -498,14 +513,17 @@ class INBioAPI
         elseif(file_exists($temp_dir ."dwca/". $check_file_or_folder_name))         return array('archive_path' => $temp_dir."dwca/",       'temp_dir' => $temp_dir);
         elseif(file_exists($temp_dir ."Data/". $check_file_or_folder_name))         return array('archive_path' => $temp_dir."Data/",       'temp_dir' => $temp_dir); //e.g. https://www.biodiversitylibrary.org/data/hosted/data.zip
         elseif(file_exists($temp_dir ."$tmpfolder/". $check_file_or_folder_name))   return array('archive_path' => $temp_dir."$tmpfolder/", 'temp_dir' => $temp_dir);
+        elseif(file_exists($archive_path))       return array('archive_path' => $archive_path,           'temp_dir' => $temp_dir);
+
         else {
             echo "\n1. ".$temp_dir . $check_file_or_folder_name."\n";
             echo "\n2. ".$archive_path . "/" . $check_file_or_folder_name."\n";
             echo "\n3. ".$temp_dir ."dwca/". $check_file_or_folder_name."\n";
             echo "\n4. ".$temp_dir ."Data/". $check_file_or_folder_name."\n";
             echo "\n5. ".$temp_dir ."$tmpfolder/". $check_file_or_folder_name."\n";
+            echo "\n6. ".$archive_path."\n";
             debug("Can't find check_file_or_folder_name [$check_file_or_folder_name].");
-            recursive_rmdir($temp_dir); //un-comment in real operation
+            // recursive_rmdir($temp_dir); //un-comment in real operation
             return false;
         }
     }
