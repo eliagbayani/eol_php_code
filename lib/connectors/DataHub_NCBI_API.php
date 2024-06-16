@@ -38,11 +38,13 @@ class DataHub_NCBI_API
         $this->api_call                 = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=txidXXTAXIDXX[Organism:exp]';
         $this->debug = array();
 
+        // /* for species-level using dumps to get totals:
         $this->big_file  = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';  //12.47 GB
         // $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
 
         $this->dumpfile["prot.accession2taxid"] = "https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.INDEX-NUM.gz";
         $this->dumpfile["prot.accession2taxid"] = "http://localhost/other_files2/dumps_GGI/NCBI/prot/prot.accession2taxid.FULL.INDEX-NUM.gz"; //dev only
+        // */
 
         /* will add this to jenkins. We need this if we want totals from dump files.
         wget -c https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.1.gz
@@ -186,33 +188,33 @@ class DataHub_NCBI_API
     }
     private function gen_NCBI_taxonomy_using_ZIP_file()
     {   echo "\nGenerate taxon info list...\n";
-        /* un-comment in real operation
+        // /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $options = $this->download_options_NCBI;
         $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
-        $options['expire_seconds'] = false; //dev only
+        // $options['expire_seconds'] = false; //dev only
         $paths = $func->extract_zip_file($this->dwca['NCBI-taxonomy'], $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        // print_r($paths); exit; //debug only
-        */
+        print_r($paths); //exit; //debug only
+        // */
 
-        // /* development only
+        /* development only
         $paths = Array(
             'extracted_file'    => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_73458/taxdmp',
             'temp_dir'          => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_73458/',
             'temp_file_path'    => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_73458/taxdmp.zip'
         );
-        // */
+        */
 
         $temp_dir = $paths['temp_dir'];
         if(is_file($this->dump_file)) unlink($this->dump_file);
         self::parse_tsv_file($temp_dir . 'names.dmp', "process names.dmp");
         self::parse_tsv_file($temp_dir . 'nodes.dmp', "process nodes.dmp");
 
-        /* un-comment in real operation -- remove temp dir
+        // /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
         echo ("\n temporary directory removed: " . $temp_dir);
-        */
+        // */
     }
     private function parse_tsv_file($file, $what, $quality_grade = false)
     {   echo "\nReading file, task: [$what]...[$quality_grade]\n";
@@ -286,7 +288,6 @@ class DataHub_NCBI_API
                 if($i <= 400000) continue;
             }
             */
-
 
             if(true) {
                 if(!$row) continue;
