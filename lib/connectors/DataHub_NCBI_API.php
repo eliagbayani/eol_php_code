@@ -182,7 +182,7 @@ class DataHub_NCBI_API
             unlink($this->tsv_file);
             // remove temp dir
             recursive_rmdir($temp_dir);
-
+            echo ("\n temporary directory removed: " . $temp_dir);
         }
         else exit("\nTerminated. Files are not ready.\n");
     }
@@ -365,7 +365,7 @@ class DataHub_NCBI_API
                 }
                 elseif($what == 'process genus family from compiled taxonomy') { //for genus family (counts from API) and species (boolean mtype)
                     self::process_genus_family($rec);
-                    if($i > 15) break; //debug only
+                    // if($i > 15) break; //debug only
                 }
             }
         }
