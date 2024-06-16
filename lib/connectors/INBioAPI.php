@@ -164,6 +164,7 @@ class INBioAPI
             echo "\n5. ".$temp_dir ."$tmpfolder/". $check_file_or_folder_name."\n";
             debug("Can't find check_file_or_folder_name [$check_file_or_folder_name].");
             recursive_rmdir($temp_dir);
+            echo "\ntemp. dir removed: [$temp_dir]\n";
             return false;
             // return array('archive_path' => $temp_dir, 'temp_dir' => $temp_dir);
         }
@@ -453,8 +454,6 @@ class INBioAPI
             "temp_dir" => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_42492/"
         );
         */
-
-
         return $paths;
     }
     function save_dump_files($url, $target)
@@ -513,8 +512,7 @@ class INBioAPI
         elseif(file_exists($temp_dir ."dwca/". $check_file_or_folder_name))         return array('archive_path' => $temp_dir."dwca/",       'temp_dir' => $temp_dir);
         elseif(file_exists($temp_dir ."Data/". $check_file_or_folder_name))         return array('archive_path' => $temp_dir."Data/",       'temp_dir' => $temp_dir); //e.g. https://www.biodiversitylibrary.org/data/hosted/data.zip
         elseif(file_exists($temp_dir ."$tmpfolder/". $check_file_or_folder_name))   return array('archive_path' => $temp_dir."$tmpfolder/", 'temp_dir' => $temp_dir);
-        elseif(file_exists($archive_path))       return array('archive_path' => $archive_path,           'temp_dir' => $temp_dir);
-
+        elseif(file_exists($archive_path))                                          return array('archive_path' => $archive_path,           'temp_dir' => $temp_dir);
         else {
             echo "\n1. ".$temp_dir . $check_file_or_folder_name."\n";
             echo "\n2. ".$archive_path . "/" . $check_file_or_folder_name."\n";
@@ -523,7 +521,8 @@ class INBioAPI
             echo "\n5. ".$temp_dir ."$tmpfolder/". $check_file_or_folder_name."\n";
             echo "\n6. ".$archive_path."\n";
             debug("Can't find check_file_or_folder_name [$check_file_or_folder_name].");
-            // recursive_rmdir($temp_dir); //un-comment in real operation
+            recursive_rmdir($temp_dir); //un-comment in real operation
+            echo "\ntemp. dir removed: [$temp_dir]\n";
             return false;
         }
     }
