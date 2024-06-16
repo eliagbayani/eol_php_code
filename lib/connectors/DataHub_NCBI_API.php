@@ -75,7 +75,7 @@ class DataHub_NCBI_API
         require_library('connectors/TraitGeneric'); 
         $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        /* step 1: assemble taxa: Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
+        // /* step 1: assemble taxa: Was first run in MacStudio. Generates the taxonomy file (compiled_taxa.txt) and just scp it to eol-archive.
         self::gen_NCBI_taxonomy_using_ZIP_file();
         print_r($this->taxa_info[1]); //exit("\nelix 2\n");
                 // testing only
@@ -86,12 +86,12 @@ class DataHub_NCBI_API
                 //     echo "\n ----- end [$taxid]";
                 // }        
                 // exit("\nelix 3\n");
-        --- end step 1 --- */
+        // --- end step 1 --- */
 
-        /* step 2: process genus and family; loop tsv file and use API
+        // /* step 2: process genus and family; loop tsv file and use API. For species-level use boolean mtype = "http://eol.org/schema/terms/SequenceInGenBank" (boolean)
         self::parse_tsv_file($this->dump_file, "process genus family from compiled taxonomy");
-        exit("\n-caching ends-\n"); //comment in real operation
-        --- end step 2 --- */
+        // exit("\n-caching ends-\n"); //comment in real operation , dev only cache only
+        // --- end step 2 --- */
 
         // [genus] => 109270
         // [species] => 2117681
@@ -101,15 +101,15 @@ class DataHub_NCBI_API
         self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
         */
 
-        // /* step 4: loop the many files dump 
+        /* step 4: loop the many files dump to get the totals
         for($i = 1; $i <= 17; $i++) {
             $url = str_replace('INDEX-NUM', $i, $this->dumpfile["prot.accession2taxid"]);
             echo "\n$i. $url\n";
             self::process_dump_file($url, $i);
         }
-        // */
+        */
 
-        // /* check results
+        /* check results: does not need this if species-level taxa is only boolean YN
         $tests_id_count['6'] = 6259;
         $tests_id_count['7'] = 926;
         $tests_id_count['9'] = 7770;
@@ -127,15 +127,15 @@ class DataHub_NCBI_API
         $tests_id_count['8049'] = 0;
         $tests_id_count['454919'] = 0;
         $tests_id_count['21'] = 0;
-
         foreach($tests_id_count as $id => $count) {
             echo "\n $id: | dump: ".@$this->totals[$id]." | API: ".$count."\n";
         }
         exit("\n-end test-\n");
-        // */
+        */
 
-
+        /* only for species-level counts based on dump files
         self::write_species_level_MoF();
+        */
 
         // self::parse_tsv_file($this->big_file2, "proc big file gen. totals[taxid]");  //NOT to be used --- generates $this->taxid_accession
         // echo "\n 8049: ".$this->totals[8049]."\n";
@@ -281,11 +281,11 @@ class DataHub_NCBI_API
                 }
             }
 
-            // /* during cache only, dev only
+            /* during cache only, dev only
             if(in_array($what, array('process genus family from compiled taxonomy'))) {
-                if($i <= 300000) continue;
+                if($i <= 400000) continue;
             }
-            // */
+            */
 
 
             if(true) {
@@ -341,7 +341,7 @@ class DataHub_NCBI_API
                         if(self::valid_string_name($rek["name"])) self::save_to_dump($rek, $this->dump_file);
                     // }
                 }
-                elseif($what == 'proc big file gen. totals[taxid]') { //for species-level taxa
+                elseif($what == 'proc big file gen. totals[taxid]') { //for species-level taxa using dumps
                     /*Array(
                         [accession] => A00001
                         [accession.version] => A00001.1
@@ -362,9 +362,9 @@ class DataHub_NCBI_API
                     // $accession = $rec['accession'];
                     // $this->taxid_accession[$taxid][$accession] = ''; //dev only
                 }
-                elseif($what == 'process genus family from compiled taxonomy') {                    
+                elseif($what == 'process genus family from compiled taxonomy') { //for genus family (counts from API) and species (boolean mtype)
                     self::process_genus_family($rec);
-                    // if($i > 15) break; //debug only
+                    if($i > 15) break; //debug only
                 }
             }
         }
@@ -415,20 +415,35 @@ class DataHub_NCBI_API
             [] => 
         )*/
         $rank = $rec['rank'];
-        // if(!in_array($rank, array('genus', 'family'))) return; //orig main operation
-        // if(!in_array($rank, array('species'))) return; //during caching only
         if(!in_array($rank, array('genus', 'family', 'species'))) return; //orig main operation
 
-        if(self::correct_time_2call_api_YN()) {
-            echo " [OK time to call API] ";
-            self::proceed_call_api($rec);
-        } 
-        else {
-            echo "\nNot correct time to call API\n";
-            echo "\nsleep 1 hr.\n";
-            sleep(60*60*1);
-            return;
+        if(in_array($rank, array('genus', 'family'))) {
+            if(self::correct_time_2call_api_YN()) {
+                echo " [OK time to call API] ";
+                self::proceed_call_api($rec);
+            } 
+            else {
+                echo "\nNot correct time to call API\n";
+                echo "\nsleep 1 hr.\n";
+                sleep(60*60*1);
+                return;
+            }    
         }
+        elseif($rank == 'species') {
+            $save = array();
+            $save['taxonID'] = $rec['id'];
+            $save['scientificName'] = $rec['name'];
+            $save['taxonRank'] = $rec['rank'];
+            $save['parentNameUsageID'] = $rec['parent_id'];
+            self::write_taxon($save);
+
+            // add ancestry to taxon.tab
+            $ancestry = self::get_ancestry_for_taxonID($save['taxonID']);
+            if($ancestry) self::write_taxa_4_ancestry($ancestry);
+            
+            self::write_MoF($rec);
+        }
+
     }
     private function proceed_call_api($rec)
     {
@@ -467,6 +482,11 @@ class DataHub_NCBI_API
             $save['taxonRank'] = $rec['rank'];
             $save['parentNameUsageID'] = $rec['parent_id'];
             self::write_taxon($save);
+
+            // add ancestry to taxon.tab
+            $ancestry = self::get_ancestry_for_taxonID($save['taxonID']);
+            if($ancestry) self::write_taxa_4_ancestry($ancestry);
+
             self::write_MoF($rec);    
         }
     }
@@ -582,8 +602,16 @@ class DataHub_NCBI_API
         $save['source'] = str_replace("XXTAXIDXX", $taxonID, $this->taxon_page2);   //suggested choice
         // $save['bibliographicCitation'] = '';
         // $save['measurementRemarks'] = ""; 
-        $mType = 'http://eol.org/schema/terms/NumberOfSequencesInGenBank';
-        $mValue = $rec['count'];
+
+        if($rec['rank'] == 'species') {
+            $mType = 'http://eol.org/schema/terms/SequenceInGenBank';
+            $mValue = "http://eol.org/schema/terms/yes";
+        }
+        else {
+            $mType = 'http://eol.org/schema/terms/NumberOfSequencesInGenBank';
+            $mValue = $rec['count'];    
+        }
+        
         $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
