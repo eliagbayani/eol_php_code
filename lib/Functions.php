@@ -160,21 +160,24 @@ class Functions
     public static function url_already_cached($url, $options = array())
     {
         // default expire time is 30 days
-        if(!isset($options['expire_seconds'])) $options['expire_seconds'] = 2592000;
+        if(!isset($options['expire_seconds'])) $options['expire_seconds'] = 60*60*24*25; //default expires in 25 days
+        if(!isset($options['timeout'])) $options['timeout'] = 120;
+        if(!isset($options['cache_path'])) $options['cache_path'] = DOC_ROOT . $GLOBALS['MAIN_CACHE_PATH'];    //orig value in environment.php is 'tmp/cache/'
+
         $md5 = md5($url);
         $cache1 = substr($md5, 0, 2);
         $cache2 = substr($md5, 2, 2);
-        if(!file_exists(DOC_ROOT . "tmp/cache/$cache1")) return false;
-        if(!file_exists(DOC_ROOT . "tmp/cache/$cache1/$cache2")) return false;
-        $cache_path = DOC_ROOT . "tmp/cache/$cache1/$cache2/$md5.cache";
-        if(!file_exists($cache_path)) return false;
-        $file_age_in_seconds = time() - filemtime($cache_path);
-        if($file_age_in_seconds >= $options['expire_seconds']) return false;
-        if($options['validation_regex']) {
-            $file_contents = file_get_contents($cache_path);
-            if(!preg_match("/". $options['validation_regex'] ."/ims", $file_contents)) return false;
+
+        if($resource_id = @$options['resource_id']) {
+            $options['cache_path'] .= "$resource_id/";
+            if(!file_exists($options['cache_path'])) return false;
         }
-        return true;
+
+        if(!file_exists($options['cache_path'] . $cache1)) return false;
+        if(!file_exists($options['cache_path'] . "$cache1/$cache2")) return false;
+        $cache_path = $options['cache_path'] . "$cache1/$cache2/$md5.cache";
+        if(file_exists($cache_path)) return true;
+        else return false;
     }
     public static function get_remote_file_fake_browser($remote_url, $options = array())
     {
