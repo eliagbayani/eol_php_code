@@ -38,13 +38,15 @@ class DataHub_NCBI_API
         $this->api_call                 = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=txidXXTAXIDXX[Organism:exp]';
         $this->debug = array();
 
-        // /* for species-level using dumps to get totals:
+        /* for species-level using dumps to get totals:
         $this->big_file  = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_gb.accession2taxid';  //12.47 GB
-        // $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
+        $this->big_file2 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid'; //32.62 GB --- NOT USED
+        $this->big_file3 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/nucl_wgs.accession2taxid.EXTRA';
+        $this->big_file4 = '/Volumes/Crucial_2TB/eol_php_code_tmp2/dead_nucl.accession2taxid';
+        */
 
         $this->dumpfile["prot.accession2taxid"] = "https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.INDEX-NUM.gz";
         $this->dumpfile["prot.accession2taxid"] = "http://localhost/other_files2/dumps_GGI/NCBI/prot/prot.accession2taxid.FULL.INDEX-NUM.gz"; //dev only
-        // */
 
         /* will add this to jenkins. We need this if we want totals from dump files.
         wget -c https://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.1.gz
@@ -101,6 +103,9 @@ class DataHub_NCBI_API
 
         /* step 3: process the big file - for species-level taxa. No API call but just read the big dump file.
         self::parse_tsv_file($this->big_file, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
+        self::parse_tsv_file($this->big_file2, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
+        self::parse_tsv_file($this->big_file3, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
+        self::parse_tsv_file($this->big_file4, "proc big file gen. totals[taxid]");      //the correct tsv file to use --- generates $this->totals[taxid] = count
         */
 
         /* step 4: loop the many files dump to get the totals
@@ -111,7 +116,7 @@ class DataHub_NCBI_API
         }
         */
 
-        /* check results: does not need this if species-level taxa is only boolean YN
+        // /* check results: does not need this if species-level taxa is only boolean YN
         $tests_id_count['6'] = 6259;
         $tests_id_count['7'] = 926;
         $tests_id_count['9'] = 7770;
@@ -132,8 +137,8 @@ class DataHub_NCBI_API
         foreach($tests_id_count as $id => $count) {
             echo "\n $id: | dump: ".@$this->totals[$id]." | API: ".$count."\n";
         }
-        exit("\n-end test-\n");
-        */
+        // exit("\n-end test-\n");
+        // */
 
         /* only for species-level counts based on dump files
         self::write_species_level_MoF();
@@ -155,8 +160,7 @@ class DataHub_NCBI_API
         454919: 40
         21: 5
         */
-        print_r($this->debug);
-        // print_r($this->taxa_info); 
+        print_r($this->debug); // print_r($this->taxa_info); 
         echo "\ncount taxa_info: ".count(@$this->taxa_info)."\n";
         $this->archive_builder->finalize(TRUE);
     }
@@ -195,7 +199,7 @@ class DataHub_NCBI_API
         $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
         // $options['expire_seconds'] = false; //dev only
         $paths = $func->extract_zip_file($this->dwca['NCBI-taxonomy'], $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        print_r($paths); //exit; //debug only
+        print_r($paths); //exit;
         // */
 
         /* development only
@@ -216,8 +220,8 @@ class DataHub_NCBI_API
         echo ("\n temporary directory removed: " . $temp_dir);
         // */
     }
-    private function parse_tsv_file($file, $what, $quality_grade = false)
-    {   echo "\nReading file, task: [$what]...[$quality_grade]\n";
+    private function parse_tsv_file($file, $what)
+    {   echo "\nReading file, task: [$what]...[$file]\n";
         $i = 0; $final = array();
         $separator = "	|	";
         $separator = "	|";
@@ -363,7 +367,7 @@ class DataHub_NCBI_API
                     // $accession = $rec['accession'];
                     // $this->taxid_accession[$taxid][$accession] = ''; //dev only
                 }
-                elseif($what == 'process genus family from compiled taxonomy') { //for genus family (counts from API) and species (boolean mtype)
+                elseif($what == 'process genus family from compiled taxonomy') { //for genus family (counts from API) and species (boolean mtype) OR counts if already cached.
                     self::process_genus_family($rec);
                     // if($i > 15) break; //debug only
                 }
@@ -418,10 +422,25 @@ class DataHub_NCBI_API
         $rank = $rec['rank'];
         if(!in_array($rank, array('genus', 'family', 'species'))) return; //orig main operation
 
-        if(in_array($rank, array('genus', 'family'))) {
+        if(in_array($rank, array('genus', 'family', 'species'))) {
             if(self::correct_time_2call_api_YN()) {
                 echo " [OK time to call API] ";
-                self::proceed_call_api($rec);
+                $ret = self::proceed_call_api($rec);
+                if($ret == 'proceedBoolean') {
+                    $rec['count'] = false;
+                    $save = array();
+                    $save['taxonID'] = $rec['id'];
+                    $save['scientificName'] = $rec['name'];
+                    $save['taxonRank'] = $rec['rank'];
+                    $save['parentNameUsageID'] = $rec['parent_id'];
+                    self::write_taxon($save);
+        
+                    // add ancestry to taxon.tab
+                    $ancestry = self::get_ancestry_for_taxonID($save['taxonID']);
+                    if($ancestry) self::write_taxa_4_ancestry($ancestry);
+                    
+                    self::write_MoF($rec);        
+                }
             } 
             else {
                 echo "\nNot correct time to call API\n";
@@ -430,26 +449,16 @@ class DataHub_NCBI_API
                 return;
             }    
         }
-        elseif($rank == 'species') {
-            $save = array();
-            $save['taxonID'] = $rec['id'];
-            $save['scientificName'] = $rec['name'];
-            $save['taxonRank'] = $rec['rank'];
-            $save['parentNameUsageID'] = $rec['parent_id'];
-            self::write_taxon($save);
-
-            // add ancestry to taxon.tab
-            $ancestry = self::get_ancestry_for_taxonID($save['taxonID']);
-            if($ancestry) self::write_taxa_4_ancestry($ancestry);
-            
-            self::write_MoF($rec);
-        }
-
     }
     private function proceed_call_api($rec)
     {
         //print_r($rec); exit("\nelix 1\n");
         $url = str_replace("XXTAXIDXX", $rec['id'], $this->api_call);
+
+        // /* New: 
+        if(!Functions::url_already_cached($url, $this->download_options_NCBI)) return "proceedBoolean";
+        // */
+
         $xml = Functions::lookup_with_cache($url, $this->download_options_NCBI);
         // <Count>367603</Count>1
         $save = array();
@@ -604,13 +613,13 @@ class DataHub_NCBI_API
         // $save['bibliographicCitation'] = '';
         // $save['measurementRemarks'] = ""; 
 
-        if($rec['rank'] == 'species') {
-            $mType = 'http://eol.org/schema/terms/SequenceInGenBank';
-            $mValue = "http://eol.org/schema/terms/yes";
-        }
-        else {
+        if($rec['count'] || $rec['count'] === 0) {
             $mType = 'http://eol.org/schema/terms/NumberOfSequencesInGenBank';
             $mValue = $rec['count'];    
+        }
+        else {
+            $mType = 'http://eol.org/schema/terms/SequenceInGenBank';
+            $mValue = "http://eol.org/schema/terms/yes";
         }
         
         $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.        
