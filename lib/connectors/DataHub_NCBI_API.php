@@ -116,7 +116,7 @@ class DataHub_NCBI_API
         }
         */
 
-        // /* check results: does not need this if species-level taxa is only boolean YN
+        /* check results: does not need this if species-level taxa is only boolean YN
         $tests_id_count['6'] = 6259;
         $tests_id_count['7'] = 926;
         $tests_id_count['9'] = 7770;
@@ -138,7 +138,7 @@ class DataHub_NCBI_API
             echo "\n $id: | dump: ".@$this->totals[$id]." | API: ".$count."\n";
         }
         // exit("\n-end test-\n");
-        // */
+        */
 
         /* only for species-level counts based on dump files
         self::write_species_level_MoF();

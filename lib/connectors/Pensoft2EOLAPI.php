@@ -285,7 +285,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         echo "\nTotal undefined parents MoF [$resource_id]: " . count($undefined_parents)."\n";
         // ===================================== */
     }
-    
+    /* seems obsolete already
     private function generate_difference_report() //utility report only, not part of main operation of textmining
     {
         // print_r($this->all_envo_terms); exit;
@@ -302,11 +302,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         echo "\n difference: ".count($difference)."\n";
         $difference = array_values($difference); //reindex key
         // print_r($difference);
-        /* $old e.g. Array(
-            [http://purl.obolibrary.org/obo/ENVO_01000739] => habitat
-            [http://purl.obolibrary.org/obo/ENVO_01001023] => radiation
-            [http://purl.obolibrary.org/obo/ENVO_00002164] => fossil
-        */
+        //  $old e.g. Array(
+        //     [http://purl.obolibrary.org/obo/ENVO_01000739] => habitat
+        //     [http://purl.obolibrary.org/obo/ENVO_01001023] => radiation
+        //     [http://purl.obolibrary.org/obo/ENVO_00002164] => fossil        
         $i = 0;
         foreach($difference as $term) { $i++;
             $uri = 'http://purl.obolibrary.org/obo/'.$term;
@@ -321,11 +320,11 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             if(!$row) continue;
             $tmp = explode("\t", $row);
             // print_r($tmp); //exit;
-            /*Array(
-                [0] => 1009000003
-                [1] => -27
-                [2] => ENVO:01000057
-            )*/
+            // Array(
+            //     [0] => 1009000003
+            //     [1] => -27
+            //     [2] => ENVO:01000057
+            // )
             $final[str_replace('ENVO:', 'ENVO_', $tmp[2])] = '';
         }
         unlink($local);
@@ -336,7 +335,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $final = array_diff($final, $filter_out);
         echo "\nentities count 2: ".count($final);
         return $final;
-    }
+    } */
     private function initialize_files()
     {
         // /* copied template, not needed in Pensoft yet
