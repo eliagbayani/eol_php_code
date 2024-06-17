@@ -10,6 +10,17 @@ $timestart = time_elapsed();
 $resource_id = 'NCBI';
 $func = new DataHub_NCBI_API($resource_id);
 
+/* --- test only ---
+$options = array('resource_id' => "723_ncbi", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
+$url = "https://opendata.eol.org/group";
+if(Functions::url_already_cached($url, $options)) exit("\ncached already\n");
+else {
+    echo "\nnot yet cached. caching now...\n";
+    Functions::lookup_with_cache($url, $options);
+}
+exit("\n-end-\n");
+*/
+
 // /*
 $func->start();
 // */

@@ -626,7 +626,7 @@ class DataHub_NCBI_API
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
     private function correct_time_2call_api_YN()
-    {   //return true; //debug only
+    {   return true; //debug only
         /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         */
