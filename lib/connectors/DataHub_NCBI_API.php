@@ -485,7 +485,7 @@ class DataHub_NCBI_API
             [parent_id] => 335928
             [] => 
         )*/
-        if($rec['count']) {
+        if(@$rec['count']) {
             $save = array();
             $save['taxonID'] = $rec['id'];
             $save['scientificName'] = $rec['name'];
