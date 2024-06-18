@@ -1690,14 +1690,16 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         return array_keys($final);
     }
     private function initialize_mRemark_assignments()
-    {   /* to-do: read from tsv file
-        https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/mRemarks_assignments.tsv
-        */
+    {           
         // $mRemarks["open waters"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
         // $mRemarks["open-water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        // $mRemarks["openwater"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
+        
+        /* read from tsv file, generate $mRemarks
+        https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/mRemarks_assignments.tsv
+        */
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/mRemarks_assignments.tsv";
         $mRemarks = self::parse_github_dump($url, "mRemark_assignments");
+        echo "\nmRemark_assignments: [".count($mRemarks)."]\n";
         $this->mRemarks = $mRemarks;
     }
     private function parse_github_dump($url, $what) //another func: load_github_dump()
