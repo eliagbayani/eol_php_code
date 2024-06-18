@@ -775,7 +775,7 @@ class TropicosArchiveAPI
     public function add_additional_mappings($return_d_value = false, $url_path_2mappings = false, $expire_seconds = 60*60*24*25)
     {
         if($url_path_2mappings) $url = $url_path_2mappings;
-        else $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Tropicos/countries with added URIs.txt";
+        else $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Tropicos/countries_with_added_URIs.txt";
         $options = $this->download_options;
         $options['cache'] = 1;
         $options['expire_seconds'] = $expire_seconds; //25 days

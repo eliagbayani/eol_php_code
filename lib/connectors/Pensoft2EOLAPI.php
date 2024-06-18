@@ -113,11 +113,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $this->another_set_exclude_URIs_03 = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/geo_synonyms.txt';
         $this->labels_to_remove_file = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/blacklist_labels_all_resources.txt';
 
-
         $this->pensoft_run_cnt = 0;
         if($val = @$param['ontologies']) $this->ontologies = $val;      // 1st client is the utility run_partial.php
         else                             $this->ontologies = "envo";    // orig
-        /* from DATA-1853 - exclude ranks */
+        /* from DATA-1853 - exclude ranks for Wikipedia inferred records */
         $this->excluded_ranks = array('class', 'infraclass', 'infrakingdom', 'infraorder', 'infraphylum', 'kingdom', 'order', 'phylum', 'subclass', 'subkingdom', 'suborder', 'subphylum', 'subtribe', 'superclass', 'superfamily', 'superkingdom', 'superorder', 'superphylum', 'division', 'domain', 'grandorder', 'parvorder', 'realm', 'subdivision', 'tribe');
         $this->pensoft_service = "https://api.pensoft.net/annotator?text=MY_DESC&ontologies=MY_ONTOLOGIES";
         /* DATA-1893: new patterns for all textmined resources: life history ontology */
