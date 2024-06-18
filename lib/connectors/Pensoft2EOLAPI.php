@@ -99,9 +99,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
 
         $this->descendants_habitat_group['saline water'] = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/AmphibiaWeb/descendants_of_salt_water.csv';
         $this->descendants_habitat_group['aquatic']    = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/AmphibiaWeb/descendants_of_aquatic.csv';
-        //remove across all textmined resources: cloud, cut
-        $this->remove_across_all_resources = array('http://purl.obolibrary.org/obo/ENVO_01000760', 'http://purl.obolibrary.org/obo/ENVO_00000474');
-        $this->remove_across_all_resources[] = 'http://purl.obolibrary.org/obo/ENVO_00000016'; //per Jen: https://eol-jira.bibalex.org/browse/DATA-1858?focusedCommentId=65552&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65552
+   
+        $this->remove_across_all_resources = array();
+        /* 2024: already placed in text file
+        $this->remove_across_all_resources = array('http://purl.obolibrary.org/obo/ENVO_01000760', 'http://purl.obolibrary.org/obo/ENVO_00000474'); //cloud, cut
+        $this->remove_across_all_resources[] = 'http://purl.obolibrary.org/obo/ENVO_00000016'; //'sea' per Jen: https://eol-jira.bibalex.org/browse/DATA-1858?focusedCommentId=65552&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65552
+        */
+
         $this->another_set_exclude_URIs = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/terms_implying_missing_filter.txt';
         $this->another_set_exclude_URIs_02 = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/terms_to_remove.txt';
         $this->another_set_exclude_URIs_03 = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/geo_synonyms.txt';
@@ -335,7 +339,22 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $final = array_diff($final, $filter_out);
         echo "\nentities count 2: ".count($final);
         return $final;
-    } */
+    } 
+    private function filter_out_from_entities()
+    {   //from: https://eol-jira.bibalex.org/browse/DATA-1858?focusedCommentId=65359&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65359
+        return array('ENVO_00000026', 'ENVO_01000342', 'ENVO_00000241', 'ENVO_01000001', 'ENVO_00002982', 'ENVO_01000628', 'ENVO_00002053', 'ENVO_00000014', 'ENVO_01000018', 'ENVO_00000167', 
+        'ENVO_00002007', 'ENVO_00000856', 'ENVO_00000084', 'ENVO_00000040', 'ENVO_00000083', 'ENVO_01000155', 'ENVO_00000078', 'ENVO_00000444', 'ENVO_00000025', 'ENVO_00000032', 'ENVO_00002008', 
+        'ENVO_00000495', 'ENVO_00000101', 'ENVO_00002015', 'ENVO_00000255', 'ENVO_00002054', 'ENVO_00000418', 'ENVO_00000463', 'ENVO_00000247', 'ENVO_01000236', 'ENVO_00000284', 'ENVO_00002034', 
+        'ENVO_00000439', 'ENVO_00000115', 'ENVO_00000381', 'ENVO_00000133', 'ENVO_01000005', 'ENVO_00002140', 'ENVO_00000231', 'ENVO_00000166', 'ENVO_00012408', 'ENVO_00010505', 'ENVO_00002226', 
+        'ENVO_00000235', 'ENVO_00000275', 'ENVO_00002870', 'ENVO_00000475', 'ENVO_00002269', 'ENVO_00000138', 'ENVO_01000158', 'ENVO_00000195', 'ENVO_00001997', 'ENVO_02000059', 'ENVO_00000440', 
+        'ENVO_00002013', 'ENVO_00000102', 'ENVO_00005792', 'ENVO_00000298', 'ENVO_00010358', 'ENVO_01000002', 'ENVO_01000006', 'ENVO_00000085', 'ENVO_00000163', 'ENVO_00000520', 'ENVO_00002118', 
+        'ENVO_00002144', 'ENVO_00003982', 'ENVO_00000149', 'ENVO_00000110', 'ENVO_00000313', 'ENVO_00000429', 'ENVO_00000500', 'ENVO_00000236', 'ENVO_00000245', 'ENVO_00005754', 'ENVO_00000422', 
+        'ENVO_00000535', 'ENVO_00000120', 'ENVO_00000155', 'ENVO_01000019', 'ENVO_00000069', 'ENVO_00000139', 'ENVO_00000145', 'ENVO_00000473', 'ENVO_00000534', 'ENVO_00005742', 'ENVO_00005747', 
+        'ENVO_00000072', 'ENVO_00000287', 'ENVO_00000400', 'ENVO_00000496', 'ENVO_00000497', 'ENVO_00000544', 'ENVO_00002270', 'ENVO_00000036', 'ENVO_00000119', 'ENVO_00000140', 'ENVO_00000157', 
+        'ENVO_00000256', 'ENVO_00002063', 'ENVO_00003041', 'ENVO_00005799', 'ENVO_01000063', 'ENVO_00000042', 'ENVO_00000079', 'ENVO_00000152', 'ENVO_00000160', 'ENVO_00000252', 'ENVO_00000271', 
+        'ENVO_00000282', 'ENVO_00000289', 'ENVO_00000290', 'ENVO_00000470', 'ENVO_00000483', 'ENVO_00000522', 'ENVO_00000548', 'ENVO_00002231', 'ENVO_00005739', 'ENVO_00005756', 'ENVO_00005767', 
+        'ENVO_00005775', 'ENVO_01000219', 'ENVO_02000084');
+    }*/
     private function initialize_files()
     {
         // /* copied template, not needed in Pensoft yet
@@ -1810,89 +1829,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
     }
     private function initialize_delete_uris()
     {
-        $uris = array('http://purl.obolibrary.org/obo/ENVO_00000104', 'http://purl.obolibrary.org/obo/ENVO_00002033', 'http://purl.obolibrary.org/obo/ENVO_00000304', 
-        'http://purl.obolibrary.org/obo/ENVO_00000486', 'http://purl.obolibrary.org/obo/ENVO_00002000', 'http://purl.obolibrary.org/obo/ENVO_00000086', 
-        'http://purl.obolibrary.org/obo/ENVO_00000220', 'http://purl.obolibrary.org/obo/ENVO_00000113', 'http://purl.obolibrary.org/obo/ENVO_00002232', 
-        'http://purl.obolibrary.org/obo/ENVO_02000047', 'http://purl.obolibrary.org/obo/ENVO_00003031', 'http://purl.obolibrary.org/obo/ENVO_00002276', 
-        'http://purl.obolibrary.org/obo/ENVO_00000121', 'http://purl.obolibrary.org/obo/ENVO_00000099', 'http://purl.obolibrary.org/obo/ENVO_00000377', 
-        'http://purl.obolibrary.org/obo/ENVO_00000165', 'http://purl.obolibrary.org/obo/ENVO_00003903', 'http://purl.obolibrary.org/obo/ENVO_02000054', 
-        'http://purl.obolibrary.org/obo/ENVO_00010624', 'http://purl.obolibrary.org/obo/ENVO_01000243', 'http://purl.obolibrary.org/obo/ENVO_01000114', 
-        'http://purl.obolibrary.org/obo/ENVO_00003885', 'http://purl.obolibrary.org/obo/ENVO_00003044', 'http://purl.obolibrary.org/obo/ENVO_00000369', 
-        'http://purl.obolibrary.org/obo/ENVO_00000158', 'http://purl.obolibrary.org/obo/ENVO_00000526', 'http://purl.obolibrary.org/obo/ENVO_02000058', 
-        'http://purl.obolibrary.org/obo/ENVO_00002169', 'http://purl.obolibrary.org/obo/ENVO_00002206', 'http://purl.obolibrary.org/obo/ENVO_00002026', 
-        'http://purl.obolibrary.org/obo/ENVO_00002170', 'http://purl.obolibrary.org/obo/ENVO_00000272', 'http://purl.obolibrary.org/obo/ENVO_00002116', 
-        'http://purl.obolibrary.org/obo/ENVO_00002186', 'http://purl.obolibrary.org/obo/ENVO_00000293', 'http://purl.obolibrary.org/obo/ENVO_00000223', 
-        'http://purl.obolibrary.org/obo/ENVO_00000514', 'http://purl.obolibrary.org/obo/ENVO_2000001', 'http://purl.obolibrary.org/obo/ENVO_00000320', 
-        'http://purl.obolibrary.org/obo/ENVO_02000006', 'http://purl.obolibrary.org/obo/ENVO_00000474', 'http://purl.obolibrary.org/obo/ENVO_00000523', 
-        'http://purl.obolibrary.org/obo/ENVO_00000074', 'http://purl.obolibrary.org/obo/ENVO_00000309', 'http://purl.obolibrary.org/obo/ENVO_00000037', 
-        'http://purl.obolibrary.org/obo/ENVO_00002158', 'http://purl.obolibrary.org/obo/ENVO_00000291', 'http://purl.obolibrary.org/obo/ENVO_00003064', 
-        'http://purl.obolibrary.org/obo/ENVO_00000449', 'http://purl.obolibrary.org/obo/ENVO_01000136', 'http://purl.obolibrary.org/obo/ENVO_00010506', 
-        'http://purl.obolibrary.org/obo/ENVO_00002020', 'http://purl.obolibrary.org/obo/ENVO_00002027', 'http://purl.obolibrary.org/obo/ENVO_00000114', 
-        'http://purl.obolibrary.org/obo/ENVO_00000294', 'http://purl.obolibrary.org/obo/ENVO_00000295', 'http://purl.obolibrary.org/obo/ENVO_00000471', 
-        'http://purl.obolibrary.org/obo/ENVO_00000443', 'http://purl.obolibrary.org/obo/ENVO_00002002', 'http://purl.obolibrary.org/obo/ENVO_00000411', 
-        'http://purl.obolibrary.org/obo/ENVO_00002164', 'http://purl.obolibrary.org/obo/ENVO_00002983', 'http://purl.obolibrary.org/obo/ENVO_00000011', 
-        'http://purl.obolibrary.org/obo/ENVO_00000050', 'http://purl.obolibrary.org/obo/ENVO_00000131', 'http://purl.obolibrary.org/obo/ENVO_00002168', 
-        'http://purl.obolibrary.org/obo/ENVO_00000340', 'http://purl.obolibrary.org/obo/ENVO_00005780', 'http://purl.obolibrary.org/obo/ENVO_00002041', 
-        'http://purl.obolibrary.org/obo/ENVO_00002171', 'http://purl.obolibrary.org/obo/ENVO_00002028', 'http://purl.obolibrary.org/obo/ENVO_00002023', 
-        'http://purl.obolibrary.org/obo/ENVO_00002025', 'http://purl.obolibrary.org/obo/ENVO_00003859', 'http://purl.obolibrary.org/obo/ENVO_00000468', 
-        'http://purl.obolibrary.org/obo/ENVO_02000000', 'http://purl.obolibrary.org/obo/ENVO_00000098', 'http://purl.obolibrary.org/obo/ENVO_00000174', 
-        'http://purl.obolibrary.org/obo/ENVO_00000311', 'http://purl.obolibrary.org/obo/ENVO_00000424', 'http://purl.obolibrary.org/obo/ENVO_00000391', 
-        'http://purl.obolibrary.org/obo/ENVO_00000533', 'http://purl.obolibrary.org/obo/ENVO_00000178', 'http://purl.obolibrary.org/obo/ENVO_00000066', 
-        'http://purl.obolibrary.org/obo/ENVO_01000057', 'http://purl.obolibrary.org/obo/ENVO_01000066', 'http://purl.obolibrary.org/obo/ENVO_00000509', 
-        'http://purl.obolibrary.org/obo/ENVO_00000427', 'http://purl.obolibrary.org/obo/ENVO_00010621', 'http://purl.obolibrary.org/obo/ENVO_01000207', 
-        'http://purl.obolibrary.org/obo/ENVO_00002035', 'http://purl.obolibrary.org/obo/ENVO_00010442', 'http://purl.obolibrary.org/obo/ENVO_00000076', 
-        'http://purl.obolibrary.org/obo/ENVO_00001996', 'http://purl.obolibrary.org/obo/ENVO_00000003', 'http://purl.obolibrary.org/obo/ENVO_00000180', 
-        'http://purl.obolibrary.org/obo/ENVO_00000477', 'http://purl.obolibrary.org/obo/ENVO_00000414', 'http://purl.obolibrary.org/obo/ENVO_00000359', 
-        'http://purl.obolibrary.org/obo/ENVO_00000048', 'http://purl.obolibrary.org/obo/ENVO_00005804', 'http://purl.obolibrary.org/obo/ENVO_00005805', 
-        'http://purl.obolibrary.org/obo/ENVO_2000006', 'http://purl.obolibrary.org/obo/ENVO_02000004', 'http://purl.obolibrary.org/obo/ENVO_00002271', 
-        'http://purl.obolibrary.org/obo/ENVO_00000480', 'http://purl.obolibrary.org/obo/ENVO_00002139', 'http://purl.obolibrary.org/obo/ENVO_00000305', 
-        'http://purl.obolibrary.org/obo/ENVO_00000134', 'http://purl.obolibrary.org/obo/ENVO_00002984', 'http://purl.obolibrary.org/obo/ENVO_00000191', 
-        'http://purl.obolibrary.org/obo/ENVO_00000339', 'http://purl.obolibrary.org/obo/ENVO_00003860', 'http://purl.obolibrary.org/obo/ENVO_00000481', 
-        'http://purl.obolibrary.org/obo/ENVO_00002214', 'http://purl.obolibrary.org/obo/ENVO_00000358', 'http://purl.obolibrary.org/obo/ENVO_00000302', 
-        'http://purl.obolibrary.org/obo/ENVO_00001995', 'http://purl.obolibrary.org/obo/ENVO_00000022', 'http://purl.obolibrary.org/obo/ENVO_01000017', 
-        'http://purl.obolibrary.org/obo/ENVO_00002055', 'http://purl.obolibrary.org/obo/ENVO_00004638', 'http://purl.obolibrary.org/obo/ENVO_00003930', 
-        'http://purl.obolibrary.org/obo/ENVO_00000092', 'http://purl.obolibrary.org/obo/ENVO_00002016', 'http://purl.obolibrary.org/obo/ENVO_00002018', 
-        'http://purl.obolibrary.org/obo/ENVO_00003043', 'http://purl.obolibrary.org/obo/ENVO_00002056', 'http://purl.obolibrary.org/obo/ENVO_00000403', 
-        'http://purl.obolibrary.org/obo/ENVO_00003030', 'http://purl.obolibrary.org/obo/ENVO_00000539', 'http://purl.obolibrary.org/obo/ENVO_01000016', 
-        'http://purl.obolibrary.org/obo/ENVO_00000361', 'http://purl.obolibrary.org/obo/ENVO_00002044', 'http://purl.obolibrary.org/obo/ENVO_00000393', 
-        'http://purl.obolibrary.org/obo/ENVO_00000027', 'http://purl.obolibrary.org/obo/ENVO_00000419', 'http://purl.obolibrary.org/obo/ENVO_00000331', 
-        'http://purl.obolibrary.org/obo/ENVO_00000330', 'http://purl.obolibrary.org/obo/ENVO_00000394', 'http://purl.obolibrary.org/obo/ENVO_00010504', 
-        'http://purl.obolibrary.org/obo/ENVO_00000543', 'http://purl.obolibrary.org/obo/ENVO_00003323', 'http://purl.obolibrary.org/obo/ENVO_00003096', 
-        'http://purl.obolibrary.org/obo/ENVO_02000001', 'http://purl.obolibrary.org/obo/ENVO_00000122', 'http://purl.obolibrary.org/obo/ENVO_00000499', 
-        'http://purl.obolibrary.org/obo/ENVO_00000094', 'http://purl.obolibrary.org/obo/ENVO_00002264', 'http://purl.obolibrary.org/obo/ENVO_00002272', 
-        'http://purl.obolibrary.org/obo/ENVO_00002001', 'http://purl.obolibrary.org/obo/ENVO_00002043', 'http://purl.obolibrary.org/obo/ENVO_00000029', 
-        'http://purl.obolibrary.org/obo/ENVO_00000547', 'http://purl.obolibrary.org/obo/ENVO_00000292', 'http://purl.obolibrary.org/obo/ENVO_00000421', 
-        'http://purl.obolibrary.org/obo/ENVO_00000043', 'http://purl.obolibrary.org/obo/ENVO_00000409', 'http://purl.obolibrary.org/obo/ENVO_00002040', 
-        'http://purl.obolibrary.org/obo/ENVO_00001998', 'http://purl.obolibrary.org/obo/ENVO_00000376', 'http://purl.obolibrary.org/obo/ENVO_00002152', 
-        'http://purl.obolibrary.org/obo/ENVO_00002123', 'http://purl.obolibrary.org/obo/ENVO_00000530', 'http://purl.obolibrary.org/obo/ENVO_00000564', 
-        'http://purl.obolibrary.org/obo/ENVO_00002277', 'http://purl.obolibrary.org/obo/ENVO_00000438', 'http://purl.obolibrary.org/obo/ENVO_2000004',     
-        'http://purl.obolibrary.org/obo/ENVO_00000367', 'http://purl.obolibrary.org/obo/ENVO_00000363', 'http://purl.obolibrary.org/obo/ENVO_00000305', 
-        'http://purl.obolibrary.org/obo/ENVO_00000358', 'http://purl.obolibrary.org/obo/ENVO_00000064', 'http://purl.obolibrary.org/obo/ENVO_00000515', 
-        'http://purl.obolibrary.org/obo/ENVO_01000246', 'http://purl.obolibrary.org/obo/ENVO_00010622', 'http://purl.obolibrary.org/obo/ENVO_00010625', 
-        'http://purl.obolibrary.org/obo/ENVO_00002000', 'http://purl.obolibrary.org/obo/ENVO_00000376', 'http://purl.obolibrary.org/obo/ENVO_00000011', 
-        'http://purl.obolibrary.org/obo/ENVO_00000291', 'http://purl.obolibrary.org/obo/ENVO_00002277', 'http://purl.obolibrary.org/obo/ENVO_00000393', 
-        'http://purl.obolibrary.org/obo/ENVO_00000547', 'http://purl.obolibrary.org/obo/ENVO_01000243', 'http://purl.obolibrary.org/obo/ENVO_00000514', 
-        'http://purl.obolibrary.org/obo/ENVO_00000533', 'http://purl.obolibrary.org/obo/ENVO_00000104', 'http://purl.obolibrary.org/obo/ENVO_00000320', 
-        'http://purl.obolibrary.org/obo/ENVO_00000220', 'http://purl.obolibrary.org/obo/ENVO_00000029', 'http://purl.obolibrary.org/obo/ENVO_00000293', 
-        'http://purl.obolibrary.org/obo/ENVO_00000174', 'http://purl.obolibrary.org/obo/ENVO_00000480', 'http://purl.obolibrary.org/obo/ENVO_00004638', 
-        'http://purl.obolibrary.org/obo/ENVO_00002139', 'http://purl.obolibrary.org/obo/ENVO_00000477', 'http://purl.obolibrary.org/obo/ENVO_2000001', 
-        'http://purl.obolibrary.org/obo/ENVO_00000331', 'http://purl.obolibrary.org/obo/ENVO_00000292', 'http://purl.obolibrary.org/obo/ENVO_01000016', 
-        'http://purl.obolibrary.org/obo/ENVO_00000499', 'http://purl.obolibrary.org/obo/ENVO_00000427', 'http://purl.obolibrary.org/obo/ENVO_00002041', 
-        'http://purl.obolibrary.org/obo/ENVO_00000294', 'http://purl.obolibrary.org/obo/ENVO_00000122', 'http://purl.obolibrary.org/obo/ENVO_00010624', 
-        'http://purl.obolibrary.org/obo/ENVO_00002271', 'http://purl.obolibrary.org/obo/ENVO_00002026', 'http://purl.obolibrary.org/obo/ENVO_00000302', 
-        'http://purl.obolibrary.org/obo/ENVO_00000550', 'http://purl.obolibrary.org/obo/ENVO_00000178', 'http://purl.obolibrary.org/obo/ENVO_00000480', 
-        'http://purl.obolibrary.org/obo/ENVO_00000086', 'http://purl.obolibrary.org/obo/ENVO_00002055', 'http://purl.obolibrary.org/obo/ENVO_01000047',
-        'http://purl.obolibrary.org/obo/ENVO_2000000', 'http://purl.obolibrary.org/obo/ENVO_00003893', 'http://purl.obolibrary.org/obo/ENVO_00003895', 'http://purl.obolibrary.org/obo/ENVO_00010625', 
-        'http://purl.obolibrary.org/obo/ENVO_00000375', 'http://purl.obolibrary.org/obo/ENVO_00000374', 'http://purl.obolibrary.org/obo/ENVO_00003963', 'http://purl.obolibrary.org/obo/ENVO_00010622', 
-        'http://purl.obolibrary.org/obo/ENVO_00000349', 'http://purl.obolibrary.org/obo/ENVO_00002197', 'http://purl.obolibrary.org/obo/ENVO_00000515', 'http://purl.obolibrary.org/obo/ENVO_00000064', 
-        'http://purl.obolibrary.org/obo/ENVO_00000062', 'http://purl.obolibrary.org/obo/ENVO_02000055', 'http://purl.obolibrary.org/obo/ENVO_00002061', 'http://purl.obolibrary.org/obo/ENVO_00002183', 
-        'http://purl.obolibrary.org/obo/ENVO_01000003', 'http://purl.obolibrary.org/obo/ENVO_00002185', 'http://purl.obolibrary.org/obo/ENVO_00002985', 'http://purl.obolibrary.org/obo/ENVO_00000363', 
-        'http://purl.obolibrary.org/obo/ENVO_00000366', 'http://purl.obolibrary.org/obo/ENVO_00000367', 'http://purl.obolibrary.org/obo/ENVO_00000364', 'http://purl.obolibrary.org/obo/ENVO_00000479', 
-        'http://purl.obolibrary.org/obo/ENVO_00000561', 'http://purl.obolibrary.org/obo/ENVO_00002267', 'http://purl.obolibrary.org/obo/ENVO_00000000', 'http://purl.obolibrary.org/obo/ENVO_00000373', 
-        'http://purl.obolibrary.org/obo/ENVO_00002215', 'http://purl.obolibrary.org/obo/ENVO_00002198', 'http://purl.obolibrary.org/obo/ENVO_00000176', 'http://purl.obolibrary.org/obo/ENVO_00000075', 
-        'http://purl.obolibrary.org/obo/ENVO_00000168', 'http://purl.obolibrary.org/obo/ENVO_00003864', 'http://purl.obolibrary.org/obo/ENVO_00002196', 'http://purl.obolibrary.org/obo/ENVO_00000002', 
-        'http://purl.obolibrary.org/obo/ENVO_00005803', 'http://purl.obolibrary.org/obo/ENVO_00002874', 'http://purl.obolibrary.org/obo/ENVO_00002046', 'http://purl.obolibrary.org/obo/ENVO_00000077');
-        foreach($uris as $uri)                              $this->delete_MoF_with_these_uris[$uri] = '';
         foreach($this->remove_across_all_resources as $uri) $this->delete_MoF_with_these_uris[$uri] = ''; //remove cloud, cut for all resources
 
         // commented so far: https://eol-jira.bibalex.org/browse/DATA-1713?focusedCommentId=65447&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65447
@@ -1933,21 +1869,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         foreach($arr as $label) if($label) $this->labels_to_remove[$label] = '';
         // print_r($this->labels_to_remove); exit("\nlabels_to_remove: ".count($this->labels_to_remove)."\n");
         // */        
-    }
-    private function filter_out_from_entities()
-    {   //from: https://eol-jira.bibalex.org/browse/DATA-1858?focusedCommentId=65359&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65359
-        return array('ENVO_00000026', 'ENVO_01000342', 'ENVO_00000241', 'ENVO_01000001', 'ENVO_00002982', 'ENVO_01000628', 'ENVO_00002053', 'ENVO_00000014', 'ENVO_01000018', 'ENVO_00000167', 
-        'ENVO_00002007', 'ENVO_00000856', 'ENVO_00000084', 'ENVO_00000040', 'ENVO_00000083', 'ENVO_01000155', 'ENVO_00000078', 'ENVO_00000444', 'ENVO_00000025', 'ENVO_00000032', 'ENVO_00002008', 
-        'ENVO_00000495', 'ENVO_00000101', 'ENVO_00002015', 'ENVO_00000255', 'ENVO_00002054', 'ENVO_00000418', 'ENVO_00000463', 'ENVO_00000247', 'ENVO_01000236', 'ENVO_00000284', 'ENVO_00002034', 
-        'ENVO_00000439', 'ENVO_00000115', 'ENVO_00000381', 'ENVO_00000133', 'ENVO_01000005', 'ENVO_00002140', 'ENVO_00000231', 'ENVO_00000166', 'ENVO_00012408', 'ENVO_00010505', 'ENVO_00002226', 
-        'ENVO_00000235', 'ENVO_00000275', 'ENVO_00002870', 'ENVO_00000475', 'ENVO_00002269', 'ENVO_00000138', 'ENVO_01000158', 'ENVO_00000195', 'ENVO_00001997', 'ENVO_02000059', 'ENVO_00000440', 
-        'ENVO_00002013', 'ENVO_00000102', 'ENVO_00005792', 'ENVO_00000298', 'ENVO_00010358', 'ENVO_01000002', 'ENVO_01000006', 'ENVO_00000085', 'ENVO_00000163', 'ENVO_00000520', 'ENVO_00002118', 
-        'ENVO_00002144', 'ENVO_00003982', 'ENVO_00000149', 'ENVO_00000110', 'ENVO_00000313', 'ENVO_00000429', 'ENVO_00000500', 'ENVO_00000236', 'ENVO_00000245', 'ENVO_00005754', 'ENVO_00000422', 
-        'ENVO_00000535', 'ENVO_00000120', 'ENVO_00000155', 'ENVO_01000019', 'ENVO_00000069', 'ENVO_00000139', 'ENVO_00000145', 'ENVO_00000473', 'ENVO_00000534', 'ENVO_00005742', 'ENVO_00005747', 
-        'ENVO_00000072', 'ENVO_00000287', 'ENVO_00000400', 'ENVO_00000496', 'ENVO_00000497', 'ENVO_00000544', 'ENVO_00002270', 'ENVO_00000036', 'ENVO_00000119', 'ENVO_00000140', 'ENVO_00000157', 
-        'ENVO_00000256', 'ENVO_00002063', 'ENVO_00003041', 'ENVO_00005799', 'ENVO_01000063', 'ENVO_00000042', 'ENVO_00000079', 'ENVO_00000152', 'ENVO_00000160', 'ENVO_00000252', 'ENVO_00000271', 
-        'ENVO_00000282', 'ENVO_00000289', 'ENVO_00000290', 'ENVO_00000470', 'ENVO_00000483', 'ENVO_00000522', 'ENVO_00000548', 'ENVO_00002231', 'ENVO_00005739', 'ENVO_00005756', 'ENVO_00005767', 
-        'ENVO_00005775', 'ENVO_01000219', 'ENVO_02000084');
     }
     public function get_descendants_of_habitat_group($what)
     {
