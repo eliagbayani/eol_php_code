@@ -1662,173 +1662,62 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // */
     }
     private function initialize_delete_mRemarks()
-    {
-        // if measurementRemarks is any of these, then delete MoF
+    {   // if measurementRemarks is any of these, then delete MoF
+        /* moved to a dump file
         $a1 = array('range s', 'ranges', 'range s', 'rang e', 'bamboo', 'barrens', 'breaks', 'mulga', 'chanaral');
         $a2 = array('ridge', 'plateau', 'plateaus', 'crests', 'canyon', 'terrace', 'canyons', 'gullies', 'notches', 'terraces', 'bluff', 'cliffs', 'gulch', 'gully', 'llanos', 'plantations', 'sierra', 'tunnel');
         $a3 = array('chemical product', 'cosmetic product', 'paper product', 'zoological garden', 'world heritage site', 'wildlife management area', 'warehouse', 'vivarium', 'terrarium', 'saline water aquarium', 
         'road cut', 'road', 'populated place', 'plant feed', 'oil spill', 'oil tank', 'oil well', 'oil reservoir', 'oil', 'nature reserve', 'national nature reserve', 'national park', 
         'national wildlife refuge', 'mouth', 'military training area', 'industrial waste', 'geographic feature', 'geothermal field', 'geothermal power plant', 'fresh water aquarium', 'elevation', 
         'bridge', 'blowhole', 'bakery', 'aquarium', 'anthropogenic geographic feature', 'animal habitation', 'air conditioning unit', 'activated sludge', 'agricultural feature');
-        $labels = array_merge($a1, $a2, $a3);
+        $labels = array_merge($a1, $a2, $a3); */
+        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/del_MoF_with_these_labels.tsv";
+        $labels = self::load_github_dump($url);
+        echo "\ndelete_MoF_with_these_labels: [".count($labels)."]\n";
         foreach($labels as $label) $this->delete_MoF_with_these_labels[$label] = '';
+    }
+    private function load_github_dump($url) //another func parse_github_dump()
+    {
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*24));
+        $arr = explode("\n", file_get_contents($local));
+        $arr = array_map('trim', $arr);
+        $arr = array_filter($arr); //remove null arrays
+        $arr = array_unique($arr); //make unique
+        $arr = array_values($arr); //reindex key
+        unlink($local);
+        foreach($arr as $uri) $final[$uri] = '';
+        // print_r($final); exit("\n\n");
+        return array_keys($final);
     }
     private function initialize_mRemark_assignments()
     {   /* to-do: read from tsv file
         https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/mRemarks_assignments.tsv
         */
-        $mRemarks["open waters"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        $mRemarks["open-water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        $mRemarks["openwater"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        $mRemarks["open water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        $mRemarks["dry stream beds"] = "http://purl.obolibrary.org/obo/ENVO_00000278";
-        $mRemarks["dry streambeds"] = "http://purl.obolibrary.org/obo/ENVO_00000278";
-        $mRemarks["dry stream-beds"] = "http://purl.obolibrary.org/obo/ENVO_00000278";
-        $mRemarks["dry stream bed"] = "http://purl.obolibrary.org/obo/ENVO_00000278";
-        $mRemarks["dry streambed"] = "http://purl.obolibrary.org/obo/ENVO_00000278";
-        $mRemarks["coral heads"] = "http://purl.obolibrary.org/obo/ENVO_01000049";
-        $mRemarks["coral head"] = "http://purl.obolibrary.org/obo/ENVO_01000049";
-        $mRemarks["glades"] = "http://purl.obolibrary.org/obo/ENVO_00000444";
-        $mRemarks["glade"] = "http://purl.obolibrary.org/obo/ENVO_00000444";
-        $mRemarks["seaway"] = "http://purl.obolibrary.org/obo/ENVO_00000447";
-        $mRemarks["tide way"] = "http://purl.obolibrary.org/obo/ENVO_00000447";
-        $mRemarks["tideway"] = "http://purl.obolibrary.org/obo/ENVO_00000447";
-        $mRemarks["sea-way"] = "http://purl.obolibrary.org/obo/ENVO_00000447";
-        $mRemarks["herbaceous areas"] = "http://purl.obolibrary.org/obo/ENVO_01001305";
-        $mRemarks["loch"] = "http://purl.obolibrary.org/obo/ENVO_01000252";
-        $mRemarks["croplands"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["cropland"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["crop land"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["agricultural regions"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["agricultural region"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["crop-lands"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["cultivated croplands"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["cultivated s"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["crop lands"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["sea vents"] = "http://purl.obolibrary.org/obo/ENVO_01000030";
-        $mRemarks["active chimneys"] = "http://purl.obolibrary.org/obo/ENVO_01000030";
-        $mRemarks["sea vent"] = "http://purl.obolibrary.org/obo/ENVO_01000030";
-        $mRemarks["active chimney"] = "http://purl.obolibrary.org/obo/ENVO_01000030";
-        $mRemarks["embayments"] = "http://purl.obolibrary.org/obo/ENVO_00000032";
-        $mRemarks["embayment"] = "http://purl.obolibrary.org/obo/ENVO_00000032";
-        $mRemarks["brush"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["bush"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["brushes"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["caatinga"] = "http://purl.obolibrary.org/obo/ENVO_00000883";
-        $mRemarks["caatingas"] = "http://purl.obolibrary.org/obo/ENVO_00000883";
-        $mRemarks["coniferous forest"] = "http://purl.obolibrary.org/obo/ENVO_01000196";
-        $mRemarks["coniferous forest"] = "http://purl.obolibrary.org/obo/ENVO_01000196";
-        $mRemarks["coniferous forests"] = "http://purl.obolibrary.org/obo/ENVO_01000196";
-        $mRemarks["coniferousforest"] = "http://purl.obolibrary.org/obo/ENVO_01000196";
-        $mRemarks["coniferousforests"] = "http://purl.obolibrary.org/obo/ENVO_01000196";
-        $mRemarks["deciduous forests"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["deciduous forest"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["deciduous forests"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["deciduous-forest"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["deciduousforest"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["deciduousforests"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["equatorial forest"] = "http://purl.obolibrary.org/obo/ENVO_01000220";
-        $mRemarks["equatorial forests"] = "http://purl.obolibrary.org/obo/ENVO_01000220";
-        $mRemarks["equatorial rain forest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["equatorial rain forests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["equatorial rainforest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["equatorial rainforests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["jungle"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["jungles"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["mallee scrub"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["mangrove forest"] = "http://purl.obolibrary.org/obo/ENVO_01000181";
-        $mRemarks["mangrove forests"] = "http://purl.obolibrary.org/obo/ENVO_01000181";
-        $mRemarks["mangrove- forest"] = "http://purl.obolibrary.org/obo/ENVO_01000181";
-        $mRemarks["monsoon forest"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["monsoon forests"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["monsoon-forest"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["mulga scrub"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["pine grove"] = "http://purl.obolibrary.org/obo/ENVO_01000240";
-        $mRemarks["pine groves"] = "http://purl.obolibrary.org/obo/ENVO_01000240";
-        $mRemarks["pinegrove"] = "http://purl.obolibrary.org/obo/ENVO_01000240";
-        $mRemarks["rain forest"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["rain forest"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["rain forests"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["rain-forest"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["rain-forests"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["rainforest"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["rainforests"] = "http://eol.org/schema/terms/wet_forest";
-        $mRemarks["sage brush"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["sage-brush"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["sagebrush"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["sagebrushes"] = "http://purl.obolibrary.org/obo/ENVO_01000176";
-        $mRemarks["taiga"] = "http://eol.org/schema/terms/boreal_forests_taiga";
-        $mRemarks["taigas"] = "http://eol.org/schema/terms/boreal_forests_taiga";
-        $mRemarks["thorn forest"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["thorn forests"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["thorn-forest"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["thornforest"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["thornforests"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["tropical rain forest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["tropical rain forests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["tropical rain-forest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["tropical rainforest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["tropical rainforests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["tropicalrainforests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-
-        $mRemarks["coast"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["coastal"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["coastal areas"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["coastal strip"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["coastal region"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["coasts"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["coastal regions"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["costal"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["littoral"] = "http://eol.org/schema/terms/littoralZone";
-        $mRemarks["Sea coast"] = "http://purl.obolibrary.org/obo/ENVO_01000687";
-        $mRemarks["forests"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["forest"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["deciduous forests"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["groves"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["deciduous forest"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["Forest Reserve"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["Forest Reserves"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["open-water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        $mRemarks["open water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        $mRemarks["rivers"] = "http://purl.obolibrary.org/obo/ENVO_01000253";
-        $mRemarks["foothill"] = "http://purl.obolibrary.org/obo/ENVO_00000083";
-        $mRemarks["foothills"] = "http://purl.obolibrary.org/obo/ENVO_00000083";
-        $mRemarks["palm grove"] = "http://purl.obolibrary.org/obo/ENVO_01000220";
-        $mRemarks["glades"] = "http://purl.obolibrary.org/obo/ENVO_00000444";
-        $mRemarks["agricultural sites"] = "http://purl.obolibrary.org/obo/ENVO_00000077";
-        $mRemarks["open-water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        $mRemarks["open water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-
-        $mRemarks["mountains"] = "http://purl.obolibrary.org/obo/ENVO_00000081";
-        $mRemarks["nunatak"] = "http://purl.obolibrary.org/obo/ENVO_00000181";
-
-        $mRemarks["hills"] = "http://purl.obolibrary.org/obo/ENVO_00000083";
-        $mRemarks["rainforests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["rainforest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["tropical rainforests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["rain forest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["thorn forest"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["deciduous forest"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["tropical rainforest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["tropical rain forests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["deciduous forests"] = "http://purl.obolibrary.org/obo/ENVO_01000816";
-        $mRemarks["tropical rain forest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["coniferous forests"] = "http://purl.obolibrary.org/obo/ENVO_01000196";
-        $mRemarks["thorn forests"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["rain-forest"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["rain forests"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["Jungle"] = "http://purl.obolibrary.org/obo/ENVO_01000228";
-        $mRemarks["coniferous forest"] = "http://purl.obolibrary.org/obo/ENVO_01000196";
-        $mRemarks["equatorial forest"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["monsoon forests"] = "http://purl.obolibrary.org/obo/ENVO_00000879";
-        $mRemarks["thornforest"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        $mRemarks["reforested areas"] = "http://purl.obolibrary.org/obo/ENVO_01000174";
-        // per https://eol-jira.bibalex.org/browse/DATA-1739?focusedCommentId=64619&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-64619 */
-        $mRemarks["seamounts"] = 'http://purl.obolibrary.org/obo/ENVO_00000264';
-        $mRemarks["seamount"] = 'http://purl.obolibrary.org/obo/ENVO_00000264';
-        $mRemarks["seamount chain"] = 'http://purl.obolibrary.org/obo/ENVO_00000264';
-        $mRemarks["range of seamounts"] = 'http://purl.obolibrary.org/obo/ENVO_00000264';
+        // $mRemarks["open waters"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
+        // $mRemarks["open-water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
+        // $mRemarks["openwater"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
+        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/mRemarks_assignments.tsv";
+        $mRemarks = self::parse_github_dump($url, "mRemark_assignments");
         $this->mRemarks = $mRemarks;
+    }
+    private function parse_github_dump($url, $what) //another func: load_github_dump()
+    {
+        $final = array();
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr
+        foreach(new FileIterator($file) as $line => $row) {
+            $i++;
+            if(!$row) continue;
+            $tmp = explode("\t", $row); // print_r($tmp); exit;
+            if($what == "mRemark_assignments") {
+                /*Array(
+                    [0] => open waters
+                    [1] => http://purl.obolibrary.org/obo/ENVO_00002030
+                )*/            
+                $final[$tmp[0]] = $tmp[1];
+            }
+        }
+        unlink($local);
+        if($what == "mRemark_assignments") return $final;        
     }
     private function initialize_delete_uris()
     {
