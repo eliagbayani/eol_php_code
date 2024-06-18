@@ -1674,7 +1674,9 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         foreach($labels as $label) $this->delete_MoF_with_these_labels[$label] = '';
     }
     private function initialize_mRemark_assignments()
-    {
+    {   /* to-do: read from tsv file
+        https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/mRemarks_assignments.tsv
+        */
         $mRemarks["open waters"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
         $mRemarks["open-water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
         $mRemarks["openwater"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
