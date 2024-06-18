@@ -420,9 +420,9 @@ class DataHub_NCBI_API
             [] => 
         )*/
         $rank = $rec['rank'];
-        if(!in_array($rank, array('genus', 'family', 'species', 'subspecies'))) return; //orig main operation
+        if(!in_array($rank, array('genus', 'family', 'species'))) return; //orig main operation //can add 'subspecies' once server becomes stable
 
-        if(in_array($rank, array('species', 'subspecies'))) self::proceedBoolean_module($rec);
+        if(in_array($rank, array('species'))) self::proceedBoolean_module($rec); //can add 'subspecies' once server becomes stable
 
         if(in_array($rank, array('genus', 'family'))) { //, 'species'
             if(self::correct_time_2call_api_YN()) {
