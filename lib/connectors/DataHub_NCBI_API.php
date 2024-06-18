@@ -7,7 +7,7 @@ class DataHub_NCBI_API
     function __construct($folder = false)
     {
         $this->download_options_NCBI = array('resource_id' => "723_ncbi", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 2000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
-        $this->download_options_NCBI['expire_seconds'] = false;
+        // $this->download_options_NCBI['expire_seconds'] = false;
         if($folder) {
             $this->resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
@@ -420,35 +420,39 @@ class DataHub_NCBI_API
             [] => 
         )*/
         $rank = $rec['rank'];
-        if(!in_array($rank, array('genus', 'family', 'species'))) return; //orig main operation
+        if(!in_array($rank, array('genus', 'family', 'species', 'subspecies'))) return; //orig main operation
 
-        if(in_array($rank, array('genus', 'family', 'species'))) {
+        if(in_array($rank, array('species', 'subspecies'))) self::proceedBoolean_module($rec);
+
+        if(in_array($rank, array('genus', 'family'))) { //, 'species'
             if(self::correct_time_2call_api_YN()) {
-                echo " [OK time to call API] ";
+                // echo " [OK time to call API] ";
                 $ret = self::proceed_call_api($rec);
-                if($ret == 'proceedBoolean') {
-                    $rec['count'] = false;
-                    $save = array();
-                    $save['taxonID'] = $rec['id'];
-                    $save['scientificName'] = $rec['name'];
-                    $save['taxonRank'] = $rec['rank'];
-                    $save['parentNameUsageID'] = $rec['parent_id'];
-                    self::write_taxon($save);
-        
-                    // add ancestry to taxon.tab
-                    $ancestry = self::get_ancestry_for_taxonID($save['taxonID']);
-                    if($ancestry) self::write_taxa_4_ancestry($ancestry);
-                    
-                    self::write_MoF($rec);        
-                }
+                if($ret == 'proceedBoolean') self::proceedBoolean_module($rec);
             } 
             else {
-                echo "\nNot correct time to call API\n";
-                echo "\nsleep 1 hr.\n";
+                echo "\nNot correct time to call API. Sleep 1 hr. then will retry.\n";
                 sleep(60*60*1);
-                return;
+                // return; //not return but try again
+                self::process_genus_family($rec);
             }    
         }
+    }
+    private function proceedBoolean_module($rec)
+    {
+        $rec['count'] = false;
+        $save = array();
+        $save['taxonID'] = $rec['id'];
+        $save['scientificName'] = $rec['name'];
+        $save['taxonRank'] = $rec['rank'];
+        $save['parentNameUsageID'] = $rec['parent_id'];
+        self::write_taxon($save);
+
+        // add ancestry to taxon.tab
+        $ancestry = self::get_ancestry_for_taxonID($save['taxonID']);
+        if($ancestry) self::write_taxa_4_ancestry($ancestry);
+        
+        self::write_MoF($rec);        
     }
     private function proceed_call_api($rec)
     {
@@ -626,7 +630,7 @@ class DataHub_NCBI_API
         $this->func->add_string_types($save, $mValue, $mType, "true");    
     }
     private function correct_time_2call_api_YN()
-    {   return true; //debug only
+    {   //return true; //debug only
         /* good debug
         if($timezone_object = date_default_timezone_get()) echo 'date_default_timezone_set: ' . date_default_timezone_get();
         */

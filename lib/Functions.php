@@ -176,8 +176,21 @@ class Functions
         if(!file_exists($options['cache_path'] . $cache1)) return false;
         if(!file_exists($options['cache_path'] . "$cache1/$cache2")) return false;
         $cache_path = $options['cache_path'] . "$cache1/$cache2/$md5.cache";
-        if(file_exists($cache_path)) return true;
-        else return false;
+
+        if(file_exists($cache_path)) {
+            $file_contents = file_get_contents($cache_path);
+            $cache_is_valid = true;
+            if(@$options['validation_regex'] && !preg_match("/". $options['validation_regex'] ."/ims", $file_contents)) {
+                $cache_is_valid = false;
+            }
+            if(($file_contents && $cache_is_valid) || (strval($file_contents) == "0" && $cache_is_valid)) {
+                $file_age_in_seconds = time() - filemtime($cache_path);
+                if($file_age_in_seconds < $options['expire_seconds']) return true;
+                if($options['expire_seconds'] === false) return true;
+            }
+            @unlink($cache_path);
+        }
+        return false;
     }
     public static function get_remote_file_fake_browser($remote_url, $options = array())
     {
