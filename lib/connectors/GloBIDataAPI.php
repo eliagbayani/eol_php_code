@@ -24,7 +24,6 @@ class GloBIDataAPI extends Globi_Refuted_Records
                                                    'Heliamphora', 'Nepenthes', 'Philcoxia', 'Pinguicula', 'Roridula', 'Sarracenia', 'Stylidium', 'Triphyophyllum', 'Utricularia');
         $this->preferred_term_table = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/GloBI/reverse_assocs.csv';
         $this->excluded_ranks = array('class', 'infraclass', 'infrakingdom', 'infraorder', 'infraphylum', 'kingdom', 'order', 'phylum', 'subclass', 'subkingdom', 'suborder', 'subphylum', 'subtribe', 'superclass', 'superfamily', 'superkingdom', 'superorder', 'superphylum', 'division', 'domain', 'grandorder', 'parvorder', 'realm', 'subdivision', 'tribe');
-        
         $this->debug = array();
     }
     /*================================================================= STARTS HERE ======================================================================*/
