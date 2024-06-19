@@ -614,7 +614,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 [http://rs.tdwg.org/dwc/terms/scientificNameAuthorship] => 
             )*/
             $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
-            $taxonRank = $rec['http://rs.tdwg.org/dwc/terms/taxonRank'];
+            $taxonRank = @$rec['http://rs.tdwg.org/dwc/terms/taxonRank'];
 
             if($this->param['resource_id'] == '617_ENV') { //Wikipedia EN - remove traits for specified ranks
                 if(in_array($taxonRank, $this->excluded_ranks)) $this->exclude_taxonIDs[$taxonID] = '';

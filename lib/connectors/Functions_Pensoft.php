@@ -201,7 +201,7 @@ class Functions_Pensoft
 
         return $rec;      
     }
-    private function load_github_dump($url) //another func parse_github_dump()
+    function load_github_dump($url) //another func parse_github_dump()
     {
         $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*24));
         $arr = explode("\n", file_get_contents($local));
@@ -218,7 +218,7 @@ class Functions_Pensoft
     {
         $final = array();
         $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr
-        foreach(new FileIterator($file) as $line => $row) {
+        foreach(new FileIterator($local) as $line => $row) {
             $i++;
             if(!$row) continue;
             $tmp = explode("\t", $row); // print_r($tmp); exit;
