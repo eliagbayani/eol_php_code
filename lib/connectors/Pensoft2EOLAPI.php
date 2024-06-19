@@ -153,14 +153,15 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         self::initialize_mRemark_assignments(); //generates $this->mRemarks                     -> used in apply_adjustments()
         self::initialize_delete_mRemarks();     //generates $this->delete_MoF_with_these_labels -> used in apply_adjustments()
         self::initialize_delete_uris();         //generates $this->delete_MoF_with_these_uris   -> used in apply_adjustments()
-        /* echo "\nto test if these 4 variables are populated: ";
+        // /* echo "\nto test if these 4 variables are populated: ";
         echo("\n remapped_terms: "              .count($this->remapped_terms)."");
         echo("\n mRemarks: "                    .count($this->mRemarks)."");
         echo("\n delete_MoF_with_these_labels: ".count($this->delete_MoF_with_these_labels)."");
-        echo("\n delete_MoF_with_these_uris: "  .count($this->delete_MoF_with_these_uris).""); echo("\n---------------\n"); */
+        echo("\n delete_MoF_with_these_uris: "  .count($this->delete_MoF_with_these_uris).""); echo("\n---------------\n");
+        // */
 
         $this->initialize_new_patterns();         //generates $this->new_patterns   -> from Functions_Pensoft.php --- DATA-1893
-        // echo("\n new_patterns: "  .count($this->new_patterns)."\n"); print_r($this->new_patterns); exit;
+        echo("\n new_patterns: "  .count($this->new_patterns)."\n"); //print_r($this->new_patterns); exit;
 
         $this->allowed_terms_URIs = self::get_allowed_value_type_URIs_from_EOL_terms_file(); //print_r($this->allowed_terms_URIs); -> from Functions_Pensoft.php
         echo ("\nallowed_terms_URIs from EOL terms file: [".count($this->allowed_terms_URIs)."]\n");
