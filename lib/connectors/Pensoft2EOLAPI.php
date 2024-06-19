@@ -626,7 +626,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 if(!Functions::valid_sciname_for_traits($scientificName)) $this->exclude_taxonIDs[$taxonID] = '';
             }
             // */
-
         }
         echo "\nexclude_taxonIDs: ".count($this->exclude_taxonIDs)."\n";
     }

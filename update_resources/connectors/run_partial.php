@@ -167,7 +167,7 @@ foreach($IDs as $resource_id) {
     $final[] =     "[$resource_id][$errors errors]";
     // ************************************
 } //end foreach()
-print_r($final);
+echo "\n"; print_r($final);
 echo "\n-end tests-\n";
 // */
 function run_desc($desc, $pensoft) {
