@@ -138,9 +138,12 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         */
 
         // /* soil compositions
-        $labels = array('sandy soil', 'clay soil', 'dry soil', 'garden soil', 'forest soil', 'muddy soil', 'red soil', 'field soil', 'volcanic soil', 'surface soil', 
-        'dune soil', 'arable soil', 'agricultural soil', 'meadow soil', 'orchard soil', 'alluvial soil', 'grassland soil', 'pasture soil', 'peat soil', 'steppe soil', 
-        'farm soil', 'alpine soil', 'roadside soil', 'tropical soil', 'beech forest soil', 'fluvisol', 'luvisol', 'cambisol', 'regosol', 'leptosol', 'gleysol', 'vertisol');
+        // $labels = array('sandy soil', 'clay soil', 'dry soil', 'garden soil', 'forest soil', 'muddy soil', 'red soil', 'field soil', 'volcanic soil', 'surface soil', 
+        // 'dune soil', 'arable soil', 'agricultural soil', 'meadow soil', 'orchard soil', 'alluvial soil', 'grassland soil', 'pasture soil', 'peat soil', 'steppe soil', 
+        // 'farm soil', 'alpine soil', 'roadside soil', 'tropical soil', 'beech forest soil', 'fluvisol', 'luvisol', 'cambisol', 'regosol', 'leptosol', 'gleysol', 'vertisol');
+        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/soil_composition.tsv";
+        $labels = self::load_github_dump($url);
+        echo "\nsoil_composition: [".count($labels)."]\n";
         foreach($labels as $label) $this->soil_compositions[$label] = '';
         // */
     }
@@ -156,10 +159,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         echo("\n delete_MoF_with_these_labels: ".count($this->delete_MoF_with_these_labels)."");
         echo("\n delete_MoF_with_these_uris: "  .count($this->delete_MoF_with_these_uris).""); echo("\n---------------\n"); */
 
-        $this->initialize_new_patterns();         //generates $this->new_patterns   -> used in xxx() --- DATA-1893
+        $this->initialize_new_patterns();         //generates $this->new_patterns   -> from Functions_Pensoft.php --- DATA-1893
         // echo("\n new_patterns: "  .count($this->new_patterns)."\n"); print_r($this->new_patterns); exit;
 
-        $this->allowed_terms_URIs = self::get_allowed_value_type_URIs_from_EOL_terms_file(); //print_r($this->allowed_terms_URIs);
+        $this->allowed_terms_URIs = self::get_allowed_value_type_URIs_from_EOL_terms_file(); //print_r($this->allowed_terms_URIs); -> from Functions_Pensoft.php
         echo ("\nallowed_terms_URIs from EOL terms file: [".count($this->allowed_terms_URIs)."]\n");
     }
     function generate_eol_tags_pensoft($resource, $timestart = '', $download_options = array('timeout' => 172800, 'expire_seconds' => 60*60*24*30))
