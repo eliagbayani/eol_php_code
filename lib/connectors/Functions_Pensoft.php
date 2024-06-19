@@ -211,7 +211,7 @@ class Functions_Pensoft
         $arr = array_values($arr); //reindex key
         unlink($local);
         foreach($arr as $uri) $final[$uri] = ''; 
-        print_r($final); //exit("\n\n"); //debug only
+        print_r($final); //debug only
         return array_keys($final);
     }
     function parse_github_dump($url, $what) //another func: load_github_dump()
@@ -219,15 +219,14 @@ class Functions_Pensoft
         $final = array();
         $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr
         foreach(new FileIterator($local) as $line => $row) {
-            $i++;
             if(!$row) continue;
             $tmp = explode("\t", $row); // print_r($tmp); exit;
             if($what == "mRemark_assignments") {
                 /*Array(
                     [0] => open waters
                     [1] => http://purl.obolibrary.org/obo/ENVO_00002030
-                )*/            
-                $final[$tmp[0]] = $tmp[1];
+                )*/
+                if($val = @$tmp[1]) $final[$tmp[0]] = $val;
             }
         }
         unlink($local);
