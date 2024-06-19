@@ -98,9 +98,9 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         */
 
         // exclude descendants of 'saline water': Amphibiaweb
-        $this->descendants_habitat_group['saline water'] = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/AmphibiaWeb/descendants_of_salt_water.csv';
+        $this->descendants_habitat_group['saline water'] = 'https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/AmphibiaWeb/descendants_of_salt_water.tsv';
         // exclude descendants of 'aquatic': AntWeb
-        $this->descendants_habitat_group['aquatic']    = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/AmphibiaWeb/descendants_of_aquatic.csv';
+        $this->descendants_habitat_group['aquatic']    = 'https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/AmphibiaWeb/descendants_of_aquatic.tsv';
    
         $this->remove_across_all_resources = array();
         /* 2024: already placed in text file

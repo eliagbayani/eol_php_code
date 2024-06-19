@@ -36,6 +36,7 @@ So we saved the last DwCA for posterity.
 [root@eol-archive resources]# cp 24-adjusted.tar.gz 24-adjusted_api.tar.gz
 24_new.php is the new connector.
 */
+echo "\nOBSOLETE, REPLACED BY: 24_new.php\n";
 exit("\nObsolete. See 24.php for more details.\n");
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");
