@@ -203,7 +203,7 @@ class Functions_Pensoft
     }
     function load_github_dump($url) //another func parse_github_dump()
     {
-        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*24));
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr cache expires
         $arr = explode("\n", file_get_contents($local));
         $arr = array_map('trim', $arr);
         $arr = array_filter($arr); //remove null arrays
@@ -217,7 +217,7 @@ class Functions_Pensoft
     function parse_github_dump($url, $what) //another func: load_github_dump()
     {
         $final = array();
-        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr cache expires
         foreach(new FileIterator($local) as $line => $row) {
             if(!$row) continue;
             $tmp = explode("\t", $row); // print_r($tmp); exit;
