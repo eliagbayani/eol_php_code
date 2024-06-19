@@ -98,9 +98,9 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         */
 
         // exclude descendants of 'saline water': Amphibiaweb
-        $this->descendants_habitat_group['saline water'] = 'https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/AmphibiaWeb/descendants_of_salt_water.tsv';
+        $this->descendants_habitat_group['saline water'] = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/AmphibiaWeb/descendants_of_salt_water.tsv';
         // exclude descendants of 'aquatic': AntWeb
-        $this->descendants_habitat_group['aquatic']    = 'https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/AmphibiaWeb/descendants_of_aquatic.tsv';
+        $this->descendants_habitat_group['aquatic']    = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/AmphibiaWeb/descendants_of_aquatic.tsv';
    
         $this->remove_across_all_resources = array();
         /* 2024: already placed in text file
@@ -108,10 +108,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $this->remove_across_all_resources[] = 'http://purl.obolibrary.org/obo/ENVO_00000016'; //'sea' per Jen: https://eol-jira.bibalex.org/browse/DATA-1858?focusedCommentId=65552&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65552
         */
 
-        $this->another_set_exclude_URIs = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/terms_implying_missing_filter.txt';
-        $this->another_set_exclude_URIs_02 = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/terms_to_remove.txt';
-        $this->another_set_exclude_URIs_03 = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/geo_synonyms.txt';
-        $this->labels_to_remove_file = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/blacklist_labels_all_resources.txt';
+        $this->another_set_exclude_URIs = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/terms_implying_missing_filter.txt';
+        $this->another_set_exclude_URIs_02 = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/terms_to_remove.txt';
+        $this->another_set_exclude_URIs_03 = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/geo_synonyms.txt';
+        $this->labels_to_remove_file = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/blacklist_labels_all_resources.txt';
 
         $this->pensoft_run_cnt = 0;
         if($val = @$param['ontologies']) $this->ontologies = $val;      // 1st client is the utility run_partial.php
@@ -120,7 +120,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $this->excluded_ranks = array('class', 'infraclass', 'infrakingdom', 'infraorder', 'infraphylum', 'kingdom', 'order', 'phylum', 'subclass', 'subkingdom', 'suborder', 'subphylum', 'subtribe', 'superclass', 'superfamily', 'superkingdom', 'superorder', 'superphylum', 'division', 'domain', 'grandorder', 'parvorder', 'realm', 'subdivision', 'tribe');
         $this->pensoft_service = "https://api.pensoft.net/annotator?text=MY_DESC&ontologies=MY_ONTOLOGIES";
         /* DATA-1893: new patterns for all textmined resources: life history ontology */
-        $this->new_patterns_4textmined_resources = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Pensoft_Annotator/life_history.tsv";
+        $this->new_patterns_4textmined_resources = "https://raw.githubusercontent.com/EOL/textmine_rules/main/life_history.tsv";
         
         $this->to_delete_file = "";
         $this->debug = array();
@@ -141,7 +141,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // $labels = array('sandy soil', 'clay soil', 'dry soil', 'garden soil', 'forest soil', 'muddy soil', 'red soil', 'field soil', 'volcanic soil', 'surface soil', 
         // 'dune soil', 'arable soil', 'agricultural soil', 'meadow soil', 'orchard soil', 'alluvial soil', 'grassland soil', 'pasture soil', 'peat soil', 'steppe soil', 
         // 'farm soil', 'alpine soil', 'roadside soil', 'tropical soil', 'beech forest soil', 'fluvisol', 'luvisol', 'cambisol', 'regosol', 'leptosol', 'gleysol', 'vertisol');
-        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/soil_composition.tsv";
+        $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/soil_composition.tsv";
         $labels = $this->load_github_dump($url);
         echo "\nsoil_composition: [".count($labels)."] dump count\n";
         foreach($labels as $label) $this->soil_compositions[$label] = '';
@@ -1645,7 +1645,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
     {
         require_library('connectors/TropicosArchiveAPI');
         /* START DATA-1841 terms remapping */
-        $url = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Terms_remapped/DATA_1841_terms_remapped.tsv";
+        $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/Terms_remapped/DATA_1841_terms_remapped.tsv";
         $func = new TropicosArchiveAPI(NULL); //to initialize variable $this->uri_values in TropicosArchiveAPI
         $this->remapped_terms = $func->add_additional_mappings(true, $url, 60*60*24); //*this is not add_additional_mappings() 60*60*24
         echo "\nremapped_terms: ".count($this->remapped_terms)."\n";
@@ -1676,7 +1676,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         'national wildlife refuge', 'mouth', 'military training area', 'industrial waste', 'geographic feature', 'geothermal field', 'geothermal power plant', 'fresh water aquarium', 'elevation', 
         'bridge', 'blowhole', 'bakery', 'aquarium', 'anthropogenic geographic feature', 'animal habitation', 'air conditioning unit', 'activated sludge', 'agricultural feature');
         $labels = array_merge($a1, $a2, $a3); */
-        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/del_MoF_with_these_labels.tsv";
+        $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/del_MoF_with_these_labels.tsv";
         $labels = $this->load_github_dump($url);
         echo "\ndelete_MoF_with_these_labels: [".count($labels)."] dump count\n";
         foreach($labels as $label) $this->delete_MoF_with_these_labels[$label] = '';
@@ -1686,10 +1686,8 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // $mRemarks["open waters"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
         // $mRemarks["open-water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
         
-        /* read from tsv file, generate $mRemarks
-        https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/mRemarks_assignments.tsv
-        */
-        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/mRemarks_assignments.tsv";
+        /* read from tsv file, generate $mRemarks */
+        $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/mRemarks_assignments.tsv";
         $mRemarks = $this->parse_github_dump($url, "mRemark_assignments");
         echo "\nmRemark_assignments: [".count($mRemarks)."] dump count\n";
         $this->mRemarks = $mRemarks;
