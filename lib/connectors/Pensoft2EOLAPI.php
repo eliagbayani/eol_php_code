@@ -143,7 +143,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // 'farm soil', 'alpine soil', 'roadside soil', 'tropical soil', 'beech forest soil', 'fluvisol', 'luvisol', 'cambisol', 'regosol', 'leptosol', 'gleysol', 'vertisol');
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/soil_composition.tsv";
         $labels = $this->load_github_dump($url);
-        echo "\nsoil_composition: [".count($labels)."]\n";
+        echo "\nsoil_composition: [".count($labels)."] dump count\n";
         foreach($labels as $label) $this->soil_compositions[$label] = '';
         // */
     }
@@ -1678,7 +1678,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $labels = array_merge($a1, $a2, $a3); */
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/del_MoF_with_these_labels.tsv";
         $labels = $this->load_github_dump($url);
-        echo "\ndelete_MoF_with_these_labels: [".count($labels)."]\n";
+        echo "\ndelete_MoF_with_these_labels: [".count($labels)."] dump count\n";
         foreach($labels as $label) $this->delete_MoF_with_these_labels[$label] = '';
     }
     private function initialize_mRemark_assignments()
@@ -1691,7 +1691,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         */
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/mRemarks_assignments.tsv";
         $mRemarks = $this->parse_github_dump($url, "mRemark_assignments");
-        echo "\nmRemark_assignments: [".count($mRemarks)."]\n";
+        echo "\nmRemark_assignments: [".count($mRemarks)."] dump count\n";
         $this->mRemarks = $mRemarks;
     }
     private function initialize_delete_uris()
