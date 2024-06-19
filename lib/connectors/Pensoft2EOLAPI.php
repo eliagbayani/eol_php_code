@@ -117,7 +117,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         if($val = @$param['ontologies']) $this->ontologies = $val;      // 1st client is the utility run_partial.php
         else                             $this->ontologies = "envo";    // orig
         /* from DATA-1853 - exclude ranks for Wikipedia inferred records */
-        $this->excluded_ranks = array('class', 'infraclass', 'infrakingdom', 'infraorder', 'infraphylum', 'kingdom', 'order', 'phylum', 'subclass', 'subkingdom', 'suborder', 'subphylum', 'subtribe', 'superclass', 'superfamily', 'superkingdom', 'superorder', 'superphylum', 'division', 'domain', 'grandorder', 'parvorder', 'realm', 'subdivision', 'tribe');
+
+        $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/Wikipedia_excluded_ranks.tsv";
+        // $this->excluded_ranks = array('class', 'infraclass', 'infrakingdom', 'infraorder', 'infraphylum', 'kingdom', 'order', 'phylum', 'subclass', 'subkingdom', 'suborder', 'subphylum', 'subtribe', 'superclass', 'superfamily', 'superkingdom', 'superorder', 'superphylum', 'division', 'domain', 'grandorder', 'parvorder', 'realm', 'subdivision', 'tribe');
+        $this->excluded_ranks = $this->load_github_dump($url);
         $this->pensoft_service = "https://api.pensoft.net/annotator?text=MY_DESC&ontologies=MY_ONTOLOGIES";
         /* DATA-1893: new patterns for all textmined resources: life history ontology */
         $this->new_patterns_4textmined_resources = "https://raw.githubusercontent.com/EOL/textmine_rules/main/life_history.tsv";
@@ -143,7 +146,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // 'farm soil', 'alpine soil', 'roadside soil', 'tropical soil', 'beech forest soil', 'fluvisol', 'luvisol', 'cambisol', 'regosol', 'leptosol', 'gleysol', 'vertisol');
         $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/soil_composition.tsv";
         $labels = $this->load_github_dump($url);
-        echo "\nsoil_composition: [".count($labels)."] dump count\n";
         foreach($labels as $label) $this->soil_compositions[$label] = '';
         // */
     }
@@ -1678,7 +1680,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $labels = array_merge($a1, $a2, $a3); */
         $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/del_MoF_with_these_labels.tsv";
         $labels = $this->load_github_dump($url);
-        echo "\ndelete_MoF_with_these_labels: [".count($labels)."] dump count\n";
         foreach($labels as $label) $this->delete_MoF_with_these_labels[$label] = '';
     }
     private function initialize_mRemark_assignments()
@@ -1689,7 +1690,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         /* read from tsv file, generate $mRemarks */
         $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/mRemarks_assignments.tsv";
         $mRemarks = $this->parse_github_dump($url, "mRemark_assignments");
-        echo "\nmRemark_assignments: [".count($mRemarks)."] dump count\n";
         $this->mRemarks = $mRemarks;
     }
     private function initialize_delete_uris()

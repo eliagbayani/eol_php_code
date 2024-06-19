@@ -212,6 +212,8 @@ class Functions_Pensoft
         unlink($local);
         foreach($arr as $uri) $final[$uri] = ''; 
         print_r($final); //debug only
+        $filename = pathinfo($url, PATHINFO_FILENAME);
+        echo "\n $filename: [".count($final)."] dump count\n";
         return array_keys($final);
     }
     function parse_github_dump($url, $what) //another func: load_github_dump()
@@ -231,6 +233,8 @@ class Functions_Pensoft
         }
         unlink($local);
         print_r($final); //debug only
+        $filename = pathinfo($url, PATHINFO_FILENAME);
+        echo "\n $filename: [".count($final)."] dump count\n";
         if($what == "mRemark_assignments") return $final;        
     }
 }
