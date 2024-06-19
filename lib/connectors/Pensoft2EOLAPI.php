@@ -142,7 +142,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // 'dune soil', 'arable soil', 'agricultural soil', 'meadow soil', 'orchard soil', 'alluvial soil', 'grassland soil', 'pasture soil', 'peat soil', 'steppe soil', 
         // 'farm soil', 'alpine soil', 'roadside soil', 'tropical soil', 'beech forest soil', 'fluvisol', 'luvisol', 'cambisol', 'regosol', 'leptosol', 'gleysol', 'vertisol');
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/soil_composition.tsv";
-        $labels = self::load_github_dump($url);
+        $labels = $this->load_github_dump($url);
         echo "\nsoil_composition: [".count($labels)."]\n";
         foreach($labels as $label) $this->soil_compositions[$label] = '';
         // */
@@ -1677,22 +1677,9 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         'bridge', 'blowhole', 'bakery', 'aquarium', 'anthropogenic geographic feature', 'animal habitation', 'air conditioning unit', 'activated sludge', 'agricultural feature');
         $labels = array_merge($a1, $a2, $a3); */
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/del_MoF_with_these_labels.tsv";
-        $labels = self::load_github_dump($url);
+        $labels = $this->load_github_dump($url);
         echo "\ndelete_MoF_with_these_labels: [".count($labels)."]\n";
         foreach($labels as $label) $this->delete_MoF_with_these_labels[$label] = '';
-    }
-    private function load_github_dump($url) //another func parse_github_dump()
-    {
-        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*24));
-        $arr = explode("\n", file_get_contents($local));
-        $arr = array_map('trim', $arr);
-        $arr = array_filter($arr); //remove null arrays
-        $arr = array_unique($arr); //make unique
-        $arr = array_values($arr); //reindex key
-        unlink($local);
-        foreach($arr as $uri) $final[$uri] = '';
-        // print_r($final); exit("\n\n");
-        return array_keys($final);
     }
     private function initialize_mRemark_assignments()
     {           
@@ -1703,28 +1690,9 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         https://github.com/eliagbayani/EOL-connector-data-files/blob/master/Pensoft_Annotator/mRemarks_assignments.tsv
         */
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Pensoft_Annotator/mRemarks_assignments.tsv";
-        $mRemarks = self::parse_github_dump($url, "mRemark_assignments");
+        $mRemarks = $this->parse_github_dump($url, "mRemark_assignments");
         echo "\nmRemark_assignments: [".count($mRemarks)."]\n";
         $this->mRemarks = $mRemarks;
-    }
-    private function parse_github_dump($url, $what) //another func: load_github_dump()
-    {
-        $final = array();
-        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr
-        foreach(new FileIterator($file) as $line => $row) {
-            $i++;
-            if(!$row) continue;
-            $tmp = explode("\t", $row); // print_r($tmp); exit;
-            if($what == "mRemark_assignments") {
-                /*Array(
-                    [0] => open waters
-                    [1] => http://purl.obolibrary.org/obo/ENVO_00002030
-                )*/            
-                $final[$tmp[0]] = $tmp[1];
-            }
-        }
-        unlink($local);
-        if($what == "mRemark_assignments") return $final;        
     }
     private function initialize_delete_uris()
     {

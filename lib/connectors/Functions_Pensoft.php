@@ -201,5 +201,38 @@ class Functions_Pensoft
 
         return $rec;      
     }
+    private function load_github_dump($url) //another func parse_github_dump()
+    {
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*24));
+        $arr = explode("\n", file_get_contents($local));
+        $arr = array_map('trim', $arr);
+        $arr = array_filter($arr); //remove null arrays
+        $arr = array_unique($arr); //make unique
+        $arr = array_values($arr); //reindex key
+        unlink($local);
+        foreach($arr as $uri) $final[$uri] = ''; 
+        print_r($final); //exit("\n\n"); //debug only
+        return array_keys($final);
+    }
+    function parse_github_dump($url, $what) //another func: load_github_dump()
+    {
+        $final = array();
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr
+        foreach(new FileIterator($file) as $line => $row) {
+            $i++;
+            if(!$row) continue;
+            $tmp = explode("\t", $row); // print_r($tmp); exit;
+            if($what == "mRemark_assignments") {
+                /*Array(
+                    [0] => open waters
+                    [1] => http://purl.obolibrary.org/obo/ENVO_00002030
+                )*/            
+                $final[$tmp[0]] = $tmp[1];
+            }
+        }
+        unlink($local);
+        print_r($final); //debug only
+        if($what == "mRemark_assignments") return $final;        
+    }
 }
 ?>
