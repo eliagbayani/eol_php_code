@@ -203,7 +203,7 @@ class Functions_Pensoft
     }
     function load_github_dump($url) //another func parse_github_dump()
     {
-        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr cache expires
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr cache expires 60*60*1
         $arr = explode("\n", file_get_contents($local));
         $arr = array_map('trim', $arr);
         $arr = array_filter($arr); //remove null arrays
@@ -211,7 +211,7 @@ class Functions_Pensoft
         $arr = array_values($arr); //reindex key
         unlink($local);
         foreach($arr as $uri) $final[$uri] = ''; 
-        print_r($final); //debug only
+        // print_r($final); //debug only
         $filename = pathinfo($url, PATHINFO_FILENAME);
         echo "\n $filename: [".count($final)."] dump count\n";
         return array_keys($final);
@@ -219,11 +219,11 @@ class Functions_Pensoft
     function parse_github_dump($url, $what) //another func: load_github_dump()
     {
         $final = array();
-        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr cache expires
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr cache expires 60*60*1
         foreach(new FileIterator($local) as $line => $row) {
             if(!$row) continue;
             $tmp = explode("\t", $row); // print_r($tmp); exit;
-            if($what == "mRemark_assignments") {
+            if($what == "key_value") {
                 /*Array(
                     [0] => open waters
                     [1] => http://purl.obolibrary.org/obo/ENVO_00002030
@@ -232,10 +232,10 @@ class Functions_Pensoft
             }
         }
         unlink($local);
-        print_r($final); //debug only
+        // print_r($final); //debug only
         $filename = pathinfo($url, PATHINFO_FILENAME);
         echo "\n $filename: [".count($final)."] dump count\n";
-        if($what == "mRemark_assignments") return $final;        
+        if($what == "key_value") return $final;        
     }
 }
 ?>

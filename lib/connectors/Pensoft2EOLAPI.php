@@ -1663,8 +1663,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // http://purl.obolibrary.org/obo/ENVO_00000087 (cliff) => http://purl.obolibrary.org/obo/ENVO_00000088 (sea cliff)
         // http://purl.obolibrary.org/obo/ENVO_00000182 (plateau) => discard. This could mean a few different things
         if($this->param['resource_id'] == '26_ENV') { //WoRMS only
+            /* moved to text file below
             $this->remapped_terms['http://purl.obolibrary.org/obo/ENVO_01000127'] = 'http://purl.obolibrary.org/obo/ENVO_00000267';
-            $this->remapped_terms['http://purl.obolibrary.org/obo/ENVO_00000087'] = 'http://purl.obolibrary.org/obo/ENVO_00000088';
+            $this->remapped_terms['http://purl.obolibrary.org/obo/ENVO_00000087'] = 'http://purl.obolibrary.org/obo/ENVO_00000088'; */
+            $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/Terms_remapped/WoRMS_only_terms_remapped.tsv";
+            $key_value_arr = $this->parse_github_dump($url, "key_value"); print_r($key_value_arr);
+            foreach($key_value_arr as $key => $value) $this->remapped_terms[$key] = $value;
+            echo "\nWoRMS added, remapped_terms: ".count($this->remapped_terms)."\n";
         }
         // */
     }
@@ -1689,7 +1694,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         
         /* read from tsv file, generate $mRemarks */
         $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/mRemarks_assignments.tsv";
-        $mRemarks = $this->parse_github_dump($url, "mRemark_assignments");
+        $mRemarks = $this->parse_github_dump($url, "key_value");
         $this->mRemarks = $mRemarks;
     }
     private function initialize_delete_uris()
@@ -1723,7 +1728,11 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // /* for WoRMS only: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65471&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65471
         // http://purl.obolibrary.org/obo/ENVO_00000182 (plateau) => discard. This could mean a few different things
         if($this->param['resource_id'] == '26_ENV') { //WoRMS only
-            $this->delete_MoF_with_these_uris['http://purl.obolibrary.org/obo/ENVO_00000182'] = '';
+            /* moved to text file below
+            $this->delete_MoF_with_these_uris['http://purl.obolibrary.org/obo/ENVO_00000182'] = ''; */
+            $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/WoRMS_only_delete_URIs.tsv";
+            $uris = $this->load_github_dump($url);
+            foreach($uris as $uri) $this->delete_MoF_with_these_uris[$uri] = '';
         }
         // */
 
