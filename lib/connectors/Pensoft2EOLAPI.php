@@ -1722,7 +1722,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // /* for WoRMS only: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65471&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65471
         // http://purl.obolibrary.org/obo/ENVO_00000182 (plateau) => discard. This could mean a few different things
         // if($this->param['resource_id'] == '26_ENV') { //WoRMS only
-        if(true) { //now across the board Jun, 20, 2024
+        if(true) { //now across the board 20Jun2024
             /* moved to text file below
             $this->delete_MoF_with_these_uris['http://purl.obolibrary.org/obo/ENVO_00000182'] = ''; */
             $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/WoRMS_only_delete_URIs.tsv";
