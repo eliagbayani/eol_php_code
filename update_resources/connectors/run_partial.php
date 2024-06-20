@@ -70,6 +70,7 @@ $descs[] = "I drive to the savanna, just around the grassland.";
 $descs[] = "I work in the Marine Institue of Technology. This is a marine species.";
 $descs[] = "I work in arete ria belong to the organic material inside moor around harbor";
 $descs[] = "(Fenďa and Lukáš 2014). I visited the United States National Museum last year.";
+$descs[] = "I like to live in a plateau."; //test for WoRMS
 
 /*
 $descs = array();
@@ -78,7 +79,7 @@ $descs[] = "(Fenďa and Lukáš 2014).";
 */
 
 $final = array();
-$IDs = array('24', '617_ENV', 'TreatmentBank_ENV'); //normal operation --- 617_ENV -> Wikipedia EN //24 -> AntWeb resource ID
+$IDs = array('24', '617_ENV', 'TreatmentBank_ENV', '26_ENV'); //normal operation --- 617_ENV -> Wikipedia EN //24 -> AntWeb resource ID
 // $IDs = array('24');
 // $IDs = array('TreatmentBank_ENV'); //or TreatmentBank
 foreach($IDs as $resource_id) {
@@ -97,7 +98,7 @@ foreach($IDs as $resource_id) {
     $i = 0; $errors = 0;
     foreach($descs as $desc) { $i++;
         $ret = run_desc($desc, $pensoft);
-        echo "\n[$resource_id $i] - "; echo("[$ret]");
+        echo "\n[$resource_id $i] - "; echo("[$desc] [$ret]");
         // $i = 9; //force-assign
         if($resource_id == '24') {            
             if($i == 1) { if($ret == "mud-ENVO_01000001|woodland-ENVO_01000175|orchard-ENVO_00000115|dune-ENVO_00000170")          echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
@@ -125,7 +126,6 @@ foreach($IDs as $resource_id) {
             if($i == 23) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 24) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 25) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
-
         }
         if(in_array($resource_id, array('TreatmentBank_ENV', '617_ENV'))) {
             if($i == 1) { if($ret == "woodland-ENVO_01000175|orchard-ENVO_00000115|dune-ENVO_00000170")    echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
@@ -162,6 +162,15 @@ foreach($IDs as $resource_id) {
             if($i == 19) { if($ret == "india-1269750")                      echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 20) { if($ret == "")                                   echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
         }
+
+        if($resource_id == '26_ENV') { //WoRMS
+            if($i == 26) { if($ret == "") echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
+        }
+        else { //the rest
+            if($i == 26) { if($ret == "plateau-ENVO_00000182") echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
+        }
+
+
     }
     echo "\nerrors: [$resource_id][$errors errors]";
     $final[] =     "[$resource_id][$errors errors]";
