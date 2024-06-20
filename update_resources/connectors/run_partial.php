@@ -166,11 +166,9 @@ foreach($IDs as $resource_id) {
         if($resource_id == '26_ENV') { //WoRMS
             if($i == 26) { if($ret == "") echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
         }
-        else { //the rest
+        else { //the rest. But still waiting final verdict here.
             if($i == 26) { if($ret == "plateau-ENVO_00000182") echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
         }
-
-
     }
     echo "\nerrors: [$resource_id][$errors errors]";
     $final[] =     "[$resource_id][$errors errors]";
