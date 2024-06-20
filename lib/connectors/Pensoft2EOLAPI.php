@@ -111,7 +111,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $this->another_set_exclude_URIs = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/terms_implying_missing_filter.txt';
         $this->another_set_exclude_URIs_02 = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/terms_to_remove.txt';
         $this->another_set_exclude_URIs_03 = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/geo_synonyms.txt';
-        $this->labels_to_remove_file = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/blacklist_labels_all_resources.txt';
+        $this->labels_to_remove_file = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/blacklist_labels.txt'; //for now Wikipedia inferred and TreatmentBank only
 
         $this->pensoft_run_cnt = 0;
         if($val = @$param['ontologies']) $this->ontologies = $val;      // 1st client is the utility run_partial.php
@@ -922,11 +922,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             // */
 
             // print_r($this->param); //exit;
-            // /* new Nov 23, 2023 per https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=67733&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67733
+            /* new Nov 23, 2023 per https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=67733&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67733
             if(in_array($this->param['resource_id'], array('617_ENV', 'TreatmentBank_ENV'))) { //Wikipedia EN & TreatmentBank for now
                 if(isset($this->labels_to_remove[$rek['lbl']])) continue;
             }
-            // */
+            */
+            if(isset($this->labels_to_remove[$rek['lbl']])) continue; //this started exclusive to Wikipedia and TreatmentBank. Now it is across the board 20Jun2024
+
 
             $rek['id'] = self::WoRMS_URL_format($rek['id']); # can be general, for all resources
             // echo "\nGoes- 80\n"; print_r($rek);
@@ -1719,7 +1721,8 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         
         // /* for WoRMS only: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65471&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65471
         // http://purl.obolibrary.org/obo/ENVO_00000182 (plateau) => discard. This could mean a few different things
-        if($this->param['resource_id'] == '26_ENV') { //WoRMS only
+        // if($this->param['resource_id'] == '26_ENV') { //WoRMS only
+        if(true) { //now across the board Jun, 20, 2024
             /* moved to text file below
             $this->delete_MoF_with_these_uris['http://purl.obolibrary.org/obo/ENVO_00000182'] = ''; */
             $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/WoRMS_only_delete_URIs.tsv";
