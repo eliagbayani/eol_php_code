@@ -1110,7 +1110,8 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             }
             // ----- New: Nov 8, 2022 - EOL Terms file ----- END */
 
-            // /* Nov 15, 2023: "linn" -> http://purl.obolibrary.org/obo/ENVO_00000040 
+            // /* Already included in text files. But needed to put here still. 
+            // Nov 15, 2023: "linn" -> http://purl.obolibrary.org/obo/ENVO_00000040 
             // Any output from this source string should be discarded. It's a common form of the author string "Linnaeus"
             // https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=67722&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67722
             // http://purl.obolibrary.org/obo/ENVO_00000040	source text: "linn"
@@ -1675,22 +1676,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
     }
     private function initialize_delete_mRemarks()
     {   // if measurementRemarks is any of these, then delete MoF
-        /* moved to a dump file
-        $a1 = array('range s', 'ranges', 'range s', 'rang e', 'bamboo', 'barrens', 'breaks', 'mulga', 'chanaral');
-        $a2 = array('ridge', 'plateau', 'plateaus', 'crests', 'canyon', 'terrace', 'canyons', 'gullies', 'notches', 'terraces', 'bluff', 'cliffs', 'gulch', 'gully', 'llanos', 'plantations', 'sierra', 'tunnel');
-        $a3 = array('chemical product', 'cosmetic product', 'paper product', 'zoological garden', 'world heritage site', 'wildlife management area', 'warehouse', 'vivarium', 'terrarium', 'saline water aquarium', 
-        'road cut', 'road', 'populated place', 'plant feed', 'oil spill', 'oil tank', 'oil well', 'oil reservoir', 'oil', 'nature reserve', 'national nature reserve', 'national park', 
-        'national wildlife refuge', 'mouth', 'military training area', 'industrial waste', 'geographic feature', 'geothermal field', 'geothermal power plant', 'fresh water aquarium', 'elevation', 
-        'bridge', 'blowhole', 'bakery', 'aquarium', 'anthropogenic geographic feature', 'animal habitation', 'air conditioning unit', 'activated sludge', 'agricultural feature');
-        $labels = array_merge($a1, $a2, $a3); */
         $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/del_MoF_with_these_labels.tsv";
         $labels = $this->load_github_dump($url);
         foreach($labels as $label) $this->delete_MoF_with_these_labels[$label] = '';
     }
     private function initialize_mRemark_assignments()
     {           
-        // $mRemarks["open waters"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
-        // $mRemarks["open-water"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
+        // e.g. $mRemarks["open waters"] = "http://purl.obolibrary.org/obo/ENVO_00002030";
         
         /* read from tsv file, generate $mRemarks */
         $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/mRemarks_assignments.tsv";
