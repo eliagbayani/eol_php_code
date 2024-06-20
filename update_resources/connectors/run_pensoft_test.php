@@ -20,7 +20,6 @@ echo "\n[$ret]\n";
 exit("\n--end test--\n");
 */
 
-
 /* option 1 works, but it skips a lot of steps that is needed in real-world connector run.
 $json = $func->run_partial($desc);
 $arr = json_decode($json); print_r($arr);
@@ -150,7 +149,6 @@ foreach($IDs as $resource_id) {
             if($i == 23) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 24) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 25) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
-      
         }
         if($resource_id == '617_ENV') {
             if($i == 18) { if($ret == "")                                   echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
