@@ -125,8 +125,8 @@ class DwCA_Aggregator_Functions
         
         return $rec;
     }
-    function process_table_TreatmentBank_document($rec, $row_type, $meta)
-    {
+    function process_table_TreatmentBank_document($rec, $row_type, $meta, $zip_file)
+    {   // print_r($rec); print_r($row_type); print_r($meta); exit("\n[$zip_file]\n");
         $taxon_id = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
         if($row_type == 'http://eol.org/schema/media/document') { //not http://rs.gbif.org/terms/1.0/description
             if(!$rec['http://ns.adobe.com/xap/1.0/rights/UsageTerms']) return false; //continue; //exclude with blank license
@@ -137,6 +137,8 @@ class DwCA_Aggregator_Functions
                                                             'contributor'   => $rec['http://purl.org/dc/terms/contributor'],
                                                             'creator'       => $rec['http://purl.org/dc/terms/creator'],
                                                             'bibliographicCitation' => $rec['http://purl.org/dc/terms/bibliographicCitation']);
+            //new 23Jun2024
+            $rec['http://rs.tdwg.org/ac/terms/additionalInformation'] = $zip_file;
         }
         elseif($row_type == 'http://rs.gbif.org/terms/1.0/description') { //not http://eol.org/schema/media/document
             /* Array( print_r($rec);
@@ -160,7 +162,8 @@ class DwCA_Aggregator_Functions
 
             $json = json_encode($rec);
             $rec['http://purl.org/dc/terms/identifier'] = md5($json);
-            $rec['http://rs.tdwg.org/ac/terms/additionalInformation'] = $rec['http://purl.org/dc/terms/type'];
+            $addInfo = array($rec['http://purl.org/dc/terms/type'], $zip_file);
+            $rec['http://rs.tdwg.org/ac/terms/additionalInformation'] = implode("|", $addInfo);
             $rec['http://purl.org/dc/terms/type'] = "http://purl.org/dc/dcmitype/Text";
             $rec['http://purl.org/dc/terms/format'] = "text/html";
             $rec['http://iptc.org/std/Iptc4xmpExt/1.0/xmlns/CVterm'] = "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Uses";
