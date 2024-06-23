@@ -101,7 +101,9 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
         $preferred_rowtypes = array("http://rs.tdwg.org/dwc/terms/taxon", "http://eol.org/schema/media/document");
         $preferred_rowtypes[] = "http://rs.gbif.org/terms/1.0/description"; //added Dec 4, 2023. To get the better quality text for textmining.
         $ret = array(); $i = 0;
-        foreach($DwCAs as $dwca_file) { $i++; echo "\n$i of $no_of_lines -> ".pathinfo($dwca_file, PATHINFO_BASENAME);
+        foreach($DwCAs as $dwca_file) { $i++;
+            $this->zip_file = pathinfo($dwca_file, PATHINFO_BASENAME); 
+            echo "\n$i of $no_of_lines -> ".$this->zip_file;
             if(file_exists($dwca_file)) {
                 $this->resource_id_current = $dwca_file;
                 self::convert_archive($preferred_rowtypes, $dwca_file, array('timeout' => 172800, 'expire_seconds' => 60*60*24*30)); //30 days
@@ -116,7 +118,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
     }
     private function convert_archive($preferred_rowtypes = false, $dwca_file, $download_options = array('timeout' => 172800, 'expire_seconds' => 0))
     {   /* param $preferred_rowtypes is the option to include-only those row_types you want on your final DwCA.*/
-        echo "\nConverting archive to EOL DwCA...\n";
+        echo "\nConverting archive to EOL DwCA [$dwca_file]...\n";
         $info = self::start($dwca_file, $download_options); //1 day expire -> 60*60*24*1
         $temp_dir = $info['temp_dir'];
         $this->temp_dir = $temp_dir; //first client is TreatmentBank. Used in reading eml.xml from the source DwCA
@@ -340,7 +342,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             if($what == "document") {
 
                 if($this->resource_id == "TreatmentBank") {
-                    $rec = $this->process_table_TreatmentBank_document($rec, $row_type, $meta); //new Dec 12, 2023
+                    $rec = $this->process_table_TreatmentBank_document($rec, $row_type, $meta, $this->zip_file); //new Dec 12, 2023
                     if(!$rec) continue;
                 }
 
