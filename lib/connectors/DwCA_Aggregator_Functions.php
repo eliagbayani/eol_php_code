@@ -151,11 +151,11 @@ class DwCA_Aggregator_Functions
             if(!$rec['http://purl.org/dc/terms/description']) return false; //continue; //description cannot be blank
             $description_type = $rec['http://purl.org/dc/terms/type'];
             
-            if(in_array($description_type, array('etymology', 'discussion', 'type_taxon'))) return false; //continue;
+            if(in_array($description_type, array('etymology', 'discussion', 'type_taxon')))                                     return false; //continue;
             // Additional text types:
-            elseif(in_array($description_type, array("synonymic_list", "vernacular_names", "ecology", "biology", "material"))) return false; //continue;
-            elseif(in_array($description_type, array("food_feeding", "breeding", "activity", "use"))) return false; //continue;
-            elseif(!$description_type) return false; //continue;
+            elseif(in_array($description_type, array("synonymic_list", "vernacular_names", "ecology", "biology", "material")))  return false; //continue;
+            elseif(in_array($description_type, array("food_feeding", "breeding", "activity", "use")))                           return false; //continue;
+            elseif(!$description_type)                                                                                          return false; //continue;
             // if($description_type == 'type_taxon') { print_r($rec); exit; } //debug only good debug
 
             $this->TreatmentBank_stats($rec, $description_type); // stat only purposes, good report.
