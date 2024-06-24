@@ -2658,7 +2658,6 @@ class Functions
             if(stripos($sciname, $hit) !== false) { //string is found
                 if(substr($sciname, -(strlen($hit))) == $hit) return false; // "Gadus morhua sp" is invalid
             }
-
         }
         return true;
     }
