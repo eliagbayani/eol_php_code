@@ -151,6 +151,7 @@ class DwCA_Aggregator_Functions
             if(!$rec['http://purl.org/dc/terms/description']) return false; //continue; //description cannot be blank
             $description_type = $rec['http://purl.org/dc/terms/type'];
             
+            // exclude these types:
             if(in_array($description_type, array('etymology', 'discussion', 'type_taxon')))                                     return false; //continue;
             // Additional text types:
             elseif(in_array($description_type, array("synonymic_list", "vernacular_names", "ecology", "biology", "material")))  return false; //continue;
@@ -167,7 +168,7 @@ class DwCA_Aggregator_Functions
             $rec['http://purl.org/dc/terms/type'] = "http://purl.org/dc/dcmitype/Text";
             $rec['http://purl.org/dc/terms/format'] = "text/html";
             $rec['http://iptc.org/std/Iptc4xmpExt/1.0/xmlns/CVterm'] = "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Uses";
-            $rec['http://purl.org/dc/terms/title'] = "";
+            $rec['http://purl.org/dc/terms/title'] = "Type: $description_type";
             $rec['http://rs.tdwg.org/ac/terms/furtherInformationURL'] = "https://treatment.plazi.org/id/".str_replace(".taxon", "", $rec['http://rs.tdwg.org/dwc/terms/taxonID']);
             $rec['http://purl.org/dc/terms/bibliographicCitation'] = $rec['http://purl.org/dc/terms/source'];
             unset($rec['http://purl.org/dc/terms/source']);
@@ -249,12 +250,340 @@ class DwCA_Aggregator_Functions
         if(stripos($rec['http://rs.tdwg.org/dwc/terms/scientificName'], "Acrididae;") !== false) return false; //continue; //string is found
         if(stripos(@$rec['http://rs.gbif.org/terms/1.0/canonicalName'], "Acrididae;") !== false) return false; //continue; //string is found
 
+        @$this->debug[$this->resource_id]['taxonRank'][$rec['http://rs.tdwg.org/dwc/terms/taxonRank']]++;
+
         // /* new: Nov 21, 2023:
         if($scientificName = @$rec["http://rs.tdwg.org/dwc/terms/scientificName"]) {
-            if(!Functions::valid_sciname_for_traits($scientificName)) return false; //continue;
+            if(!Functions::valid_sciname_for_traits($scientificName)) return false;
+            if(in_array($rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'], array('synonym'))) return false;
+            if(self::no_ancestry_fields($rec)) return false;
+        }
+        else return false;
+        // */
+
+        @$this->debug[$this->resource_id]['taxonomicStatus'][$rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus']]++;
+
+        /*Array(
+            [http://rs.tdwg.org/dwc/terms/taxonID] => 5ACD6D1A54AC5FBC87E765FCFE855D63.taxon
+            [http://rs.tdwg.org/dwc/terms/namePublishedIn] => 
+            [http://rs.tdwg.org/dwc/terms/acceptedNameUsageID] => 
+            [http://rs.tdwg.org/dwc/terms/parentNameUsageID] => 
+            [http://rs.tdwg.org/dwc/terms/originalNameUsageID] => 
+            [http://rs.tdwg.org/dwc/terms/kingdom] => Animalia
+            [http://rs.tdwg.org/dwc/terms/phylum] => Arthropoda
+            [http://rs.tdwg.org/dwc/terms/class] => Insecta
+            [http://rs.tdwg.org/dwc/terms/order] => Heteroptera
+            [http://rs.tdwg.org/dwc/terms/family] => Acanthosomatidae
+            [http://rs.tdwg.org/dwc/terms/genus] => Acanthosoma
+            [http://rs.tdwg.org/dwc/terms/taxonRank] => species
+            [http://rs.tdwg.org/dwc/terms/scientificName] => Acanthosoma Denticaudum (Jakovlev 1880)
+            [http://rs.tdwg.org/dwc/terms/scientificNameAuthorship] => (Jakovlev 1880)
+            [http://gbif.org/dwc/terms/1.0/canonicalName] => Acanthosoma Denticaudum
+            [http://rs.tdwg.org/dwc/terms/taxonomicStatus] => 
+            [http://rs.tdwg.org/dwc/terms/nomenclaturalStatus] => 
+            [http://purl.org/dc/terms/references] => http://treatment.plazi.org/id/5ACD6D1A54AC5FBC87E765FCFE855D63
+        )*/
+
+        // /* new: by Eli 24Jun2024
+        if($val = @$rec['http://rs.gbif.org/terms/1.0/canonicalName']) {
+            $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
+            $scientificName = $val;
+        }
+        elseif($val = $rec['http://gbif.org/dwc/terms/1.0/canonicalName']) {
+            $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
+            $scientificName = $val;
+        }
+        else { print_r($rec); exit("\nNo canonical\n"); }
+        // */            
+
+        // more than 2 numeric strings: e.g. "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963"
+        $matches = array();
+        preg_match_all('/([0-9]+)/', $scientificName, $matches);
+        if(count($matches[1]) > 1) {
+            $obj = self::run_gnfinder($scientificName); print_r($obj);
+            if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
+        }
+
+        // /* Some scientificName values have uppercase epithets although the epithets at the source have the appropriate lower case. e.g. "Coranus Aethiops Jakovlev 1893" https://github.com/EOL/ContentImport/issues/13
+        $parts = explode(" ", $scientificName);
+        if(ctype_upper(substr(@$parts[1], 0, 1))) { echo "\n[epithet uppercase: ".$scientificName."]\n";
+            $rec = self::epithet_upper_case($rec);
+        } //ctype_upper
+
+        // print_r($rec); //exit("\n[$sciname]\n");
+        // if("Insecta" == @$rec['http://gbif.org/dwc/terms/1.0/canonicalName']) exit("\nelix\n"); //debug only
+        // */
+
+        /* utility: gni test only
+        $sciname = "Deuterodon aff. taeniatus (Jenyns, 1842)";
+        // $sciname = "Cercyon (Acycreon) apiciflavus Hebauer 2002";                                       //-> canonical simple: Cercyon apiciflavus
+        // $sciname = "Galesus (G.) foersteri var. nigricornis Kieffer 1911";                              //-> canonical simple: Galesus foersteri nigricornis
+        // $sciname = "Spartina ×townsendii H. Groves & J. Groves, Bot. Exch. Club Rep. 1880. 37. 1881.";  //-> canonical simple: Spartina townsendii
+        $sciname = "(Porch) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
+        $sciname = "Tenebroides (Polynesibroides) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
+        $sciname = "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963";
+        $obj = self::run_gnfinder($sciname); print_r($obj);
+        echo "\ncanonical simple: [".@$obj->names[0]->bestResult->matchedCanonicalSimple."]\n";
+        exit("\norig: [$sciname]\n"); //works OK but not needed here.
+        */
+
+        /* This should accommodate cases where the scientificName value includes things like a subgenus name, a var./ssp./f. abbreviation or a hybrid character. Examples:
+        scientificName: Cercyon (Acycreon) apiciflavus Hebauer 2002 -> canonical simple: Cercyon apiciflavus
+        scientificName: Galesus (G.) foersteri var. nigricornis Kieffer 1911 -> canonical simple: Galesus foersteri nigricornis
+        scientificName: Spartina ×townsendii H. Groves & J. Groves, Bot. Exch. Club Rep. 1880. 37. 1881. -> canonical simple: Spartina townsendii */
+        $rec = self::get_name_from_gnfinder($rec);
+
+        if(!self::katja_valid_name($rec)) return false;
+
+        return $rec;
+    }
+    private function epithet_upper_case($rec)
+    {
+        // print_r($rec); //exit;
+        $taxonID = str_replace(".taxon", "", $rec['http://rs.tdwg.org/dwc/terms/taxonID']);
+        $url = "http://tb.plazi.org/GgServer/xml/".$taxonID;
+
+        $options = $this->download_TB_options;
+        $options['expire_seconds'] = false; //doesn't expire
+        $xml_string = Functions::lookup_with_cache($url, $options);
+
+        // $xml_string = 'xxxdocTitle="Callichthys callichthys callichthys (Linnaeus 1758" yyy<taxonomicName id="0E052165DC2726A7AD530570A1A6D6C2" LSID="BC789CA9-3135-5E6F-8EC5-A6F40F9AE404" authority="callichthys (Linnaeus, 1758)" authorityName="callichthys (Linnaeus" authorityYear="1758" baseAuthorityName="Linnaeus" baseAuthorityYear="1758" class="Actinopterygii" family="Callichthyidae" genus="Callichthys" higherTaxonomySource="CoL" kingdom="Animalia" lsidName="Callichthys callichthys" order="Siluriformes" pageId="0" pageNumber="25" phylum="Chordata" rank="species" species="callichthys">Callichthys callichthys (Linnaeus, 1758)</taxonomicName>ddd';
+
+        $xml_sciname1 = self::get_taxonomicName_from_xml($xml_string, 'taxonomicName');
+        $xml_sciname2 = self::get_taxonomicName_from_xml($xml_string, 'docTitle');
+
+        // echo "\nxml_sciname1: [$xml_sciname1]\n"; echo "\nxml_sciname2: [$xml_sciname2]\n"; exit; //debug only
+
+        $ret1 = self::xml_and_dwca_same_names($xml_sciname1, $rec);
+        /* debug only
+        if(in_array($taxonID, array('BC789CA931355E6F8EC5A6F40F9AE404'))) {
+            print_r($ret1);
+            exit("\n[$xml_sciname1]\n[$xml_sciname2]\nditox xx"); //debug only
+        }
+        */        
+        if($ret1['final']) {
+            // if(in_array($taxonID, array('BC789CA931355E6F8EC5A6F40F9AE404'))) exit("\n[$xml_sciname1]\n[$xml_sciname2]\nditox 1"); //debug only
+            $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $xml_sciname1;
+            $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = Functions::canonical_form($xml_sciname1);
+        }
+        else {
+            $ret2 = self::xml_and_dwca_same_names($xml_sciname2, $rec);
+            if($ret2['final']) {
+                if(in_array($taxonID, array('BC789CA931355E6F8EC5A6F40F9AE404'))) {
+                    exit("\n does not go here: [$xml_sciname1]\n[$xml_sciname2]\n");
+                    // print_r($ret2); exit("\n[$xml_sciname1]\n[$xml_sciname2]\nditox 2"); //debug only
+                    $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $xml_sciname1;
+                    $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = Functions::canonical_form($xml_sciname1);    
+                }
+                else {
+                    $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $xml_sciname2;
+                    $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = Functions::canonical_form($xml_sciname2);    
+                }
+            }
+            else {
+                if(in_array($taxonID, array('BC789CA931355E6F8EC5A6F40F9AE404'))) {
+                    // exit("\n does not go here: [$xml_sciname1]\n[$xml_sciname2]\n"); //went here
+                    $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $xml_sciname1; //will do 
+                    $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = Functions::canonical_form($xml_sciname1);    
+                }
+                else {
+                    echo "\n--------------------------------------------------Investigate:\n"; print_r($rec); 
+                    echo "\nsciname from XML taxonomicName: [".self::get_taxonomicName_from_xml($xml_string, 'taxonomicName')."]\n";
+                    echo "\nsciname from XML docTitle: [".self::get_taxonomicName_from_xml($xml_string, 'docTitle')."]\n";
+
+                    echo "\nsciname from DwCA: [".$rec['http://rs.tdwg.org/dwc/terms/scientificName']."]\n";
+        
+                    echo "\nsciname from XML 1: [".$ret1['sciname']."]\n";
+                    echo "\nsciname from DwCA 1: [".$ret1['rec_sciname']."]\n";
+
+                    echo "\nsciname from XML 2: [".$ret2['sciname']."]\n";
+                    echo "\nsciname from DwCA 2: [".$ret2['rec_sciname']."]\n";
+
+                    exit("\nsciname from XML is different from sciname from DWCA\n");    
+                }
+            }
         }
         return $rec;
-        // */
+    }
+    private function get_name_from_gnfinder($rec)
+    {
+        /* This should accommodate cases where the scientificName value includes things like a subgenus name, a var./ssp./f. abbreviation or a hybrid character. Examples:
+        scientificName: Cercyon (Acycreon) apiciflavus Hebauer 2002 -> canonical simple: Cercyon apiciflavus
+        scientificName: Galesus (G.) foersteri var. nigricornis Kieffer 1911 -> canonical simple: Galesus foersteri nigricornis
+        scientificName: Spartina ×townsendii H. Groves & J. Groves, Bot. Exch. Club Rep. 1880. 37. 1881. -> canonical simple: Spartina townsendii */
+        $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
+        // case 1
+        $strings = array(" var.", " ssp.", " f.", "×", " x ");
+        foreach($strings as $str) {
+            if(stripos($scientificName, $str) !== false) { //string is found
+                if($val = self::get_canonical_simple($scientificName)) $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
+            }
+        }        
+        return $rec;
+    }
+    private function xml_and_dwca_same_names($xml_sciname, $rec)
+    {
+        $sciname = $xml_sciname;
+        $sciname = str_replace(" aff. ", " ", $sciname); //BFDABD75C1CF582D8A453276518C11D0.taxon
+
+        $rec_sciname = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
+
+        $sciname     = str_replace(".", ". ", $sciname);
+        $rec_sciname = str_replace(".", ". ", $rec_sciname);
+
+        $sciname     = Functions::remove_whitespace(str_replace(array(",", ".", ";"), "", $sciname));
+        $rec_sciname = Functions::remove_whitespace(str_replace(array(",", ".", ";"), "", $rec_sciname));
+
+        $sciname = strtolower(self::replace_accents($sciname));
+        $rec_sciname = strtolower(self::replace_accents($rec_sciname));
+
+        $sciname = Functions::remove_whitespace(preg_replace('/\s*\([^)]*\)/', '', $sciname)); //remove parenthesis OK
+        $rec_sciname = Functions::remove_whitespace(preg_replace('/\s*\([^)]*\)/', '', $rec_sciname)); //remove parenthesis OK
+        
+        $sciname = Functions::remove_whitespace(self::remove_numeric_from_string($sciname));
+        $rec_sciname = Functions::remove_whitespace(self::remove_numeric_from_string($rec_sciname));
+
+        if($sciname == $rec_sciname)    return array('final' => true, 'sciname' => $sciname, 'rec_sciname' => $rec_sciname);
+        else {
+            $sciname = Functions::remove_whitespace(str_replace("&amp", "", $sciname));
+            if($sciname == $rec_sciname)    return array('final' => true, 'sciname' => $sciname, 'rec_sciname' => $rec_sciname);
+            else {
+                $rec_sciname = Functions::remove_whitespace(str_replace("and", "", $rec_sciname));
+                if($sciname == $rec_sciname)    return array('final' => true, 'sciname' => $sciname, 'rec_sciname' => $rec_sciname);
+                else                            return array('final' => false, 'sciname' => $sciname, 'rec_sciname' => $rec_sciname);
+            }
+        }
+    }
+    function run_gnfinder($str)
+    {
+        require_library('connectors/Functions_Memoirs');
+        require_library('connectors/ParseListTypeAPI_Memoirs');
+        require_library('connectors/ParseUnstructuredTextAPI_Memoirs'); 
+        $func = new ParseUnstructuredTextAPI_Memoirs(false, false);
+        $obj = $func->run_gnverifier($str); //print_r($obj); //exit;
+        return $obj;
+    }
+    function get_taxonomicName_from_xml($xml, $what)
+    {   if($what == 'taxonomicName') {
+            if(preg_match("/<taxonomicName(.*?)<\/taxonomicName>/ims", $xml, $arr)) {
+                $sciname = self::replace_accents($arr[1]);
+                $sciname = trim(strip_tags("<taxonomicName".$sciname));
+                $sciname = str_replace(array("\t", chr(10), chr(13)), " ", $sciname);
+                $sciname = html_entity_decode($sciname); //important 523AFB0F879857DEA647B13C3BAB685A.taxon
+
+                $parts = explode(" ", $sciname);
+                if(count($parts) > 2) {
+                    $obj = self::run_gnfinder($sciname); //print_r($obj);
+                    if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) return Functions::remove_whitespace($val);
+                }
+                else return Functions::remove_whitespace($sciname); //to limit call to gnfinder
+            }    
+        }
+        elseif($what == 'docTitle') {
+            if(preg_match("/docTitle=\"(.*?)\"/ims", $xml, $arr)) {
+                $sciname = $arr[1];
+
+                $parts = explode(" ", $sciname);
+                if(count($parts) > 2) {
+                    $obj = self::run_gnfinder($sciname); //print_r($obj);
+                    if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) return Functions::remove_whitespace($val);
+                }
+                else return Functions::remove_whitespace($sciname); //to limit call to gnfinder
+            }    
+        }
+        exit("\nInvestigate: no <taxonomicName> nor docTitle found in XML.\n");
+    }
+    function katja_valid_name($rec)
+    {   
+        $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
+        $taxonRank      = $rec['http://rs.tdwg.org/dwc/terms/taxonRank'];
+        /* Misparsed or malformed names
+        Please remove all records for taxa that have one the following strings in their scientific name values (case insensitive): undefined|undetermined|incertae sedis */
+        $strings = array('undefined', 'undetermined', 'incertae sedis');
+        foreach($strings as $str) {
+            if(stripos($scientificName, $str) !== false) return false; //string is found
+        }
+
+        /* Higher taxa
+        Please remove all records for taxa that are NOT of rank species|variety|subspecies|form. There are over 90,000 of these records. 
+        Most of them are mismapped, i.e., the trait record is attached to a genus or family or worse, 
+        but the matched value is actually providing information for a species that is not picked up by the parser. Examples:
+        */
+        if(!in_array(strtolower($taxonRank), array('species', 'variety', 'subspecies', 'form'))) return false;
+
+        // [taxonRank] => Array(
+        //     [species] => 211
+        //     [genus] => 20
+        //     [subGenus] => 4
+        //     [class] => 1
+        //     [subSpecies] => 28
+        //     [variety] => 4 )
+        //  ...many more...
+        /* Please remove all records for:
+        taxa of rank species where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+
+        taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+.
+        */
+        if($taxonRank == 'species') {
+            // $sciname = "R. crataegifolius Bunge Mém. Acad. Imp. Sci. St. - Pétersbourg Divers Savans 2: 98. 1835."; //cannot be rescued
+            // $sciname = "C. italicus (Linnaeus, 1758)"; //cannot be rescued    
+            $pattern = "/[A-Z][a-z-]+ [a-z-]+/";
+
+            $canonical_simple = self::get_canonical_simple($scientificName);
+            if(!preg_match($pattern, $canonical_simple)) {
+                echo "\ninvalid reg: [$scientificName] [$canonical_simple]\n";
+                return false;
+            }
+            else echo "\nvalid reg: [$scientificName] [$canonical_simple]\n";
+        }
+
+        /* taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+. */
+        $ranks = array('variety', 'subSpecies', 'form');
+        if(in_array($taxonRank, $ranks)) {
+            $pattern = "/[A-Z][a-z-]+ [a-z-]+ [a-z-]+./";
+            if(!preg_match($pattern, $scientificName)) {
+                echo "\ninvalid reg rank [$taxonRank]: [$scientificName]\n";
+                return false;
+            }
+            else echo "\nvalid reg rank [$taxonRank]: [$scientificName]\n";
+        }
+
+        return true;
+    }
+    private function get_canonical_simple($scientificName)
+    {
+        if($scientificName == Functions::canonical_form($scientificName)) return $scientificName;
+
+        $obj = self::run_gnfinder($scientificName);
+        if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) return $val;
+    }
+    function replace_accents($str)
+    {
+        // $string = 'Ë À Ì Â Í Ã Î Ä Ï Ç Ò È Ó É Ô Ê Õ Ö ê Ù ë Ú î Û ï Ü ô Ý õ â û ã ÿ ç';
+        $normalizeChars = array(
+            'Š'=>'S', 'š'=>'s', 'Ð'=>'Dj','Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A',
+            'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I',
+            'Ï'=>'I', 'Ñ'=>'N', 'Ń'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U',
+            'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss','à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a',
+            'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i',
+            'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ń'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u',
+            'ú'=>'u', 'û'=>'u', 'ü'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y', 'ƒ'=>'f',
+            'ă'=>'a', 'î'=>'i', 'â'=>'a', 'ș'=>'s', 'ț'=>'t', 'Ă'=>'A', 'Î'=>'I', 'Â'=>'A', 'Ș'=>'S', 'Ț'=>'T',
+        );
+        //Output: E A I A I A I A I C O E O E O E O O e U e U i U i U o Y o a u a y c
+        return strtr($str, $normalizeChars);        
+    }
+    private function remove_numeric_from_string($string)
+    {
+        $digits = array("1", "2", "3", "4", "5", "6", "7", "8", "9", "0");
+        return str_ireplace($digits, '', $string);
+    }
+    private function no_ancestry_fields($rec)
+    {
+        $ranks = array('kingdom', 'phylum', 'class', 'order', 'family', 'genus');
+        foreach($ranks as $rank) {
+            if(@$rec["http://rs.tdwg.org/dwc/terms/".$rank]) return false; //has value
+        }
+        return true; //all fields are blank
     }
 }
 ?>
