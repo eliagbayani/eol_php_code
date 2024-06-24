@@ -173,6 +173,13 @@ print_r($arr);
 exit("\n-end test-\n");
 */
 
+/* test only
+$matches = array();
+preg_match_all('/([0-9]+)/', "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963", $matches);
+print_r($matches[1]);
+exit("\n-end test-\n");
+*/
+
 print_r($argv);
 $params['jenkins_or_cron'] = @$argv[1]; //not needed here
 $param                     = json_decode(@$argv[2], true);
