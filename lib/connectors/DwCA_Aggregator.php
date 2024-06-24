@@ -32,6 +32,10 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
                                   "http://eol.org/schema/reference/reference"       => "reference",
                                   "http://eol.org/schema/association"               => "association");
         $this->attributions = array();
+        $this->download_TB_options = array( //same value as in TreatmentBankAPI.php
+            'resource_id'        => "TreatmentBank",
+            'expire_seconds'     => false, //expires set to false for now
+            'download_wait_time' => 2000000, 'timeout' => 60*5, 'download_attempts' => 1, 'delay_in_minutes' => 1, 'cache' => 1);
     }
     function get_langs()
     {
@@ -322,8 +326,11 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             if($what == "taxon") {
                 //----------taxonID must be unique
                 $taxon_id = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
-                if(!isset($this->taxon_ids[$taxon_id])) $this->taxon_ids[$taxon_id] = '';
-                else continue;
+
+                // if($taxon_id == "EC1F5479EE323E211667122BCBA032DA.taxon") { //debug only
+                //     print_r($rec); exit("\nstop 1\n");
+                // }
+                
                 //----------sciname must not be blank
                 if(!$rec['http://rs.tdwg.org/dwc/terms/scientificName']) continue;
                 // ====================================== customize per resource:
@@ -335,13 +342,16 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
                 if($this->resource_id == "TreatmentBank") {
                     $rec = $this->process_table_TreatmentBank_taxon($rec); //new Dec 12, 2023
                     if(!$rec) continue;
+                    $this->TB_taxon_ids[$taxon_id] = '';
                 }
                 // ======================================    
             } //end $what == 'taxon'
 
             if($what == "document") {
+                $taxon_id = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
 
                 if($this->resource_id == "TreatmentBank") {
+                    if(!isset($this->TB_taxon_ids[$taxon_id])) continue; //to avoid creating media objects without taxon entry. per Github #13
                     $rec = $this->process_table_TreatmentBank_document($rec, $row_type, $meta, $this->zip_file); //new Dec 12, 2023
                     if(!$rec) continue;
                 }
