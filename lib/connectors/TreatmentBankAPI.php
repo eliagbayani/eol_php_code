@@ -32,7 +32,7 @@ class TreatmentBankAPI
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));
         }
         $this->debug = array();
-        $this->download_options = array(
+        $this->download_TB_options = array(
             'resource_id'        => "TreatmentBank",
             'expire_seconds'     => false, //expires set to false for now
             'download_wait_time' => 2000000, 'timeout' => 60*5, 'download_attempts' => 1, 'delay_in_minutes' => 1, 'cache' => 1);
@@ -106,7 +106,7 @@ class TreatmentBankAPI
                         else continue;
                     }
                     elseif($purpose == "build-up local dwca list") {
-                        // /* main operation - uncommentn in real operation
+                        // /* main operation - uncomment in real operation
                         if(($i % 5000) == 0) echo "[$i] ";
                         self::process_item_buildup_list($xml);
                         // if($i == 10) break; //debug only                        
@@ -117,7 +117,7 @@ class TreatmentBankAPI
                         if($i >= $from && $i <= $to) {
                             self::process_item_buildup_list($xml);
                         }
-                        */                        
+                        */
                     }
                 }
             }
@@ -144,7 +144,7 @@ class TreatmentBankAPI
         )*/
         $url = $xml->link.".xml";
         debug("".$url."");
-        $xml_string = Functions::lookup_with_cache($url, $this->download_options);
+        $xml_string = Functions::lookup_with_cache($url, $this->download_TB_options);
         $hash = simplexml_load_string($xml_string); // print_r($hash); 
         
         if($hash{"docType"} == "treatment" && $hash{"masterDocId"} && $hash{"docLanguage"} == "en") {
@@ -211,7 +211,7 @@ class TreatmentBankAPI
             [guid] => 03FA87C50911FFB0FC2DFC79FB4AD551.xml
         )*/
         $url = $xml->link.".xml"; // debug("".$url."");
-        $xml_string = Functions::lookup_with_cache($url, $this->download_options);
+        $xml_string = Functions::lookup_with_cache($url, $this->download_TB_options);
         $hash = simplexml_load_string($xml_string); // print_r($hash); 
         if($hash{"docType"} == "treatment" && $hash{"masterDocId"} && $hash{"docLanguage"} == "en") {
             // echo "\ndocType: [".$hash{"docType"}."]";
@@ -249,7 +249,7 @@ class TreatmentBankAPI
     }
     private function load_zip_contents()
     {
-        $options = $this->download_options;
+        $options = $this->download_TB_options;
         $options['file_extension'] = 'zip';
         $this->TEMP_FILE_PATH = create_temp_dir() . "/";
         if($local_zip_file = Functions::save_remote_file_to_local($this->partner_source_csv, $options)) {
