@@ -305,9 +305,8 @@ class DwCA_Aggregator_Functions
         // more than 2 numeric strings: e.g. "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963"
         $matches = array();
         preg_match_all('/([0-9]+)/', $scientificName, $matches);
-        if(count($matches[1]) > 1) {
-            $obj = self::run_gnfinder($scientificName); print_r($obj);
-            if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
+        if(count($matches[1]) > 1) {             
+            if($val = self::get_canonical_simple($scientificName)) $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
         }
 
         // /* Some scientificName values have uppercase epithets although the epithets at the source have the appropriate lower case. e.g. "Coranus Aethiops Jakovlev 1893" https://github.com/EOL/ContentImport/issues/13
@@ -329,8 +328,7 @@ class DwCA_Aggregator_Functions
         // $sciname = "(Porch) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
         // $sciname = "Tenebroides (Polynesibroides) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
         // $sciname = "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963";
-        $obj = self::run_gnfinder($sciname); print_r($obj);
-        echo "\ncanonical simple: [".@$obj->names[0]->bestResult->matchedCanonicalSimple."]\n";
+        echo "\ncanonical simple: [". self::get_canonical_simple($sciname) ."]\n";
         echo "\ncanonical_form: [".Functions::canonical_form($sciname)."]\n"; //works OK but not needed here.
         exit("\norig: [$sciname]\n"); //works OK but not needed here.
         ======================================================================== */
@@ -481,8 +479,7 @@ class DwCA_Aggregator_Functions
 
                 $parts = explode(" ", $sciname);
                 if(count($parts) > 2) {
-                    $obj = self::run_gnfinder($sciname); //print_r($obj);
-                    if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) return Functions::remove_whitespace($val);
+                    if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
                 }
                 else return Functions::remove_whitespace($sciname); //to limit call to gnfinder
             }    
@@ -493,8 +490,7 @@ class DwCA_Aggregator_Functions
 
                 $parts = explode(" ", $sciname);
                 if(count($parts) > 2) {
-                    $obj = self::run_gnfinder($sciname); //print_r($obj);
-                    if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) return Functions::remove_whitespace($val);
+                    if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
                 }
                 else return Functions::remove_whitespace($sciname); //to limit call to gnfinder
             }    
