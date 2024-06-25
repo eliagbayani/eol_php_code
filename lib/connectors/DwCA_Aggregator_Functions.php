@@ -545,11 +545,12 @@ class DwCA_Aggregator_Functions
         $ranks = array('variety', 'subspecies', 'form');
         if(in_array($taxonRank, $ranks)) {
             $pattern = "/[A-Z][a-z-]+ [a-z-]+ [a-z-]+./";
-            if(!preg_match($pattern, $scientificName)) {
-                echo "\ninvalid reg rank [$taxonRank]: [$scientificName]\n";
+            $canonical_simple = self::get_canonical_simple($scientificName);
+            if(!preg_match($pattern, $canonical_simple)) {
+                echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
                 return false;
             }
-            else echo "\nvalid reg rank [$taxonRank]: [$scientificName]\n";
+            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
         }
 
         return true; //means it's a valid name
