@@ -237,7 +237,10 @@ class DwCA_Aggregator_Functions
         return $rec;
     }
     function process_table_TreatmentBank_taxon($rec)
-    {   // ancestry fields must not have separators: https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=66656&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66656
+    {   
+        $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+
+        // ancestry fields must not have separators: https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=66656&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66656
         $ancestors = array('kingdom', 'phylum', 'class', 'order', 'family', 'genus');
         foreach($ancestors as $ancestor) {
             if($val = trim(@$rec["http://rs.tdwg.org/dwc/terms/".$ancestor])) {
@@ -252,14 +255,36 @@ class DwCA_Aggregator_Functions
 
         @$this->debug[$this->resource_id]['taxonRank'][$rec['http://rs.tdwg.org/dwc/terms/taxonRank']]++;
 
+
+        /* There are some misparsed/malformed names that we should try to rescue:
+        // Species names without genus. There are a bunch of reasons why the genus name may not get parsed and the species name ends up being just the epithet. 
+        // If it proves to be too challenging to fix these names, we should remove them. Examples:
+        //     neglectus Van Loon, Boomsma & Andrasfalvy 1990 - Source has special character before genus name (#)
+        //     atavus Cockerell 1920 - Source has special character before genus name (†)
+        //     albolucens Prout 1916 - Name looks well-formed at source, but it has the subgenus in parentheses
+        //     griseifrons Becker 1910 - Name malformed in page header.
+        $parts = explode(" ", $scientificName);
+        if(count($parts) > 1 && ctype_lower(substr(@$parts[0], 0, 1))) {
+            print_r($rec); exit("\nstop 2\n");
+        }        
+        */
+
         // /* new: Nov 21, 2023:
         if($scientificName = @$rec["http://rs.tdwg.org/dwc/terms/scientificName"]) {
+
             if(!Functions::valid_sciname_for_traits($scientificName)) return false;
             if(in_array($rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'], array('synonym'))) return false;
-            if(self::no_ancestry_fields($rec)) return false;
+
+                if($taxonID == 'E3583F3CF7EF2EB74F6AF61FC4765EB5.taxon') {
+                    // print_r($rec); exit("\nstop 3\n");
+                }
+        
+
+            // if(self::no_ancestry_fields($rec)) return false;
         }
         else return false;
         // */
+
 
         @$this->debug[$this->resource_id]['taxonomicStatus'][$rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus']]++;
 
@@ -515,6 +540,7 @@ class DwCA_Aggregator_Functions
     {   
         $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
         $taxonRank      = strtolower($rec['http://rs.tdwg.org/dwc/terms/taxonRank']);
+        $taxonID        = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
         // /* Misparsed or malformed names
         // Please remove all records for taxa that have one the following strings in their scientific name values (case insensitive): undefined|undetermined|incertae sedis
         $strings = array('undefined', 'undetermined', 'incertae sedis');
@@ -548,10 +574,10 @@ class DwCA_Aggregator_Functions
             $pattern = "/[A-Z][a-z-]+ [a-z-]+/";
             $canonical_simple = self::get_canonical_simple($scientificName);
             if(!preg_match($pattern, $canonical_simple)) {
-                echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
+                echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
                 return false;
             }
-            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
+            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
         }
 
         /* taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+. */
@@ -560,10 +586,10 @@ class DwCA_Aggregator_Functions
             $pattern = "/[A-Z][a-z-]+ [a-z-]+ [a-z-]+./";
             $canonical_simple = self::get_canonical_simple($scientificName);
             if(!preg_match($pattern, $canonical_simple)) {
-                echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
+                echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
                 return false;
             }
-            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
+            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
         }
 
         return true; //means it's a valid name
