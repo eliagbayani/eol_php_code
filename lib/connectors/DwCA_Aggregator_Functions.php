@@ -496,20 +496,21 @@ class DwCA_Aggregator_Functions
     function katja_valid_name($rec)
     {   
         $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
-        $taxonRank      = $rec['http://rs.tdwg.org/dwc/terms/taxonRank'];
-        /* Misparsed or malformed names
-        Please remove all records for taxa that have one the following strings in their scientific name values (case insensitive): undefined|undetermined|incertae sedis */
+        $taxonRank      = strtolower($rec['http://rs.tdwg.org/dwc/terms/taxonRank']);
+        // /* Misparsed or malformed names
+        // Please remove all records for taxa that have one the following strings in their scientific name values (case insensitive): undefined|undetermined|incertae sedis
         $strings = array('undefined', 'undetermined', 'incertae sedis');
         foreach($strings as $str) {
             if(stripos($scientificName, $str) !== false) return false; //string is found
         }
+        // */
 
-        /* Higher taxa
-        Please remove all records for taxa that are NOT of rank species|variety|subspecies|form. There are over 90,000 of these records. 
-        Most of them are mismapped, i.e., the trait record is attached to a genus or family or worse, 
-        but the matched value is actually providing information for a species that is not picked up by the parser. Examples:
-        */
-        if(!in_array(strtolower($taxonRank), array('species', 'variety', 'subspecies', 'form'))) return false;
+        // /* Higher taxa
+        // Please remove all records for taxa that are NOT of rank species|variety|subspecies|form. There are over 90,000 of these records. 
+        // Most of them are mismapped, i.e., the trait record is attached to a genus or family or worse, 
+        // but the matched value is actually providing information for a species that is not picked up by the parser. Examples:
+        if(!in_array($taxonRank, array('species', 'variety', 'subspecies', 'form'))) return false;
+        // */
 
         // [taxonRank] => Array(
         //     [species] => 211
@@ -527,7 +528,6 @@ class DwCA_Aggregator_Functions
             // $sciname = "R. crataegifolius Bunge Mém. Acad. Imp. Sci. St. - Pétersbourg Divers Savans 2: 98. 1835."; //cannot be rescued
             // $sciname = "C. italicus (Linnaeus, 1758)"; //cannot be rescued    
             $pattern = "/[A-Z][a-z-]+ [a-z-]+/";
-
             $canonical_simple = self::get_canonical_simple($scientificName);
             if(!preg_match($pattern, $canonical_simple)) {
                 echo "\ninvalid reg: [$scientificName] [$canonical_simple]\n";
@@ -537,7 +537,7 @@ class DwCA_Aggregator_Functions
         }
 
         /* taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+. */
-        $ranks = array('variety', 'subSpecies', 'form');
+        $ranks = array('variety', 'subspecies', 'form');
         if(in_array($taxonRank, $ranks)) {
             $pattern = "/[A-Z][a-z-]+ [a-z-]+ [a-z-]+./";
             if(!preg_match($pattern, $scientificName)) {
@@ -547,7 +547,7 @@ class DwCA_Aggregator_Functions
             else echo "\nvalid reg rank [$taxonRank]: [$scientificName]\n";
         }
 
-        return true;
+        return true; //means it's a valid name
     }
     private function get_canonical_simple($scientificName)
     {
@@ -555,6 +555,8 @@ class DwCA_Aggregator_Functions
 
         $obj = self::run_gnfinder($scientificName);
         if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) return $val;
+
+        return $scientificName; //fallback
     }
     function replace_accents($str)
     {
