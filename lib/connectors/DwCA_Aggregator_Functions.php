@@ -296,6 +296,12 @@ class DwCA_Aggregator_Functions
         else { print_r($rec); exit("\nNo canonical\n"); }
         // */            
 
+        // /* new
+        $scientificName = self::run_gnfinder_if_needed($scientificName);
+        $rec["http://rs.tdwg.org/dwc/terms/scientificName"] = $scientificName;
+        // */
+        
+
         // more than 2 numeric strings: e.g. "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963"
         $matches = array();
         preg_match_all('/([0-9]+)/', $scientificName, $matches);
@@ -314,18 +320,20 @@ class DwCA_Aggregator_Functions
         // if("Insecta" == @$rec['http://gbif.org/dwc/terms/1.0/canonicalName']) exit("\nelix\n"); //debug only
         // */
 
-        /* utility: gni test only
+        /* ======================== utility: gni test only ========================
         $sciname = "Deuterodon aff. taeniatus (Jenyns, 1842)";
         // $sciname = "Cercyon (Acycreon) apiciflavus Hebauer 2002";                                       //-> canonical simple: Cercyon apiciflavus
         // $sciname = "Galesus (G.) foersteri var. nigricornis Kieffer 1911";                              //-> canonical simple: Galesus foersteri nigricornis
-        // $sciname = "Spartina ×townsendii H. Groves & J. Groves, Bot. Exch. Club Rep. 1880. 37. 1881.";  //-> canonical simple: Spartina townsendii
-        $sciname = "(Porch) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
-        $sciname = "Tenebroides (Polynesibroides) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
-        $sciname = "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963";
+        $sciname = "Spartina ×townsendii H. Groves & J. Groves, Bot. Exch. Club Rep. 1880. 37. 1881.";  //-> canonical simple: Spartina townsendii
+        // $sciname = "Spartina ×townsendii";  //-> canonical simple: Spartina townsendii
+        // $sciname = "(Porch) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
+        // $sciname = "Tenebroides (Polynesibroides) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
+        // $sciname = "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963";
         $obj = self::run_gnfinder($sciname); print_r($obj);
         echo "\ncanonical simple: [".@$obj->names[0]->bestResult->matchedCanonicalSimple."]\n";
+        echo "\ncanonical_form: [".Functions::canonical_form($sciname)."]\n"; //works OK but not needed here.
         exit("\norig: [$sciname]\n"); //works OK but not needed here.
-        */
+        ======================================================================== */
 
         /* This should accommodate cases where the scientificName value includes things like a subgenus name, a var./ssp./f. abbreviation or a hybrid character. Examples:
         scientificName: Cercyon (Acycreon) apiciflavus Hebauer 2002 -> canonical simple: Cercyon apiciflavus
@@ -557,6 +565,13 @@ class DwCA_Aggregator_Functions
         if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) return $val;
 
         return $scientificName; //fallback
+    }
+    private function run_gnfinder_if_needed($scientificName)
+    {
+        if(stripos($scientificName, "×") !== false) {  //string is found
+            return self::get_canonical_simple($scientificName);
+        }
+        return $scientificName;
     }
     function replace_accents($str)
     {
