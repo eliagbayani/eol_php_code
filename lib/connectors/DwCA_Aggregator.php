@@ -265,6 +265,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             if(!$row) continue;
             // $row = Functions::conv_to_utf8($row); //possibly to fix special chars. but from copied template
             $tmp = explode("\t", $row);
+            if(!$tmp) continue;
             
             // if($column_count != count($tmp)) continue; //new line
             
@@ -288,7 +289,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
                 if(in_array($term, $excluded_terms)) { $k++; continue; }
                 if($val = @$replaced_terms[$term]) $term = $val;
                 // */
-                $rec[$term] = $tmp[$k];
+                $rec[$term] = @$tmp[$k];
                 $k++;
             }
             $rec = array_map('trim', $rec);
