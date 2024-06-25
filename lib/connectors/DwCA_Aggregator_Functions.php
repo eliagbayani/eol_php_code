@@ -328,6 +328,7 @@ class DwCA_Aggregator_Functions
         // $sciname = "(Porch) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
         // $sciname = "Tenebroides (Polynesibroides) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
         // $sciname = "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963";
+        $sciname = "Chenopodium album x opulifolium";
         echo "\ncanonical simple: [". self::get_canonical_simple($sciname) ."]\n";
         echo "\ncanonical_form: [".Functions::canonical_form($sciname)."]\n"; //works OK but not needed here.
         exit("\norig: [$sciname]\n"); //works OK but not needed here.
@@ -534,10 +535,10 @@ class DwCA_Aggregator_Functions
             $pattern = "/[A-Z][a-z-]+ [a-z-]+/";
             $canonical_simple = self::get_canonical_simple($scientificName);
             if(!preg_match($pattern, $canonical_simple)) {
-                echo "\ninvalid reg: [$scientificName] [$canonical_simple]\n";
+                echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
                 return false;
             }
-            else echo "\nvalid reg: [$scientificName] [$canonical_simple]\n";
+            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
         }
 
         /* taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+. */
@@ -557,10 +558,10 @@ class DwCA_Aggregator_Functions
     {
         if($scientificName == Functions::canonical_form($scientificName)) return $scientificName;
 
-        $obj = self::run_gnfinder($scientificName);
+        $obj = self::run_gnfinder($scientificName); //print_r($obj);
         if($val = @$obj->names[0]->bestResult->matchedCanonicalSimple) return $val;
 
-        return $scientificName; //fallback
+        // return $scientificName; //fallback ---  NEVER GIVE A FALLBACK
     }
     private function run_gnfinder_if_needed($scientificName)
     {
