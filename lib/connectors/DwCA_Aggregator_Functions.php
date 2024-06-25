@@ -313,6 +313,7 @@ class DwCA_Aggregator_Functions
         $parts = explode(" ", $scientificName);
         if(ctype_upper(substr(@$parts[1], 0, 1))) { echo "\n[epithet uppercase: ".$scientificName."]\n";
             $rec = self::epithet_upper_case($rec);
+            if(!$rec) return false;
         } //ctype_upper
 
         // print_r($rec); //exit("\n[$sciname]\n");
@@ -406,7 +407,8 @@ class DwCA_Aggregator_Functions
                     echo "\nsciname from XML 2: [".$ret2['sciname']."]\n";
                     echo "\nsciname from DwCA 2: [".$ret2['rec_sciname']."]\n";
 
-                    exit("\nsciname from XML is different from sciname from DWCA\n");    
+                    echo "\nsciname from XML is different from sciname from DWCA\n"; //exit;
+                    return;
                 }
             }
         }
@@ -483,6 +485,7 @@ class DwCA_Aggregator_Functions
                     if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
                 }
                 else return Functions::remove_whitespace($sciname); //to limit call to gnfinder
+                // return $sciname;
             }    
         }
         elseif($what == 'docTitle') {
@@ -494,6 +497,7 @@ class DwCA_Aggregator_Functions
                     if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
                 }
                 else return Functions::remove_whitespace($sciname); //to limit call to gnfinder
+                // return $sciname;
             }    
         }
         exit("\nInvestigate: no <taxonomicName> nor docTitle found in XML.\n");

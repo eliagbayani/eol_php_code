@@ -129,7 +129,7 @@ http://eol.org/schema/media/document:
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/TreatmentBankAPI');
-// $GLOBALS["ENV_DEBUG"] = false;
+$GLOBALS["ENV_DEBUG"] = true; //false;
 $timestart = time_elapsed();
 
 /* Important function for Pensoft. Used as retrieve_annotation() in Pensoft2EOLAPI.php
