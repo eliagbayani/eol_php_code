@@ -542,7 +542,7 @@ class DwCA_Aggregator_Functions
                 echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
                 return false;
             }
-            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
+            // else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
         }
 
         /* taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+. */
@@ -554,7 +554,7 @@ class DwCA_Aggregator_Functions
                 echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
                 return false;
             }
-            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
+            // else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
         }
 
         return true; //means it's a valid name
