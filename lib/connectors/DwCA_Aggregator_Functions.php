@@ -255,32 +255,16 @@ class DwCA_Aggregator_Functions
 
         @$this->debug[$this->resource_id]['taxonRank'][$rec['http://rs.tdwg.org/dwc/terms/taxonRank']]++;
 
-
-        /* There are some misparsed/malformed names that we should try to rescue:
-        // Species names without genus. There are a bunch of reasons why the genus name may not get parsed and the species name ends up being just the epithet. 
-        // If it proves to be too challenging to fix these names, we should remove them. Examples:
-        //     neglectus Van Loon, Boomsma & Andrasfalvy 1990 - Source has special character before genus name (#)
-        //     atavus Cockerell 1920 - Source has special character before genus name (†)
-        //     albolucens Prout 1916 - Name looks well-formed at source, but it has the subgenus in parentheses
-        //     griseifrons Becker 1910 - Name malformed in page header.
-        $parts = explode(" ", $scientificName);
-        if(count($parts) > 1 && ctype_lower(substr(@$parts[0], 0, 1))) {
-            print_r($rec); exit("\nstop 2\n");
-        }        
-        */
-
         // /* new: Nov 21, 2023:
         if($scientificName = @$rec["http://rs.tdwg.org/dwc/terms/scientificName"]) {
-
             if(!Functions::valid_sciname_for_traits($scientificName)) return false;
             if(in_array($rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'], array('synonym'))) return false;
 
-                if($taxonID == 'E3583F3CF7EF2EB74F6AF61FC4765EB5.taxon') {
-                    // print_r($rec); exit("\nstop 3\n");
-                }
+            // if($taxonID == 'E3583F3CF7EF2EB74F6AF61FC4765EB5.taxon') { //debug only
+                // print_r($rec); exit("\nstop 3\n");
+            // }
         
-
-            // if(self::no_ancestry_fields($rec)) return false;
+            // if(self::no_ancestry_fields($rec)) return false; //CANNOT USE IT ANYMORE
         }
         else return false;
         // */
@@ -331,8 +315,13 @@ class DwCA_Aggregator_Functions
         $matches = array();
         preg_match_all('/([0-9]+)/', $scientificName, $matches);
         if(count($matches[1]) > 1) {             
-            if($val = self::get_canonical_simple($scientificName)) $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
+            if($val = self::get_canonical_simple($scientificName)) {
+                $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
+                $scientificName = $val;
+            }
         }
+
+
 
         // /* Some scientificName values have uppercase epithets although the epithets at the source have the appropriate lower case. e.g. "Coranus Aethiops Jakovlev 1893" https://github.com/EOL/ContentImport/issues/13
         $parts = explode(" ", $scientificName);
@@ -340,6 +329,11 @@ class DwCA_Aggregator_Functions
             $rec = self::epithet_upper_case($rec);
             if(!$rec) return false;
         } //ctype_upper
+
+
+        $rec = self::malformed_try_to_rescue($rec);
+        $scientificName = $rec["http://rs.tdwg.org/dwc/terms/scientificName"];
+
 
         // print_r($rec); //exit("\n[$sciname]\n");
         // if("Insecta" == @$rec['http://gbif.org/dwc/terms/1.0/canonicalName']) exit("\nelix\n"); //debug only
@@ -371,16 +365,18 @@ class DwCA_Aggregator_Functions
 
         return $rec;
     }
+    private function get_taxon_xml($taxonID)
+    {
+        $url = "http://tb.plazi.org/GgServer/xml/".$taxonID;
+        $options = $this->download_TB_options;
+        $options['expire_seconds'] = false; //doesn't expire
+        return Functions::lookup_with_cache($url, $options);
+    }
     private function epithet_upper_case($rec)
     {
         // print_r($rec); //exit;
         $taxonID = str_replace(".taxon", "", $rec['http://rs.tdwg.org/dwc/terms/taxonID']);
-        $url = "http://tb.plazi.org/GgServer/xml/".$taxonID;
-
-        $options = $this->download_TB_options;
-        $options['expire_seconds'] = false; //doesn't expire
-        $xml_string = Functions::lookup_with_cache($url, $options);
-
+        $xml_string = self::get_taxon_xml($taxonID);
         // $xml_string = 'xxxdocTitle="Callichthys callichthys callichthys (Linnaeus 1758" yyy<taxonomicName id="0E052165DC2726A7AD530570A1A6D6C2" LSID="BC789CA9-3135-5E6F-8EC5-A6F40F9AE404" authority="callichthys (Linnaeus, 1758)" authorityName="callichthys (Linnaeus" authorityYear="1758" baseAuthorityName="Linnaeus" baseAuthorityYear="1758" class="Actinopterygii" family="Callichthyidae" genus="Callichthys" higherTaxonomySource="CoL" kingdom="Animalia" lsidName="Callichthys callichthys" order="Siluriformes" pageId="0" pageNumber="25" phylum="Chordata" rank="species" species="callichthys">Callichthys callichthys (Linnaeus, 1758)</taxonomicName>ddd';
 
         $xml_sciname1 = self::get_taxonomicName_from_xml($xml_string, 'taxonomicName');
@@ -596,6 +592,8 @@ class DwCA_Aggregator_Functions
     }
     private function get_canonical_simple($scientificName)
     {
+        $scientificName = Functions::remove_whitespace(str_replace(array("#"), "", $scientificName)); //some cleaning
+
         if($scientificName == Functions::canonical_form($scientificName)) return $scientificName;
 
         $obj = self::run_gnfinder($scientificName); //print_r($obj);
@@ -638,6 +636,43 @@ class DwCA_Aggregator_Functions
             if(@$rec["http://rs.tdwg.org/dwc/terms/".$rank]) return false; //has value
         }
         return true; //all fields are blank
+    }
+    private function malformed_try_to_rescue($rec)
+    {
+        // /* There are some misparsed/malformed names that we should try to rescue:
+        // Species names without genus. There are a bunch of reasons why the genus name may not get parsed and the species name ends up being just the epithet. 
+        // If it proves to be too challenging to fix these names, we should remove them. Examples:
+        //     neglectus Van Loon, Boomsma & Andrasfalvy 1990 - Source has special character before genus name (#)
+        //     atavus Cockerell 1920 - Source has special character before genus name (†)
+        //     albolucens Prout 1916 - Name looks well-formed at source, but it has the subgenus in parentheses
+        //     griseifrons Becker 1910 - Name malformed in page header.
+        $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
+        $taxonID = str_replace(".taxon", "", $rec['http://rs.tdwg.org/dwc/terms/taxonID']);
+        $xml_string = self::get_taxon_xml($taxonID);    
+        $parts = explode(" ", $scientificName);
+        if(ctype_lower(substr(@$parts[0], 0, 1))) {
+            $xml_sciname1 = self::get_taxonomicName_from_xml($xml_string, 'taxonomicName');
+            $xml_sciname2 = self::get_taxonomicName_from_xml($xml_string, 'docTitle');
+            $xml_sciname3 = self::get_taxonomicName_from_xml($xml_string, 'masterDocTitle');
+            echo "\n1: [$xml_sciname1]\n2: [$xml_sciname2]\n3: [$xml_sciname3]\n";
+
+            if(stripos($xml_sciname1, $scientificName) !== false)       $sciname = $xml_sciname1;         //e.g. "# Cephalonomia gallicola (Ashmead, 1887)"
+            elseif(stripos($xml_sciname2, $scientificName) !== false)   $sciname = $xml_sciname2;
+            elseif(stripos($xml_sciname3, $scientificName) !== false)   $sciname = $xml_sciname3;
+            else { echo "\nCannot resque: $taxonID\n"; return false; }
+
+            print_r($rec); 
+
+            $sciname = Functions::remove_whitespace(str_replace(array("#"), "", $sciname));
+            if($val = self::get_canonical_simple($sciname)) { $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
+                                                              $rec['http://rs.gbif.org/terms/1.0/canonicalName']  = $val; }
+            else $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $sciname;
+
+            print_r($rec);
+            // exit("\n[$sciname]\nstop 4\n");
+        }        
+        // */
+        return $rec;
     }
 }
 ?>
