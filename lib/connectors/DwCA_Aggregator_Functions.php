@@ -329,7 +329,8 @@ class DwCA_Aggregator_Functions
         // $sciname = "(Porch) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
         // $sciname = "Tenebroides (Polynesibroides) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
         // $sciname = "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963";
-        $sciname = "Chenopodium album x opulifolium";
+        $sciname = "Chenopodium Vulvaria Linn.";
+        // $sciname = "Chenopodium album x opulifolium";
         echo "\ncanonical simple: [". self::get_canonical_simple($sciname) ."]\n";
         echo "\ncanonical_form: [".Functions::canonical_form($sciname)."]\n"; //works OK but not needed here.
         exit("\norig: [$sciname]\n"); //works OK but not needed here.
@@ -359,8 +360,9 @@ class DwCA_Aggregator_Functions
 
         $xml_sciname1 = self::get_taxonomicName_from_xml($xml_string, 'taxonomicName');
         $xml_sciname2 = self::get_taxonomicName_from_xml($xml_string, 'docTitle');
+        $xml_sciname3 = self::get_taxonomicName_from_xml($xml_string, 'masterDocTitle');
 
-        // echo "\nxml_sciname1: [$xml_sciname1]\n"; echo "\nxml_sciname2: [$xml_sciname2]\n"; exit; //debug only
+        // echo "\nxml_sciname1: [$xml_sciname1]\n"; echo "\nxml_sciname2: [$xml_sciname2]\n"; echo "\nxml_sciname3: [$xml_sciname3]\n"; exit("\nstop 2\n); //debug only
 
         $ret1 = self::xml_and_dwca_same_names($xml_sciname1, $rec);
         /* debug only
@@ -389,26 +391,34 @@ class DwCA_Aggregator_Functions
                 }
             }
             else {
-                if(in_array($taxonID, array('BC789CA931355E6F8EC5A6F40F9AE404'))) {
-                    // exit("\n does not go here: [$xml_sciname1]\n[$xml_sciname2]\n"); //went here
-                    $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $xml_sciname1; //will do 
-                    $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = Functions::canonical_form($xml_sciname1);    
+                $ret3 = self::xml_and_dwca_same_names($xml_sciname3, $rec);
+                if($ret3['final']) {
+                    $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $xml_sciname3;
+                    $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = Functions::canonical_form($xml_sciname3);    
                 }
                 else {
-                    echo "\n--------------------------------------------------Investigate:\n"; print_r($rec); 
-                    echo "\nsciname from XML taxonomicName: [".self::get_taxonomicName_from_xml($xml_string, 'taxonomicName')."]\n";
-                    echo "\nsciname from XML docTitle: [".self::get_taxonomicName_from_xml($xml_string, 'docTitle')."]\n";
-
-                    echo "\nsciname from DwCA: [".$rec['http://rs.tdwg.org/dwc/terms/scientificName']."]\n";
-        
-                    echo "\nsciname from XML 1: [".$ret1['sciname']."]\n";
-                    echo "\nsciname from DwCA 1: [".$ret1['rec_sciname']."]\n";
-
-                    echo "\nsciname from XML 2: [".$ret2['sciname']."]\n";
-                    echo "\nsciname from DwCA 2: [".$ret2['rec_sciname']."]\n";
-
-                    echo "\nsciname from XML is different from sciname from DWCA\n"; //exit;
-                    return;
+                    if(in_array($taxonID, array('BC789CA931355E6F8EC5A6F40F9AE404'))) {
+                        // exit("\n does not go here: [$xml_sciname1]\n[$xml_sciname2]\n"); //went here
+                        $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $xml_sciname1; //will do 
+                        $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = Functions::canonical_form($xml_sciname1);    
+                    }
+                    else {
+                        echo "\n--------------------------------------------------Investigate:\n"; print_r($rec); 
+                        echo "\nsciname from XML taxonomicName: [".self::get_taxonomicName_from_xml($xml_string, 'taxonomicName')."]\n";
+                        echo "\nsciname from XML docTitle: [".self::get_taxonomicName_from_xml($xml_string, 'docTitle')."]\n";
+    
+                        echo "\nsciname from DwCA: [".$rec['http://rs.tdwg.org/dwc/terms/scientificName']."]\n";
+            
+                        echo "\nsciname from XML 1: [".$ret1['sciname']."]\n";
+                        echo "\nsciname from DwCA 1: [".$ret1['rec_sciname']."]\n";
+    
+                        echo "\nsciname from XML 2: [".$ret2['sciname']."]\n";
+                        echo "\nsciname from DwCA 2: [".$ret2['rec_sciname']."]\n";
+    
+                        echo "\nsciname from XML is different from sciname from DWCA\n"; //exit;
+                        $this->debug['scinames are diff from xml and dwca'][$taxonID] = '';
+                        return;
+                    }
                 }
             }
         }
@@ -484,23 +494,22 @@ class DwCA_Aggregator_Functions
                 if(count($parts) > 2) {
                     if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
                 }
-                else return Functions::remove_whitespace($sciname); //to limit call to gnfinder
-                // return $sciname;
+                return Functions::remove_whitespace($sciname); //to limit call to gnfinder
             }    
         }
-        elseif($what == 'docTitle') {
-            if(preg_match("/docTitle=\"(.*?)\"/ims", $xml, $arr)) {
+        elseif($what == 'docTitle' || $what == 'masterDocTitle') {
+            if(preg_match("/$what=\"(.*?)\"/ims", $xml, $arr)) {
                 $sciname = $arr[1];
 
                 $parts = explode(" ", $sciname);
                 if(count($parts) > 2) {
+                    // ditox Chenopodium Vulvaria Linn.
                     if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
                 }
-                else return Functions::remove_whitespace($sciname); //to limit call to gnfinder
-                // return $sciname;
+                return Functions::remove_whitespace($sciname); //to limit call to gnfinder
             }    
         }
-        exit("\nInvestigate: no <taxonomicName> nor docTitle found in XML.\n");
+        exit("\nInvestigate: no <taxonomicName> nor docTitle nor masterDocTitle found in XML.\n$xml\n");
     }
     function katja_valid_name($rec)
     {   
@@ -542,7 +551,7 @@ class DwCA_Aggregator_Functions
                 echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
                 return false;
             }
-            // else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
+            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
         }
 
         /* taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+. */
@@ -554,7 +563,7 @@ class DwCA_Aggregator_Functions
                 echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
                 return false;
             }
-            // else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
+            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank]\n";
         }
 
         return true; //means it's a valid name
