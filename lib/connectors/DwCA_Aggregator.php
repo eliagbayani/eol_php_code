@@ -343,7 +343,12 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
                 if($this->resource_id == "TreatmentBank") {
                     $rec = $this->process_table_TreatmentBank_taxon($rec); //new Dec 12, 2023
                     if(!$rec) continue;
+
+                    // /* Missing taxa GitHub #13
+                    // There are 7393 taxa with trait data that are not represented in the taxon file. See missingTaxonIDs.txt attached. 
+                    // If we cannot get the taxonomic data for these records, we should remove them.
                     $this->TB_taxon_ids[$taxon_id] = '';
+                    // */
                 }
                 // ======================================    
             } //end $what == 'taxon'
