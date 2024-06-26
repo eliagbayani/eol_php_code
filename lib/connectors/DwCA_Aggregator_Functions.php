@@ -564,6 +564,7 @@ class DwCA_Aggregator_Functions
         taxa of rank species where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+
         taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+.
         */
+        // print_r($rec); //debug only
         if($taxonRank == 'species') {
             // $sciname = "R. crataegifolius Bunge Mém. Acad. Imp. Sci. St. - Pétersbourg Divers Savans 2: 98. 1835."; //cannot be rescued
             // $sciname = "C. italicus (Linnaeus, 1758)"; //cannot be rescued    
@@ -648,9 +649,9 @@ class DwCA_Aggregator_Functions
         //     griseifrons Becker 1910 - Name malformed in page header.
         $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
         $taxonID = str_replace(".taxon", "", $rec['http://rs.tdwg.org/dwc/terms/taxonID']);
-        $xml_string = self::get_taxon_xml($taxonID);    
         $parts = explode(" ", $scientificName);
         if(ctype_lower(substr(@$parts[0], 0, 1))) {
+            $xml_string = self::get_taxon_xml($taxonID);
             $xml_sciname1 = self::get_taxonomicName_from_xml($xml_string, 'taxonomicName');
             $xml_sciname2 = self::get_taxonomicName_from_xml($xml_string, 'docTitle');
             $xml_sciname3 = self::get_taxonomicName_from_xml($xml_string, 'masterDocTitle');
