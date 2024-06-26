@@ -605,10 +605,10 @@ class DwCA_Aggregator_Functions
             $pattern = "/[A-Z][a-z-]+ [a-z-]+/";
             $canonical_simple = self::get_canonical_simple($scientificName);
             if(!preg_match($pattern, $canonical_simple)) {
-                echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
+                echo "\ninvalid reg 1: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
                 return false;
             }
-            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
+            else echo "\nvalid reg 1: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
         }
 
         /* taxa of rank variety|subspecies|form where the canonical name (simple) does not match [A-Z][a-z-]+ [a-z-]+ [a-z-]+. */
@@ -617,10 +617,10 @@ class DwCA_Aggregator_Functions
             $pattern = "/[A-Z][a-z-]+ [a-z-]+ [a-z-]+./";
             $canonical_simple = self::get_canonical_simple($scientificName);
             if(!preg_match($pattern, $canonical_simple)) {
-                echo "\ninvalid reg: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
+                echo "\ninvalid reg 2: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
                 return false;
             }
-            else echo "\nvalid reg: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
+            else echo "\nvalid reg 2: [$scientificName] [$canonical_simple] [$taxonRank] [$taxonID]\n";
         }
 
         return true; //means it's a valid name
