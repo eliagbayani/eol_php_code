@@ -238,6 +238,7 @@ class DwCA_Aggregator_Functions
     }
     function process_table_TreatmentBank_taxon($rec)
     {   
+
         $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
 
         // ancestry fields must not have separators: https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=66656&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66656
@@ -293,12 +294,26 @@ class DwCA_Aggregator_Functions
             [http://purl.org/dc/terms/references] => http://treatment.plazi.org/id/5ACD6D1A54AC5FBC87E765FCFE855D63
         )*/
 
+        /* force assign - dev only
+        $rec['http://rs.tdwg.org/dwc/terms/taxonID'] = "88C2BABEBE20B7F9EBFECC704E94D72A.taxon";
+        $rec['http://rs.tdwg.org/dwc/terms/taxonRank'] = "species";
+        $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = "albolucens Prout 1916";
+        $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = "albolucens"; //---> used in TreatMentBank
+        $rec['http://rs.gbif.org/terms/1.0/canonicalName'] = "albolucens";
+
+        $rec['http://rs.tdwg.org/dwc/terms/taxonID'] = "037C5B987B1C946AC69CAC6073F4E26A.taxon";
+        $rec['http://rs.tdwg.org/dwc/terms/taxonRank'] = "species";
+        $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = "griseifrons Becker 1910";
+        $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = "griseifrons"; //---> used in TreatMentBank
+        $rec['http://rs.gbif.org/terms/1.0/canonicalName'] = "griseifrons";
+        */
+
         // /* new: by Eli 24Jun2024
         if($val = @$rec['http://rs.gbif.org/terms/1.0/canonicalName']) {
             $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
             $scientificName = $val;
         }
-        elseif($val = $rec['http://gbif.org/dwc/terms/1.0/canonicalName']) {
+        elseif($val = @$rec['http://gbif.org/dwc/terms/1.0/canonicalName']) {
             $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
             $scientificName = $val;
         }
@@ -310,7 +325,6 @@ class DwCA_Aggregator_Functions
         $rec["http://rs.tdwg.org/dwc/terms/scientificName"] = $scientificName;
         // */
         
-
         // more than 2 numeric strings: e.g. "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963"
         $matches = array();
         preg_match_all('/([0-9]+)/', $scientificName, $matches);
@@ -321,14 +335,13 @@ class DwCA_Aggregator_Functions
             }
         }
 
-
-
         // /* Some scientificName values have uppercase epithets although the epithets at the source have the appropriate lower case. e.g. "Coranus Aethiops Jakovlev 1893" https://github.com/EOL/ContentImport/issues/13
         $parts = explode(" ", $scientificName);
         if(ctype_upper(substr(@$parts[1], 0, 1))) { echo "\n[epithet uppercase: ".$scientificName."]\n";
             $rec = self::epithet_upper_case($rec);
             if(!$rec) return false;
         } //ctype_upper
+
 
 
         $rec = self::malformed_try_to_rescue($rec);
@@ -593,7 +606,7 @@ class DwCA_Aggregator_Functions
     }
     private function get_canonical_simple($scientificName)
     {
-        $scientificName = Functions::remove_whitespace(str_replace(array("#"), "", $scientificName)); //some cleaning
+        $scientificName = Functions::remove_whitespace(str_replace(array("#", "†"), "", $scientificName)); //some cleaning
 
         if($scientificName == Functions::canonical_form($scientificName)) return $scientificName;
 
@@ -647,6 +660,7 @@ class DwCA_Aggregator_Functions
         //     atavus Cockerell 1920 - Source has special character before genus name (†)
         //     albolucens Prout 1916 - Name looks well-formed at source, but it has the subgenus in parentheses
         //     griseifrons Becker 1910 - Name malformed in page header.
+        // print_r($rec); exit;
         $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
         $taxonID = str_replace(".taxon", "", $rec['http://rs.tdwg.org/dwc/terms/taxonID']);
         $parts = explode(" ", $scientificName);
@@ -655,21 +669,23 @@ class DwCA_Aggregator_Functions
             $xml_sciname1 = self::get_taxonomicName_from_xml($xml_string, 'taxonomicName');
             $xml_sciname2 = self::get_taxonomicName_from_xml($xml_string, 'docTitle');
             $xml_sciname3 = self::get_taxonomicName_from_xml($xml_string, 'masterDocTitle');
-            echo "\n1: [$xml_sciname1]\n2: [$xml_sciname2]\n3: [$xml_sciname3]\n";
+
+            echo "\nneedle: [$scientificName]\n1: [$xml_sciname1]\n2: [$xml_sciname2]\n3: [$xml_sciname3]\n"; //exit;
 
             if(stripos($xml_sciname1, $scientificName) !== false)       $sciname = $xml_sciname1;         //e.g. "# Cephalonomia gallicola (Ashmead, 1887)"
             elseif(stripos($xml_sciname2, $scientificName) !== false)   $sciname = $xml_sciname2;
             elseif(stripos($xml_sciname3, $scientificName) !== false)   $sciname = $xml_sciname3;
-            else { echo "\nCannot resque: $taxonID\n"; return false; }
+            else { echo "\nCannot resque: $taxonID\n"; return false; }    
 
-            print_r($rec); 
+            // print_r($rec); 
 
             $sciname = Functions::remove_whitespace(str_replace(array("#"), "", $sciname));
             if($val = self::get_canonical_simple($sciname)) { $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
-                                                              $rec['http://rs.gbif.org/terms/1.0/canonicalName']  = $val; }
+                                                              $rec['http://rs.gbif.org/terms/1.0/canonicalName']  = $val; 
+                                                              $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = $val; }
             else $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $sciname;
 
-            print_r($rec);
+            // print_r($rec);
             // exit("\n[$sciname]\nstop 4\n");
         }        
         // */
