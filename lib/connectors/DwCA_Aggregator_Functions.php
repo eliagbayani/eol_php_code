@@ -261,8 +261,8 @@ class DwCA_Aggregator_Functions
             if(!Functions::valid_sciname_for_traits($scientificName)) return false;
             if(in_array($rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'], array('synonym'))) return false;
 
-            // if($taxonID == 'E3583F3CF7EF2EB74F6AF61FC4765EB5.taxon') { //debug only
-                // print_r($rec); exit("\nstop 3\n");
+            // if($taxonID == '63215F0FF59F9237DD33ED0B7EDD83C7.taxon') { //debug only
+            //     print_r($rec); exit("\nstop 3\n");
             // }
         
             // if(self::no_ancestry_fields($rec)) return false; //CANNOT USE IT ANYMORE
@@ -307,6 +307,7 @@ class DwCA_Aggregator_Functions
         $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = "griseifrons"; //---> used in TreatMentBank
         $rec['http://rs.gbif.org/terms/1.0/canonicalName'] = "griseifrons";
         */
+
 
         // /* new: by Eli 24Jun2024
         if($val = @$rec['http://rs.gbif.org/terms/1.0/canonicalName']) {
@@ -362,6 +363,7 @@ class DwCA_Aggregator_Functions
         // $sciname = "Tenebroides (Polynesibroides) Kolibáč, Bocakova, Liebherr, Ramage, and Porch 2021";
         // $sciname = "Pseudosphingonotus savignyi (Saussure 1884) Schumakov 1963";
         $sciname = "Chenopodium Vulvaria Linn.";
+        $sciname = "Asthenas (Asthena) argyrorrhytes Prout, 1916";
         // $sciname = "Chenopodium album x opulifolium";
         echo "\ncanonical simple: [". self::get_canonical_simple($sciname) ."]\n";
         echo "\ncanonical_form: [".Functions::canonical_form($sciname)."]\n"; //works OK but not needed here.
@@ -518,6 +520,7 @@ class DwCA_Aggregator_Functions
     }
     function get_taxonomicName_from_xml($xml, $what)
     {   if($what == 'taxonomicName') {
+            /* orig
             if(preg_match("/<taxonomicName(.*?)<\/taxonomicName>/ims", $xml, $arr)) {
                 $sciname = self::replace_accents($arr[1]);
                 $sciname = trim(strip_tags("<taxonomicName".$sciname));
@@ -529,10 +532,28 @@ class DwCA_Aggregator_Functions
                     if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
                 }
                 return Functions::remove_whitespace($sciname); //to limit call to gnfinder
-            }    
+            } */
+            if(preg_match_all("/<taxonomicName(.*?)<\/taxonomicName>/ims", $xml, $arr)) {
+                foreach($arr[1] as $possible) {
+                    $sciname = self::replace_accents($possible);
+                    $sciname = trim(strip_tags("<taxonomicName".$sciname));
+                    $sciname = str_replace(array("\t", chr(10), chr(13)), " ", $sciname);
+                    $sciname = html_entity_decode($sciname); //important 523AFB0F879857DEA647B13C3BAB685A.taxon
+                    $sciname = str_replace("'", "", $sciname);
+    
+                    if(ctype_upper(substr($sciname, 0, 1))) {
+                        $parts = explode(" ", $sciname);
+                        if(count($parts) > 2) {
+                            if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
+                        }
+                        return Functions::remove_whitespace($sciname); //to limit call to gnfinder        
+                    }
+                }
+            }
+
         }
         elseif($what == 'docTitle' || $what == 'masterDocTitle') {
-            if(preg_match("/$what=\"(.*?)\"/ims", $xml, $arr)) {
+            if(preg_match("/ $what=\"(.*?)\"/ims", $xml, $arr)) {
                 $sciname = $arr[1];
 
                 $parts = explode(" ", $sciname);
@@ -606,7 +627,7 @@ class DwCA_Aggregator_Functions
     }
     private function get_canonical_simple($scientificName)
     {
-        $scientificName = Functions::remove_whitespace(str_replace(array("#", "†"), "", $scientificName)); //some cleaning
+        $scientificName = Functions::remove_whitespace(str_replace(array("#", "†", "'"), "", $scientificName)); //some cleaning
 
         if($scientificName == Functions::canonical_form($scientificName)) return $scientificName;
 
@@ -664,22 +685,48 @@ class DwCA_Aggregator_Functions
         $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
         $taxonID = str_replace(".taxon", "", $rec['http://rs.tdwg.org/dwc/terms/taxonID']);
         $parts = explode(" ", $scientificName);
-        if(ctype_lower(substr(@$parts[0], 0, 1))) {
+        $first_char = substr(@$parts[0], 0, 1);
+        if(ctype_lower($first_char)   || $first_char == "(") { //(Asthena) argyrorrhytes
             $xml_string = self::get_taxon_xml($taxonID);
             $xml_sciname1 = self::get_taxonomicName_from_xml($xml_string, 'taxonomicName');
             $xml_sciname2 = self::get_taxonomicName_from_xml($xml_string, 'docTitle');
             $xml_sciname3 = self::get_taxonomicName_from_xml($xml_string, 'masterDocTitle');
 
-            echo "\nneedle: [$scientificName]\n1: [$xml_sciname1]\n2: [$xml_sciname2]\n3: [$xml_sciname3]\n"; //exit;
+            echo "\nneedle 1st: [$scientificName]\n1: [$xml_sciname1]\n2: [$xml_sciname2]\n3: [$xml_sciname3]\n"; //exit;
 
             if(stripos($xml_sciname1, $scientificName) !== false)       $sciname = $xml_sciname1;         //e.g. "# Cephalonomia gallicola (Ashmead, 1887)"
             elseif(stripos($xml_sciname2, $scientificName) !== false)   $sciname = $xml_sciname2;
             elseif(stripos($xml_sciname3, $scientificName) !== false)   $sciname = $xml_sciname3;
-            else { echo "\nCannot resque: $taxonID\n"; return false; }    
+            else { 
+                $scientificName = str_replace(array("(", ")"), "", $scientificName);
+                echo "\nneedle 2nd: [$scientificName]\n1: [$xml_sciname1]\n2: [$xml_sciname2]\n3: [$xml_sciname3]\n"; //exit;
+                if(stripos($xml_sciname1, $scientificName) !== false)       $sciname = $xml_sciname1;
+                elseif(stripos($xml_sciname2, $scientificName) !== false)   $sciname = $xml_sciname2;
+                elseif(stripos($xml_sciname3, $scientificName) !== false)   $sciname = $xml_sciname3;
+                else { //for e.g. 137FF6ACDFFF13BF31BED9C61C5B5E77
+                    /*
+                    needle 1st: [(Gymnoscelis) inops]
+                    1: [Chloroclystis inops]
+                    2: [Chloroclystis inops]
+                    3: [List]
 
+                    needle 2nd: [Gymnoscelis inops]
+                    1: [Chloroclystis inops]
+                    2: [Chloroclystis inops]
+                    3: [List]
+                    */
+                    $parts = explode(" ", $scientificName);
+                    $parts1 = explode(" ", $xml_sciname1);
+                    $parts2 = explode(" ", $xml_sciname2);
+
+                    if($parts[1] == $parts1[1]) $sciname = $xml_sciname1;
+                    elseif($parts[1] == $parts2[1]) $sciname = $xml_sciname2;
+                    else { echo "\nCannot resque: $taxonID\n"; return false; }
+                }
+            }
             // print_r($rec); 
 
-            $sciname = Functions::remove_whitespace(str_replace(array("#"), "", $sciname));
+            $sciname = Functions::remove_whitespace(str_replace(array("#", "'"), "", $sciname));
             if($val = self::get_canonical_simple($sciname)) { $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
                                                               $rec['http://rs.gbif.org/terms/1.0/canonicalName']  = $val; 
                                                               $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = $val; }
