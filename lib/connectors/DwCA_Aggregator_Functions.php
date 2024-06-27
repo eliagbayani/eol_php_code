@@ -261,7 +261,7 @@ class DwCA_Aggregator_Functions
             if(!Functions::valid_sciname_for_traits($scientificName)) return false;
             if(in_array($rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'], array('synonym'))) return false;
 
-            // if($taxonID == '63215F0FF59F9237DD33ED0B7EDD83C7.taxon') { //debug only
+            // if($taxonID == 'A82B87F6FFD9FFCD77463DE9F7B0FD18.taxon') { //debug only
             //     print_r($rec); exit("\nstop 3\n");
             // }
         
@@ -546,9 +546,10 @@ class DwCA_Aggregator_Functions
                         if(count($parts) > 2) {
                             if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
                         }
-                        return Functions::remove_whitespace($sciname); //to limit call to gnfinder        
+                        return Functions::remove_whitespace($sciname); //to limit call to gnfinder
                     }
                 }
+                return Functions::remove_whitespace($sciname);
             }
 
         }
@@ -564,7 +565,7 @@ class DwCA_Aggregator_Functions
                 return Functions::remove_whitespace($sciname); //to limit call to gnfinder
             }    
         }
-        exit("\nInvestigate: no <taxonomicName> nor docTitle nor masterDocTitle found in XML.\n$xml\n");
+        exit("\nInvestigate: no <taxonomicName> nor docTitle nor masterDocTitle found in XML.\n[$what]\n$xml\n");
     }
     function katja_valid_name($rec)
     {   
@@ -726,7 +727,7 @@ class DwCA_Aggregator_Functions
             }
             // print_r($rec); 
 
-            $sciname = Functions::remove_whitespace(str_replace(array("#", "'"), "", $sciname));
+            $sciname = Functions::remove_whitespace(str_replace(array("#", "'", '"'), "", $sciname));
             if($val = self::get_canonical_simple($sciname)) { $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
                                                               $rec['http://rs.gbif.org/terms/1.0/canonicalName']  = $val; 
                                                               $rec['http://gbif.org/dwc/terms/1.0/canonicalName'] = $val; }
