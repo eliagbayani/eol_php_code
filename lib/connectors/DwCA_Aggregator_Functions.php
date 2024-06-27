@@ -238,9 +238,17 @@ class DwCA_Aggregator_Functions
     }
     function process_table_TreatmentBank_taxon($rec)
     {   
-
         $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+        $taxonRank = $rec['http://rs.tdwg.org/dwc/terms/taxonRank'];
+        @$this->debug[$this->resource_id]['taxonRank'][$taxonRank]++;
 
+        // /* Higher taxa
+        // Please remove all records for taxa that are NOT of rank species|variety|subspecies|form. There are over 90,000 of these records. 
+        // Most of them are mismapped, i.e., the trait record is attached to a genus or family or worse, 
+        // but the matched value is actually providing information for a species that is not picked up by the parser. Examples:
+        if(!in_array($taxonRank, array('species', 'variety', 'subspecies', 'form'))) return false;
+        // */
+    
         // ancestry fields must not have separators: https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=66656&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66656
         $ancestors = array('kingdom', 'phylum', 'class', 'order', 'family', 'genus');
         foreach($ancestors as $ancestor) {
@@ -254,7 +262,6 @@ class DwCA_Aggregator_Functions
         if(stripos($rec['http://rs.tdwg.org/dwc/terms/scientificName'], "Acrididae;") !== false) return false; //continue; //string is found
         if(stripos(@$rec['http://rs.gbif.org/terms/1.0/canonicalName'], "Acrididae;") !== false) return false; //continue; //string is found
 
-        @$this->debug[$this->resource_id]['taxonRank'][$rec['http://rs.tdwg.org/dwc/terms/taxonRank']]++;
 
         // /* new: Nov 21, 2023:
         if($scientificName = @$rec["http://rs.tdwg.org/dwc/terms/scientificName"]) {
@@ -534,18 +541,26 @@ class DwCA_Aggregator_Functions
                 return Functions::remove_whitespace($sciname); //to limit call to gnfinder
             } */
             if(preg_match_all("/<taxonomicName(.*?)<\/taxonomicName>/ims", $xml, $arr)) {
-                foreach($arr[1] as $possible) {
+                $arr[1] = array_map('trim', $arr[1]);
+                // print_r($arr[1]);  //good debug
+                $i = -1;
+                foreach($arr[1] as $possible) { $i++;
                     $sciname = self::replace_accents($possible);
                     $sciname = trim(strip_tags("<taxonomicName".$sciname));
                     $sciname = str_replace(array("\t", chr(10), chr(13)), " ", $sciname);
                     $sciname = html_entity_decode($sciname); //important 523AFB0F879857DEA647B13C3BAB685A.taxon
-                    $sciname = str_replace("'", "", $sciname);
+                    $sciname = trim(str_replace(array("'", "#", '"'), "", $sciname));
     
+                    // echo "\nscrutinize: [$sciname]\n"; //good debug
                     if(ctype_upper(substr($sciname, 0, 1))) {
                         $parts = explode(" ", $sciname);
                         if(count($parts) > 2) {
-                            if($val = self::get_canonical_simple($sciname)) return Functions::remove_whitespace($val);
+                            if($val = self::get_canonical_simple($sciname)) {
+                                // echo "\nindex a: [$i] [$val]\n"; //good debug
+                                return Functions::remove_whitespace($val);
+                            }
                         }
+                        // echo "\nindex b: [$i] [$sciname]\n"; //good debug
                         return Functions::remove_whitespace($sciname); //to limit call to gnfinder
                     }
                 }
@@ -682,7 +697,7 @@ class DwCA_Aggregator_Functions
         //     atavus Cockerell 1920 - Source has special character before genus name (†)
         //     albolucens Prout 1916 - Name looks well-formed at source, but it has the subgenus in parentheses
         //     griseifrons Becker 1910 - Name malformed in page header.
-        // print_r($rec); exit;
+        // print_r($rec); //exit;
         $scientificName = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
         $taxonID = str_replace(".taxon", "", $rec['http://rs.tdwg.org/dwc/terms/taxonID']);
         $parts = explode(" ", $scientificName);
@@ -699,7 +714,7 @@ class DwCA_Aggregator_Functions
             elseif(stripos($xml_sciname2, $scientificName) !== false)   $sciname = $xml_sciname2;
             elseif(stripos($xml_sciname3, $scientificName) !== false)   $sciname = $xml_sciname3;
             else { 
-                $scientificName = str_replace(array("(", ")"), "", $scientificName);
+                $scientificName = trim(str_replace(array("(", ")"), "", $scientificName));
                 echo "\nneedle 2nd: [$scientificName]\n1: [$xml_sciname1]\n2: [$xml_sciname2]\n3: [$xml_sciname3]\n"; //exit;
                 if(stripos($xml_sciname1, $scientificName) !== false)       $sciname = $xml_sciname1;
                 elseif(stripos($xml_sciname2, $scientificName) !== false)   $sciname = $xml_sciname2;
