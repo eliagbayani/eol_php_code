@@ -192,7 +192,7 @@ class TraitGeneric
     public function initialize_terms_remapping($expire_seconds = 60*60*24*30)
     {
         /* START DATA-1841 terms remapping */
-        $url = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Terms_remapped/DATA_1841_terms_remapped.tsv";
+        $url = "https://raw.githubusercontent.com/EOL/textmine_rules/main/Terms_remapped/DATA_1841_terms_remapped.tsv";
         require_library('connectors/TropicosArchiveAPI');
         $func = new TropicosArchiveAPI(NULL);
         $this->remapped_terms = $func->add_additional_mappings(true, $url, $expire_seconds); //*this is not add_additional_mappings() like how was used normally in Functions().
