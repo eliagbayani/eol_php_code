@@ -30,7 +30,7 @@ else {
     $dirname = pathinfo($params['destination'], PATHINFO_DIRNAME).'/'; //obsolete
     // $dirname = $params['true_root'].'applications/specimen_image_export/temp/';
     // $dirname = $params['true_root'].'applications/trait_data_import/temp/';
-    $dirname = $params['true_root'].'applications/taxonomic_validation/temp/';
+    $dirname = $params['true_root'].'applications/CheckListBank_tool/temp/';
     $extensions = array('.tab', '.txt', '.tsv', '.zip', '.tmp', '.gz', '.csv'); //possible extensions
     foreach($extensions as $ext) {
         $tmp = $dirname.$params['uuid'].$ext;
@@ -45,13 +45,13 @@ else {
     // /*
     // $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "MarineGEO_sie/" . $params['uuid'] . ".xls";
     // $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "Trait_Data_Import/" . $params['uuid'] . ".tar.gz";
-    $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "Taxonomic_Validation/" . $params['uuid'] . ".zip";
+    $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_tool/" . $params['uuid'] . ".zip";
     if(file_exists($final_archive_gzip_url)) {
         
         // /* NEW: to accommodate Filename_ID implementation
         if($Filename_ID = @$params['Filename_ID']) {
             // $rename_to = CONTENT_RESOURCE_LOCAL_PATH . "Trait_Data_Import/" . $params['Filename_ID'] . ".tar.gz";
-            $rename_to = CONTENT_RESOURCE_LOCAL_PATH . "Taxonomic_Validation/" . $params['Filename_ID'] . ".zip";
+            $rename_to = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_tool/" . $params['Filename_ID'] . ".zip";
 
             /* as much as possible don't use: Functions::file_rename
             Functions::file_rename($final_archive_gzip_url, $rename_to)
@@ -91,7 +91,7 @@ else {
                 [task] => xls2dwca_job_1
                 [uuid] => 1643726800
                 [destination] => /opt/homebrew/var/www/eol_php_code//applications/trait_data_import/temp/1643726800.xlsx
-                [destination] => /opt/homebrew/var/www/eol_php_code//applications/taxonomic_validation/temp/1643726800.tab
+                [destination] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1643726800.tab
                 [true_root] => /opt/homebrew/var/www/eol_php_code/
                 [Filename_ID] => 111222
             )*/

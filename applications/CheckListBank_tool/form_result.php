@@ -84,9 +84,9 @@ elseif($file_type = @$_FILES["file_upload"]["type"]) { //Taxa File
         // echo "<hr>newfile: [$newfile]<hr>"; exit;
         // /* ---------- Added block:
         if(strtolower(pathinfo($newfile, PATHINFO_EXTENSION)) == 'csv') { // echo "<br>csv nga<br>";
-            require_library('connectors/TaxonomicValidationRules');
-            require_library('connectors/TaxonomicValidationAPI');
-            $func = new TaxonomicValidationAPI('taxonomic_validation');
+            require_library('connectors/CheckListBankRules');
+            require_library('connectors/CheckListBankAPI');
+            $func = new CheckListBankAPI('CheckListBank_tool');
             $newfile = $func->convert_csv2tsv($newfile); // exit("\n[$newfile]\n");
         }
         // else echo "<br>hindi csv<br>";
@@ -112,7 +112,7 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
         // exit("\n[$newfile]\n");
 
         // /* ---------- Added block:
-        $dwca_full_path = DOC_ROOT."/applications/taxonomic_validation/".$newfile;
+        $dwca_full_path = DOC_ROOT."/applications/CheckListBank_tool/".$newfile;
         if($download_directory = ContentManager::download_temp_file_and_assign_extension($dwca_full_path, "")) { //added 2nd blank param to suffice: "Warning: Missing argument 2"
             debug("<br>newfile = [$newfile]<br>download_directory:[$download_directory]<br>");
             // $download_directory = '/Library/WebServer/Webroot/eol_php_code/applications/content_server/tmp/9f508e44e8038fb56bbc0c9b34eb3ac7';
@@ -156,18 +156,18 @@ elseif($file_type = @$_FILES["file_upload3"]["type"]) { // Taxa List
         $newfile = "temp/" . $time_var . "." . pathinfo($orig_file, PATHINFO_EXTENSION);
 
         // /* ---------- Added block:
-        require_library('connectors/TaxonomicValidationRules');
-        require_library('connectors/TaxonomicValidationAPI');
+        require_library('connectors/CheckListBankRules');
+        require_library('connectors/CheckListBankAPI');
         if(pathinfo($newfile, PATHINFO_EXTENSION) == "zip") { //e.g. taxa_list.txt.zip
-            $func1 = new TaxonomicValidationAPI('taxonomic_validation');
+            $func1 = new CheckListBankAPI('CheckListBank_tool');
             $newfile = $func1->process_zip_file(str_replace("temp/", "", $newfile)); // exit("\n[$newfile]\n");
 
             $newfile = "temp/".$newfile;
-            $func2 = new TaxonomicValidationRules();
+            $func2 = new CheckListBankRules();
             $func2->add_header_to_file($newfile, "scientificName");
         }
         else { //e.g. taxa_list.txt
-            $func2 = new TaxonomicValidationRules();
+            $func2 = new CheckListBankRules();
             $func2->add_header_to_file($newfile, "scientificName");
         }
         // ---------- */

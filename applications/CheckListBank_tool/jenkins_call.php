@@ -47,7 +47,7 @@ $params['json'] = $json;
 // exit("\n$json\n");
 // $params['destination'] = $for_DOC_ROOT . "/applications/specimen_image_export/" . $newfile; --- copied template
 // $params['destination'] = $for_DOC_ROOT . "/applications/trait_data_import/" . $newfile;
-$params['destination'] = $for_DOC_ROOT . "/applications/taxonomic_validation/" . $newfile;
+$params['destination'] = $for_DOC_ROOT . "/applications/CheckListBank_tool/" . $newfile;
 
 //always use DOC_ROOT so u can switch from jenkins to cmdline. BUT DOC_ROOT won't work here either since /config/boot.php is not called here. So use $for_DOC_ROOT instead.
 $params['Filename_ID'] = $form['Filename_ID'];
@@ -76,17 +76,17 @@ $newfile = pathinfo($newfile, PATHINFO_BASENAME);
 if($form_url) $cmd = PHP_PATH.' trait_data_import.php jenkins _ ' . "'" . $form_url . "' ".$params['uuid']. " '".$params['json']."'"; //no filename but there is form_url and uuid
 else          $cmd = PHP_PATH.' trait_data_import.php jenkins ' . "'" . $newfile . "' _ _ ". "'".$params['json']."'";
 */
-if($form_url) $cmd = PHP_PATH.' taxonomic_validation.php jenkins _ ' . "'" . $form_url . "' ".$params['uuid']. " '".$params['json']."'"; //no filename but there is form_url and uuid
-else          $cmd = PHP_PATH.' taxonomic_validation.php jenkins ' . "'" . $newfile . "' _ _ ". "'".$params['json']."'";
+if($form_url) $cmd = PHP_PATH.' CheckListBank_tool.php jenkins _ ' . "'" . $form_url . "' ".$params['uuid']. " '".$params['json']."'"; //no filename but there is form_url and uuid
+else          $cmd = PHP_PATH.' CheckListBank_tool.php jenkins ' . "'" . $newfile . "' _ _ ". "'".$params['json']."'";
 
-// command: [/opt/homebrew/opt/php@5.6/bin/php taxonomic_validation.php jenkins '1686047624.tab' _ _ '{"Filename_ID":"","Short_Desc":"test" , "timestart":"0.009732"}']
+// command: [/opt/homebrew/opt/php@5.6/bin/php CheckListBank_tool.php jenkins '1686047624.tab' _ _ '{"Filename_ID":"","Short_Desc":"test" , "timestart":"0.009732"}']
 
 // echo "<pre>";print_r($params);echo "</pre>"; //good debug
 /*Array(
     [true_root] => /opt/homebrew/var/www/eol_php_code/
     [uuid] => 1686049797
     [json] => {"Filename_ID":"","Short_Desc":"test" , "timestart":"0.009201"}
-    [destination] => /opt/homebrew/var/www/eol_php_code//applications/taxonomic_validation/temp/1686049797.tab
+    [destination] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1686049797.tab
     [Filename_ID] => 
     [Short_Desc] => test
 )*/
