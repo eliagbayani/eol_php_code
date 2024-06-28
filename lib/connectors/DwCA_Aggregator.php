@@ -107,9 +107,9 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
         $ret = array(); $i = 0;
         foreach($DwCAs as $dwca_file) { $i++;
 
-            // /* during cache only | comment in normal operation
+            /* during cache only | comment in normal operation | another similar block in DwCA_Aggregator_Functions.php
             if($i < 39533) continue;
-            // */
+            */
 
             $this->zip_file = pathinfo($dwca_file, PATHINFO_BASENAME); 
             echo "\n$i of $no_of_lines -> ".$this->zip_file;
