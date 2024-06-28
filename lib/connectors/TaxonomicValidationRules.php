@@ -854,7 +854,7 @@ class TaxonomicValidationRules
             fwrite($WRITE, "$spaces $sciname -> $total "."\n");
         }
         fwrite($WRITE, "--------------------------------------------------"."\n");
-        fwrite($WRITE, "Number of unmatched names: ".$r['totals']['unmatchedNames']."\n");
+        fwrite($WRITE, "Number of unmatched names: ".@$r['totals']['unmatchedNames']."\n");
         fwrite($WRITE, "--------------------------------------------------"."\n");
         fwrite($WRITE, "-end of report-"."\n");
         fclose($WRITE);
@@ -892,7 +892,7 @@ class TaxonomicValidationRules
             // $sum = 0; //orig place, moved up Jun 26, 2024
             foreach($names as $name => $total) $sum += ($total - 1);
         }
-        $totals = $this->summary_report['totals']['matchedNames'] + $this->summary_report['totals']['unmatchedNames'];
+        $totals = $this->summary_report['totals']['matchedNames'] + @$this->summary_report['totals']['unmatchedNames'];
         $diff = $totals - $sum;
         debug("\nDiff: [$diff] = $totals - $sum | ".$this->summary_report['Number of taxa']."\n");
         // */
