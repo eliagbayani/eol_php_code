@@ -887,8 +887,9 @@ class TaxonomicValidationRules
         if($GLOBALS['ENV_DEBUG']) print_r($this->summary_report); //exit("\nditox 20\n");
 
         // /* reconcile 
+        $sum = 0;
         if($names = $this->summary_report['Number of names with multiple matches']) {
-            $sum = 0;
+            // $sum = 0; //orig place, moved up Jun 26, 2024
             foreach($names as $name => $total) $sum += ($total - 1);
         }
         $totals = $this->summary_report['totals']['matchedNames'] + $this->summary_report['totals']['unmatchedNames'];
