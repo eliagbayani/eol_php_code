@@ -521,7 +521,7 @@ class DwCA_Aggregator_Functions
         // /* during cache only | comment in normal operation
         @$this->total_page_calls++; echo "\nTotal calls:[$this->total_page_calls]\n";
         if($this->total_page_calls > 1) {
-            if(($this->total_page_calls % 1000) == 0) { echo "\nsleep 30 secs.\n"; sleep(30); }
+            if(($this->total_page_calls % 500) == 0) { echo "\nsleep 30 secs.\n"; sleep(30); }
         }
         // */
 
