@@ -106,6 +106,11 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
         $preferred_rowtypes[] = "http://rs.gbif.org/terms/1.0/description"; //added Dec 4, 2023. To get the better quality text for textmining.
         $ret = array(); $i = 0;
         foreach($DwCAs as $dwca_file) { $i++;
+
+            // /* during cache only | comment in normal operation
+            if($i < 39533) continue;
+            // */
+
             $this->zip_file = pathinfo($dwca_file, PATHINFO_BASENAME); 
             echo "\n$i of $no_of_lines -> ".$this->zip_file;
             if(file_exists($dwca_file)) {

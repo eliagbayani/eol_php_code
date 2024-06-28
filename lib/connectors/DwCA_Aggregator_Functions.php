@@ -518,6 +518,13 @@ class DwCA_Aggregator_Functions
     }
     function run_gnfinder($str)
     {
+        // /* during cache only | comment in normal operation
+        @$this->total_page_calls++; echo "\nTotal calls:[$this->total_page_calls]\n";
+        if($this->total_page_calls > 1) {
+            if(($this->total_page_calls % 1000) == 0) { echo "\nsleep 30 secs.\n"; sleep(30); }
+        }
+        // */
+
         require_library('connectors/Functions_Memoirs');
         require_library('connectors/ParseListTypeAPI_Memoirs');
         require_library('connectors/ParseUnstructuredTextAPI_Memoirs'); 
