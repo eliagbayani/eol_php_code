@@ -45,13 +45,13 @@ else {
     // /*
     // $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "MarineGEO_sie/" . $params['uuid'] . ".xls";
     // $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "Trait_Data_Import/" . $params['uuid'] . ".tar.gz";
-    $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_tool/" . $params['uuid'] . ".zip";
+    $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_files/" . $params['uuid'] . ".zip";
     if(file_exists($final_archive_gzip_url)) {
         
         // /* NEW: to accommodate Filename_ID implementation
         if($Filename_ID = @$params['Filename_ID']) {
             // $rename_to = CONTENT_RESOURCE_LOCAL_PATH . "Trait_Data_Import/" . $params['Filename_ID'] . ".tar.gz";
-            $rename_to = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_tool/" . $params['Filename_ID'] . ".zip";
+            $rename_to = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_files/" . $params['Filename_ID'] . ".zip";
 
             /* as much as possible don't use: Functions::file_rename
             Functions::file_rename($final_archive_gzip_url, $rename_to)

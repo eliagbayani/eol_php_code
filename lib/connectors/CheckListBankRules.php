@@ -25,7 +25,7 @@ class CheckListBankRules
         $this->HC = new DwCA_Utility(); // HC - higherClassification functions
         // */
         // /* 3rd:
-        $this->temp_dir = CONTENT_RESOURCE_LOCAL_PATH . '/CheckListBank_tool/'.$this->resource_id."/";
+        $this->temp_dir = CONTENT_RESOURCE_LOCAL_PATH . '/CheckListBank_files/'.$this->resource_id."/";
         if(!is_dir($this->temp_dir)) mkdir($this->temp_dir);
         $filenames = array('matchedNames', 'processed', 'unmatchedNames');
         foreach($filenames as $filename) {

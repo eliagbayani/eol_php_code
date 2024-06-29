@@ -30,7 +30,7 @@ class CheckListBankAPI extends CheckListBankRules
             
             // $this->resources['path'] = CONTENT_RESOURCE_LOCAL_PATH."MarineGEO_sie/";
             // $this->resources['path'] = CONTENT_RESOURCE_LOCAL_PATH."Trait_Data_Import/";
-            $this->resources['path'] = CONTENT_RESOURCE_LOCAL_PATH."CheckListBank_tool/";
+            $this->resources['path'] = CONTENT_RESOURCE_LOCAL_PATH."CheckListBank_files/";
 
             $dir = $this->resources['path'];
             if(!is_dir($dir)) mkdir($dir);
