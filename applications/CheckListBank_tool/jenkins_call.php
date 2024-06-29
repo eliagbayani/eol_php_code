@@ -79,16 +79,15 @@ else          $cmd = PHP_PATH.' trait_data_import.php jenkins ' . "'" . $newfile
 if($form_url) $cmd = PHP_PATH.' CheckListBank_tool.php jenkins _ ' . "'" . $form_url . "' ".$params['uuid']. " '".$params['json']."'"; //no filename but there is form_url and uuid
 else          $cmd = PHP_PATH.' CheckListBank_tool.php jenkins ' . "'" . $newfile . "' _ _ ". "'".$params['json']."'";
 
-// command: [/opt/homebrew/opt/php@5.6/bin/php CheckListBank_tool.php jenkins '1686047624.tab' _ _ '{"Filename_ID":"","Short_Desc":"test" , "timestart":"0.009732"}']
-
-// echo "<pre>";print_r($params);echo "</pre>"; //good debug
+// command: [/opt/homebrew/opt/php@5.6/bin/php CheckListBank_tool.php jenkins '1719632821.tab' _ _ '{"Filename_ID":"","Short_Desc":"" , "timestart":"0.006125"}'] 
+// echo "<pre>";print_r($params);echo "</pre>"; exit("\n[$cmd]\n"); //good debug
 /*Array(
     [true_root] => /opt/homebrew/var/www/eol_php_code/
-    [uuid] => 1686049797
-    [json] => {"Filename_ID":"","Short_Desc":"test" , "timestart":"0.009201"}
-    [destination] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1686049797.tab
+    [uuid] => 1719632737
+    [json] => {"Filename_ID":"","Short_Desc":"" , "timestart":"0.010594"}
+    [destination] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1719632737.tab
     [Filename_ID] => 
-    [Short_Desc] => test
+    [Short_Desc] => 
 )*/
 // exit("<br>command: [".$cmd."]<br>");
 
