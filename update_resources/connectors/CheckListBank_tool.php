@@ -9,9 +9,10 @@ php update_resources/connectors/marine_geo_image.php _ image_input.xlsx _ _ '$js
 php update_resources/connectors/marine_geo_image.php _ _ 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/MarineGEO/image_input.xlsx' uuid001 '$json'
 
 from jenkins_call.php: 1686049284
-/opt/homebrew/opt/php@5.6/bin/php CheckListBank_tool.php jenkins '1686049284.tab' _ _ '{"Filename_ID":"","Short_Desc":"test" , "timestart":"0.009732"}'
-php update_resources/connectors/CheckListBank_tool.php _ '1686049284.tab' _ _ '{"Filename_ID":"","Short_Desc":"test" , "timestart":"0.009732"}']
-where 1686049284.tab is in /eol_php_code/applications/CheckListBank_tool/temp/
+/opt/homebrew/opt/php@5.6/bin/php CheckListBank_tool.php jenkins '1719632821.tab' _ _ '{"Filename_ID":"","Short_Desc":"" , "timestart":"0.006125"}'
+
+php update_resources/connectors/CheckListBank_tool.php _ '1719632821.tab' _ _ '{"Filename_ID":"","Short_Desc":"" , "timestart":"0.006125"}'
+where 1719632821.tab is in /eol_php_code/applications/CheckListBank_tool/temp/
 */
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");

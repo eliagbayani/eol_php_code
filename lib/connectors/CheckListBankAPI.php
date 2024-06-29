@@ -48,7 +48,8 @@ class CheckListBankAPI extends CheckListBankRules
     }
     function start($filename = false, $form_url = false, $uuid = false, $json = false)
     {
-        $this->arr_json = json_decode($json, true);
+        echo "\nstart filename: [$filename]\n";
+        $this->arr_json = json_decode($json, true); print_r($this->arr_json);
         if($val = @$this->arr_json['timestart']) $timestart = $val;               //normal operation
         else                                     $timestart = time_elapsed();     //during dev only - command line
         if($GLOBALS['ENV_DEBUG']) print_r($this->arr_json);
@@ -57,20 +58,25 @@ class CheckListBankAPI extends CheckListBankRules
         if($form_url && $form_url != '_') $filename = self::process_form_url($form_url, $uuid); //this will download (wget) and save file in /specimen_export/temp/
         // */
         
+        /* doesn't seem to pass here anymore
         if(pathinfo($filename, PATHINFO_EXTENSION) == "zip") { //e.g. taxon.tab.zip
             $filename = self::process_zip_file($filename);
-            // /* for csv files - file format: Taxa File
+            // for csv files - file format: Taxa File
             if(pathinfo($filename, PATHINFO_EXTENSION) == "csv") { // exit("\n<br>meron csv [$filename]<br>\n");
                 $filename = $this->input['path'].$filename;             // added complete path
                 $filename = self::convert_csv2tsv($filename);
                 $filename = pathinfo($filename, PATHINFO_BASENAME);     // back to just basename, e.g. 1687492564.tsv
             }
-            // else exit("\n<br>wala daw csv [$filename]<br>\n"); //no need to trap
-            // */            
+            // else exit("\n<br>wala daw csv [$filename]<br>\n"); //no need to trap            
         }
+        */
         
         if(!$filename) exit("\nNo filename: [$filename]. Will terminate.\n");
-        $input_file = $this->input['path'].$filename; //e.g. $filename is 'input_Eli.xlsx'
+        $input_file = $this->input['path'].$filename;
+        echo "\nfilename is: [$filename]\n";
+        echo "\ninput_file is: [$input_file]\n"; exit("\nstop 1\n");
+        // input_file is: [/opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1719634586.tab]
+
         if(file_exists($input_file)) {
             $this->resource_id = pathinfo($input_file, PATHINFO_FILENAME); // exit("\nEli is here...\n[".$this->resource_id."]\n");
             $this->process_user_file($input_file); //calling main program

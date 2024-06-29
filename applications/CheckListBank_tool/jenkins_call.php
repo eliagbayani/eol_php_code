@@ -4,11 +4,11 @@ require_once("../../../FreshData/controllers/other.php");
 require_once("../../../FreshData/controllers/freshdata.php");
 
 $GLOBALS['ENV_DEBUG'] = true;
-/* during development
+// /* during development
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 $GLOBALS['ENV_DEBUG'] = true; //set to true when debugging
-*/
+// */
 
 $ctrler = new freshdata_controller(array());
 $job_name = 'xls2dwca_job';
@@ -52,6 +52,8 @@ $params['destination'] = $for_DOC_ROOT . "/applications/CheckListBank_tool/" . $
 //always use DOC_ROOT so u can switch from jenkins to cmdline. BUT DOC_ROOT won't work here either since /config/boot.php is not called here. So use $for_DOC_ROOT instead.
 $params['Filename_ID'] = $form['Filename_ID'];
 $params['Short_Desc'] = $form['Short_Desc'];
+$params['Taxon file'] = $taxon_file;
+$params['Distribution file'] = $distribution_file;
 
 /* for more debugging...
 echo "<br>newfile: [$newfile]";
