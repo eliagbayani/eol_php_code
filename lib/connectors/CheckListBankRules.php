@@ -147,6 +147,7 @@ class CheckListBankRules
                 dwc:locality	geographic_value
                 dwc:occurrenceStatus	origin
                 */
+                $taxonID = $rec['dwc:taxonID'];
                 $s = array(); //save array
                 $s['scientific_nameID'] = $rec['dwc:taxonID'];
                 $s['parent_nameID'] = $rec['dwc:parentNameUsageID'];
@@ -173,12 +174,14 @@ class CheckListBankRules
                 $occurrenceStatus = @$this->distribution_info_list[$taxonID]['o'];
                 $occurrenceStatus = self::clean_array($occurrenceStatus);
                 $occurrenceStatus = implode("|", $occurrenceStatus);
+
                 $locality = @$this->distribution_info_list[$taxonID]['l'];
                 $locality = self::clean_array($locality);
                 $locality = implode("|", $locality);
+                
                 $s['geographic_value'] = $locality;
                 $s['origin'] = $occurrenceStatus;
-                write_output_rec_2txt($s, "Main_Table");
+                self::write_output_rec_2txt($s, "Main_Table");
 
             }
             //###############################################################################################
@@ -338,10 +341,13 @@ class CheckListBankRules
     }
     private function clean_array($arr)
     {
-        $arr = array_filter($arr); //remove null arrays
-        $arr = array_unique($arr); //make unique
-        $arr = array_values($arr); //reindex key
-        return $arr;
+        if(is_array($arr)) {
+            $arr = array_filter($arr); //remove null arrays
+            $arr = array_unique($arr); //make unique
+            $arr = array_values($arr); //reindex key
+            return $arr;    
+        }
+        else return array();
     }
     // private function clean_string($str)
     // {
