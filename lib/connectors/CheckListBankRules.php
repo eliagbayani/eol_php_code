@@ -38,11 +38,12 @@ class CheckListBankRules
     function start_CheckListBank_process()
     {
         self::initialize();
-        $this->parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv');
-        self::summary_report();
-        self::prepare_download_link();
-        recursive_rmdir($this->temp_dir);
-        // exit("\n-stop muna-\n");
+        self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv');
+        print_r($this->debug);
+        // self::summary_report();
+        // self::prepare_download_link();
+        // recursive_rmdir($this->temp_dir);
+        exit("\n-stop muna-\n");
         return;
     }
     function parse_TSV_file($txtfile, $task)
@@ -62,7 +63,7 @@ class CheckListBankRules
                 $k = 0; $rec = array();
                 foreach($fields as $fld) { $rec[$fld] = @$row[$k]; $k++; }
             }
-            $rec = array_map('trim', $rec); // print_r($rec); exit("\nstopx\n");
+            $rec = array_map('trim', $rec); //print_r($rec); exit("\nstopx\n");
             //###############################################################################################
             if($task == "process Taxon.tsv") {
                 /*Array(
@@ -89,9 +90,12 @@ class CheckListBankRules
                     [dwc:taxonRemarks] => 
                     [dcterms:references] => 
                 )*/
+                $this->debug['namePublishedIn'][$rec['dwc:namePublishedIn']] = '';
+                $this->debug['taxonomicStatus'][$rec['dwc:taxonomicStatus']] = '';
+                $this->debug['references'][$rec['dcterms:references']] = '';
             }
             //###############################################################################################
-            if($task == "name match and validate") {
+            if($task == "process Distribution.tsv") {
             }
             //###############################################################################################
         } //end foreach()

@@ -13,7 +13,7 @@ class CheckListBankAPI extends CheckListBankRules
         // $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));
         $this->debug = array();
         
-        $this->download_options = array('cache' => 1, 'resource_id' => 'MarineGEO_2', 'timeout' => 3600, 'download_attempts' => 1, 'expire_seconds' => 60*60*24*30*3); //orig expires quarterly
+        $this->download_options = array('cache' => 1, 'resource_id' => 'CheckListBank', 'timeout' => 3600, 'download_attempts' => 1, 'expire_seconds' => 60*60*24*30*1);
         // $this->download_options['expire_seconds'] = false; //debug only
         
         /* ============================= START for specimen_export ============================= */
@@ -34,14 +34,6 @@ class CheckListBankAPI extends CheckListBankRules
 
             $dir = $this->resources['path'];
             if(!is_dir($dir)) mkdir($dir);
-            /*
-            $dir = $this->resources['path'].'TSVs';
-            if(!is_dir($dir)) mkdir($dir);
-            */
-            /* copied template
-            $this->input['worksheets'] = array('data', 'references', 'vocabulary'); //'data' is the 1st worksheet from Trait_template.xlsx
-            $this->vocabulary_fields = array("predicate label", "predicate uri", "value label", "value uri", "units label", "units uri", "statmeth label", "statmeth uri", "sex label", "sex uri", "lifestage label", "lifestage uri");
-            */
             $this->opendata_dataset_api = 'https://opendata.eol.org/api/3/action/package_show?id=';
         }
         /* ============================= END for image_export ============================= */
@@ -88,7 +80,7 @@ class CheckListBankAPI extends CheckListBankRules
         )*/
         if(file_exists($input_file)) {
             $this->resource_id = pathinfo($input_file, PATHINFO_FILENAME); //exit("\nEli is here...\n[".$this->resource_id."]\n");
-
+            $this->start_CheckListBank_process();
 
             /* copied template from trait_data_import tool
             self::read_input_file($input_file); //writes to text files for reading in next step.
