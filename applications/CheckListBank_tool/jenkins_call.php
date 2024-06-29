@@ -41,7 +41,13 @@ $json = '{"Proj":"'.$form['Proj'].'", "Dept":"'.$dept_map[$form['Dept']].'"
          , "Proj_refresh":"'.$Proj_refresh.'"
          , "timestart":"'.$timestart.'", "Lic_yr":"'.$form['Lic_yr'].'", "Lic_inst":"'.$form['Lic_inst'].'", "Lic_cont":"'.$form['Lic_cont'].'"}';
 */
-$json = '{"Filename_ID":"'.$form['Filename_ID'].'","Short_Desc":"'.$form['Short_Desc'].'" , "timestart":"'.$timestart.'"}';
+$json = '{"Filename_ID":"'.$form['Filename_ID'].'",
+         "Short_Desc":"'.$form['Short_Desc'].'" , 
+         "TransID":"'.$time_var.'" , 
+         "Taxon_file":"'.$time_var."_".$taxon_file.'" , 
+         "Distribution_file":"'.$time_var."_".$distribution_file.'" , 
+         "timestart":"'.$timestart.'"}';
+
 
 $params['json'] = $json;
 // exit("\n$json\n");
@@ -52,8 +58,7 @@ $params['destination'] = $for_DOC_ROOT . "/applications/CheckListBank_tool/" . $
 //always use DOC_ROOT so u can switch from jenkins to cmdline. BUT DOC_ROOT won't work here either since /config/boot.php is not called here. So use $for_DOC_ROOT instead.
 $params['Filename_ID'] = $form['Filename_ID'];
 $params['Short_Desc'] = $form['Short_Desc'];
-$params['Taxon file'] = $taxon_file;
-$params['Distribution file'] = $distribution_file;
+
 
 /* for more debugging...
 echo "<br>newfile: [$newfile]";
