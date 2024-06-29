@@ -49,7 +49,7 @@ class CheckListBankRules
         $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
         $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
 
-        // self::do_main_mapping();
+        self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
 
         // self::summary_report();
         // self::prepare_download_link();
@@ -124,9 +124,65 @@ class CheckListBankRules
                 $this->debug['locality'][$rec['dwc:locality']] = '';
                 $this->debug['occurrenceStatus'][$rec['dwc:occurrenceStatus']] = '';
                 $taxonID = $rec['dwc:taxonID'];
-                $this->distribution_info_list[$taxonID] = array('o' => $rec['dwc:occurrenceStatus'], 'l' => $rec['dwc:locality']);
+                // $this->distribution_info_list[$taxonID] = array('o' => $rec['dwc:occurrenceStatus'], 'l' => $rec['dwc:locality']); //commented bec. it may have multiple values
+                $this->distribution_info_list[$taxonID]['o'][] = $rec['dwc:occurrenceStatus'];
+                $this->distribution_info_list[$taxonID]['l'][] = $rec['dwc:locality'];
             }
             //###############################################################################################
+            if($task == "do main mapping") { //mapping here: https://github.com/EOL/ContentImport/issues/14#issuecomment-2168170536
+                /*
+                dwc field	TWB field
+                dwc:taxonID	scientific_nameID                
+                dwc:parentNameUsageID	parent_nameID
+                dwc:acceptedNameUsageID	accepted_nameID
+                dwc:taxonomicStatus	name_usage
+                dwc:taxonRank	rank_name
+                dwc:scientificNameAuthorship	taxon_author
+                dwc:genericName	unit_name1
+                dwc:infragenericEpithet	unit_name2
+                dwc:specificEpithet	IF dwc:infragenericEpithet absent: unit_name2 | IF dwc:infragenericEpithet present: unit_name3
+                dwc:infraspecificEpithet	IF dwc:infragenericEpithet absent: unit_name3 | IF dwc:infragenericEpithet present: unit_name4
+                dwc:cultivarEpithet	 IF dwc:infragenericEpithet absent: unit_name3 | IF dwc:infragenericEpithet present: unit_name4
+                dwc:namePublishedIn	PULL OUT INTO NEW TABLE
+                dwc:locality	geographic_value
+                dwc:occurrenceStatus	origin
+                */
+                $s = array(); //save array
+                $s['scientific_nameID'] = $rec['dwc:taxonID'];
+                $s['parent_nameID'] = $rec['dwc:parentNameUsageID'];
+                $s['accepted_nameID'] = $rec['dwc:acceptedNameUsageID'];
+                $s['name_usage'] = $rec['dwc:taxonomicStatus'];
+                $s['rank_name'] = $rec['dwc:taxonRank'];
+                $s['taxon_author'] = $rec['dwc:scientificNameAuthorship'];
+
+                $s['unit_name1'] = '';  $s['unit_name2'] = ''; $s['unit_name3'] = '';  $s['unit_name4'] = ''; //initialize
+
+                $s['unit_name1'] = $rec['dwc:genericName'];
+                $s['unit_name2'] = $rec['dwc:infragenericEpithet'];
+
+                $infragenericEpithet = $rec['dwc:infragenericEpithet'];
+                if(!$infragenericEpithet) $s['unit_name2'] = $rec['dwc:specificEpithet'];
+                else                      $s['unit_name3'] = $rec['dwc:specificEpithet'];
+                if(!$infragenericEpithet) $s['unit_name3'] = $rec['dwc:infraspecificEpithet'];
+                else                      $s['unit_name4'] = $rec['dwc:infraspecificEpithet'];
+                if(!$infragenericEpithet) $s['unit_name3'] = $rec['dwc:cultivarEpithet'];
+                else                      $s['unit_name4'] = $rec['dwc:cultivarEpithet'];
+
+                // dwc:namePublishedIn	PULL OUT INTO NEW TABLE
+
+                $occurrenceStatus = @$this->distribution_info_list[$taxonID]['o'];
+                $occurrenceStatus = self::clean_array($occurrenceStatus);
+                $occurrenceStatus = implode("|", $occurrenceStatus);
+                $locality = @$this->distribution_info_list[$taxonID]['l'];
+                $locality = self::clean_array($locality);
+                $locality = implode("|", $locality);
+                $s['geographic_value'] = $locality;
+                $s['origin'] = $occurrenceStatus;
+                write_output_rec_2txt($s, "Main_Table");
+
+            }
+            //###############################################################################################
+
         } //end foreach()
         if($task == "load DH file") {
             // echo "\nLoaded DH 2.1 DONE.";
@@ -137,7 +193,7 @@ class CheckListBankRules
     private function write_array_2txt($arr, $basename)
     {
         $arr = self::clean_array($arr);
-        $filename = $this->temp_dir.$basename.".tsv"; echo "\nfilename: [$filename]\n";
+        $filename = $this->temp_dir.$basename.".txt"; echo "\nfilename: [$filename]\n";
         $WRITE = Functions::file_open($filename, "w");
         foreach($arr as $row) fwrite($WRITE, $row . "\n");
         fclose($WRITE);
@@ -287,5 +343,10 @@ class CheckListBankRules
         $arr = array_values($arr); //reindex key
         return $arr;
     }
+    // private function clean_string($str)
+    // {
+    //     $str = str_replace(array("\t"), " ", $str);
+    //     return Functions::remove_whitespace($str);
+    // }
 }
 ?>
