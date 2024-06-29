@@ -165,13 +165,25 @@ for($loop = 1; $loop <= $loops; $loop++) { //echo "\n[$loop of $loops]";
 exit("\n-end test-\n");
 */
 
-/* test only
-$str = "903E305AF00D922FFF7B0AC2D6C4F88A.taxon_-_903E305AF00D922FFF7B0AC2D6C4F88A.text			alpine	ENVO_01000340	envo	";
-$str = "244558_-_WoRMS:note:86414			gravel	ENVO_01000018	envo";
-$arr = explode("\t", $str);
-print_r($arr);
+// /* test only
+$orig_str = "Beirne BP. The male genitalia of the British Stigmellidae (Nepticulidae) (Lep.). Proceedings of the Royal Irish Academy Section B 50: 191-218. doi: http://www.jstor.org/pss/20490833. (1945).";
+$str = $orig_str;
+if(preg_match_all("/\((.*?)\)/ims", $str, $arr)) {
+    print_r($arr[1]);
+    $i = -1;
+    $words = array();
+    foreach($arr[1] as $s) {
+        if(stripos($s, ".") !== false) { //string is found
+            $i++;
+            $temp = str_replace(".", " _my_period_ ", $s);
+            $str = str_replace("($s)", "($temp)", $str);
+        }
+    }
+    echo "\norig: [$orig_str]\n";
+    echo "\n new: [$str]\n"; //return $str
+}
 exit("\n-end test-\n");
-*/
+// */
 
 /* test only
 $matches = array();
