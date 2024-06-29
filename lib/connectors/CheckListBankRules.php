@@ -34,22 +34,31 @@ class CheckListBankRules
         //     $WRITE = Functions::file_open($filename, "w"); fclose($WRITE);
         // }
         // */
+
+        // /*
+        require_library('connectors/WikiDataMtce_ResourceAPI');
+        require_library('connectors/WikiDataMtceAPI');
+        $this->other_funcs = new WikiDataMtceAPI(); //func is: parse_citation_using_anystyle(citation, all)
+        // */
+
     }
     function start_CheckListBank_process()
     {
         self::initialize();
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv');
         $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
-        $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
-        $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
-        $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
-        $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
-        $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
-        self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv');
-        $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
-        $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
+        // $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
+        // self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv');
+        // $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
 
-        self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
+        // self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
+
+        self::parse_references_with_anystyle();
 
         // self::summary_report();
         // self::prepare_download_link();
@@ -348,6 +357,22 @@ class CheckListBankRules
             return $arr;    
         }
         else return array();
+    }
+    private function parse_references_with_anystyle()
+    {
+        $filename = $this->temp_dir."namePublishedIn.txt"; echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
+        foreach(new FileIterator($filename) as $line_number => $line) {
+            if(!$line) continue;
+            $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
+            // $line = htmlspecialchars_decode($line); //didn't work, and others didn't work
+            $line = htmlentities($line); //worked perfectly for special chars
+            $obj = $this->other_funcs->parse_citation_using_anystyle($line, 'all');
+            $obj[0]->raw = $line;
+            print_r($obj);
+
+            if($i > 5) break;
+        }
+        exit("\nstopx 1\n");
     }
     // private function clean_string($str)
     // {

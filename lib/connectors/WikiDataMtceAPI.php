@@ -1093,7 +1093,7 @@ class WikiDataMtceAPI extends WikiDataMtce_ResourceAPI
         }
         return $rows;
     }
-    function parse_citation_using_anystyle($citation, $what, $series)
+    function parse_citation_using_anystyle($citation, $what, $series = false) //$series is optional
     {
         echo("\n----------\nthis runs ruby...[$what][$series]\n----------\n"); //comment in real operation
         $json = shell_exec($this->anystyle_parse_prog . ' "'.$citation.'"');
