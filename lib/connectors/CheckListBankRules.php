@@ -364,20 +364,57 @@ class CheckListBankRules
         foreach(new FileIterator($filename) as $line_number => $line) {
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
+
+            $line = self::format_citation_for_anystyle($line);
+
             // $line = htmlspecialchars_decode($line); //didn't work, and others didn't work
             $line = htmlentities($line); //worked perfectly for special chars
+
             $obj = $this->other_funcs->parse_citation_using_anystyle($line, 'all');
             $obj[0]->raw = $line;
+
+            if(!self::hasMatchedParentheses($obj[0]->title[0])) $obj[0]->title[0] .= ")";
+
+            $obj[0]->title[0] = str_replace(" there is a cat ", ".", $obj[0]->title[0]);
+
             print_r($obj);
 
             if($i > 5) break;
         }
         exit("\nstopx 1\n");
     }
-    // private function clean_string($str)
-    // {
-    //     $str = str_replace(array("\t"), " ", $str);
-    //     return Functions::remove_whitespace($str);
-    // }
+    private function format_citation_for_anystyle($orig_str)
+    {
+        // $orig_str = "Beirne BP. The male genitalia of the British Stigmellidae (Nepticulidae) (Lep.). Proceedings of the Royal Irish Academy Section B 50: 191-218. doi: http://www.jstor.org/pss/20490833. (1945).";
+        $str = $orig_str;
+        // $str = str_replace(")", " ) ", $str);
+        // $str = str_replace("(", " ( ", $str);
+
+        if(preg_match_all("/\((.*?)\)/ims", $str, $arr)) {
+            // print_r($arr[1]);
+            $words = array();
+            foreach($arr[1] as $s) {
+                if(stripos($s, ".") !== false) { //string is found
+                    $temp = str_replace(".", " there is a cat ", $s);
+                    $str = str_replace("($s)", "($temp)", $str);
+                }
+            }
+            echo "\norig: [$orig_str]\n";
+            echo "\n new: [$str]\n"; //return $str
+            return $str;
+        }
+        return $orig_str;
+    }
+    function hasMatchedParentheses( $string ) {
+        $counter = 0;
+        $length = strlen( $string );
+        for( $i = 0; $i < $length; $i++ ) {
+            $char = $string[ $i ];
+            if( $char == '(' ) $counter++;
+            elseif( $char == ')' ) $counter--;
+            if( $counter < 0 ) return false;
+        }
+        return $counter == 0;
+    }    
 }
 ?>
