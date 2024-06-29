@@ -49,7 +49,7 @@ class CheckListBankAPI extends CheckListBankRules
     function start($filename = false, $form_url = false, $uuid = false, $json = false)
     {
         echo "\nstart filename: [$filename]\n";
-        $this->arr_json = json_decode($json, true); print_r($this->arr_json);
+        $this->arr_json = json_decode($json, true);
         if($val = @$this->arr_json['timestart']) $timestart = $val;               //normal operation
         else                                     $timestart = time_elapsed();     //during dev only - command line
         if($GLOBALS['ENV_DEBUG']) print_r($this->arr_json);
@@ -74,12 +74,21 @@ class CheckListBankAPI extends CheckListBankRules
         if(!$filename) exit("\nNo filename: [$filename]. Will terminate.\n");
         $input_file = $this->input['path'].$filename;
         echo "\nfilename is: [$filename]\n";
-        echo "\ninput_file is: [$input_file]\n"; exit("\nstop 1\n");
-        // input_file is: [/opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1719634586.tab]
-
+        echo "\ninput_file is: [$input_file]\n"; //exit("\nstop 1\n");
+        // filename is: [1719649213.zip]
+        // input_file is: [/opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1719649213.zip]
+        $this->temp_folder = str_replace($filename, "", $input_file);
+        /*Array( $this->arr_json
+            [Filename_ID] => 
+            [Short_Desc] => 
+            [TransID]           => 1719638494
+            [Taxon_file]        => 1719638494_Taxon.tsv
+            [Distribution_file] => 1719638494_Distribution.tsv
+            [timestart] => 0.007148
+        )*/
         if(file_exists($input_file)) {
-            $this->resource_id = pathinfo($input_file, PATHINFO_FILENAME); // exit("\nEli is here...\n[".$this->resource_id."]\n");
-            $this->process_user_file($input_file); //calling main program
+            $this->resource_id = pathinfo($input_file, PATHINFO_FILENAME); //exit("\nEli is here...\n[".$this->resource_id."]\n");
+
 
             /* copied template from trait_data_import tool
             self::read_input_file($input_file); //writes to text files for reading in next step.
