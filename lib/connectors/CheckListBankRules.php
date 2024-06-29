@@ -375,7 +375,7 @@ class CheckListBankRules
 
             if(!self::hasMatchedParentheses($obj[0]->title[0])) $obj[0]->title[0] .= ")";
 
-            $obj[0]->title[0] = str_replace(" there is a cat ", ".", $obj[0]->title[0]);
+            $obj[0]->title[0] = str_replace("there_is_a_cat", ".", $obj[0]->title[0]);
 
             print_r($obj);
 
@@ -395,7 +395,7 @@ class CheckListBankRules
             $words = array();
             foreach($arr[1] as $s) {
                 if(stripos($s, ".") !== false) { //string is found
-                    $temp = str_replace(".", " there is a cat ", $s);
+                    $temp = str_replace(".", "there_is_a_cat", $s);
                     $str = str_replace("($s)", "($temp)", $str);
                 }
             }
