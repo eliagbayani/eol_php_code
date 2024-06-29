@@ -39,7 +39,18 @@ class CheckListBankRules
     {
         self::initialize();
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv');
-        print_r($this->debug);
+        $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
+        $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
+        $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
+        $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
+        $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
+        $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
+        self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv');
+        $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
+        $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
+
+        // self::do_main_mapping();
+
         // self::summary_report();
         // self::prepare_download_link();
         // recursive_rmdir($this->temp_dir);
@@ -90,12 +101,30 @@ class CheckListBankRules
                     [dwc:taxonRemarks] => 
                     [dcterms:references] => 
                 )*/
+                // The columns to be mapped are:
+                // -Taxon file: taxonomicStatus, taxonRank, nomenclaturalStatus (if populated), taxonRemarks
+                // -Distribution file: locality and occurrenceStatus (if present/populated)
                 $this->debug['namePublishedIn'][$rec['dwc:namePublishedIn']] = '';
+                $this->debug['infragenericEpithet'][$rec['dwc:infragenericEpithet']] = '';
                 $this->debug['taxonomicStatus'][$rec['dwc:taxonomicStatus']] = '';
-                $this->debug['references'][$rec['dcterms:references']] = '';
+                $this->debug['taxonRank'][$rec['dwc:taxonRank']] = '';
+                $this->debug['nomenclaturalStatus'][$rec['dwc:nomenclaturalStatus']] = '';
+                $this->debug['taxonRemarks'][$rec['dwc:taxonRemarks']] = '';
             }
             //###############################################################################################
             if($task == "process Distribution.tsv") {
+                /*Array(
+                    [dwc:taxonID] => ca4b69b0-40be-4eec-8cac-d883b8703cfd
+                    [dwc:occurrenceStatus] => native
+                    [dwc:locationID] => 
+                    [dwc:locality] => Neotropical region
+                    [dwc:countryCode] => 
+                    [dcterms:source] => 
+                )*/
+                $this->debug['locality'][$rec['dwc:locality']] = '';
+                $this->debug['occurrenceStatus'][$rec['dwc:occurrenceStatus']] = '';
+                $taxonID = $rec['dwc:taxonID'];
+                $this->distribution_info_list[$taxonID] = array('o' => $rec['dwc:occurrenceStatus'], 'l' => $rec['dwc:locality']);
             }
             //###############################################################################################
         } //end foreach()
@@ -105,12 +134,13 @@ class CheckListBankRules
             // print_r($taxo_status); exit("\n[$syn]\n"); //good debug
         }
     }
-    private function clean_array($arr)
+    private function write_array_2txt($arr, $basename)
     {
-        $arr = array_filter($arr); //remove null arrays
-        $arr = array_unique($arr); //make unique
-        $arr = array_values($arr); //reindex key
-        return $arr;
+        $arr = self::clean_array($arr);
+        $filename = $this->temp_dir.$basename.".tsv"; echo "\nfilename: [$filename]\n";
+        $WRITE = Functions::file_open($filename, "w");
+        foreach($arr as $row) fwrite($WRITE, $row . "\n");
+        fclose($WRITE);
     }
     private function write_output_rec_2txt($rec, $basename)
     {   // print_r($rec);
@@ -249,6 +279,13 @@ class CheckListBankRules
         elseif($total > 1000000 && $total <= 2000000) $modulo = 10000;
         elseif($total > 2000000) $modulo = 10000;
         return $modulo;
+    }
+    private function clean_array($arr)
+    {
+        $arr = array_filter($arr); //remove null arrays
+        $arr = array_unique($arr); //make unique
+        $arr = array_values($arr); //reindex key
+        return $arr;
     }
 }
 ?>
