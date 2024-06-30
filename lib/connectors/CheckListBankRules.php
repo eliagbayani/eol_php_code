@@ -378,10 +378,42 @@ class CheckListBankRules
             $obj[0]->title[0] = str_replace("there_is_a_cat", ".", $obj[0]->title[0]);
 
             print_r($obj);
-
+            $save = self::convert_anystyle_obj_2save($obj);
             if($i > 5) break;
         }
         exit("\nstopx 1\n");
+    }
+    private function convert_anystyle_obj_2save($obj)
+    {   /*Array(
+            [0] => stdClass Object(
+                [author] => Array(
+                        [0] => stdClass Object(
+                                [family] => Borkowski
+                                [given] => A.
+                            )
+                    )
+                [title] => Array(
+                        [0] => Studien an Nepticuliden (Lepidoptera). Teil V. Die europäischen Arten der Gattung Nepticula Heyden von Eichen
+                    )
+                [volume] => Array(
+                        [0] => 42
+                    )
+                [pages] => Array(
+                        [0] => 767u2013799
+                    )
+
+                [date] => Array(
+                        [0] => 1972
+                    )
+
+                [type] => article-journal
+                [container-title] => Array(
+                        [0] => Polskie Pismo Entomologiczne
+                    )
+                [raw] => Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil V. Die europäischen Arten der Gattung Nepticula Heyden von Eichen. Polskie Pismo Entomologiczne 42: 767-799. (1972).
+            )
+        )*/
+        
     }
     private function format_citation_for_anystyle($orig_str)
     {
