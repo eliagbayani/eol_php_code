@@ -29,7 +29,9 @@ class AnystyleAPI
         anystyle                              --stdout -f json parse input.txt
         */
 
-        $this->anystyle_parse_model = DOC_ROOT. "update_resources/connectors/helpers/anystyle/eli_core.mod";
+        $this->anystyle_parse_model_core = DOC_ROOT. "update_resources/connectors/helpers/anystyle/eli_core.mod";
+        $this->anystyle_parse_model_gold = DOC_ROOT. "update_resources/connectors/helpers/anystyle/eli_gold.mod";
+
         $this->temp_path = DOC_ROOT. "update_resources/connectors/helpers/anystyle/";
         $this->anystyle_path = "/usr/local/bin/anystyle";
     }
@@ -40,7 +42,8 @@ class AnystyleAPI
         fwrite($WRITE, $citation);
         fclose($WRITE);
 
-        $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model  --stdout -f json parse $input_file";
+        $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model_core  --stdout -f json parse $input_file";
+        // $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model_gold  --stdout -f json parse $input_file";
         // $cmd = "$this->anystyle_path                                             --stdout -f json parse $input_file";
 
         $json = shell_exec($cmd);

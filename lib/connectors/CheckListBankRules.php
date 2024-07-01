@@ -66,8 +66,6 @@ class CheckListBankRules
 
         self::parse_references_with_anystyle();
 
-
-
         // self::summary_report();
         // self::prepare_download_link();
         // recursive_rmdir($this->temp_dir);
@@ -375,8 +373,14 @@ class CheckListBankRules
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
 
+            // force assign
             // $line = "Clemens B. Letters received from Dr. Brackenridge Clemens. 9. Letter of October 29th, 1860. In: Stainton HT (Ed) The Tineina of North America by (the late) Dr Brackenridge Clemens (being a collected edition of his writing on that group of insects). John van Voorst, London, XV, 282. (1872).";
             // $line = "Davis DR, Wilkinson C. Nepticulidae. In: Hodges RW, Dominick T, Davis DR, Ferguson DC, Franclemont JG, Munroe EG, Powell JA (Eds) Check list of the Lepidoptera of America north of Mexico : including Greenland. Classey, London, 2-3. (1983).";
+            // $line = "Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).";
+            // $line = "Donner H, Wilkinson C. Fauna of New Zealand. Nepticulidae (Insecta: Lepidoptera). Fauna of New Zealand 16: 1-88. (1989).";
+            // $line = "Gregor F, Povolny D. Description of Ectoedemia spiraeae (Gregor &amp; Povolny, 1955) and designation of type specimens of Lithocolletis desertella Gregor &amp; Povolny, 1949. Casopis Moravsk&eacute;ho Musea v Brne (Vedy pr&iacute;rodn&iacute;) 68: 173-180. (1983).";
+
+
             $line = self::format_citation_for_anystyle($line);
 
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
