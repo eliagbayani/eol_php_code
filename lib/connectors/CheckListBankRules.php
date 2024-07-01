@@ -370,11 +370,13 @@ class CheckListBankRules
     {
         $filename = $this->temp_dir."namePublishedIn.txt"; echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
         foreach(new FileIterator($filename) as $line_number => $line) {
+            // $line = str_replace(array("\t", "\n", chr(10), chr(13)), " ", $line);
+
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
 
             // $line = "Clemens B. Letters received from Dr. Brackenridge Clemens. 9. Letter of October 29th, 1860. In: Stainton HT (Ed) The Tineina of North America by (the late) Dr Brackenridge Clemens (being a collected edition of his writing on that group of insects). John van Voorst, London, XV, 282. (1872).";
-
+            // $line = "Davis DR, Wilkinson C. Nepticulidae. In: Hodges RW, Dominick T, Davis DR, Ferguson DC, Franclemont JG, Munroe EG, Powell JA (Eds) Check list of the Lepidoptera of America north of Mexico : including Greenland. Classey, London, 2-3. (1983).";
             $line = self::format_citation_for_anystyle($line);
 
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
@@ -389,7 +391,14 @@ class CheckListBankRules
 
             print_r($obj);
             $reks = self::convert_anystyle_obj_2save($obj);
-            if($i > 50) break; //debug only
+            $fields = array("raw", "author", "title", "type", "container-title", "volume", "pages", "doi", "date", "raw", "url", "editor", "issue", "location", "publisher", "edition");
+            foreach($reks as $rec) {
+                $save = array();
+                foreach($fields as $field) $save[$field] = @$rec[$field];
+                self::write_output_rec_2txt($save, "References");
+            }
+
+            // if($i > 10) break; //debug only
             // break; //debug only
         }
 
@@ -408,9 +417,11 @@ class CheckListBankRules
             [issue] => 
             [location] => 
             [publisher] => 
+            [edition] => 
         ) */
 
-        // print_r($this->debug);
+
+        print_r($this->debug);
 
         exit("\nstopx 1\n"); 
         // Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).
