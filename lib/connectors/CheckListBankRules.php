@@ -393,7 +393,24 @@ class CheckListBankRules
             // break; //debug only
         }
 
-        print_r($this->debug);
+        /* [anystyle labels] => Array(
+            [author] => 
+            [title] => 
+            [volume] => 
+            [pages] => 
+            [doi] => 
+            [date] => 
+            [type] => 
+            [container-title] => 
+            [raw] => 
+            [url] => 
+            [editor] => 
+            [issue] => 
+            [location] => 
+            [publisher] => 
+        ) */
+
+        // print_r($this->debug);
 
         exit("\nstopx 1\n"); 
         // Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).
@@ -472,7 +489,7 @@ class CheckListBankRules
             }
             $reks[] = $rek;
         // }
-        print_r($reks);
+        echo "\nreks start\n"; print_r($reks); echo "\nreks end\n";
         return $reks;
     }
     private function format_citation_for_anystyle($orig_str)
