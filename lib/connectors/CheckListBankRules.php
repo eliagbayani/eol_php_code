@@ -66,6 +66,8 @@ class CheckListBankRules
 
         self::parse_references_with_anystyle();
 
+
+
         // self::summary_report();
         // self::prepare_download_link();
         // recursive_rmdir($this->temp_dir);
@@ -371,7 +373,7 @@ class CheckListBankRules
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
 
-            $line = "Clemens B. Letters received from Dr. Brackenridge Clemens. 9. Letter of October 29th, 1860. In: Stainton HT (Ed) The Tineina of North America by (the late) Dr Brackenridge Clemens (being a collected edition of his writing on that group of insects). John van Voorst, London, XV, 282. (1872).";
+            // $line = "Clemens B. Letters received from Dr. Brackenridge Clemens. 9. Letter of October 29th, 1860. In: Stainton HT (Ed) The Tineina of North America by (the late) Dr Brackenridge Clemens (being a collected edition of his writing on that group of insects). John van Voorst, London, XV, 282. (1872).";
 
             $line = self::format_citation_for_anystyle($line);
 
@@ -380,16 +382,19 @@ class CheckListBankRules
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
             $obj->raw = str_replace("there_is_a_cat", ".", $line);
 
-            if(!self::hasMatchedParentheses($obj->title[0]))                $obj->title[0] .= ")";
-            if(!self::hasMatchedParentheses($obj->{'container-title'}[0])) $obj->{'container-title'}[0] .= ")";
-
-            $obj->title[0] = str_replace("there_is_a_cat", ".", $obj->title[0]);
+            // moved below
+            // if(!self::hasMatchedParentheses($obj->title[0]))               $obj->title[0] .= ")";
+            // if(!self::hasMatchedParentheses($obj->{'container-title'}[0])) $obj->{'container-title'}[0] .= ")";
+            // $obj->title[0] = str_replace("there_is_a_cat", ".", $obj->title[0]);
 
             print_r($obj);
             $reks = self::convert_anystyle_obj_2save($obj);
             if($i > 50) break; //debug only
             // break; //debug only
         }
+
+        print_r($this->debug);
+
         exit("\nstopx 1\n"); 
         // Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).
         // Clemens B. Contributions to American Lepidopterology - No. 5. Proceedings of the Academy of Natural Sciences of Philadelphia 12: 203-221. doi: http://biostor.org/reference/98227. (1860).
@@ -427,7 +432,7 @@ class CheckListBankRules
         $reks = array();
         // foreach($obj as $o) {
             $rek = array();
-            foreach($obj as $field => $values_or_value) {
+            foreach($obj as $field => $values_or_value) { $this->debug['anystyle labels'][$field] = '';
                 // if(in_array($field, array('type', 'raw'))) $rek[$field] = $values_or_value;
                 if(!is_array($values_or_value)) $rek[$field] = $values_or_value;
                 else {
@@ -438,7 +443,7 @@ class CheckListBankRules
                         foreach($values_or_value as $object) {
                             $auth = "";
                             foreach($object as $field2 => $val2) $auth[] = $val2;
-                            print_r($auth);
+                            // print_r($auth);
                             $rek2[] = implode(" ", $auth);
                         }
                         /*Array(
@@ -452,7 +457,15 @@ class CheckListBankRules
                         $rek[$field] = implode("|", $rek2);
                     }
                     else { //an array of strings
-                        foreach($values_or_value as $val) $tmp[] = $val;
+                        $tmp = array();
+                        foreach($values_or_value as $val) {
+                            // /* customize formatting
+                            if(!self::hasMatchedParentheses($val)) $val .= ")";
+                            $val = str_replace("there_is_a_cat", ".", $val);
+                            // */
+
+                            $tmp[] = $val;
+                        }
                         $rek[$field] = implode("|", $tmp);    
                     }
                 }

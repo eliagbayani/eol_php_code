@@ -22,9 +22,11 @@ class AnystyleAPI
         // ========================================================================= start Anystyle cli
         /* IMPORTANT: https://github.com/inukshuk/anystyle-cli#anystyle-help-train
         inside: update_resources/connectors/helpers/anystyle/
-        anystyle train core.xml eli_core.mod      
+
+        anystyle --overwrite train core.xml eli_core.mod
+        anystyle             train core.xml eli_core.mod      
         anystyle --parser-model eli_core.mod  --stdout -f json parse input.txt
-        anystyle                              --stdout -f csl  parse input.txt
+        anystyle                              --stdout -f json parse input.txt
         */
 
         $this->anystyle_parse_model = DOC_ROOT. "update_resources/connectors/helpers/anystyle/eli_core.mod";
@@ -39,7 +41,7 @@ class AnystyleAPI
         fclose($WRITE);
 
         $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model  --stdout -f json parse $input_file";
-        $cmd = "$this->anystyle_path                                             --stdout -f json parse $input_file";
+        // $cmd = "$this->anystyle_path                                             --stdout -f json parse $input_file";
 
         $json = shell_exec($cmd);
         // /* seems not needed here, only in Ruby below
