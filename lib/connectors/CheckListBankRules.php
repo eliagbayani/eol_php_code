@@ -35,10 +35,15 @@ class CheckListBankRules
         // }
         // */
 
-        // /*
+        /*
         require_library('connectors/WikiDataMtce_ResourceAPI');
         require_library('connectors/WikiDataMtceAPI');
         $this->other_funcs = new WikiDataMtceAPI(); //func is: parse_citation_using_anystyle(citation, all)
+        */
+
+        // /*
+        require_library('connectors/AnystyleAPI');
+        $this->other_funcs = new AnystyleAPI(); //func is: parse_citation_using_anystyle_cli(citation, id)
         // */
 
     }
@@ -365,23 +370,29 @@ class CheckListBankRules
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
 
+            $line = "Clemens B. Letters received from Dr. Brackenridge Clemens. 9. Letter of October 29th, 1860. In: Stainton HT (Ed) The Tineina of North America by (the late) Dr Brackenridge Clemens (being a collected edition of his writing on that group of insects). John van Voorst, London, XV, 282. (1872).";
+
             $line = self::format_citation_for_anystyle($line);
 
             // $line = htmlspecialchars_decode($line); //didn't work, and others didn't work
             $line = htmlentities($line); //worked perfectly for special chars
 
-            $obj = $this->other_funcs->parse_citation_using_anystyle($line, 'all');
-            $obj[0]->raw = $line;
+            echo "\nnew line: [$line]\n";
 
-            if(!self::hasMatchedParentheses($obj[0]->title[0])) $obj[0]->title[0] .= ")";
-            $obj[0]->title[0] = str_replace("there_is_a_cat", ".", $obj[0]->title[0]);
+            $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->resource_id);
+            $obj->raw = $line;
+
+            if(!self::hasMatchedParentheses($obj->title[0])) $obj->title[0] .= ")";
+            $obj->title[0] = str_replace("there_is_a_cat", ".", $obj->title[0]);
 
             print_r($obj);
             $reks = self::convert_anystyle_obj_2save($obj);
-            // foreach($reks as $save) 
-            if($i > 50) break;
+            // if($i > 50) break; //debug only
+            break; //debug only
         }
-        exit("\nstopx 1\n"); //Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).
+        exit("\nstopx 1\n"); 
+        // Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).
+        // Clemens B. Contributions to American Lepidopterology - No. 5. Proceedings of the Academy of Natural Sciences of Philadelphia 12: 203-221. doi: http://biostor.org/reference/98227. (1860).
     }
     private function convert_anystyle_obj_2save($obj)
     {   /*Array(
@@ -414,9 +425,9 @@ class CheckListBankRules
             )
         )*/
         $reks = array();
-        foreach($obj as $o) {
+        // foreach($obj as $o) {
             $rek = array();
-            foreach($o as $field => $values_or_value) {
+            foreach($obj as $field => $values_or_value) {
                 // if(in_array($field, array('type', 'raw'))) $rek[$field] = $values_or_value;
                 if(!is_array($values_or_value)) $rek[$field] = $values_or_value;
                 else {
@@ -447,7 +458,7 @@ class CheckListBankRules
                 }
             }
             $reks[] = $rek;
-        }
+        // }
         print_r($reks);
         return $reks;
     }
@@ -459,6 +470,12 @@ class CheckListBankRules
         // $str = str_replace("(", " ( ", $str);
 
         // $str = str_replace(" JD. ", " J.D. ", $str);
+        // . Contributions
+        // $str = str_replace(". Contributions", ". The Contributions", $str);
+        // B. Letters
+        // $str = str_replace("B. Letters", "B. The Letters", $str);
+        
+
 
         if(preg_match_all("/\((.*?)\)/ims", $str, $arr)) {
             // print_r($arr[1]);
