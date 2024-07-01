@@ -374,14 +374,14 @@ class CheckListBankRules
             $obj[0]->raw = $line;
 
             if(!self::hasMatchedParentheses($obj[0]->title[0])) $obj[0]->title[0] .= ")";
-
             $obj[0]->title[0] = str_replace("there_is_a_cat", ".", $obj[0]->title[0]);
 
             print_r($obj);
-            $save = self::convert_anystyle_obj_2save($obj);
-            if($i > 5) break;
+            $reks = self::convert_anystyle_obj_2save($obj);
+            // foreach($reks as $save) 
+            if($i > 50) break;
         }
-        exit("\nstopx 1\n");
+        exit("\nstopx 1\n"); //Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).
     }
     private function convert_anystyle_obj_2save($obj)
     {   /*Array(
@@ -413,7 +413,43 @@ class CheckListBankRules
                 [raw] => Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil V. Die europäischen Arten der Gattung Nepticula Heyden von Eichen. Polskie Pismo Entomologiczne 42: 767-799. (1972).
             )
         )*/
-        
+        $reks = array();
+        foreach($obj as $o) {
+            $rek = array();
+            foreach($o as $field => $values_or_value) {
+                // if(in_array($field, array('type', 'raw'))) $rek[$field] = $values_or_value;
+                if(!is_array($values_or_value)) $rek[$field] = $values_or_value;
+                else {
+                    $tmp = array();
+                    // if(in_array($field, array('author', 'editor'))) continue; //'container-title'
+                    if(is_object($values_or_value[0])) { //an array of objects
+                        $rek2 = array();
+                        foreach($values_or_value as $object) {
+                            $auth = "";
+                            foreach($object as $field2 => $val2) $auth[] = $val2;
+                            print_r($auth);
+                            $rek2[] = implode(" ", $auth);
+                        }
+                        /*Array(
+                            [0] => Amsel
+                            [1] => H.G.
+                        )
+                        Array(
+                            [0] => Hering
+                            [1] => M.
+                        )*/
+                        $rek[$field] = implode("|", $rek2);
+                    }
+                    else { //an array of strings
+                        foreach($values_or_value as $val) $tmp[] = $val;
+                        $rek[$field] = implode("|", $tmp);    
+                    }
+                }
+            }
+            $reks[] = $rek;
+        }
+        print_r($reks);
+        return $reks;
     }
     private function format_citation_for_anystyle($orig_str)
     {
@@ -421,6 +457,8 @@ class CheckListBankRules
         $str = $orig_str;
         // $str = str_replace(")", " ) ", $str);
         // $str = str_replace("(", " ( ", $str);
+
+        // $str = str_replace(" JD. ", " J.D. ", $str);
 
         if(preg_match_all("/\((.*?)\)/ims", $str, $arr)) {
             // print_r($arr[1]);
