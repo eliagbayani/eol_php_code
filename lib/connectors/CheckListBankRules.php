@@ -43,7 +43,8 @@ class CheckListBankRules
 
         // /*
         require_library('connectors/AnystyleAPI');
-        $this->other_funcs = new AnystyleAPI(); //func is: parse_citation_using_anystyle_cli(citation, id)
+        $this->input_file = $this->temp_dir . "input_" . $this->resource_id . ".txt";
+        $this->other_funcs = new AnystyleAPI(); //func is: parse_citation_using_anystyle_cli(citation, input_file)
         // */
 
     }
@@ -379,7 +380,7 @@ class CheckListBankRules
 
             echo "\nnew line: [$line]\n";
 
-            $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->resource_id);
+            $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file);
             $obj->raw = $line;
 
             if(!self::hasMatchedParentheses($obj->title[0])) $obj->title[0] .= ")";

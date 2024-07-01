@@ -20,9 +20,11 @@ class AnystyleAPI
         // $this->tmp_batch_export = DOC_ROOT . "/tmp/temp_export.qs"; //moved        
         
         // ========================================================================= start Anystyle cli
-        /*
-        anystyle --parser-model eli_core.mod  --stdout -f json parse input2.txt
-        anystyle                              --stdout -f csl parse input.txt
+        /* IMPORTANT: https://github.com/inukshuk/anystyle-cli#anystyle-help-train
+        inside: update_resources/connectors/helpers/anystyle/
+        anystyle train core.xml eli_core.mod      
+        anystyle --parser-model eli_core.mod  --stdout -f json parse input.txt
+        anystyle                              --stdout -f csl  parse input.txt
         */
 
         $this->anystyle_parse_model = DOC_ROOT. "update_resources/connectors/helpers/anystyle/eli_core.mod";
@@ -30,9 +32,8 @@ class AnystyleAPI
         $this->anystyle_path = "/usr/local/bin/anystyle";
     }
 
-    function parse_citation_using_anystyle_cli($citation, $id)
+    function parse_citation_using_anystyle_cli($citation, $input_file)
     {
-        $input_file = $this->temp_path . $id . ".txt";
         $WRITE = Functions::file_open($input_file, "w");
         fwrite($WRITE, $citation);
         fclose($WRITE);
