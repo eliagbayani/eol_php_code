@@ -39,6 +39,8 @@ class AnystyleAPI
         fclose($WRITE);
 
         $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model  --stdout -f json parse $input_file";
+        $cmd = "$this->anystyle_path                                             --stdout -f json parse $input_file";
+
         $json = shell_exec($cmd);
         $json = substr(trim($json), 1, -1); # remove first and last char
         $json = str_replace("\\", "", $json); # remove "\" from converted json from Ruby
