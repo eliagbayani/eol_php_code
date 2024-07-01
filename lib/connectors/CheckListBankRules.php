@@ -377,20 +377,18 @@ class CheckListBankRules
 
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
 
-            $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file);
-            // print_r($obj); exit;
-            $obj->raw = $line;
-            // $obj->raw = str_replace("there_is_a_cat", ".", $line);
+            $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
+            $obj->raw = str_replace("there_is_a_cat", ".", $line);
 
             if(!self::hasMatchedParentheses($obj->title[0]))                $obj->title[0] .= ")";
-            // if(!self::hasMatchedParentheses(@$obj->{'container-title'}[0])) $obj->{'container-title'}[0] .= ")";
+            if(!self::hasMatchedParentheses($obj->{'container-title'}[0])) $obj->{'container-title'}[0] .= ")";
 
             $obj->title[0] = str_replace("there_is_a_cat", ".", $obj->title[0]);
 
             print_r($obj);
             $reks = self::convert_anystyle_obj_2save($obj);
-            // if($i > 50) break; //debug only
-            break; //debug only
+            if($i > 50) break; //debug only
+            // break; //debug only
         }
         exit("\nstopx 1\n"); 
         // Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).
