@@ -375,15 +375,16 @@ class CheckListBankRules
 
             $line = self::format_citation_for_anystyle($line);
 
-            // $line = htmlspecialchars_decode($line); //didn't work, and others didn't work
-            $line = htmlentities($line); //worked perfectly for special chars
-
-            echo "\nnew line: [$line]\n";
+            $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
 
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file);
+            // print_r($obj); exit;
             $obj->raw = $line;
+            // $obj->raw = str_replace("there_is_a_cat", ".", $line);
 
-            if(!self::hasMatchedParentheses($obj->title[0])) $obj->title[0] .= ")";
+            if(!self::hasMatchedParentheses($obj->title[0]))                $obj->title[0] .= ")";
+            // if(!self::hasMatchedParentheses(@$obj->{'container-title'}[0])) $obj->{'container-title'}[0] .= ")";
+
             $obj->title[0] = str_replace("there_is_a_cat", ".", $obj->title[0]);
 
             print_r($obj);
@@ -476,7 +477,6 @@ class CheckListBankRules
         // B. Letters
         // $str = str_replace("B. Letters", "B. The Letters", $str);
         
-
 
         if(preg_match_all("/\((.*?)\)/ims", $str, $arr)) {
             // print_r($arr[1]);
