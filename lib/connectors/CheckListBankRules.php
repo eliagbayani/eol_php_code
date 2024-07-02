@@ -10,7 +10,6 @@ class CheckListBankRules
 {
     function __construct()
     {
-        $this->can_compute_higherClassificationYN = false; //default is false
     }
     private function initialize()
     {   /* 1st:
@@ -51,18 +50,19 @@ class CheckListBankRules
     function start_CheckListBank_process()
     {
         self::initialize();
-        self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv');
+        self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv'); //generate unique lists from Taxon.tsv
         $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
-        // $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
-        // $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
-        // $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
-        // $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
-        // $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
-        // self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv');
-        // $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
-        // $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
-
-        // self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
+        // /* main operation
+        $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
+        $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
+        $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
+        $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
+        $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
+        self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv'); //generate unique lists from Distribution.tsv
+        $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
+        $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
+        self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
+        // */
 
         self::parse_references_with_anystyle();
 
@@ -366,7 +366,11 @@ class CheckListBankRules
     }
     private function parse_references_with_anystyle()
     {
-        $filename = $this->temp_dir."namePublishedIn.txt"; echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
+        $filename = $this->temp_dir."namePublishedIn.txt";
+        
+        $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //for testing only
+
+        echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
         foreach(new FileIterator($filename) as $line_number => $line) {
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
@@ -379,10 +383,21 @@ class CheckListBankRules
             // $line = "Gregor F, Povolny D. Description of Ectoedemia spiraeae (Gregor &amp; Povolny, 1955) and designation of type specimens of Lithocolletis desertella Gregor &amp; Povolny, 1949. Casopis Moravsk&eacute;ho Musea v Brne (Vedy pr&iacute;rodn&iacute;) 68: 173-180. (1983).";
             // $line = "Meyrick E. Descriptions of Australian Microlepidoptera, XVI. Tineidae. Proceedings of the Linnean Society of New South Wales (2) 7: 477-612. doi: http://dx.doi.org/10.5962/bhl.part.26071. (1893).";
             // $line = "Peyerimhoff Hd. Mitteilungen der Schweizerischen Entomologischen Gesellschaft 3: 409-415. (1871).";
+            // $line = "Chrétien P. Lés Lépidoptères du Maroc. Galleriinae - Micropterygidae. In: Oberthür C (Ed) Études de Lépidoptérologie comparée. Oberthür, Rennes, 324-379. (1922).";
+            // $line = "Chrétien P. Contribution à la connaissance des Lépidoptères du Nord de l'Afrique. Annales de la Société Entomologique de France 84: 289-374, figs. 281-211. (1915).";
+            // $line = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).";
+            // $line = "Boheman CH. Entomologiska anteckningar under en resa i Södra Sverige 1851. Kongliga Svenska Vetenskaps-Akademiens Handlingar 1851: 55-210. doi: http://dx.doi.org/10.5962/bhl.title.35818. (1853).";
 
             $line = self::format_citation_for_anystyle($line);
 
+            /* commented for now
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
+//   <sequence>
+//     <author>Chrétien P.</author>
+//     <title>Contribution à la connaissance des Lépidoptères du Nord de l'Afrique.</title>
+//     <container-title>Annales de la Société Entomologique de France</container-title>
+//   </sequence>
+            */
 
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
             $obj->raw = str_replace("there_is_a_cat", ".", $line);

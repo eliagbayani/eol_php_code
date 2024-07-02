@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
   <sequence>
+    <author>
+      <family>JD.</family>
+      <given>Bradley</given>
+    </author>
+    <title>Microlepidoptera.</title>
+    <container-title>Ruwenzori Expedition</container-title>
+  </sequence>
+  <sequence>
     <author>Davis DR, Wilkinson C.</author>
     <title>Nepticulidae.</title>
     <container-title>Check list of the Lepidoptera of America north of Mexico : including Greenland.</container-title>
     <editor>Hodges RW, Dominick T, Davis DR, Ferguson DC, Franclemont JG, Munroe EG, Powell JA</editor>
-  </sequence>
-  <sequence>
-    <author>Bradley JD.</author>
-    <title>Microlepidoptera.</title>
-    <container-title>Ruwenzori Expedition 1952</container-title>
   </sequence>
   <sequence>
     <author>Clemens B.</author>
@@ -35,8 +38,26 @@
   <sequence>
     <author>Meyrick E.</author>
     <title>Descriptions of Australian Microlepidoptera, XVI. Tineidae.</title>
-    <container-title>Proceedings of the Linnean Society of New South Wales</container-title>
+    <container-title>Proceedings of the Linnean Society of New South Wales (2)</container-title>
   </sequence>
+  <sequence>
+    <author>Peyerimhoff Hd.</author>
+    <title>Mitteilungen der Schweizerischen Entomologischen Gesellschaft</title>
+  </sequence>
+  <sequence>
+    <author>Gregor F, Povolny D.</author>
+    <title>Description of Ectoedemia spiraeae (Gregor &amp; Povolny, 1955) and designation of type specimens of Lithocolletis desertella Gregor &amp; Povolny, 1949.</title>
+  </sequence>
+
+  <sequence>
+    <author>
+      <family>P.</family>
+      <given>Chrétien</given>
+    </author>
+    <title>Lés Lépidoptères du Maroc. Galleriinae - Micropterygidae.</title>
+    <container-title>Études de Lépidoptérologie comparée.</container-title>
+  </sequence>
+
   <sequence>
     <author>Heidegger M.,</author>
     <date>1927,</date>
