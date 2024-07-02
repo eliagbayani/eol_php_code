@@ -407,12 +407,32 @@ class CheckListBankRules
             $reks = self::convert_anystyle_obj_2save($obj);
 
             // /* write to References
-            $fields = array("identifier", "full_reference", "author", "title", "type", "container-title", "volume", "pages", "doi", "date", "url", "editor", "issue", "location", "publisher", "edition");
+            $fields = array("identifier", "full_reference", "author", "title", "type", "container-title", "volume", "pages", "doi", "date", "url", "editor", "location", "publisher", "edition");
+            // "issue" 
+            $ref_map = array( //DwCA counterpart: https://editors.eol.org/other_files/ontology/reference_extension.xml
+                'identifier'        => 'identifier',
+                'full_reference'    => 'full_reference',
+                'author'    => 'authorList',
+                'title'     => 'primaryTitle',
+                'volume'    => 'volume',
+                'pages'     => 'pages',
+                'doi'       => 'doi',
+                'date'      => 'created',
+                'type'      => 'publicationType',
+                'container-title'   => 'title',
+                'url'       => 'uri',
+                'editor'    => 'editorList',
+                // 'issue'  => No counterpart in DwCA. Let us ignore for now.
+                'location'  => 'localityName',
+                'publisher' => 'publisher',
+                'edition'   => 'edition');
+
             foreach($reks as $rec) {
                 $save = array();
                 foreach($fields as $field)  {
-                    if($field == 'identifier') $save[$field] = md5($rec['full_reference']);
-                    else                         $save[$field] = @$rec[$field];
+                    $save_field = $ref_map[$field];
+                    if($field == 'identifier') $save[$save_field] = md5($rec['full_reference']);
+                    else                       $save[$save_field] = @$rec[$field];
                 }
                 self::write_output_rec_2txt($save, "References");
             }
@@ -423,22 +443,27 @@ class CheckListBankRules
         }
 
         /* [anystyle labels] => Array(
-            [author] => 
-            [title] => 
-            [volume] => 
-            [pages] => 
-            [doi] => 
-            [date] => 
-            [type] => 
-            [container-title] => 
-            [full_reference] => 
-            [url] => 
-            [editor] => 
-            [issue] => 
-            [location] => 
-            [publisher] => 
-            [edition] => 
-        ) */
+            [author] => authorList
+            [title] => primaryTitle
+            [volume] => volume
+            [pages] => pages
+            [doi] => doi
+            [date] => created
+            [type] => publicationType
+            [container-title] => title
+            [full_reference] => full_reference
+            [url] => uri
+            [editor] => editorList
+            [issue] => {can be ignored...}
+            [location] => localityName
+            [publisher] => publisher
+            [edition] => edition
+        ) 
+        identifier
+        pageStart
+        pageEnd
+        language    
+        */
 
         print_r($this->debug);
         exit("\nstopx 1\n"); 
@@ -558,6 +583,26 @@ class CheckListBankRules
             if( $counter < 0 ) return false;
         }
         return $counter == 0;
-    }    
+    }
+    /* DwCA Reference
+    identifier
+    publicationType
+    full_reference
+    primaryTitle
+    title
+    pages
+    pageStart
+    pageEnd
+    volume
+    edition
+    publisher
+    authorList
+    editorList
+    created
+    language
+    uri
+    doi
+    localityName
+    */
 }
 ?>
