@@ -196,6 +196,7 @@ class CheckListBankRules
                 
                 $s['geographic_value'] = $locality;
                 $s['origin'] = $occurrenceStatus;
+                $s['referenceID'] = md5($rec['dwc:namePublishedIn']);
                 self::write_output_rec_2txt($s, "Main_Table");
 
             }
@@ -210,6 +211,10 @@ class CheckListBankRules
     }
     private function write_array_2txt($arr, $basename)
     {
+        // if($basename == 'namePublishedIn') {
+        //     print_r($arr); exit("\nstop 3\n");
+        // }
+
         $arr = self::clean_array($arr);
         $filename = $this->temp_dir.$basename.".txt"; echo "\nfilename: [$filename]\n";
         $WRITE = Functions::file_open($filename, "w");
@@ -368,7 +373,7 @@ class CheckListBankRules
     {
         $filename = $this->temp_dir."namePublishedIn.txt";
         
-        // $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //for testing only
+        // $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //used for testing only
 
         echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
         foreach(new FileIterator($filename) as $line_number => $line) {
@@ -387,32 +392,34 @@ class CheckListBankRules
             // $line = "Chrétien P. Contribution à la connaissance des Lépidoptères du Nord de l'Afrique. Annales de la Société Entomologique de France 84: 289-374, figs. 281-211. (1915).";
             // $line = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).";
             // $line = "Boheman CH. Entomologiska anteckningar under en resa i Södra Sverige 1851. Kongliga Svenska Vetenskaps-Akademiens Handlingar 1851: 55-210. doi: http://dx.doi.org/10.5962/bhl.title.35818. (1853).";
-            $line = "Klimesch J. Nepticula preisseckeri spec. nov. (Lep., Nepticulidae). Zeitschrift des Wiener Entomologen-Vereines 26: 162-168, pl. 116. (1941).";
+            // $line = "Klimesch J. Nepticula preisseckeri spec. nov. (Lep., Nepticulidae). Zeitschrift des Wiener Entomologen-Vereines 26: 162-168, pl. 116. (1941).";
 
             $line = self::format_citation_for_anystyle($line);
 
             /* commented for now
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
-//   <sequence>
-//     <author>Chrétien P.</author>
-//     <title>Contribution à la connaissance des Lépidoptères du Nord de l'Afrique.</title>
-//     <container-title>Annales de la Société Entomologique de France</container-title>
-//   </sequence>
             */
 
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
-            $obj->raw = str_replace("there_is_a_cat", ".", $line);
+            $obj->full_reference = str_replace("there_is_a_cat", ".", $line);
 
             print_r($obj);
             $reks = self::convert_anystyle_obj_2save($obj);
-            $fields = array("raw", "author", "title", "type", "container-title", "volume", "pages", "doi", "date", "raw", "url", "editor", "issue", "location", "publisher", "edition");
+
+            // /* write to References
+            $fields = array("identifier", "full_reference", "author", "title", "type", "container-title", "volume", "pages", "doi", "date", "url", "editor", "issue", "location", "publisher", "edition");
             foreach($reks as $rec) {
                 $save = array();
-                foreach($fields as $field) $save[$field] = @$rec[$field];
+                foreach($fields as $field)  {
+                    if($field == 'identifier') $save[$field] = md5($rec['full_reference']);
+                    else                         $save[$field] = @$rec[$field];
+                }
                 self::write_output_rec_2txt($save, "References");
             }
-            // if($i > 10) break; //debug only
-            break; //debug only
+            // */
+
+            if($i > 5) break; //debug only
+            // break; //debug only
         }
 
         /* [anystyle labels] => Array(
@@ -424,7 +431,7 @@ class CheckListBankRules
             [date] => 
             [type] => 
             [container-title] => 
-            [raw] => 
+            [full_reference] => 
             [url] => 
             [editor] => 
             [issue] => 
@@ -433,12 +440,8 @@ class CheckListBankRules
             [edition] => 
         ) */
 
-
         print_r($this->debug);
-
         exit("\nstopx 1\n"); 
-        // Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).
-        // Clemens B. Contributions to American Lepidopterology - No. 5. Proceedings of the Academy of Natural Sciences of Philadelphia 12: 203-221. doi: http://biostor.org/reference/98227. (1860).
     }
     private function convert_anystyle_obj_2save($obj)
     {   /*Array(
@@ -467,14 +470,14 @@ class CheckListBankRules
                 [container-title] => Array(
                         [0] => Polskie Pismo Entomologiczne
                     )
-                [raw] => Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil V. Die europäischen Arten der Gattung Nepticula Heyden von Eichen. Polskie Pismo Entomologiczne 42: 767-799. (1972).
+                [full_reference] => Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil V. Die europäischen Arten der Gattung Nepticula Heyden von Eichen. Polskie Pismo Entomologiczne 42: 767-799. (1972).
             )
         )*/
         $reks = array();
         // foreach($obj as $o) {
             $rek = array();
             foreach($obj as $field => $values_or_value) { $this->debug['anystyle labels'][$field] = '';
-                // if(in_array($field, array('type', 'raw'))) $rek[$field] = $values_or_value;
+                // if(in_array($field, array('type', 'full_reference'))) $rek[$field] = $values_or_value;
                 if(!is_array($values_or_value)) $rek[$field] = $values_or_value;
                 else {
                     $tmp = array();
