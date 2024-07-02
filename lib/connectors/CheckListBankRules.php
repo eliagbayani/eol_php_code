@@ -368,7 +368,7 @@ class CheckListBankRules
     {
         $filename = $this->temp_dir."namePublishedIn.txt";
         
-        $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //for testing only
+        // $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //for testing only
 
         echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
         foreach(new FileIterator($filename) as $line_number => $line) {
