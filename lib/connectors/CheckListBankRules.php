@@ -387,6 +387,7 @@ class CheckListBankRules
             // $line = "Chrétien P. Contribution à la connaissance des Lépidoptères du Nord de l'Afrique. Annales de la Société Entomologique de France 84: 289-374, figs. 281-211. (1915).";
             // $line = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).";
             // $line = "Boheman CH. Entomologiska anteckningar under en resa i Södra Sverige 1851. Kongliga Svenska Vetenskaps-Akademiens Handlingar 1851: 55-210. doi: http://dx.doi.org/10.5962/bhl.title.35818. (1853).";
+            $line = "Klimesch J. Nepticula preisseckeri spec. nov. (Lep., Nepticulidae). Zeitschrift des Wiener Entomologen-Vereines 26: 162-168, pl. 116. (1941).";
 
             $line = self::format_citation_for_anystyle($line);
 
@@ -411,7 +412,7 @@ class CheckListBankRules
                 self::write_output_rec_2txt($save, "References");
             }
             // if($i > 10) break; //debug only
-            // break; //debug only
+            break; //debug only
         }
 
         /* [anystyle labels] => Array(
