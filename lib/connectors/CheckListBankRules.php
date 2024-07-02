@@ -379,7 +379,7 @@ class CheckListBankRules
             // $line = "Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).";
             // $line = "Donner H, Wilkinson C. Fauna of New Zealand. Nepticulidae (Insecta: Lepidoptera). Fauna of New Zealand 16: 1-88. (1989).";
             // $line = "Gregor F, Povolny D. Description of Ectoedemia spiraeae (Gregor &amp; Povolny, 1955) and designation of type specimens of Lithocolletis desertella Gregor &amp; Povolny, 1949. Casopis Moravsk&eacute;ho Musea v Brne (Vedy pr&iacute;rodn&iacute;) 68: 173-180. (1983).";
-
+            $line = "Meyrick E. Descriptions of Australian Microlepidoptera, XVI. Tineidae. Proceedings of the Linnean Society of New South Wales (2) 7: 477-612. doi: http://dx.doi.org/10.5962/bhl.part.26071. (1893).";
 
             $line = self::format_citation_for_anystyle($line);
 
@@ -387,11 +387,6 @@ class CheckListBankRules
 
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
             $obj->raw = str_replace("there_is_a_cat", ".", $line);
-
-            // moved below
-            // if(!self::hasMatchedParentheses($obj->title[0]))               $obj->title[0] .= ")";
-            // if(!self::hasMatchedParentheses($obj->{'container-title'}[0])) $obj->{'container-title'}[0] .= ")";
-            // $obj->title[0] = str_replace("there_is_a_cat", ".", $obj->title[0]);
 
             print_r($obj);
             $reks = self::convert_anystyle_obj_2save($obj);
@@ -401,9 +396,8 @@ class CheckListBankRules
                 foreach($fields as $field) $save[$field] = @$rec[$field];
                 self::write_output_rec_2txt($save, "References");
             }
-
             // if($i > 10) break; //debug only
-            // break; //debug only
+            break; //debug only
         }
 
         /* [anystyle labels] => Array(
