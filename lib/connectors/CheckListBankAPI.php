@@ -35,11 +35,11 @@ class CheckListBankAPI extends CheckListBankRules
             $dir = $this->resources['path'];
             if(!is_dir($dir)) mkdir($dir);
 
-            $this->map['taxonomicStatus']['valid_invalid'] = array('valid', 'invalid');
-            $this->map['taxonomicStatus']['accepted_not_accepted'] = array('accepted', 'not accepted');
+            $this->map['taxonomicStatus']['valid_invalid'] = array('', 'valid', 'invalid');
+            $this->map['taxonomicStatus']['accepted_not_accepted'] = array('', 'accepted', 'not accepted');
             $this->map['taxonRank'] = array("", "Kingdom", "Subkingdom", "Infrakingdom", "Superdivision", "Superphylum", "Division", "Phylum", "Subdivision", "Subphylum", "Infradivision", "Infraphylum", "Parvdivision", "Parvphylum", "Superclass", "Class", "Subclass", "Infraclass", "Superorder", "Order", "Suborder", "Infraorder", "Section", "Subsection", "Superfamily", "Family", "Subfamily", "Tribe", "Subtribe", "Genus", "Subgenus", "Species", "Subspecies", "Variety", "Form", "Subvariety", "Race", "Stirp", "Morph", "Aberration", "Subform");
-            $this->map['locality'] = array("Antarctica/Southern Ocean", "North America", "Middle America", "Caribbean", "South America", "Europe & Northern Asia (excluding China)", "Africa", "Southern Asia", "Australia", "Oceania", "Eastern Atlantic Ocean", "Western Atlantic Ocean", "Indo-West Pacific", "East Pacific");
-            $this->map['occurrenceStatus'] = array("Native", "Introduced", "Native & Introduced", "Incidental", "Native & Extirpated", "Native & Extinct");
+            $this->map['locality'] = array("", "Antarctica/Southern Ocean", "North America", "Middle America", "Caribbean", "South America", "Europe & Northern Asia (excluding China)", "Africa", "Southern Asia", "Australia", "Oceania", "Eastern Atlantic Ocean", "Western Atlantic Ocean", "Indo-West Pacific", "East Pacific");
+            $this->map['occurrenceStatus'] = array("", "Native", "Introduced", "Native & Introduced", "Incidental", "Native & Extirpated", "Native & Extinct");
             // $this->opendata_dataset_api = 'https://opendata.eol.org/api/3/action/package_show?id='; //not used
         }
         /* ============================= END for image_export ============================= */
