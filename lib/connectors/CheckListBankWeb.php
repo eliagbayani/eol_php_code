@@ -9,22 +9,25 @@ class CheckListBankWeb
     {
         echo "\ndito na siya...\n";
         $taxonRanks = self::get_text_contents('taxonRank');
+        $taxonomicStatuses = self::get_text_contents('taxonomicStatus');
+        if(in_array('accepted', $taxonomicStatuses)) $taxonomicStatus_map = $this->map['taxonomicStatus']['accepted_not_accepted'];
+        elseif(in_array('valid', $taxonomicStatuses)) $taxonomicStatus_map = $this->map['taxonomicStatus']['valid_invalid'];
+        else echo "\nWarning: No mapping for taxonomicStatus.\n";
         ?>
         <table border="1" cellpadding="15" cellspacing="1" align="center" width="40%">
         <tr align="center"><td><b>CheckListBank Tool</b></td></tr>
         <form action="form_result_map.php" method="post" enctype="multipart/form-data">
         <tr><td>
                 <font size="3">Mapping Exercise</font>
+                <?php echo "ID: $this->resource_id <input type='hidden' value='$this->resource_id'><br>"; ?>
         </td></tr>
         <tr align="center">
             <td>
-                <?php
-                echo '<input type="text" value="'.$this->resource_id.'"><br>';
-                // print_r($taxonRanks);
-                ?><table><?php
+                <table><?php
                 $i = -1;
                 foreach($taxonRanks as $r) { $i++;
                         ?><tr><?php
+                        if(!$r) continue;
                         echo "<td>$r</td>";
                         echo "<td>
                             <select name='rank[$i]' id='cars'>";
@@ -34,21 +37,42 @@ class CheckListBankWeb
                                 echo "<option value='$tr' $selected >$tr</option>";
                             }
                             echo'</select>
-                        </td>';
-
-                            
+                        </td>';                            
                         ?></tr><?php
-
-
                 } //end foreach()
-                ?></table><?php
-                // print_r($this->map['taxonRank']);
-
-                ?>
-                <input type="submit" value="Submit">
-                <input type="reset" value="Reset">
+                ?></table>
             </td>
         </tr>
+
+        <tr align="center">
+            <td>
+                <table><?php
+                $i = -1;
+                foreach($taxonomicStatuses as $r) { $i++;
+                        ?><tr><?php
+                        if(!$r) continue;
+                        echo "<td>$r</td>";
+                        echo "<td>
+                            <select name='taxonomicStatus[$i]' id='cars'>";
+                            foreach($taxonomicStatus_map as $tr) {
+                                if($r == $tr) $selected = "selected";
+                                else          $selected = "";
+                                echo "<option value='$tr' $selected >$tr</option>";
+                            }
+                            echo'</select>
+                        </td>';                            
+                        ?></tr><?php
+                } //end foreach()
+                ?></table>
+            </td>
+        </tr>
+
+
+
+        <tr><td colspan="2">
+                <input type="submit" value="Submit">
+                <input type="reset" value="Reset">
+        </td></tr>
         </form>
         </table>
         <?php

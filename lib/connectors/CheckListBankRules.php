@@ -54,7 +54,7 @@ class CheckListBankRules extends CheckListBankWeb
         // $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
         // /* main operation
         // $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
-        // $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
+        $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
         $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
         // $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
         // $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
@@ -213,7 +213,7 @@ class CheckListBankRules extends CheckListBankWeb
     }
     private function write_array_2txt($arr, $basename)
     {
-        // if($basename == 'namePublishedIn') {
+        // if($basename == 'taxonRank') {
         //     print_r($arr); exit("\nstop 3\n");
         // }
 
@@ -368,6 +368,7 @@ class CheckListBankRules extends CheckListBankWeb
     private function clean_array($arr)
     {
         if(is_array($arr)) {
+            $arr = array_map('trim', $arr);
             $arr = array_filter($arr); //remove null arrays
             $arr = array_unique($arr); //make unique
             $arr = array_values($arr); //reindex key
