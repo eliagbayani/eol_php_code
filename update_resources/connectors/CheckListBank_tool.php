@@ -23,6 +23,7 @@ $GLOBALS['ENV_DEBUG'] = true;   //set to true when debugging
 ini_set('error_reporting', E_ALL);
 // */
 ini_set('memory_limit','14096M');
+require_library('connectors/CheckListBankWeb');
 require_library('connectors/CheckListBankRules');
 require_library('connectors/CheckListBankAPI');
 // $timestart = time_elapsed(); //use the one from jenkins_call.php

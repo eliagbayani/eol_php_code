@@ -6,7 +6,7 @@ namespace php_active_record;
 /extra/gnparser/gnparser172/gnparser -V
     version: v1.7.2
 */
-class CheckListBankRules
+class CheckListBankRules extends CheckListBankWeb
 {
     function __construct()
     {
@@ -51,20 +51,22 @@ class CheckListBankRules
     {
         self::initialize();
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv'); //generate unique lists from Taxon.tsv
-        $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
         // /* main operation
-        $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
-        $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
         $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
-        $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
-        $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
-        self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv'); //generate unique lists from Distribution.tsv
-        $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
-        $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
-        self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
+        // $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
+        // self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv'); //generate unique lists from Distribution.tsv
+        // $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
+        // $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
+        // self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
+        // self::parse_references_with_anystyle();
         // */
 
-        self::parse_references_with_anystyle();
+        $this->create_web_form();
+        // print_r($this->debug);
 
         // self::summary_report();
         // self::prepare_download_link();
@@ -218,7 +220,11 @@ class CheckListBankRules
         $arr = self::clean_array($arr);
         $filename = $this->temp_dir.$basename.".txt"; echo "\nfilename: [$filename]\n";
         $WRITE = Functions::file_open($filename, "w");
-        foreach($arr as $row) fwrite($WRITE, $row . "\n");
+        foreach($arr as $row) {
+            if(!$row) continue;
+            if($basename == 'taxonRank') $row = ucfirst(strtolower($row));
+            fwrite($WRITE, $row . "\n");
+        }
         fclose($WRITE);
     }
     private function write_output_rec_2txt($rec, $basename)
@@ -403,7 +409,7 @@ class CheckListBankRules
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
             $obj->full_reference = str_replace("there_is_a_cat", ".", $line);
 
-            print_r($obj);
+            // print_r($obj); //good debug
             $reks = self::convert_anystyle_obj_2save($obj);
 
             // /* write to References
@@ -438,7 +444,7 @@ class CheckListBankRules
             }
             // */
 
-            if($i > 5) break; //debug only
+            if($i > 1) break; //debug only
             // break; //debug only
         }
 
@@ -464,9 +470,6 @@ class CheckListBankRules
         pageEnd
         language    
         */
-
-        print_r($this->debug);
-        exit("\nstopx 1\n"); 
     }
     private function convert_anystyle_obj_2save($obj)
     {   /*Array(
