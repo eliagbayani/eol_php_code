@@ -368,8 +368,6 @@ class CheckListBankRules
     {
         $filename = $this->temp_dir."namePublishedIn.txt"; echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
         foreach(new FileIterator($filename) as $line_number => $line) {
-            // $line = str_replace(array("\t", "\n", chr(10), chr(13)), " ", $line);
-
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
 
@@ -379,7 +377,8 @@ class CheckListBankRules
             // $line = "Bradley JD. Microlepidoptera. Ruwenzori Expedition 1952 2: 81-148. (1965).";
             // $line = "Donner H, Wilkinson C. Fauna of New Zealand. Nepticulidae (Insecta: Lepidoptera). Fauna of New Zealand 16: 1-88. (1989).";
             // $line = "Gregor F, Povolny D. Description of Ectoedemia spiraeae (Gregor &amp; Povolny, 1955) and designation of type specimens of Lithocolletis desertella Gregor &amp; Povolny, 1949. Casopis Moravsk&eacute;ho Musea v Brne (Vedy pr&iacute;rodn&iacute;) 68: 173-180. (1983).";
-            $line = "Meyrick E. Descriptions of Australian Microlepidoptera, XVI. Tineidae. Proceedings of the Linnean Society of New South Wales (2) 7: 477-612. doi: http://dx.doi.org/10.5962/bhl.part.26071. (1893).";
+            // $line = "Meyrick E. Descriptions of Australian Microlepidoptera, XVI. Tineidae. Proceedings of the Linnean Society of New South Wales (2) 7: 477-612. doi: http://dx.doi.org/10.5962/bhl.part.26071. (1893).";
+            // $line = "Peyerimhoff Hd. Mitteilungen der Schweizerischen Entomologischen Gesellschaft 3: 409-415. (1871).";
 
             $line = self::format_citation_for_anystyle($line);
 
@@ -397,7 +396,7 @@ class CheckListBankRules
                 self::write_output_rec_2txt($save, "References");
             }
             // if($i > 10) break; //debug only
-            break; //debug only
+            // break; //debug only
         }
 
         /* [anystyle labels] => Array(
