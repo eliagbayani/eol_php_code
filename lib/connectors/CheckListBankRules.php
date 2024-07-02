@@ -56,8 +56,8 @@ class CheckListBankRules extends CheckListBankWeb
         // $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
         $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
         $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
-        // $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
-        // $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
+        $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
+        $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv'); //generate unique lists from Distribution.tsv
         $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
         $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
@@ -223,6 +223,8 @@ class CheckListBankRules extends CheckListBankWeb
         foreach($arr as $row) {
             if(!$row) continue;
             if($basename == 'taxonRank') $row = ucfirst(strtolower($row));
+            if($basename == 'occurrenceStatus') $row = ucfirst(strtolower($row));
+
             fwrite($WRITE, $row . "\n");
         }
         fclose($WRITE);
@@ -445,7 +447,7 @@ class CheckListBankRules extends CheckListBankWeb
             }
             // */
 
-            if($i > 1) break; //debug only
+            // if($i > 1) break; //debug only
             // break; //debug only
         }
 
