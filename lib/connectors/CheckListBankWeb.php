@@ -58,10 +58,19 @@ class CheckListBankWeb
                         echo "<td>$r</td>";
                         echo "<td>
                             <select name='taxonomicStatus[$i]' id='cars'>";
-                            foreach($taxonomicStatus_map as $tr) {
-                                if($r == $tr) $selected = "selected";
-                                else          $selected = "";
-                                echo "<option value='$tr' $selected >$tr</option>";
+                            if(in_array($r, array('accepted', 'not accepted', 'valid', 'invalid'))) {
+                                foreach($taxonomicStatus_map as $tr) {
+                                    if($r == $tr) $selected = "selected";
+                                    else          $selected = "";
+                                    echo "<option value='$tr' $selected >$tr</option>";
+                                }    
+                            }
+                            else {
+                                foreach($this->map['unacceptability_reason'] as $tr) {
+                                    if($r == $tr) $selected = "selected";
+                                    else          $selected = "";
+                                    echo "<option value='$tr' $selected >$tr</option>";
+                                }    
                             }
                             echo'</select>
                         </td>';                            
