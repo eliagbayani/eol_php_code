@@ -23,7 +23,12 @@ class CheckListBankWeb
         <form action="form_result_map.php" method="post" enctype="multipart/form-data">
         <tr><td>
                 <font size="3">Mapping Exercise</font>
-                <?php echo "ID: $this->resource_id <input type='hidden' name='resource_id' value='$this->resource_id'><br>"; ?>
+                <?php echo "ID: $this->resource_id <br>
+                <input type='hidden' name='resource_id' value='$this->resource_id'>
+                <input type='hidden' name='temp_dir' value='$this->temp_dir'>
+                "; 
+
+                ?>
         </td></tr>
         <tr align="center">
             <td>
@@ -38,7 +43,7 @@ class CheckListBankWeb
                             foreach($this->map['taxonRank'] as $tr) {
                                 if($r == $tr) $selected = "selected";
                                 else          $selected = "";
-                                echo "<option value='$tr' $selected >$tr</option>";
+                                echo "<option value='$r|$tr' $selected >$tr</option>";
                             }
                             echo'</select>
                         </td>';                            
@@ -62,14 +67,14 @@ class CheckListBankWeb
                                 foreach($taxonomicStatus_map as $tr) {
                                     if($r == $tr) $selected = "selected";
                                     else          $selected = "";
-                                    echo "<option value='$tr' $selected >$tr</option>";
+                                    echo "<option value='$r|$tr' $selected >$tr</option>";
                                 }    
                             }
                             else {
                                 foreach($this->map['unacceptability_reason'] as $tr) {
                                     if($r == $tr) $selected = "selected";
                                     else          $selected = "";
-                                    echo "<option value='$tr' $selected >$tr</option>";
+                                    echo "<option value='$r|$tr' $selected >$tr</option>";
                                 }    
                             }
                             echo'</select>
@@ -93,7 +98,7 @@ class CheckListBankWeb
                             foreach($this->map['locality'] as $tr) {
                                 if($r == $tr) $selected = "selected";
                                 else          $selected = "";
-                                echo "<option value='$tr' $selected >$tr</option>";
+                                echo "<option value='$r|$tr' $selected >$tr</option>";
                             }
                             echo'</select>
                         </td>';                            
@@ -116,7 +121,7 @@ class CheckListBankWeb
                             foreach($this->map['occurrenceStatus'] as $tr) {
                                 if($r == $tr) $selected = "selected";
                                 else          $selected = "";
-                                echo "<option value='$tr' $selected >$tr</option>";
+                                echo "<option value='$r|$tr' $selected >$tr</option>";
                             }
                             echo'</select>
                         </td>';                            

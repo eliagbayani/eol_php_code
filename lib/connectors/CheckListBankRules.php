@@ -194,7 +194,7 @@ class CheckListBankRules extends CheckListBankWeb
                 $s['unacceptability_reason'] = '';
                 
 
-                $s['rank_name'] = $rec['dwc:taxonRank'];
+                $s['rank_name'] = ucfirst(strtolower($rec['dwc:taxonRank']));
                 $s['taxon_author'] = $rec['dwc:scientificNameAuthorship'];
 
                 $s['unit_name1'] = '';  $s['unit_name2'] = ''; $s['unit_name3'] = '';  $s['unit_name4'] = ''; //initialize
@@ -409,7 +409,7 @@ class CheckListBankRules extends CheckListBankWeb
         // $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //used for testing only
 
         echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
-        foreach(new FileIterator($filename) as $line_number => $line) {
+        foreach(new FileIterator($filename) as $line_number => $line) { $orig_line = $line;
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
 
@@ -434,7 +434,8 @@ class CheckListBankRules extends CheckListBankWeb
             */
 
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
-            $obj->full_reference = str_replace("there_is_a_cat", ".", $line);
+            // $obj->full_reference = str_replace("there_is_a_cat", ".", $line); //maybe sufficent already, but better to use $orig_line instead.
+            $obj->full_reference = $orig_line;
 
             // print_r($obj); //good debug
             $reks = self::convert_anystyle_obj_2save($obj);
