@@ -23,7 +23,7 @@ class CheckListBankWeb
         <form action="form_result_map.php" method="post" enctype="multipart/form-data">
         <tr><td>
                 <font size="3">Mapping Exercise</font>
-                <?php echo "ID: $this->resource_id <input type='hidden' value='$this->resource_id'><br>"; ?>
+                <?php echo "ID: $this->resource_id <input type='hidden' name='resource_id' value='$this->resource_id'><br>"; ?>
         </td></tr>
         <tr align="center">
             <td>

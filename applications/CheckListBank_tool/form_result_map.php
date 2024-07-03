@@ -16,27 +16,41 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 $time_var = time();
 
-// echo "<pre>"; print_r($_FILES); exit("</pre>");
 $form = $_POST;
 echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
+/*Array(
+    [taxonRank] => Array(
+            [0] => Kingdom
+            [1] => Phylum
+            [2] => Class
+            [3] => Order
+            [4] => Superfamily
+            [5] => Family
+            [6] => Genus
+            [7] => Species
+        )
+    [taxonomicStatus] => Array(
+            [0] => accepted
+            [1] => 
+            [2] => misapplied
+            [3] => 
+        )
+    [locality] => Array(
+            [0] => 
+            [1] => Australia
+            [2] => 
+            [19] => Western Atlantic Ocean
+            [20] => Western Atlantic Ocean
+        )
+    [occurrenceStatus] => Array(
+            [0] => Native
+        )
+)*/
 
-// /* Filename_ID check if doesn't exist in OpenData. If doesn't exist, stop operation now.
 if($resource_id = @get_val_var('resource_id')) {
+    echo "\nid: $resource_id\n";
 }
-// */
-
-// if($form_url) { //URL is pasted.
-// }
-// elseif($file_type = @$_FILES["file_upload"]["type"]) { //Taxa File
-// }
-// elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
-// }
-// elseif($file_type = @$_FILES["file_upload3"]["type"]) { // Taxa List
-// }
-// else exit("<hr>Please select a file to continue. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
-
-
-
+else echo "\nNo resource_id\n";
 
 function get_val_var($v)
 {
