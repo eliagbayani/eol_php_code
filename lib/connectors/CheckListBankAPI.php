@@ -36,7 +36,7 @@ class CheckListBankAPI extends CheckListBankRules
             if(!is_dir($dir)) mkdir($dir);
 
             $this->map['taxonomicStatus']['valid_invalid'] = array('', 'valid', 'invalid');
-            $this->map['taxonomicStatus']['accepted_not_accepted'] = array('', 'accepted', 'not accepted');
+            $this->map['taxonomicStatus']['accepted_not_accepted'] = array('', 'accepted', 'not accepted', 'unaccepted');
             $this->map['unacceptability_reason'] = array("", "junior synonym", "original name/combination", "subsequent name/combination", "junior homonym", "homonym & junior synonym", "unavailable, database artifact", "unavailable, literature misspelling", "unavailable, incorrect orig.[inal] spelling", "unavailable, suppressed by ruling", "unavailable, nomen nudum", "unavailable, other", "unjustified emendation", "unnecessary replacement", "nomen oblitum", "misapplied", "pro parte", "other, see comments", "nomen dubium");
 
             $this->map['taxonRank'] = array("", "Kingdom", "Subkingdom", "Infrakingdom", "Superdivision", "Superphylum", "Division", "Phylum", "Subdivision", "Subphylum", "Infradivision", "Infraphylum", "Parvdivision", "Parvphylum", "Superclass", "Class", "Subclass", "Infraclass", "Superorder", "Order", "Suborder", "Infraorder", "Section", "Subsection", "Superfamily", "Family", "Subfamily", "Tribe", "Subtribe", "Genus", "Subgenus", "Species", "Subspecies", "Variety", "Form", "Subvariety", "Race", "Stirp", "Morph", "Aberration", "Subform");
