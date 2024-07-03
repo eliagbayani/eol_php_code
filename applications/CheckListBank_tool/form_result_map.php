@@ -55,7 +55,7 @@ echo "</pre>";
 
 $source      = $temp_dir . 'Main_Table.txt';
 $destination = $temp_dir . 'Taxa.txt';
-parse_TSV_file($source, $destination);
+parse_TSV_file($source, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map);
 
 function get_val_var($v)
 {
@@ -79,8 +79,8 @@ function generate_array_map($form, $table)
     }
     return $final;
 }
-function parse_TSV_file($txtfile, $destination)
-{   
+function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map)
+{
     $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa.txt\n");
     $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
     foreach(new FileIterator($txtfile) as $line_number => $line) {
@@ -124,8 +124,12 @@ function parse_TSV_file($txtfile, $destination)
             $save['unacceptability_reason'] = ''; //must be blank
         }    
         elseif(in_array($save['pre_name_usage'], array('unaccepted', 'not accepted', 'invalid'))) { //unacceptability_reason should be populated
-            $save['unacceptability_reason'] = $save['pre_name_usage'];
-            $save['name_usage'] = 'unaccepted'; //must be: 'unaccepted' or 'not accepted' or 'invalid'
+            $save['name_usage'] = $save['pre_name_usage'];
+            $save['unacceptability_reason'] = '';
+        }
+        elseif($val = $save['pre_name_usage']) {
+            $save['name_usage'] = 'unaccepted';
+            $save['unacceptability_reason'] = $val;
         }
         // ----- 2nd ----- name_usage | unacceptability_reason
         if($val = $save['name_usage']) {

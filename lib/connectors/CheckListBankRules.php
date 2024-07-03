@@ -214,6 +214,7 @@ class CheckListBankRules extends CheckListBankWeb
 
                 $occurrenceStatus = @$this->distribution_info_list[$taxonID]['o'];
                 $occurrenceStatus = self::clean_array($occurrenceStatus);
+                $occurrenceStatus = self::ucfirst_array_values($occurrenceStatus);
                 $occurrenceStatus = implode("|", $occurrenceStatus);
 
                 $locality = @$this->distribution_info_list[$taxonID]['l'];
@@ -614,6 +615,15 @@ class CheckListBankRules extends CheckListBankWeb
             if( $counter < 0 ) return false;
         }
         return $counter == 0;
+    }
+    private function ucfirst_array_values($arr)
+    {
+        $final = array();
+        foreach($arr as $val) {
+            $val = ucfirst(strtolower($val));
+            $final[] = $val;
+        }
+        return $final;
     }
     /* DwCA Reference
     identifier
