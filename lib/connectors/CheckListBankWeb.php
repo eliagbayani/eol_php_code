@@ -32,7 +32,7 @@ class CheckListBankWeb
         </td></tr>
         <tr align="center">
             <td>
-                <table><?php
+                <table><tr rowspan='2'><td align='center' colspan='2'><b>rank_name</b><br>&nbsp;</td></tr><?php
                 $i = -1;
                 foreach($taxonRanks as $r) { $i++;
                         ?><tr><?php
@@ -55,7 +55,7 @@ class CheckListBankWeb
 
         <tr align="center">
             <td>
-                <table><?php
+                <table><tr rowspan='2'><td align='center' colspan='2'><b>name_usage | unacceptability_reason</b><br>&nbsp;</td></tr><?php
                 $i = -1;
                 foreach($taxonomicStatuses as $r) { $i++;
                         ?><tr><?php
@@ -87,7 +87,7 @@ class CheckListBankWeb
 
         <tr align="center">
             <td>
-                <table><?php
+                <table><tr rowspan='2'><td align='center' colspan='2'><b>geographic_value</b><br>&nbsp;</td></tr><?php
                 $i = -1;
                 foreach($localities as $r) { $i++;
                         ?><tr><?php
@@ -110,7 +110,7 @@ class CheckListBankWeb
 
         <tr align="center">
             <td>
-                <table><?php
+                <table><tr rowspan='2'><td align='center' colspan='2'><b>origin</b><br>&nbsp;</td></tr><?php
                 $i = -1;
                 foreach($occurrenceStatuses as $r) { $i++;
                         ?><tr><?php
