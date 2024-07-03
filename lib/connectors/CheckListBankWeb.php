@@ -7,7 +7,7 @@ class CheckListBankWeb
     }
     function create_web_form()
     {
-        echo "\ndito na siya...\n";
+        // echo "\ndito na siya...\n";
         $taxonRanks = self::get_text_contents('taxonRank');
         $taxonomicStatuses = self::get_text_contents('taxonomicStatus');
         if(in_array('accepted', $taxonomicStatuses)) $taxonomicStatus_map = $this->map['taxonomicStatus']['accepted_not_accepted'];
@@ -131,9 +131,9 @@ class CheckListBankWeb
             </td>
         </tr>
 
-        <tr><td colspan="2">
-                <input type="submit" value="Submit">
-                <input type="reset" value="Reset">
+        <tr><td align='center' colspan="2">
+                <input type="submit" value=" Submit ">
+                <input type="reset" value=" Reset ">
         </td></tr>
         </form>
         </table>
@@ -141,7 +141,7 @@ class CheckListBankWeb
     }
     private function get_text_contents($basename)
     {
-        $filename = $this->temp_dir.$basename.".txt"; echo "\nfilename: [$filename]\n";
+        $filename = $this->temp_dir.$basename.".txt"; //echo "\nfilename: [$filename]\n";
         $contents = file_get_contents($filename);
         return explode("\n", $contents);
     }

@@ -243,7 +243,7 @@ class CheckListBankRules extends CheckListBankWeb
         // }
 
         $arr = self::clean_array($arr);
-        $filename = $this->temp_dir.$basename.".txt"; echo "\nfilename: [$filename]\n";
+        $filename = $this->temp_dir.$basename.".txt"; //echo "\nfilename: [$filename]\n";
         $WRITE = Functions::file_open($filename, "w");
         foreach($arr as $row) {
             if(!$row) continue;

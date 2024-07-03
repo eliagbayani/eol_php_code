@@ -7,11 +7,11 @@ ini_set('error_reporting', false);
 ini_set('display_errors', false);
 $GLOBALS['ENV_DEBUG'] = false; //set to false in production
 // */
-// /* during development
+/* during development
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 $GLOBALS['ENV_DEBUG'] = true; //set to true during development
-// */
+*/
 $form = $_POST;
 echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
 /*Array(
@@ -66,7 +66,7 @@ function get_val_var($v)
 }
 function get_text_contents($basename)
 {
-    $filename = $temp_dir.$basename.".txt"; echo "\nfilename: [$filename]\n";
+    $filename = $temp_dir.$basename.".txt"; //echo "\nfilename: [$filename]\n";
     $contents = file_get_contents($filename);
     return explode("\n", $contents);
 }
@@ -149,7 +149,7 @@ function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus
             if($val2 = @$occurrenceStatus_map[$val]) $save['origin'] = $val2;
         }
         // ----- write -----
-        echo "<pre>"; print_r($save); echo "</pre>"; //exit;
+        // echo "<pre>"; print_r($save); echo "</pre>"; //exit;
         write_output_rec_2txt($save, $destination);
     } //end foreach()
 }

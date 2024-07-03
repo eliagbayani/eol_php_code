@@ -48,7 +48,7 @@ class CheckListBankAPI extends CheckListBankRules
     }
     function start($filename = false, $form_url = false, $uuid = false, $json = false)
     {
-        echo "\nstart filename: [$filename]\n";
+        // echo "\nstart filename: [$filename]\n";
         $this->arr_json = json_decode($json, true);
         if($val = @$this->arr_json['timestart']) $timestart = $val;               //normal operation
         else                                     $timestart = time_elapsed();     //during dev only - command line
@@ -73,8 +73,8 @@ class CheckListBankAPI extends CheckListBankRules
         
         if(!$filename) exit("\nNo filename: [$filename]. Will terminate.\n");
         $input_file = $this->input['path'].$filename;
-        echo "\nfilename is: [$filename]\n";
-        echo "\ninput_file is: [$input_file]\n"; //exit("\nstop 1\n");
+        // echo "\nfilename is: [$filename]\n";
+        // echo "\ninput_file is: [$input_file]\n"; //exit("\nstop 1\n");
         // filename is: [1719649213.zip]
         // input_file is: [/opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1719649213.zip]
         $this->temp_folder = str_replace($filename, "", $input_file);
