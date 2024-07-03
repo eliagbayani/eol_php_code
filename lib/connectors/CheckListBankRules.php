@@ -71,6 +71,7 @@ class CheckListBankRules extends CheckListBankWeb
         // self::summary_report();
         // self::prepare_download_link();
         // recursive_rmdir($this->temp_dir);
+        exit;
         exit("\n-stop muna-\n");
         return;
     }
