@@ -50,7 +50,7 @@ echo "<pre>";
 $taxonRank_map          = generate_array_map($form, 'taxonRank');        print_r($taxonRank_map); //exit;
 $taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');  print_r($taxonomicStatus_map);
 $locality_map           = generate_array_map($form, 'locality');         print_r($locality_map); 
-$occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus'); print_r($occurrenceStatus_map); exit;
+$occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus'); print_r($occurrenceStatus_map); //exit;
 echo "</pre>";
 
 $source      = $temp_dir . 'Main_Table.txt';
@@ -116,7 +116,7 @@ function parse_TSV_file($txtfile, $destination)
         )*/
         // ===========================start saving
         $save = array();
-        $fields = array_keys($rec);
+        $fields = array_keys($rec); //print_r($fields);
         foreach($fields as $field) $save[$field] = $rec[$field];
         // ----- 1st -----
         if(in_array($save['pre_name_usage'], array('accepted', 'valid'))) {
@@ -125,7 +125,7 @@ function parse_TSV_file($txtfile, $destination)
         }    
         elseif(in_array($save['pre_name_usage'], array('unaccepted', 'not accepted', 'invalid'))) { //unacceptability_reason should be populated
             $save['unacceptability_reason'] = $save['pre_name_usage'];
-            // $save['name_usage'] = must be: 'unaccepted' or 'not accepted' or 'invalid'
+            $save['name_usage'] = 'unaccepted'; //must be: 'unaccepted' or 'not accepted' or 'invalid'
         }
         // ----- 2nd ----- name_usage | unacceptability_reason
         if($val = $save['name_usage']) {
@@ -145,6 +145,7 @@ function parse_TSV_file($txtfile, $destination)
             if($val2 = @$occurrenceStatus_map[$val]) $save['origin'] = $val2;
         }
         // ----- write -----
+        echo "<pre>"; print_r($save); echo "</pre>"; //exit;
         write_output_rec_2txt($save, $destination);
     } //end foreach()
 }
