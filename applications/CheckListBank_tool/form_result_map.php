@@ -51,7 +51,9 @@ $taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');
 $locality_map           = generate_array_map($form, 'locality');
 $occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus');
 
-parse_TSV_file($temp_dir . 'Main_Table.txt', "");
+$source      = $temp_dir . 'Main_Table.txt';
+$destination = $temp_dir . 'Taxa.txt';
+parse_TSV_file($source, $destination);
 
 function get_val_var($v)
 {
@@ -75,9 +77,10 @@ function generate_array_map($form, $table)
     }
     return $final;
 }
-function parse_TSV_file($txtfile, $task)
+function parse_TSV_file($txtfile, $destination)
 {   
-    $i = 0; debug("\nUpdating: [$txtfile]\n");
+    $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa.txt\n");
+    $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
     foreach(new FileIterator($txtfile) as $line_number => $line) {
         if(!$line) continue;
         $i++; if(($i % 1000) == 0) echo "\n".number_format($i)." ";
@@ -109,7 +112,59 @@ function parse_TSV_file($txtfile, $task)
             [origin] => 
             [referenceID] => d41d8cd98f00b204e9800998ecf8427e
         )*/
-
+        // ===========================start saving
+        $save = array();
+        $fields = array_keys($rec);
+        foreach($fields as $field) {
+            $save[$field] = $rec['$field'];
+        }
+        // ----- 1st -----
+        if(in_array($save['pre_name_usage'], array('accepted', 'valid'))) {
+            $save['name_usage'] = $save['pre_name_usage'];
+            $save['unacceptability_reason'] = ''; //must be blank
+        }    
+        elseif(in_array($save['pre_name_usage'], array('unaccepted', 'not accepted', 'invalid'))) { //unacceptability_reason should be populated
+            $save['unacceptability_reason'] = $save['pre_name_usage'];
+            // $save['name_usage'] = must be: 'unaccepted' or 'not accepted' or 'invalid'
+        }
+        // ----- 2nd ----- name_usage | unacceptability_reason
+        if($val = $save['name_usage']) {
+            if($val2 = $taxonomicStatus_map[$val]) $save['name_usage'] = $val2;
+        }
+        if($val = $save['unacceptability_reason']) {
+            if($val2 = $taxonomicStatus_map[$val]) $save['unacceptability_reason'] = $val2;
+        }
+        // ----- 3rd ----- rank_name | geographic_value | origin
+        if($val = $save['rank_name']) {
+            if($val2 = $taxonRank_map[$val]) $save['rank_name'] = $val2;
+        }
+        if($val = $save['geographic_value']) {
+            if($val2 = $locality_map[$val]) $save['geographic_value'] = $val2;
+        }
+        if($val = $save['origin']) {
+            if($val2 = $occurrenceStatus_map[$val]) $save['origin'] = $val2;
+        }
+        // ----- write -----
+        write_output_rec_2txt($save, $destination);
+    } //end foreach()
+}
+function write_output_rec_2txt($rec, $filename)
+{   
+    $fields = array_keys($rec);
+    $WRITE = Functions::file_open($filename, "a");
+    clearstatcache(); //important for filesize()
+    if(filesize($filename) == 0) fwrite($WRITE, implode("\t", $fields) . "\n");
+    $save = array();
+    foreach($fields as $fld) {
+        if(is_array($rec[$fld])) { //if value is array()
+            $rec[$fld] = self::clean_array($rec[$fld]);
+            $rec[$fld] = implode(", ", $rec[$fld]); //convert to string
+            $save[] = trim($rec[$fld]);
+        }
+        else $save[] = $rec[$fld];
     }
+    $tab_separated = (string) implode("\t", $save); 
+    fwrite($WRITE, $tab_separated . "\n");
+    fclose($WRITE);
 }
 ?>
