@@ -123,10 +123,19 @@ class CheckListBankRules extends CheckListBankWeb
                 // -Distribution file: locality and occurrenceStatus (if present/populated)
                 $this->debug['namePublishedIn'][$rec['dwc:namePublishedIn']] = '';
                 $this->debug['infragenericEpithet'][$rec['dwc:infragenericEpithet']] = '';
-                $this->debug['taxonomicStatus'][$rec['dwc:taxonomicStatus']] = '';
                 $this->debug['taxonRank'][$rec['dwc:taxonRank']] = '';
                 $this->debug['nomenclaturalStatus'][$rec['dwc:nomenclaturalStatus']] = '';
                 $this->debug['taxonRemarks'][$rec['dwc:taxonRemarks']] = '';
+
+                $tS = $rec['dwc:taxonomicStatus'];
+                $nS = $rec['dwc:nomenclaturalStatus'];
+                $tR = $rec['dwc:taxonRemarks'];
+                // $val = $tS ? $tS : $nS ? $nS : $tR; //ternary didn't work
+                if($tS) $val = $tS;
+                elseif($nS) $val = $nS;
+                elseif($tR) $val = $tR;
+                else $val = "-something wrong-";
+                $this->debug['taxonomicStatus'][$val] = ''; //pre_name_usage
             }
             //###############################################################################################
             if($task == "process Distribution.tsv") {
@@ -169,7 +178,22 @@ class CheckListBankRules extends CheckListBankWeb
                 $s['scientific_nameID'] = $rec['dwc:taxonID'];
                 $s['parent_nameID'] = $rec['dwc:parentNameUsageID'];
                 $s['accepted_nameID'] = $rec['dwc:acceptedNameUsageID'];
-                $s['name_usage'] = $rec['dwc:taxonomicStatus'];
+                
+                // Use taxonomicStatus if populated, if not try nomenclaturalStatus, if not try taxonRemarks
+                $tS = $rec['dwc:taxonomicStatus'];
+                $nS = $rec['dwc:nomenclaturalStatus'];
+                $tR = $rec['dwc:taxonRemarks'];
+                // $val = $tS ? $tS : $nS ? $nS : $tR; //ternary didn't work
+                if($tS) $val = $tS;
+                elseif($nS) $val = $nS;
+                elseif($tR) $val = $tR;
+                else $val = "-something wrong-";
+
+                $s['pre_name_usage'] = $val;
+                $s['name_usage'] = '';
+                $s['unacceptability_reason'] = '';
+                
+
                 $s['rank_name'] = $rec['dwc:taxonRank'];
                 $s['taxon_author'] = $rec['dwc:scientificNameAuthorship'];
 
