@@ -117,6 +117,7 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
             debug("<br>newfile = [$newfile]<br>download_directory:[$download_directory]<br>"); //exit("\nstop 2\n");
             // $download_directory = '/Library/WebServer/Webroot/eol_php_code/applications/content_server/tmp/9f508e44e8038fb56bbc0c9b34eb3ac7';
             if(is_dir($download_directory) && file_exists($download_directory ."/meta.xml")) {
+                // echo "\n[$download_directory]\n"; exit;
                 $taxon_file        = get_file_from_DwCA($download_directory ."/meta.xml", "http://rs.tdwg.org/dwc/terms/Taxon"); //taxon.tab
                 $distribution_file = get_file_from_DwCA($download_directory ."/meta.xml", "http://rs.gbif.org/terms/1.0/Distribution"); //taxon.tab
 

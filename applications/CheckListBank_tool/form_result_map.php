@@ -47,10 +47,10 @@ $temp_dir = @get_val_var('temp_dir');
 // debug("\n[$resource_id][$temp_dir]\n");
 
 echo "<pre>";
-$taxonRank_map          = generate_array_map($form, 'taxonRank');        print_r($taxonRank_map); //exit;
-$taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');  print_r($taxonomicStatus_map);
-$locality_map           = generate_array_map($form, 'locality');         print_r($locality_map); 
-$occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus'); print_r($occurrenceStatus_map); //exit;
+$taxonRank_map          = generate_array_map($form, 'taxonRank');        //print_r($taxonRank_map); //exit;
+$taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');  //print_r($taxonomicStatus_map);
+$locality_map           = generate_array_map($form, 'locality');         //print_r($locality_map); 
+$occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus'); //print_r($occurrenceStatus_map); //exit;
 echo "</pre>";
 
 $source      = $temp_dir . 'Main_Table.txt';
