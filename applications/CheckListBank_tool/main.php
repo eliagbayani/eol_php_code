@@ -36,7 +36,7 @@ else                      $browser_comment = "Choose File"; //Safari Chrome etc
         <td>
             <input type='text' name='Filename_ID' hidden>
             <input type='text' name='Short_Desc' hidden>
-            <input type="submit" value="Convert archive file">
+            <input type="submit" value="Convert archive file to ITIS format">
             <input type="reset" value="Reset">
         </td>
     </tr>
