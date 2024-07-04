@@ -46,11 +46,10 @@ class CheckListBankRules extends CheckListBankWeb
         $this->other_funcs = new AnystyleAPI(); //func is: parse_citation_using_anystyle_cli(citation, input_file)
 
         if(Functions::is_production()) {
-            $out = shell_exec("scl enable rh-ruby25 bash");
+            $out = shell_exec("/usr/bin/scl enable rh-ruby25 bash");
             echo "\nTerminal: [$out]\n";
         }
         // */
-
     }
     function start_CheckListBank_process()
     {
