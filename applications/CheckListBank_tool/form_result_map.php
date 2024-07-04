@@ -75,13 +75,13 @@ $rec['url'] = $domain.'/eol_php_code/applications/content_server/resources/Trait
 
 $final_zip_url = str_replace(DOC_ROOT, WEB_ROOT, $target);
 echo "<br>Download ITIS-formatted file: [<a href='$final_zip_url'>".pathinfo($final_zip_url, PATHINFO_BASENAME)."</a>]<br><br>";
-// recursive_rmdir($temp_dir); //un-comment in real operation
-unlink($temp_folder . $resource_id."_Distribution.tsv");
-unlink($temp_folder . $resource_id."_Taxon.tsv");
+recursive_rmdir($temp_dir); //un-comment in real operation
+$tmp_file = $temp_folder . $resource_id."_Distribution.tsv";    if(is_file($tmp_file)) unlink($tmp_file);
+$tmp_file = $temp_folder . $resource_id."_Taxon.tsv";           if(is_file($tmp_file)) unlink($tmp_file);
 ?>
 You can save this file to your computer.<br>
 This file will remain in our server for two (2) weeks.<br>
-<a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br>
+<!--- <a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br> --->
 <a href='main.php'> &lt;&lt; Back to menu</a>
 <?php
 echo "</pre>";
