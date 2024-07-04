@@ -33,7 +33,9 @@ class AnystyleAPI
         $this->anystyle_parse_model_gold = DOC_ROOT. "update_resources/connectors/helpers/anystyle/eli_gold.mod";
 
         $this->temp_path = DOC_ROOT. "update_resources/connectors/helpers/anystyle/";
-        $this->anystyle_path = "/usr/local/bin/anystyle";
+
+        if(Functions::is_production()) $this->anystyle_path = "/opt/rh/rh-ruby25/root/usr/local/bin/anystyle";
+        else                           $this->anystyle_path = "/usr/local/bin/anystyle";
     }
 
     function parse_citation_using_anystyle_cli($citation, $input_file)
