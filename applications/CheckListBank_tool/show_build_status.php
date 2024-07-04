@@ -102,7 +102,7 @@ else {
     }
     // */
 }
-if($build_status) echo "<hr><b>Build status 3: OK</b><pre>".$build_status."</pre><hr>";
+if($build_status) echo "<hr><b>Build status 3: Mapping Exercise</b><pre>".$build_status."</pre><hr>";
 else {
     if($ctrler->is_task_in_queue('xls2dwca_job', $params['uuid'].$postfix)) { //job_name = 'specmnXport_job' or 'xls2dwca_job'
         echo "<hr><b>Build status 1:</b><pre>This job is now in queue...</pre><hr>";
