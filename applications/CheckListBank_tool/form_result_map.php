@@ -47,7 +47,8 @@ $temp_dir = @get_val_var('temp_dir');
 $temp_folder = @get_val_var('temp_folder');
 // echo("\n[$resource_id][$temp_dir][$temp_folder]\n");
 
-echo "<pre>"; echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
+echo "<pre>"; 
+// echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
 $taxonRank_map          = generate_array_map($form, 'taxonRank');        //print_r($taxonRank_map); //exit;
 $taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');  //print_r($taxonomicStatus_map);
 $locality_map           = generate_array_map($form, 'locality');         //print_r($locality_map); 
@@ -64,19 +65,24 @@ $target_dir = str_replace("$resource_id/", "", $temp_dir);
 $target = $target_dir."ITIS_format_$resource_id.zip";
 // $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
 $output = shell_exec("zip -j $target $source1 $source2");
-echo "\n$output\nCompressed OK [".$target."]\n";
+echo "\n$output\n";
 
+if(stripos($output, "error") !== false) exit("\nGo back to Main.\n");
+echo "\nCompressed OK\n";
 if(Functions::is_production()) $domain = "https://editors.eol.org";
 else                           $domain = "http://localhost";
 $rec['url'] = $domain.'/eol_php_code/applications/content_server/resources/Trait_Data_Import/'.$resource_id.'.tar.gz';
 
 $final_zip_url = str_replace(DOC_ROOT, WEB_ROOT, $target);
-echo "<br>[$final_zip_url]";
-recursive_rmdir($temp_dir); //un-comment in real operation
+echo "<br>Download ITIS-formatted file: [<a href='$final_zip_url'>".pathinfo($final_zip_url, PATHINFO_BASENAME)."</a>]<br><br>";
+// recursive_rmdir($temp_dir); //un-comment in real operation
 unlink($temp_folder . $resource_id."_Distribution.tsv");
 unlink($temp_folder . $resource_id."_Taxon.tsv");
+?>
+You can save this file to your computer.<br>
+This file will remain in our server for two (2) weeks.<br>
+<a href='main.php'> &lt;&lt; Back to menu</a><?php
 echo "</pre>";
-
 
 function get_val_var($v)
 {

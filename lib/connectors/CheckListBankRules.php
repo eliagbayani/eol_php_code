@@ -24,7 +24,7 @@ class CheckListBankRules extends CheckListBankWeb
         $this->HC = new DwCA_Utility(); // HC - higherClassification functions
         */
         // /* 3rd:
-        $this->temp_dir = CONTENT_RESOURCE_LOCAL_PATH . '/CheckListBank_files/'.$this->resource_id."/";
+        $this->temp_dir = CONTENT_RESOURCE_LOCAL_PATH . 'CheckListBank_files/'.$this->resource_id."/";
         if(!is_dir($this->temp_dir)) mkdir($this->temp_dir);
         // $filenames = array('matchedNames', 'processed', 'unmatchedNames');
         // foreach($filenames as $filename) {
@@ -405,9 +405,9 @@ class CheckListBankRules extends CheckListBankWeb
     }
     private function parse_references_with_anystyle()
     {
-        $filename = $this->temp_dir."namePublishedIn.txt";
+        $filename = $this->temp_dir."namePublishedIn.txt"; // echo "\nnamePublishedIn.txt: [$filename]\n";
         // $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //used for testing only
-        echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
+        $i = 0;
         foreach(new FileIterator($filename) as $line_number => $line) { $orig_line = $line;
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
@@ -570,7 +570,8 @@ class CheckListBankRules extends CheckListBankWeb
             }
             $reks[] = $rek;
         // }
-        echo "\nreks start\n"; print_r($reks); echo "\nreks end\n";
+        //echo "\nreks start\n"; 
+        // print_r($reks); //echo "\nreks end\n";
         return $reks;
     }
     private function format_citation_for_anystyle($orig_str)
@@ -596,8 +597,8 @@ class CheckListBankRules extends CheckListBankWeb
                     $str = str_replace("($s)", "($temp)", $str);
                 }
             }
-            echo "\norig: [$orig_str]\n";
-            echo "\n new: [$str]\n"; //return $str
+            // echo "\norig: [$orig_str]\n";
+            // echo "\n new: [$str]\n";
             return $str;
         }
         return $orig_str;

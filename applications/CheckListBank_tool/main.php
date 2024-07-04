@@ -20,7 +20,7 @@ else                      $browser_comment = "Choose File"; //Safari Chrome etc
     <tr><td>
             <font size="3">
             <b>Darwin Core Archive</b> <br><br>
-            Upload user file: </font><input type="file" name="file_upload2" id="file_upload2" size="100">
+            Upload archive file: </font><input type="file" name="file_upload2" id="file_upload2" size="100">
             <br><br><small>(.tar.gz or .zip)</small>
     </td></tr>
     <!---
@@ -36,7 +36,7 @@ else                      $browser_comment = "Choose File"; //Safari Chrome etc
         <td>
             <input type='text' name='Filename_ID' hidden>
             <input type='text' name='Short_Desc' hidden>
-            <input type="submit" value="Run">
+            <input type="submit" value="Convert archive file">
             <input type="reset" value="Reset">
         </td>
     </tr>

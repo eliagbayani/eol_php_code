@@ -5,7 +5,7 @@ class CheckListBankWeb
     function __construct()
     {
     }
-    function create_web_form($tool_temp_folder)
+    function create_web_form()
     {
         // echo "\ndito na siya...\n";
         $taxonRanks = self::get_text_contents('taxonRank');
@@ -135,6 +135,7 @@ class CheckListBankWeb
         <tr><td align='center' colspan="2">
                 <input type="submit" value=" Submit ">
                 <input type="reset" value=" Reset ">
+                <a href='javascript:history.go(-2)'> &lt;&lt; Go back</a>
         </td></tr>
         </form>
         </table>

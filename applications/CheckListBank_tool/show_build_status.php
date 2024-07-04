@@ -45,34 +45,29 @@ else {
     // /*
     // $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "MarineGEO_sie/" . $params['uuid'] . ".xls";
     // $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "Trait_Data_Import/" . $params['uuid'] . ".tar.gz";
-    $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_files/" . $params['uuid'] . ".zip";
+    $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_files/" . $params['uuid'] . "/Main_Table.txt";
     if(file_exists($final_archive_gzip_url)) {
-        
-        // /* NEW: to accommodate Filename_ID implementation
+        /*
+        // NEW start: to accommodate Filename_ID implementation
         if($Filename_ID = @$params['Filename_ID']) {
             // $rename_to = CONTENT_RESOURCE_LOCAL_PATH . "Trait_Data_Import/" . $params['Filename_ID'] . ".tar.gz";
             $rename_to = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_files/" . $params['Filename_ID'] . ".zip";
 
-            /* as much as possible don't use: Functions::file_rename
-            Functions::file_rename($final_archive_gzip_url, $rename_to)
-            */
-            
-            // /* ========== New: since Functions::file_rename above doesn't work
+            // as much as possible don't use: Functions::file_rename
+            // Functions::file_rename($final_archive_gzip_url, $rename_to)
+                        
+            // ========== New: since Functions::file_rename above doesn't work
             if(copy($final_archive_gzip_url, $rename_to)) echo "<br>Updated OK: [".pathinfo($rename_to, PATHINFO_BASENAME)."]<br>";
             else echo "\n<br>ERRORx: cannot copy [$final_archive_gzip_url] to [$rename_to]<br>Please inform eagbayani@eol.org.<br>\n";
-            // ========== */
+            // ==========
 
             $final_archive_gzip_url = $rename_to;
             $hash_post = $Filename_ID;
         }
         else $hash_post = $params['uuid'];
-        // */
+        // NEW end
         
-        /* special provision : copied template
-        $ckan_resource_id = get_ckan_resource_id_given_hash("hash-".$hash_post);
-        */
         // echo "\n" . getcwd() . "\n"; exit;
-
         $ctrler->display_message(array('type' => "highlight", 'msg' => "Job completed OK."));
         
         // if($final_archive_gzip_url && $ckan_resource_id) {
@@ -87,19 +82,19 @@ else {
                 echo "<a href='main.php'>Back to menu</a>";
             echo "<br>=======================================================<br><br>";
             // echo "<pre>"; print_r($params); echo "</pre>"; //good debug
-            /*Array(
-                [task] => xls2dwca_job_1
-                [uuid] => 1643726800
-                [destination] => /opt/homebrew/var/www/eol_php_code//applications/trait_data_import/temp/1643726800.xlsx
-                [destination] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1643726800.tab
-                [true_root] => /opt/homebrew/var/www/eol_php_code/
-                [Filename_ID] => 111222
-            )*/
+            // Array(
+            //     [task] => xls2dwca_job_1
+            //     [uuid] => 1643726800
+            //     [destination] => /opt/homebrew/var/www/eol_php_code//applications/trait_data_import/temp/1643726800.xlsx
+            //     [destination] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1643726800.tab
+            //     [true_root] => /opt/homebrew/var/www/eol_php_code/
+            //     [Filename_ID] => 111222
+            // )
         }
         else {
             echo "There were problems processing this upload: [$final_archive_gzip_url] [$ckan_resource_id]"; print_r($params);
         }
-        // echo "<a href='../../applications/tools.php'>Back to Tools</a>";
+        */
     }
     else {
         $ctrler->display_message(array('type' => "highlight", 'msg' => "ERROR: Build failed. &nbsp; $str"));
@@ -107,7 +102,7 @@ else {
     }
     // */
 }
-if($build_status) echo "<hr><b>Build status 3:</b><pre>".$build_status."</pre><hr>";
+if($build_status) echo "<hr><b>Build status 3: OK</b><pre>".$build_status."</pre><hr>";
 else {
     if($ctrler->is_task_in_queue('xls2dwca_job', $params['uuid'].$postfix)) { //job_name = 'specmnXport_job' or 'xls2dwca_job'
         echo "<hr><b>Build status 1:</b><pre>This job is now in queue...</pre><hr>";
