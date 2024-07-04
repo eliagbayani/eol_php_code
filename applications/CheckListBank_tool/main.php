@@ -1,6 +1,13 @@
 <?php
 namespace php_active_record;
 include_once(dirname(__FILE__) . "/../../config/environment.php");
+
+// /* normal operation
+ini_set('error_reporting', false);
+ini_set('display_errors', false);
+$GLOBALS['ENV_DEBUG'] = false; //set to false in production
+// */
+
 $browser = Functions::getBrowser(); // echo "Browser: " . $browser;
 if($browser == 'Firefox') $browser_comment = "Browse...";
 else                      $browser_comment = "Choose File"; //Safari Chrome etc
