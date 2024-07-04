@@ -50,7 +50,7 @@ class CheckListBankRules extends CheckListBankWeb
 
         if(Functions::is_production()) {
             shell_exec("su -");
-            $out = shell_exec("/usr/bin/scl enable rh-ruby25 bash");
+            $out = shell_exec("/bin/scl enable rh-ruby25 bash");
             echo "\nTerminal: [$out]\n";
         }
         // */
