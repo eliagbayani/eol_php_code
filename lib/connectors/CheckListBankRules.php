@@ -43,24 +43,24 @@ class CheckListBankRules extends CheckListBankWeb
         $this->other_funcs = new WikiDataMtceAPI(); //func is: parse_citation_using_anystyle(citation, all)
         */
 
-        /*
+        // /*
         require_library('connectors/AnystyleAPI');
         $this->input_file = $this->temp_dir . "input_" . $this->resource_id . ".txt";
         $this->other_funcs = new AnystyleAPI(); //func is: parse_citation_using_anystyle_cli(citation, input_file)
 
-        if(Functions::is_production()) {
-            shell_exec("su -");
-            $out = shell_exec("/bin/scl enable rh-ruby25 /usr/bin/bash");
-            // $out = shell_exec("/bin/scl enable rh-ruby25 'ruby -v'");
-            echo "\nTerminal: [$out]\n";
+        // if(Functions::is_production()) {
+        //     shell_exec("su -");
+        //     $out = shell_exec("/bin/scl enable rh-ruby25 /usr/bin/bash");
+        //     // $out = shell_exec("/bin/scl enable rh-ruby25 'ruby -v'");
+        //     echo "\nTerminal: [$out]\n";
 
-            $out = shell_exec("gem install anystyle-cli");
-            echo "\nTerminal: [$out]\n";
+        //     $out = shell_exec("gem install anystyle-cli");
+        //     echo "\nTerminal: [$out]\n";
 
-            $out = shell_exec("which anystyle");
-            echo "\nTerminal: [$out]\n";
-        }
-        */
+        //     $out = shell_exec("which anystyle");
+        //     echo "\nTerminal: [$out]\n";
+        // }
+        // */
     }
     function start_CheckListBank_process()
     {
