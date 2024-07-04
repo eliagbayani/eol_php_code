@@ -53,7 +53,7 @@ class CheckListBankRules extends CheckListBankWeb
             $out = shell_exec("/bin/scl enable rh-ruby25 bash");
             $out = shell_exec("/bin/scl enable rh-ruby25 'ruby -v'");
             echo "\nTerminal: [$out]\n";
-            $out = shell_exec("anystyle");
+            $out = shell_exec("which anystyle");
             echo "\nTerminal: [$out]\n";
         }
         // */
