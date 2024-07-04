@@ -81,7 +81,9 @@ unlink($temp_folder . $resource_id."_Taxon.tsv");
 ?>
 You can save this file to your computer.<br>
 This file will remain in our server for two (2) weeks.<br>
-<a href='main.php'> &lt;&lt; Back to menu</a><?php
+<a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br>
+<a href='main.php'> &lt;&lt; Back to menu</a>
+<?php
 echo "</pre>";
 
 function get_val_var($v)

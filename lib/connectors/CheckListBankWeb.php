@@ -135,7 +135,7 @@ class CheckListBankWeb
         <tr><td align='center' colspan="2">
                 <input type="submit" value=" Submit ">
                 <input type="reset" value=" Reset ">
-                <a href='javascript:history.go(-2)'> &lt;&lt; Go back</a>
+                <a href='javascript:history.go(-2)'> &lt;&lt; Back to menu</a>
         </td></tr>
         </form>
         </table>
