@@ -68,6 +68,8 @@ class CheckListBankRules extends CheckListBankWeb
         $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
         self::parse_references_with_anystyle();
+
+        $WRITE = Functions::file_open($this->temp_dir."Taxa.txt", "w"); fclose($WRITE); //created here due to permission in form_result_map.php
         // */
 
         $this->create_web_form();
