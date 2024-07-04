@@ -46,7 +46,7 @@ $resource_id = @get_val_var('resource_id');
 $temp_dir = @get_val_var('temp_dir');
 // debug("\n[$resource_id][$temp_dir]\n");
 
-echo "<pre>";
+echo "<pre>"; echo "\n[$resource_id]\n[$temp_dir]\n";
 $taxonRank_map          = generate_array_map($form, 'taxonRank');        //print_r($taxonRank_map); //exit;
 $taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');  //print_r($taxonomicStatus_map);
 $locality_map           = generate_array_map($form, 'locality');         //print_r($locality_map); 
@@ -56,6 +56,16 @@ echo "</pre>";
 $source      = $temp_dir . 'Main_Table.txt';
 $destination = $temp_dir . 'Taxa.txt';
 parse_TSV_file($source, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map);
+
+echo "\nCompressing...\n";
+$source1 = $temp_dir.'Taxa.txt';
+$source2 = $temp_dir.'References.txt';
+$target_dir = str_replace("$resource_id/", "", $temp_dir);
+$target = $target_dir."ITIS_format_$resource_id.zip";
+// $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
+$output = shell_exec("zip -j $target $source1 $source2");
+echo "\noutput\nCompressed OK [".$target."]\n";
+
 
 function get_val_var($v)
 {

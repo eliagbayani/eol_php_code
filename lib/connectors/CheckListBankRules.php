@@ -51,9 +51,9 @@ class CheckListBankRules extends CheckListBankWeb
     {
         self::initialize();
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv'); //generate unique lists from Taxon.tsv
-        // $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
+        $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
         // /* main operation
-        // $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
+        $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
         $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
         $a = $this->debug['taxonRank'];                                     self::write_array_2txt(array_keys($a), "taxonRank");            //print_r($a);
         $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
@@ -62,7 +62,7 @@ class CheckListBankRules extends CheckListBankWeb
         $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
         $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
-        // self::parse_references_with_anystyle();
+        self::parse_references_with_anystyle();
         // */
 
         $this->create_web_form();
@@ -194,7 +194,6 @@ class CheckListBankRules extends CheckListBankWeb
                 $s['name_usage'] = '';
                 $s['unacceptability_reason'] = '';
                 
-
                 $s['rank_name'] = ucfirst(strtolower($rec['dwc:taxonRank']));
                 $s['taxon_author'] = $rec['dwc:scientificNameAuthorship'];
 
@@ -407,14 +406,11 @@ class CheckListBankRules extends CheckListBankWeb
     private function parse_references_with_anystyle()
     {
         $filename = $this->temp_dir."namePublishedIn.txt";
-        
         // $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //used for testing only
-
         echo "\nnamePublishedIn.txt: [$filename]\n"; $i = 0;
         foreach(new FileIterator($filename) as $line_number => $line) { $orig_line = $line;
             if(!$line) continue;
             $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
-
             // force assign
             // $line = "Clemens B. Letters received from Dr. Brackenridge Clemens. 9. Letter of October 29th, 1860. In: Stainton HT (Ed) The Tineina of North America by (the late) Dr Brackenridge Clemens (being a collected edition of his writing on that group of insects). John van Voorst, London, XV, 282. (1872).";
             // $line = "Davis DR, Wilkinson C. Nepticulidae. In: Hodges RW, Dominick T, Davis DR, Ferguson DC, Franclemont JG, Munroe EG, Powell JA (Eds) Check list of the Lepidoptera of America north of Mexico : including Greenland. Classey, London, 2-3. (1983).";
@@ -474,7 +470,7 @@ class CheckListBankRules extends CheckListBankWeb
             }
             // */
 
-            // if($i > 1) break; //debug only
+            if($i > 2) break; //debug only
             // break; //debug only
         }
 
