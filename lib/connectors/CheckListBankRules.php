@@ -34,7 +34,7 @@ class CheckListBankRules extends CheckListBankWeb
         // }
         // */
 
-        /*
+        /* didn't use anymore
         require_library('connectors/WikiDataMtce_ResourceAPI');
         require_library('connectors/WikiDataMtceAPI');
         $this->other_funcs = new WikiDataMtceAPI(); //func is: parse_citation_using_anystyle(citation, all)
@@ -44,6 +44,11 @@ class CheckListBankRules extends CheckListBankWeb
         require_library('connectors/AnystyleAPI');
         $this->input_file = $this->temp_dir . "input_" . $this->resource_id . ".txt";
         $this->other_funcs = new AnystyleAPI(); //func is: parse_citation_using_anystyle_cli(citation, input_file)
+
+        if(Functions::is_production()) {
+            $out = shell_exec("scl enable rh-ruby25 bash");
+            echo "\nTerminal: [$out]\n";
+        }
         // */
 
     }
