@@ -75,6 +75,8 @@ $rec['url'] = $domain.'/eol_php_code/applications/content_server/resources/Trait
 
 $final_zip_url = str_replace(DOC_ROOT, WEB_ROOT, $target);
 echo "<br>Download ITIS-formatted file: [<a href='$final_zip_url'>".pathinfo($final_zip_url, PATHINFO_BASENAME)."</a>]<br><br>";
+
+shell_exec("chmod 777 ".$temp_dir);
 recursive_rmdir($temp_dir); //un-comment in real operation
 $tmp_file = $temp_folder . $resource_id."_Distribution.tsv";    if(is_file($tmp_file)) unlink($tmp_file);
 $tmp_file = $temp_folder . $resource_id."_Taxon.tsv";           if(is_file($tmp_file)) unlink($tmp_file);
