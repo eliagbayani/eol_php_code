@@ -70,6 +70,7 @@ class CheckListBankRules extends CheckListBankWeb
         self::parse_references_with_anystyle();
 
         $WRITE = Functions::file_open($this->temp_dir."Taxa.txt", "w"); fclose($WRITE); //created here due to permission in form_result_map.php
+        shell_exec("chmod 777 ".$this->temp_dir."Taxa.txt");
         // */
 
         $this->create_web_form();
