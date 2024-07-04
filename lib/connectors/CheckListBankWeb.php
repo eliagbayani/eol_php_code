@@ -5,7 +5,7 @@ class CheckListBankWeb
     function __construct()
     {
     }
-    function create_web_form()
+    function create_web_form($tool_temp_folder)
     {
         // echo "\ndito na siya...\n";
         $taxonRanks = self::get_text_contents('taxonRank');
@@ -26,6 +26,7 @@ class CheckListBankWeb
                 <?php echo "ID: $this->resource_id <br>
                 <input type='hidden' name='resource_id' value='$this->resource_id'>
                 <input type='hidden' name='temp_dir' value='$this->temp_dir'>
+                <input type='hidden' name='temp_folder' value='$this->temp_folder'>
                 "; 
 
                 ?>

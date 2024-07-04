@@ -13,7 +13,7 @@ ini_set('display_errors', true);
 $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 */
 $form = $_POST;
-echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
+// echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
 /*Array(
     [taxonRank] => Array(
             [0] => Kingdom
@@ -44,14 +44,14 @@ echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
 )*/
 $resource_id = @get_val_var('resource_id');
 $temp_dir = @get_val_var('temp_dir');
-// debug("\n[$resource_id][$temp_dir]\n");
+$temp_folder = @get_val_var('temp_folder');
+// echo("\n[$resource_id][$temp_dir][$temp_folder]\n");
 
-echo "<pre>"; echo "\n[$resource_id]\n[$temp_dir]\n";
+echo "<pre>"; echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
 $taxonRank_map          = generate_array_map($form, 'taxonRank');        //print_r($taxonRank_map); //exit;
 $taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');  //print_r($taxonomicStatus_map);
 $locality_map           = generate_array_map($form, 'locality');         //print_r($locality_map); 
 $occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus'); //print_r($occurrenceStatus_map); //exit;
-echo "</pre>";
 
 $source      = $temp_dir . 'Main_Table.txt';
 $destination = $temp_dir . 'Taxa.txt';
@@ -64,7 +64,16 @@ $target_dir = str_replace("$resource_id/", "", $temp_dir);
 $target = $target_dir."ITIS_format_$resource_id.zip";
 // $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
 $output = shell_exec("zip -j $target $source1 $source2");
-echo "\noutput\nCompressed OK [".$target."]\n";
+echo "\n$output\nCompressed OK [".$target."]\n";
+
+if(Functions::is_production()) $domain = "https://editors.eol.org";
+else                           $domain = "http://localhost";
+$rec['url'] = $domain.'/eol_php_code/applications/content_server/resources/Trait_Data_Import/'.$resource_id.'.tar.gz';
+
+$final_zip_url = str_replace(DOC_ROOT, WEB_ROOT, $target);
+echo "<br>[$final_zip_url]";
+// recursive_rmdir($temp_dir); //un-comment in real operation
+echo "</pre>";
 
 
 function get_val_var($v)
