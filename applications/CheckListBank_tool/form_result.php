@@ -16,6 +16,10 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 */
 $time_var = time();
 
+$dir = DOC_ROOT.'/applications/CheckListBank_tool/temp/';
+if(!is_dir($dir)) mkdir($dir);
+
+
 // echo "<pre>"; print_r($_FILES); exit("</pre>");
 $form = $_POST;
 // echo "<pre>"; print_r($form); echo "</pre>"; exit("\neli 200\n");
