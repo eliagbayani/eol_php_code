@@ -72,7 +72,9 @@ $rec['url'] = $domain.'/eol_php_code/applications/content_server/resources/Trait
 
 $final_zip_url = str_replace(DOC_ROOT, WEB_ROOT, $target);
 echo "<br>[$final_zip_url]";
-// recursive_rmdir($temp_dir); //un-comment in real operation
+recursive_rmdir($temp_dir); //un-comment in real operation
+unlink($temp_folder . $resource_id."_Distribution.tsv");
+unlink($temp_folder . $resource_id."_Taxon.tsv");
 echo "</pre>";
 
 
