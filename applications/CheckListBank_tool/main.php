@@ -6,7 +6,12 @@ if($browser == 'Firefox') $browser_comment = "Browse...";
 else                      $browser_comment = "Choose File"; //Safari Chrome etc
 ?>
 <table border="1" cellpadding="15" cellspacing="1" align="center" width="40%">
-    <tr align="center"><td><b>CheckListBank Tool</b></td></tr>
+    <tr align="center"><td><b>CheckListBank Tool</b>
+
+    <br><br><small>
+    This tool converts archives downloaded from <a href='https://www.checklistbank.org/dataset'>CheckListBank</a> and converts it into an ITIS format file.
+    </small>
+    </td></tr>
     <form action="form_result.php" method="post" enctype="multipart/form-data">
     <!---
     <tr><td>
@@ -21,7 +26,8 @@ else                      $browser_comment = "Choose File"; //Safari Chrome etc
             <font size="3">
             <b>Darwin Core Archive</b> <br><br>
             Upload archive file: </font><input type="file" name="file_upload2" id="file_upload2" size="100">
-            <br><br><small>(.tar.gz or .zip)</small>
+            <br><br><small>(.tar.gz or .zip)
+            </small>
     </td></tr>
     <!---
     <tr><td>
