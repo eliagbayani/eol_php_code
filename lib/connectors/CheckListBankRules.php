@@ -25,7 +25,10 @@ class CheckListBankRules extends CheckListBankWeb
         */
         // /* 3rd:
         $this->temp_dir = CONTENT_RESOURCE_LOCAL_PATH . 'CheckListBank_files/'.$this->resource_id."/";
-        if(!is_dir($this->temp_dir)) mkdir($this->temp_dir);
+        if(!is_dir($this->temp_dir)) {
+            mkdir($this->temp_dir);
+            shell_exec("chmod 777 ".$this->temp_dir);
+        }
         // $filenames = array('matchedNames', 'processed', 'unmatchedNames');
         // foreach($filenames as $filename) {
         //     $filename = $this->temp_dir.$filename.".txt";
