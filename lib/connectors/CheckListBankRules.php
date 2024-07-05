@@ -428,7 +428,7 @@ class CheckListBankRules extends CheckListBankWeb
         $i = 0;
         foreach(new FileIterator($filename) as $line_number => $line) { $orig_line = $line;
             if(!$line) continue;
-            $i++; if(($i % 100) == 0) echo "\n".number_format($i)." ";
+            $i++; if(($i % 10000) == 0) echo "\n".number_format($i)." ";
             // force assign
             // $line = "Clemens B. Letters received from Dr. Brackenridge Clemens. 9. Letter of October 29th, 1860. In: Stainton HT (Ed) The Tineina of North America by (the late) Dr Brackenridge Clemens (being a collected edition of his writing on that group of insects). John van Voorst, London, XV, 282. (1872).";
             // $line = "Davis DR, Wilkinson C. Nepticulidae. In: Hodges RW, Dominick T, Davis DR, Ferguson DC, Franclemont JG, Munroe EG, Powell JA (Eds) Check list of the Lepidoptera of America north of Mexico : including Greenland. Classey, London, 2-3. (1983).";
