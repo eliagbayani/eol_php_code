@@ -90,7 +90,6 @@ class CheckListBankRules extends CheckListBankWeb
         $this->create_web_form();
         // print_r($this->debug);
 
-        // self::summary_report();
         // self::prepare_download_link();
         // recursive_rmdir($this->temp_dir);
         exit;
@@ -317,36 +316,6 @@ class CheckListBankRules extends CheckListBankWeb
         $out = shell_exec($cmd);
         echo "\n$out\n";
         return;
-    }
-    private function write_summary_report()
-    {
-        $filename = $this->temp_dir."summary_report.txt";
-        $WRITE = Functions::file_open($filename, "w");
-        fwrite($WRITE, "Number of taxa: ".$r['Number of taxa'] . "\n");
-        fwrite($WRITE, "--------------------------------------------------"."\n");
-        $spaces = " _____ ";
-        fwrite($WRITE, "List of fields and their DwC-A mappings: "."\n");
-        foreach($r['List of fields'] as $field) {
-            $field2 = str_pad($field, 30, " ", STR_PAD_LEFT);
-            if($val = @$this->taxon_fields[$field]) fwrite($WRITE, "$spaces $field2"." -> ".$val."\n");
-            else                                    fwrite($WRITE, "$spaces $field2"." -> "."unmapped"."\n");
-        }
-        fwrite($WRITE, "--------------------------------------------------"."\n");
-        fwrite($WRITE, "Taxonomic status: "."\n");
-        fwrite($WRITE, "--------------------------------------------------"."\n");
-        fwrite($WRITE, "--------------------------------------------------"."\n");
-        fwrite($WRITE, "Number of unmatched names: ".@$r['totals']['unmatchedNames']."\n");
-        fwrite($WRITE, "--------------------------------------------------"."\n");
-        fwrite($WRITE, "-end of report-"."\n");
-        fclose($WRITE);
-    }
-    private function summary_report()
-    {   
-        $this->summary_report['Number of taxa 2'] = self::total_rows_on_file($this->summary_report['info']['user file']);
-        $this->summary_report['No. of canonical duplicates'] = self::get_canonical_duplicates();
-        $this->summary_report['Number of names with multiple matches'] = self::get_names_with_multiple_matches(); // user file taxon matches with DH taxon        
-        if($GLOBALS['ENV_DEBUG']) print_r($this->summary_report); //exit("\nditox 20\n");
-        self::write_summary_report();
     }
     private function total_rows_on_file($file)
     {
