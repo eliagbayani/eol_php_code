@@ -181,6 +181,7 @@ function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus
         }
         // ----- write -----
         // echo "<pre>"; print_r($save); echo "</pre>"; //exit;
+        unset($save['pre_name_usage']);
         write_output_rec_2txt($save, $destination);
     } //end foreach()
 }
