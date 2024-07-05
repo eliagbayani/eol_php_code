@@ -50,7 +50,8 @@ class CheckListBankRules extends CheckListBankWeb
 
         if(Functions::is_production()) {
             // shell_exec("su -");
-            // $out = shell_exec("/bin/scl enable rh-ruby25 /usr/bin/bash");
+            // $out = shell_exec("source scl_source enable rh-ruby25");
+
             // // $out = shell_exec("/bin/scl enable rh-ruby25 'ruby -v'");
             // echo "\nTerminal: [$out]\n";
 
@@ -61,9 +62,7 @@ class CheckListBankRules extends CheckListBankWeb
             // echo "\nTerminal: [$out]\n";
 
             $out = shell_exec("ruby -v");
-            echo "\nTerminal: [$out]\n";
-
-
+            echo "\nTerminal: [".trim($out)."]\n";
         }
         // */
     }
@@ -432,7 +431,7 @@ class CheckListBankRules extends CheckListBankWeb
         $filename = $this->temp_dir."namePublishedIn.txt"; // echo "\nnamePublishedIn.txt: [$filename]\n";
         // $filename = DOC_ROOT. "update_resources/connectors/helpers/anystyle/For_Testing.txt"; //used for testing only
         $i = 0;
-        foreach(new FileIterator($filename) as $line_number => $line) { $orig_line = $line;
+        foreach(new FileIterator($filename) as $line_number => $line) { $orig_line = trim($line);
             if(!$line) continue;
             $i++; if(($i % 10000) == 0) echo "\n".number_format($i)." ";
             // force assign
