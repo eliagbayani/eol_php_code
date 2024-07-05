@@ -95,11 +95,12 @@ class CheckListBankRules extends CheckListBankWeb
     }
     function parse_TSV_file($txtfile, $task)
     {   
-        $modulo = self::get_modulo($txtfile);
+        // $modulo = self::get_modulo($txtfile);
+        $modulo = 10000;
         $i = 0; debug("\nProcessing: [$txtfile]\n"); //$syn = 0; for stats only        
         foreach(new FileIterator($txtfile) as $line_number => $line) {
             if(!$line) continue;
-            $i++; if(($i % $modulo) == 0) echo "\n".number_format($i)." ";
+            $i++; //if(($i % $modulo) == 0) echo "\n".number_format($i)." ";
             $row = explode("\t", $line); // print_r($row);
             if($i == 1) {
                 $fields = $row;

@@ -2,16 +2,16 @@
 namespace php_active_record;
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 $timestart = time_elapsed();
-// /* normal operation
+/* normal operation
 ini_set('error_reporting', false);
 ini_set('display_errors', false);
 $GLOBALS['ENV_DEBUG'] = false; //set to false in production
-// */
-/* during development
+*/
+// /* during development
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 $GLOBALS['ENV_DEBUG'] = true; //set to true during development
-*/
+// */
 $form = $_POST;
 // echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
 /*Array(
@@ -106,7 +106,7 @@ function generate_array_map($form, $table)
     $final = array();
     foreach($form[$table] as $whole) {
         $parts = explode("|", $whole);
-        $final[$parts[0]] = $parts[1];
+        $final[$parts[0]] = @$parts[1];
     }
     return $final;
 }
@@ -116,7 +116,7 @@ function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus
     $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
     foreach(new FileIterator($txtfile) as $line_number => $line) {
         if(!$line) continue;
-        $i++; if(($i % 1000) == 0) echo "\n".number_format($i)." ";
+        $i++; //if(($i % 1000) == 0) echo "\n".number_format($i)." ";
         $row = explode("\t", $line); // print_r($row);
         if($i == 1) {
             $fields = $row;
