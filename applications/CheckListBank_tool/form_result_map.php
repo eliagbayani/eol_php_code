@@ -45,6 +45,11 @@ $form = $_POST;
 $resource_id = @get_val_var('resource_id');
 $temp_dir = @get_val_var('temp_dir');
 $temp_folder = @get_val_var('temp_folder');
+$accepted_or_valid = @get_val_var('accepted_or_valid');
+
+if($accepted_or_valid == 'accepted') $var_unaccepted = 'unaccepted';
+if($accepted_or_valid == 'valid') $var_unaccepted = 'invalid';
+
 // echo("\n[$resource_id][$temp_dir][$temp_folder]\n");
 
 echo "<pre>"; 
@@ -56,7 +61,7 @@ $occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus'); //print
 
 $source      = $temp_dir . 'Main_Table.txt';
 $destination = $temp_dir . 'Taxa.txt';
-parse_TSV_file($source, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map);
+parse_TSV_file($source, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map, $var_unaccepted);
 
 echo "\nCompressing...\n";
 $source1 = $temp_dir.'Taxa.txt';
@@ -110,7 +115,7 @@ function generate_array_map($form, $table)
     }
     return $final;
 }
-function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map)
+function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map, $var_unaccepted)
 {
     $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa.txt\n");
     $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
@@ -159,7 +164,7 @@ function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus
             $save['unacceptability_reason'] = '';
         }
         elseif($val = $save['pre_name_usage']) {
-            $save['name_usage'] = 'unaccepted';
+            $save['name_usage'] = $var_unaccepted; //'unaccepted' or 'invalid'
             $save['unacceptability_reason'] = $val;
         }
         // ----- 2nd ----- name_usage | unacceptability_reason

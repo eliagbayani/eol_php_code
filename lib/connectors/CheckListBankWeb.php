@@ -10,8 +10,14 @@ class CheckListBankWeb
         // echo "\ndito na siya...\n";
         $taxonRanks = self::get_text_contents('taxonRank');
         $taxonomicStatuses = self::get_text_contents('taxonomicStatus');
-        if(in_array('accepted', $taxonomicStatuses)) $taxonomicStatus_map = $this->map['taxonomicStatus']['accepted_not_accepted'];
-        elseif(in_array('valid', $taxonomicStatuses)) $taxonomicStatus_map = $this->map['taxonomicStatus']['valid_invalid'];
+        if(in_array('accepted', $taxonomicStatuses)) {
+            $taxonomicStatus_map = $this->map['taxonomicStatus']['accepted_not_accepted'];
+            $accepted_or_valid = 'accepted';
+        }
+        elseif(in_array('valid', $taxonomicStatuses)) {
+            $taxonomicStatus_map = $this->map['taxonomicStatus']['valid_invalid'];
+            $accepted_or_valid = 'valid';
+        }
         else echo "\nWarning: No mapping for taxonomicStatus.\n";
         
         $localities = self::get_text_contents('locality');
@@ -27,6 +33,7 @@ class CheckListBankWeb
                 <input type='hidden' name='resource_id' value='$this->resource_id'>
                 <input type='hidden' name='temp_dir' value='$this->temp_dir'>
                 <input type='hidden' name='temp_folder' value='$this->temp_folder'>
+                <input type='hidden' name='accepted_or_valid' value='$accepted_or_valid'>
                 "; 
 
                 ?>
