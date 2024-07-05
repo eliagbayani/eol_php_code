@@ -462,7 +462,7 @@ class CheckListBankRules extends CheckListBankWeb
             // print_r($obj); //good debug
             */
 
-            $obj = (object) array('full_reference' => $line); //temporary sol'n
+            $obj = (object) array('full_reference' => $orig_line); //temporary sol'n
             
             $reks = self::convert_anystyle_obj_2save($obj);
             
