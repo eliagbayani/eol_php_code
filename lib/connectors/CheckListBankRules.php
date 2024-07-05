@@ -245,7 +245,8 @@ class CheckListBankRules extends CheckListBankWeb
                 
                 $s['geographic_value'] = $locality;
                 $s['origin'] = $occurrenceStatus;
-                $s['referenceID'] = md5($rec['dwc:namePublishedIn']);
+                if($val = $rec['dwc:namePublishedIn']) $s['referenceID'] = md5($val);
+                else                                   $s['referenceID'] = '';
                 self::write_output_rec_2txt($s, "Main_Table");
 
             }
@@ -431,6 +432,11 @@ class CheckListBankRules extends CheckListBankWeb
             */
 
             $obj = (object) array('full_reference' => $orig_line); //temporary sol'n
+
+            /* dev only --- used in searching for a reference, happened to be blank namepublishedIN
+            if(isset($this->debug['namePublishedIn'][$orig_line])) {}
+            else echo "\nhuli ref ka...[$orig_line]\n";
+            */
             
             $reks = self::convert_anystyle_obj_2save($obj);
             
