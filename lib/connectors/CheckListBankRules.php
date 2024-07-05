@@ -450,14 +450,14 @@ class CheckListBankRules extends CheckListBankWeb
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
             */
 
-            /* main operation
+            // /* main operation
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
             // $obj->full_reference = str_replace("there_is_a_cat", ".", $line); //maybe sufficent already, but better to use $orig_line instead.
             $obj->full_reference = $orig_line;
             // print_r($obj); //good debug
-            */
+            // */
 
-            $obj = (object) array('full_reference' => $line); //temporary sol'n
+            // $obj = (object) array('full_reference' => $line); //temporary sol'n
             
             $reks = self::convert_anystyle_obj_2save($obj);
             
