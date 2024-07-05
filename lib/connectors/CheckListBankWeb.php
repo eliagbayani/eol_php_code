@@ -40,7 +40,7 @@ class CheckListBankWeb
                         if(!$r) continue;
                         echo "<td>$r</td>";
                         echo "<td>
-                            <select name='taxonRank[$i]' id='cars'>";
+                            <select name='taxonRank[$i]' id='tR'>";
                             foreach($this->map['taxonRank'] as $tr) {
                                 if($r == $tr) $selected = "selected";
                                 else          $selected = "";
@@ -63,8 +63,9 @@ class CheckListBankWeb
                         if(!$r) continue;
                         echo "<td>$r</td>";
                         echo "<td>
-                            <select name='taxonomicStatus[$i]' id='cars'>";
-                            if(in_array($r, array('accepted', 'not accepted', 'valid', 'invalid'))) {
+                            <select required name='taxonomicStatus[$i]' id='tS'>";?>
+                            <option value=""></option><?php
+                            if(in_array($r, array('accepted', 'not accepted', 'unaccepted', 'valid', 'invalid'))) {
                                 foreach($taxonomicStatus_map as $tr) {
                                     if($r == $tr) $selected = "selected";
                                     else          $selected = "";
@@ -95,7 +96,7 @@ class CheckListBankWeb
                         if(!$r) continue;
                         echo "<td>$r</td>";
                         echo "<td>
-                            <select name='locality[$i]' id='cars'>";
+                            <select name='locality[$i]' id='l'>";
                             foreach($this->map['locality'] as $tr) {
                                 if($r == $tr) $selected = "selected";
                                 else          $selected = "";
@@ -118,7 +119,7 @@ class CheckListBankWeb
                         if(!$r) continue;
                         echo "<td>$r</td>";
                         echo "<td>
-                            <select name='occurrenceStatus[$i]' id='cars'>";
+                            <select name='occurrenceStatus[$i]' id='oS'>";
                             foreach($this->map['occurrenceStatus'] as $tr) {
                                 if($r == $tr) $selected = "selected";
                                 else          $selected = "";
