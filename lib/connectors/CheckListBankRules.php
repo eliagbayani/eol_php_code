@@ -48,18 +48,23 @@ class CheckListBankRules extends CheckListBankWeb
         $this->input_file = $this->temp_dir . "input_" . $this->resource_id . ".txt";
         $this->other_funcs = new AnystyleAPI(); //func is: parse_citation_using_anystyle_cli(citation, input_file)
 
-        // if(Functions::is_production()) {
-        //     shell_exec("su -");
-        //     $out = shell_exec("/bin/scl enable rh-ruby25 /usr/bin/bash");
-        //     // $out = shell_exec("/bin/scl enable rh-ruby25 'ruby -v'");
-        //     echo "\nTerminal: [$out]\n";
+        if(Functions::is_production()) {
+            // shell_exec("su -");
+            // $out = shell_exec("/bin/scl enable rh-ruby25 /usr/bin/bash");
+            // // $out = shell_exec("/bin/scl enable rh-ruby25 'ruby -v'");
+            // echo "\nTerminal: [$out]\n";
 
-        //     $out = shell_exec("gem install anystyle-cli");
-        //     echo "\nTerminal: [$out]\n";
+            // $out = shell_exec("gem install anystyle-cli");
+            // echo "\nTerminal: [$out]\n";
 
-        //     $out = shell_exec("which anystyle");
-        //     echo "\nTerminal: [$out]\n";
-        // }
+            // $out = shell_exec("which anystyle");
+            // echo "\nTerminal: [$out]\n";
+
+            $out = shell_exec("ruby -v");
+            echo "\nTerminal: [$out]\n";
+
+
+        }
         // */
     }
     function start_CheckListBank_process()
@@ -450,14 +455,14 @@ class CheckListBankRules extends CheckListBankWeb
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
             */
 
-            // /* main operation
+            /* main operation
             $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
             // $obj->full_reference = str_replace("there_is_a_cat", ".", $line); //maybe sufficent already, but better to use $orig_line instead.
             $obj->full_reference = $orig_line;
             // print_r($obj); //good debug
-            // */
+            */
 
-            // $obj = (object) array('full_reference' => $line); //temporary sol'n
+            $obj = (object) array('full_reference' => $line); //temporary sol'n
             
             $reks = self::convert_anystyle_obj_2save($obj);
             
