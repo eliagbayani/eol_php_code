@@ -10,11 +10,14 @@ class CheckListBankWeb
         // echo "\ndito na siya...\n";
         $taxonRanks = self::get_text_contents('taxonRank');
         $taxonomicStatuses = self::get_text_contents('taxonomicStatus');
-        if(in_array('accepted', $taxonomicStatuses)) {
+        if(in_array('accepted', $taxonomicStatuses) || 
+           in_array('unaccepted', $taxonomicStatuses) ||
+           in_array('not accepted', $taxonomicStatuses)) {
             $taxonomicStatus_map = $this->map['taxonomicStatus']['accepted_not_accepted'];
             $accepted_or_valid = 'accepted';
         }
-        elseif(in_array('valid', $taxonomicStatuses)) {
+        elseif(in_array('valid', $taxonomicStatuses) || 
+               in_array('invalid', $taxonomicStatuses)) {
             $taxonomicStatus_map = $this->map['taxonomicStatus']['valid_invalid'];
             $accepted_or_valid = 'valid';
         }
