@@ -277,7 +277,6 @@ class DwCA_Aggregator_Functions
         else return false;
         // */
 
-
         @$this->debug[$this->resource_id]['taxonomicStatus'][$rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus']]++;
 
         /*Array(
@@ -315,7 +314,6 @@ class DwCA_Aggregator_Functions
         $rec['http://rs.gbif.org/terms/1.0/canonicalName'] = "griseifrons";
         */
 
-
         // /* new: by Eli 24Jun2024
         if($val = @$rec['http://rs.gbif.org/terms/1.0/canonicalName']) {
             $rec['http://rs.tdwg.org/dwc/terms/scientificName'] = $val;
@@ -351,10 +349,8 @@ class DwCA_Aggregator_Functions
         } //ctype_upper
 
 
-
         $rec = self::malformed_try_to_rescue($rec);
         $scientificName = $rec["http://rs.tdwg.org/dwc/terms/scientificName"];
-
 
         // print_r($rec); //exit("\n[$sciname]\n");
         // if("Insecta" == @$rec['http://gbif.org/dwc/terms/1.0/canonicalName']) exit("\nelix\n"); //debug only
