@@ -34,7 +34,7 @@ class TreatmentBankAPI
         $this->debug = array();
         $this->download_TB_options = array(
             'resource_id'        => "TreatmentBank",
-            'expire_seconds'     => false, //expires set to false for now
+            'expire_seconds'     => 60*60*24*30, //false, //expires set to false for now
             'download_wait_time' => 2000000, 'timeout' => 60*5, 'download_attempts' => 1, 'delay_in_minutes' => 1, 'cache' => 1);
         $this->service['Plazi Treatments'] = "http://tb.plazi.org/GgServer/xml.rss.xml";
         $this->service['DwCA zip download'] = "tb.plazi.org/GgServer/dwca/masterDocId.zip";
