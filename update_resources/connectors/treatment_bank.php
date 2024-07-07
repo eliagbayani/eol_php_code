@@ -165,7 +165,7 @@ for($loop = 1; $loop <= $loops; $loop++) { //echo "\n[$loop of $loops]";
 exit("\n-end test-\n");
 */
 
-// /* test only
+/* test only
 $orig_str = "Beirne BP. The male genitalia of the British Stigmellidae (Nepticulidae) (Lep.). Proceedings of the Royal Irish Academy Section B 50: 191-218. doi: http://www.jstor.org/pss/20490833. (1945).";
 $str = $orig_str;
 if(preg_match_all("/\((.*?)\)/ims", $str, $arr)) {
@@ -183,7 +183,7 @@ if(preg_match_all("/\((.*?)\)/ims", $str, $arr)) {
     echo "\n new: [$str]\n"; //return $str
 }
 exit("\n-end test-\n");
-// */
+*/
 
 /* test only
 $matches = array();
