@@ -938,7 +938,12 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 
                 // /* un-comment to allow just 4 terms. Comment to allow all terms under geonames with 'ENVO' uri. It was in the past totally disallowing terms in geonames that have ENVO uri.
                 if(stripos($rek['id'], "ENVO_") !== false) { //string is found
-                    if(in_array($rek['lbl'], array('forest', 'woodland', 'grassland', 'savanna'))) {} //accepts these terms, and maybe more once allowed by Jen.
+                    if(in_array($rek['lbl'], array('forest', 'woodland', 'grassland', 'savanna'))) { //accepts these terms, and maybe more once allowed by Jen.
+                        // /* NEW Jul 9: but they have to be in lower case not "Forest" but just "forest"
+                        if(strpos($rek['context'], "<b>$rek[lbl]</b>") !== false) {}
+                        else continue;
+                        // */
+                    }
                     else continue;
                 }
                 // */
