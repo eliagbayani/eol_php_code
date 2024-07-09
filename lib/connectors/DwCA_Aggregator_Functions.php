@@ -129,7 +129,10 @@ class DwCA_Aggregator_Functions
     {   // print_r($rec); print_r($row_type); print_r($meta); exit("\n[$zip_file]\n");
         $taxon_id = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
         if($row_type == 'http://eol.org/schema/media/document') { //not http://rs.gbif.org/terms/1.0/description
-            if(!$rec['http://ns.adobe.com/xap/1.0/rights/UsageTerms']) return false; //continue; //exclude with blank license
+            if(!$rec['http://ns.adobe.com/xap/1.0/rights/UsageTerms']) {
+                // print_r($rec); echo "-no license"; //debug only
+                return false; //continue; //exclude with blank license
+            }
             // build-up an info list
             $this->info_taxonID_mediaRec[$taxon_id] = array('UsageTerms'    => $rec['http://ns.adobe.com/xap/1.0/rights/UsageTerms'],
                                                             'rights'        => $rec['http://purl.org/dc/terms/rights'],
@@ -241,7 +244,7 @@ class DwCA_Aggregator_Functions
     function process_table_TreatmentBank_taxon($rec)
     {   
         $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
-        $taxonRank = $rec['http://rs.tdwg.org/dwc/terms/taxonRank'];
+        $taxonRank = strtolower($rec['http://rs.tdwg.org/dwc/terms/taxonRank']);
         @$this->debug[$this->resource_id]['taxonRank'][$taxonRank]++;
 
         // /* Higher taxa
