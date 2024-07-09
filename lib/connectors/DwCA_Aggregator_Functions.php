@@ -251,7 +251,7 @@ class DwCA_Aggregator_Functions
         // Please remove all records for taxa that are NOT of rank species|variety|subspecies|form. There are over 90,000 of these records. 
         // Most of them are mismapped, i.e., the trait record is attached to a genus or family or worse, 
         // but the matched value is actually providing information for a species that is not picked up by the parser. Examples:
-        if(!in_array($taxonRank, array('species', 'variety', 'subspecies', 'form'))) return false;
+        if(!in_array($taxonRank, array('species', 'variety', 'subspecies', 'form'))) { @$this->debug['invalid taxon']['invalid rank']++; return false; }
         // */
     
         // ancestry fields must not have separators: https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=66656&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66656
@@ -270,8 +270,8 @@ class DwCA_Aggregator_Functions
 
         // /* new: Nov 21, 2023:
         if($scientificName = @$rec["http://rs.tdwg.org/dwc/terms/scientificName"]) {
-            if(!Functions::valid_sciname_for_traits($scientificName)) return false;
-            if(in_array($rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'], array('synonym'))) return false;
+            if(!Functions::valid_sciname_for_traits($scientificName)) { @$this->debug['invalid taxon']['invalid_sciname_for_traits']++; return false; }
+            if(in_array($rec['http://rs.tdwg.org/dwc/terms/taxonomicStatus'], array('synonym'))) { @$this->debug['invalid taxon']['a synonym']++; return false; }
 
             // if($taxonID == 'A82B87F6FFD9FFCD77463DE9F7B0FD18.taxon') { //debug only
             //     print_r($rec); exit("\nstop 3\n");
