@@ -156,13 +156,21 @@ class Functions_Pensoft
     }
     function process_table_TreatmentBank_ENV($rec)
     {
-        $description_type = $rec['http://rs.tdwg.org/ac/terms/additionalInformation'];
+        $pipe_delimited = $rec['http://rs.tdwg.org/ac/terms/additionalInformation'];
+        $arr = explode("|", $pipe_delimited);
+        $description_type = $arr[0];
+        $zip_file = $arr[1];
+
         $title            = $rec['http://purl.org/dc/terms/title'];
         // $this->ontologies = "envo,eol-geonames"; //orig
-        if($title == 'Title for eol-geonames')                                      $this->ontologies = "eol-geonames";
+        if($title == 'Title for eol-geonames')                                      {$this->ontologies = "eol-geonames"; @$this->debug['Title for eol-geonames']++;}
         elseif(in_array($description_type, array("distribution", "conservation")))  $this->ontologies = "envo,eol-geonames";
         elseif(in_array($description_type, array("description", "biology_ecology", "diagnosis", "materials_examined"))) $this->ontologies = "envo"; //the rest
-        else return false;
+        else { 
+            // echo "R1 [$title] [$description_type]"; 
+            $this->debug['unused data type'][$description_type] = ''; 
+            return false;
+        }
 
         /* per Jen: https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=67753&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67753
                     https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=67763&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67763
