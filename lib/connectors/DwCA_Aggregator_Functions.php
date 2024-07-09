@@ -163,8 +163,10 @@ class DwCA_Aggregator_Functions
 
             $json = json_encode($rec);
             $rec['http://purl.org/dc/terms/identifier'] = md5($json);
+
             $addInfo = array($rec['http://purl.org/dc/terms/type'], $zip_file);
             $rec['http://rs.tdwg.org/ac/terms/additionalInformation'] = implode("|", $addInfo);
+            
             $rec['http://purl.org/dc/terms/type'] = "http://purl.org/dc/dcmitype/Text";
             $rec['http://purl.org/dc/terms/format'] = "text/html";
             $rec['http://iptc.org/std/Iptc4xmpExt/1.0/xmlns/CVterm'] = "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Uses";
