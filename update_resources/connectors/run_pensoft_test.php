@@ -70,17 +70,20 @@ $descs[] = "I work in the Marine Institue of Technology. This is a marine specie
 $descs[] = "I work in arete ria belong to the organic material inside moor around harbor";
 $descs[] = "(Fenďa and Lukáš 2014). I visited the United States National Museum last year.";
 $descs[] = "I like to live in a plateau."; //test for WoRMS
+$descs[] = "Description. See Crosnier and Forest (1966) for description and figures of eastern Atlantic specimens."; 
+$descs[] = "Lives in the forest of Brazil"; 
 
 /*
 $descs = array();
-// $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-$descs[] = "(Fenďa and Lukáš 2014).";
+$descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
 */
 
 $final = array();
 $IDs = array('24', '617_ENV', 'TreatmentBank_ENV', '26_ENV'); //normal operation --- 617_ENV -> Wikipedia EN //24 -> AntWeb resource ID
 // $IDs = array('24');
 // $IDs = array('TreatmentBank_ENV'); //or TreatmentBank
+// $IDs = array('617_ENV'); //or Wikipedia EN
+
 foreach($IDs as $resource_id) {
     $param['resource_id'] = $resource_id;
     require_library('connectors/Functions_Pensoft');
@@ -125,6 +128,7 @@ foreach($IDs as $resource_id) {
             if($i == 23) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 24) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 25) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
+            if($i == 27) { if($ret == "Eastern Atlantic-9237")                      echo " -OK-"; else {echo " -ERROR-"; $errors++;} } //exclude 'Forest'
         }
         if(in_array($resource_id, array('TreatmentBank_ENV', '617_ENV'))) {
             if($i == 1) { if($ret == "woodland-ENVO_01000175|orchard-ENVO_00000115|dune-ENVO_00000170")    echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
@@ -149,18 +153,24 @@ foreach($IDs as $resource_id) {
             if($i == 23) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 24) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 25) { if($ret == "")                                           echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
+
         }
         if($resource_id == '617_ENV') {
             if($i == 18) { if($ret == "")                                   echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 19) { if($ret == "india-1269750|valley-ENVO_00000100") echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 20) { if($ret == "valley-ENVO_00000100")               echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
+            if($i == 27) { if($ret == "")                                   echo " -OK-"; else {echo " -ERROR-"; $errors++;} } //exclude 'Forest'
         }
         if($resource_id == 'TreatmentBank_ENV') {
             if($i == 18) { if($ret == "Sri Lanka-1227603")                  echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 19) { if($ret == "india-1269750")                      echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
             if($i == 20) { if($ret == "")                                   echo " -OK-"; else {echo " -ERROR-"; $errors++;} }
+            if($i == 27) { if($ret == "Eastern Atlantic-9237")              echo " -OK-"; else {echo " -ERROR-"; $errors++;} } //exclude 'Forest'
+
         }
         if($i == 26) { if($ret == "") echo " -OK-"; else {echo " -ERROR-"; $errors++;} } //exclude 'plateau' across the board
+        if($i == 28) { if($ret == "forest-ENVO_01000174|brazil-3469034")    echo " -OK-"; else {echo " -ERROR-"; $errors++;} } //include 'forest'
+
     }
     echo "\nerrors: [$resource_id][$errors errors]";
     $final[] =     "[$resource_id][$errors errors]";
