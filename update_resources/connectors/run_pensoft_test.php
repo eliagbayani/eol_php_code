@@ -92,6 +92,9 @@ $descs[] = "Zhang, Stadler, Klopfstein, uncultivated heath, Ronquist 2016."; //[
 $descs[] = "This is likely to be a synonym of either B. suturalis or B. lineatus, both of which are found in south India";
 $descs[] = "This is likely to be a synonym of either B Suturalis or B Lineatus, both of which are found in south India";
 
+$descs[] = "Type: materials_examined	Holotype. AMS I. 19426 - 001, 414 mm, female, off Malabar "; //[malabar-Malabar]
+$descs[] = "It differs significantly from all but A. malabar in having more total vertebrae (160 vs. 131 – 145)"; //[]
+
 
 /*
 $descs = array();
@@ -208,6 +211,9 @@ foreach($IDs as $resource_id) {
         if($i == 31) {$s = "heath-ENVO_00000107";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 32) {$s = "india-1269750";                         if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 33) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
+        if($i == 34) {$s = "malabar-Malabar";                       if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 35) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";
