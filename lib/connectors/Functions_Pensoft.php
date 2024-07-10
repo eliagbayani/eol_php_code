@@ -257,14 +257,14 @@ class Functions_Pensoft
 
             // if word length is 1 char and uppercase, AND next word is uppercase e.g. "T Reyes" but not "G morhua"
             if(strlen($part) == 1 && ctype_upper($part)) {
-                $next_word = $parts[$i+1];
+                $next_word = @$parts[$i+1];
                 $first_char_next_word = substr($next_word, 0, 1);
                 if(ctype_upper($first_char_next_word)) return false;
             }
 
             // if word length is 2 and 1st char is upper and 2nd char is period (.) AND next word is uppercase e.g. "T. Reyes" but not "G. morhua"
             if(strlen($part) == 2 && ctype_upper($first_char) && in_array($second_char, array("."))) {
-                $next_word = $parts[$i+1];
+                $next_word = @$parts[$i+1];
                 $first_char_next_word = substr($next_word, 0, 1);
                 if(ctype_upper($first_char_next_word)) return false;
             }
