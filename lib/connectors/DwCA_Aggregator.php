@@ -144,6 +144,11 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
         // print_r($index); //exit; //good debug to see the all-lower case URIs
         $index = $this->let_media_document_go_first_over_description($index); // print_r($index); exit;
         foreach($index as $row_type) {
+
+            // /* NEW: remove media rowtype: Jul 8, 2024
+            if($row_type == strtolower("http://eol.org/schema/media/Document")) continue;
+            // */
+
             /* ----------customized start------------ */
             if($this->resource_id == 'wikipedia_combined_languages') break; //all extensions will be processed elsewhere.
             if($this->resource_id == 'wikipedia_combined_languages_batch2') break; //all extensions will be processed elsewhere.
