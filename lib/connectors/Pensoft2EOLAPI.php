@@ -914,6 +914,8 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             // if($rek['is_synonym'] == "1") continue;
             // */
 
+            
+
             // /* should not get 'fen' --- [context] => Almost all of these are incorrect e.g. 1 ‘‘<b>fen</b>. ov.’’ fenestra ovalis
             //    but should get 'philippines'       => in the valley of the dead found in <b>Philippines</b>.
             $needle = "<b>".$rek['lbl']."</b>.";
@@ -965,7 +967,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 $parts_of_lit_ref = array(' vol.', ' p.', ' pp.', ' fig.', ' figs.', 'legit ', 'coll. ', 'ed. ', 'eds. '); 
                 //, 'legit', 'coll.' from Katja
                 //, 'ed. ', 'eds. ' from Eli 
-
                 $cont = true;
                 foreach($parts_of_lit_ref as $part) {
                     if(stripos($rek['context'], $part) !== false) $cont = false; //string is found
