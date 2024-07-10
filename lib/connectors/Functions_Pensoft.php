@@ -6,7 +6,8 @@ class Functions_Pensoft
     function __construct() {}
     function initialize_new_patterns()
     {   // exit("\n[$this->new_patterns_4textmined_resources]\nelix1\n");
-        $str = file_get_contents($this->new_patterns_4textmined_resources);
+        // $str = file_get_contents($this->new_patterns_4textmined_resources); //too long
+        $str = Functions::lookup_with_cache($this->new_patterns_4textmined_resources, $this->download_options);
         $arr = explode("\n", $str);
         $arr = array_map('trim', $arr);
         // $arr = array_filter($arr); //remove null arrays
@@ -211,7 +212,7 @@ class Functions_Pensoft
     }
     function load_github_dump($url) //another func parse_github_dump()
     {
-        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*1)); //1 hr cache expires 60*60*1
+        $local = Functions::save_remote_file_to_local($url, array('cache' => 1, 'expire_seconds' => 60*60*24)); //1 day expires
         $arr = explode("\n", file_get_contents($local));
         $arr = array_map('trim', $arr);
         $arr = array_filter($arr); //remove null arrays
@@ -244,6 +245,34 @@ class Functions_Pensoft
         $filename = pathinfo($url, PATHINFO_FILENAME);
         echo "\n $filename: [".count($final)."] dump count\n";
         if($what == "key_value") return $final;        
+    }
+
+    function is_context_valid($context)
+    {
+        $parts = explode(" ", $context); //print_r($parts); exit;
+        $i = -1;
+        foreach($parts as $part) { $i++;
+            $first_char = substr($part, 0, 1);
+            $second_char = substr($part, 1, 1);
+
+            // if word length is 1 char and uppercase, AND next word is uppercase e.g. "T Reyes" but not "G morhua"
+            if(strlen($part) == 1 && ctype_upper($part)) {
+                $next_word = $parts[$i+1];
+                $first_char_next_word = substr($next_word, 0, 1);
+                if(ctype_upper($first_char_next_word)) return false;
+            }
+
+            // if word length is 2 and 1st char is upper and 2nd char is period (.) AND next word is uppercase e.g. "T. Reyes" but not "G. morhua"
+            if(strlen($part) == 2 && ctype_upper($first_char) && in_array($second_char, array("."))) {
+                $next_word = $parts[$i+1];
+                $first_char_next_word = substr($next_word, 0, 1);
+                if(ctype_upper($first_char_next_word)) return false;
+            }
+            
+            // if word lenght is 2 and both upper e.g. "TA"
+            // if(strlen($part) == 2 && ctype_upper($part)) return false;
+        }
+        return true;
     }
 }
 ?>
