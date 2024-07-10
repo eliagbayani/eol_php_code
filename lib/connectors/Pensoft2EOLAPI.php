@@ -766,6 +766,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
     */
     public function retrieve_annotation($id, $desc)
     {
+        // /* If has the word 'Acknowledgements', exclude
+        if(stripos(substr($desc, 0, 100), "Acknowledgement") !== false) return; //string is found
+        // */
+        
         // /* new: massage description for TreatmentBank (Nov 27, 2023)
         if($this->param['resource_id'] == "TreatmentBank_ENV") $desc = $this->format_TreatmentBank_desc($desc);
         // return; //during dev only
@@ -813,6 +817,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             $str = self::format_str($str);
             if($this->includeOntologiesYN)  $id = md5($str.$this->ontologies); //for now only for those SI PDFs/epubs
             else                            $id = md5($str); //orig, the rest goes here...
+            // echo "\nbatch feed for pensoft: [$str]\n"; //good debug
             if($str) self::retrieve_partial($id, $str, $loop);
             // */
             
@@ -907,6 +912,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 )
         */
         foreach($arr as $rek) {
+            // print_r($rek); //good debug NEW
             // /* general for all:
             
             // /* new: Nov 22, 2023 - Eli's initiative -- never use this
@@ -916,6 +922,14 @@ class Pensoft2EOLAPI extends Functions_Pensoft
 
             // /* NEW: Jul 10, 2024 - Eli's initiative --- never use line with " A. " --- abbreviation of names
             if(!$this->is_context_valid($rek['context'])) continue;
+            // */
+
+            // /* words accepted if uppercase but excluded if lowercase
+            $labels = array('malabar'); //A. malabar - exclude | Off to Malabar - include
+            $lbl = $rek['lbl'];
+            if(in_array($lbl, $labels)) {
+                if(strpos($rek['context'], "<b>$lbl</b>") !== false) continue;
+            }
             // */
 
             // /* should not get 'fen' --- [context] => Almost all of these are incorrect e.g. 1 ‘‘<b>fen</b>. ov.’’ fenestra ovalis
