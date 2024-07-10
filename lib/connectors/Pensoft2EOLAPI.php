@@ -962,7 +962,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 
                 // /* exclude if context has certain strings that denote a literature reference - FOR ALL RESOURCES
                 // vol. 8, p. 67. 1904.Tylobolus uncigerus, Brolemann, Ann. Soc. Ent. <b>France</b>, vol. 83, pp. 9, 22, fig.
-                $parts_of_lit_ref = array(' vol.', ' p.', ' pp.', ' fig.', ' figs.');
+                $parts_of_lit_ref = array(' vol.', ' p.', ' pp.', ' fig.', ' figs.', 'legit ', 'coll. ', 'ed. ', 'eds. '); 
+                //, 'legit', 'coll.' from Katja
+                //, 'ed. ', 'eds. ' from Eli 
+
                 $cont = true;
                 foreach($parts_of_lit_ref as $part) {
                     if(stripos($rek['context'], $part) !== false) $cont = false; //string is found
