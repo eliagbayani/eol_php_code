@@ -914,7 +914,9 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             // if($rek['is_synonym'] == "1") continue;
             // */
 
-            
+            // /* NEW: Jul 10, 2024 - Eli's initiative --- never use line with " A. " --- abbreviation of names
+            if(!$this->is_context_valid($rek['context'])) continue;
+            // */
 
             // /* should not get 'fen' --- [context] => Almost all of these are incorrect e.g. 1 ‘‘<b>fen</b>. ov.’’ fenestra ovalis
             //    but should get 'philippines'       => in the valley of the dead found in <b>Philippines</b>.
@@ -1332,7 +1334,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         "lbl": "hill",
         "context": "Michael R. and Joseph <b>Hill</b>",
         */
-        $words = array('urban', 'hill'); //Urban C. -> is a name
+        $words = array('urban', 'hill', 'heath'); //Urban C. -> is a name
         foreach($words as $word) {
             if($rek['lbl'] == $word) {
                 if(strpos($rek['context'], $word) !== false) return true;   //if small letter then OK   //string is found
@@ -1723,7 +1725,8 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $to_delete_sources = array($this->another_set_exclude_URIs_02,  //Jen: "I've found a bunch more measurementValue terms we should ALWAYS remove." : https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65451&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65451
                                    $this->another_set_exclude_URIs_03); //Jen: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65780&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65780
         foreach($to_delete_sources as $source) {
-            $str = file_get_contents($source);
+            // $str = file_get_contents($source); //too long
+            $str = Functions::lookup_with_cache($source, $this->download_options);
             $arr = explode("\n", $str);
             $arr = array_map('trim', $arr);
             $arr = array_filter($arr); //remove null arrays
@@ -1747,7 +1750,8 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // */
 
         // /* remove list of labels
-        $str = file_get_contents($this->labels_to_remove_file);
+        // $str = file_get_contents($this->labels_to_remove_file);
+        $str = Functions::lookup_with_cache($this->labels_to_remove_file, $this->download_options);
         $arr = explode("\n", $str);
         $arr = array_map('trim', $arr);
         foreach($arr as $label) if($label) $this->labels_to_remove[$label] = '';
