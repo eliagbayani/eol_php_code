@@ -73,7 +73,7 @@ $descs[] = "Distribution. Sri Lanka.";
 // This is likely to be a synonym of either B. suturalis or B. lineatus, both of which are found in South India. 
 // The male genitalia could not be examined in detail for confirmation. yz";
 
-$descs[] = "Images of the two syntypes of ‘ Brumus ceylonicus ’ deposited at SDEI (obtained through the courtesy of Kevin Weissing, SDEI) below the valley show that this species indeed is a Brumoides and it is transferred here to Brumoides (comb. n.). This is likely to be a synonym of either B. suturalis or B. lineatus, both of which are found in the south.";
+$descs[] = "below the valley show that this species indeed is a Brumoides and it is transferred here to Brumoides (comb. n.). This is likely to be a synonym of either B. Suturalis or B. Lineatus, both of which are found in south India";
 
 
 $descs[] = "the quick References: valley in the north.";
@@ -88,6 +88,8 @@ $descs[] = "Lives in the forest of Brazil";
 $descs[] = "Zhang C, Stadler T, Klopfstein S, Heath TA, Ronquist F. 2016.";
 $descs[] = "Zhang, Stadler, Klopfstein, Heath, Ronquist 2016.";
 $descs[] = "Zhang, Stadler, Klopfstein, uncultivated heath, Ronquist 2016."; //[heath-ENVO_00000107]
+
+$descs[] = "This is likely to be a synonym of either B. suturalis or B. lineatus, both of which are found in south India";
 
 
 /*
@@ -190,7 +192,7 @@ foreach($IDs as $resource_id) {
         if($resource_id == 'TreatmentBank_ENV') {
             $q = array();
             $q[18] = array('s' => "Sri Lanka-1227603");
-            $q[19] = array('s' => "");
+            $q[19] = array('s' => "valley-ENVO_00000100");
             $q[20] = array('s' => "");
             $q[27] = array('s' => "Eastern Atlantic-9237");
             if($arr = @$q[$i]) {
@@ -203,6 +205,8 @@ foreach($IDs as $resource_id) {
         if($i == 29) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 30) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 31) {$s = "heath-ENVO_00000107";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 32) {$s = "india-1269750";                         if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
     }
     echo "\nerrors: [$resource_id][$errors errors]";
     $final[] =     "[$resource_id][$errors errors]";
