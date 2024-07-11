@@ -924,14 +924,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             if(!$this->is_context_valid($rek['context'])) continue;
             // */
 
-            // /* words accepted if uppercase but excluded if lowercase
-            $labels = array('malabar'); //A. malabar - exclude | Off to Malabar - include
-            $lbl = $rek['lbl'];
-            if(in_array($lbl, $labels)) {
-                if(strpos($rek['context'], "<b>$lbl</b>") !== false) continue;
-            }
-            // */
-
             // /* should not get 'fen' --- [context] => Almost all of these are incorrect e.g. 1 ‘‘<b>fen</b>. ov.’’ fenestra ovalis
             //    but should get 'philippines'       => in the valley of the dead found in <b>Philippines</b>.
             $needle = "<b>".$rek['lbl']."</b>.";
@@ -953,13 +945,20 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             */
             if(isset($this->labels_to_remove[$rek['lbl']])) continue; //this started exclusive to Wikipedia and TreatmentBank. Now it is across the board 20Jun2024
 
-
             $rek['id'] = self::WoRMS_URL_format($rek['id']); # can be general, for all resources
             // echo "\nGoes- 80\n"; print_r($rek);
 
             if($rek['ontology'] == "eol-geonames") { //per https://eol-jira.bibalex.org/browse/DATA-1877?focusedCommentId=65861&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65861
                 // echo "\nGoes- 81\n";
-                
+
+                // /* words accepted if uppercase but excluded if lowercase
+                $labels = array('malabar', 'antarctica'); //A. malabar OR C. antarctica - exclude | Off to Malabar - include
+                $lbl = $rek['lbl'];
+                if(in_array($lbl, $labels)) {
+                    if(strpos($rek['context'], "<b>$lbl</b>") !== false) continue;
+                }
+                // */
+
                 // /* un-comment to allow just 4 terms. Comment to allow all terms under geonames with 'ENVO' uri. It was in the past totally disallowing terms in geonames that have ENVO uri.
                 if(stripos($rek['id'], "ENVO_") !== false) { //string is found
                     if(in_array($rek['lbl'], array('forest', 'woodland', 'grassland', 'savanna'))) { //accepts these terms, and maybe more once allowed by Jen.
@@ -989,8 +988,9 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 }
                 if(!$cont) continue;
                 // */
-            }
+            } // ============================ end "eol-geonames"            
             // */
+
             // echo "\nGoes- 100\n";
             // /*
             if($rek['ontology'] == "envo") { //ontology habitat
@@ -1007,13 +1007,16 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 */
                 if($rek['id'] == 'http://purl.obolibrary.org/obo/ENVO_00000447') continue;                
                 if(in_array($rek['lbl'], array('mesa', 'laguna', 'rapids', 'ocean', 'sea', 'organ', 'field', 'well', 'adhesive', 'quarry', 'reservoir', 'umbrella', 'plantation', 'bar', 'planktonic material'))) continue;
-            }
+                if($rek['lbl'] == 'marsh') { //marsh harrier is a vernacular for a kind of bird
+                    if(stripos($rek['context'], 'harrier') !== false) continue; //string is found
+                }
+            } // ============================ end "envo"
             // */
             
             // /*
             if($rek['ontology'] == "growth") {
                 if(in_array($rek['id'], array('https://www.wikidata.org/entity/Q16868813'))) continue; //https://eol-jira.bibalex.org/browse/DATA-1877?focusedCommentId=66125&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66125
-            }
+            } // ============================ end "growth"
             // */
             
             // /* customize
@@ -1125,7 +1128,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                         }
                     }
                 }
-            }
+            } // ============================ end "eol-geonames"
             // */
             // echo "\nGoes- 102\n";
 

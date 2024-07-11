@@ -266,7 +266,10 @@ class Functions_Pensoft
             if(strlen($part) == 2 && ctype_upper($first_char) && in_array($second_char, array("."))) {
                 $next_word = @$parts[$i+1];
                 $first_char_next_word = substr($next_word, 0, 1);
-                if(ctype_upper($first_char_next_word)) return false;
+                if(ctype_upper($first_char_next_word)) {
+                    // echo "\n[$part]\n[$next_word]\n\n";
+                    return false;
+                }
             }
             
             // if word lenght is 2 and both upper e.g. "TA"

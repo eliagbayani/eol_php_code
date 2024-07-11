@@ -94,6 +94,9 @@ $descs[] = "This is likely to be a synonym of either B Suturalis or B Lineatus, 
 
 $descs[] = "Type: materials_examined	Holotype. AMS I. 19426 - 001, 414 mm, female, off Malabar "; //[malabar-Malabar]
 $descs[] = "It differs significantly from all but A. malabar in having more total vertebrae (160 vs. 131 – 145)"; //[]
+$descs[] = "(1836: 83) and on disturbed ground such as roadsides. 0 – 620 m elevation. Conservation Status: — C. antarctica is classed as Least Concern as it is widespread with stable populations";
+$descs[] = "A very cold plase is Antarctica in the North Pole";
+$descs[] = "It is found in Ukraine in western marsh harrier Circus aeruginosus 1";
 
 
 /*
@@ -211,9 +214,11 @@ foreach($IDs as $resource_id) {
         if($i == 31) {$s = "heath-ENVO_00000107";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 32) {$s = "india-1269750";                         if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 33) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
-
         if($i == 34) {$s = "malabar-Malabar";                       if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 35) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 36) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 37) {$s = "antarctica-6255152";                    if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 38) {$s = "ukraine-690791";                        if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";
