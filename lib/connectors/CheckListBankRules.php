@@ -489,6 +489,15 @@ class CheckListBankRules extends CheckListBankWeb
                 -pub_comment                
                 */
 
+
+            $ref_type_values_map = array( //anystyle vs ITIS Jen values
+                'article-journal'   => 'Journal Article',
+                'book'              => 'Book',
+                'chapter'           => 'Book Chapter',
+                'paper-conference'  => 'Conference Paper',
+                ''                  => 'Miscellaneous'
+            );
+
             $fields = array("type", "identifier", "full_reference", "author", "editor", "title",  "container-title", "date", "pages", "publisher", "location", "url", "doi", "language");
             $ref_map_ITIS = array( //ITIS counterpart
                 'type'              => 'Item type',
@@ -514,6 +523,12 @@ class CheckListBankRules extends CheckListBankWeb
                 $save = array();
                 foreach($fields as $field)  {
                     $save_field = $ref_map_ITIS[$field];
+
+                    if($field == 'type') {
+                        $val = @$rec[$field];
+                        $rec[$field] = $ref_type_values_map[$val];
+                    }
+
                     if($field == 'identifier') $save[$save_field] = md5($rec['full_reference']);
                     else                       $save[$save_field] = @$rec[$field];
                 }
