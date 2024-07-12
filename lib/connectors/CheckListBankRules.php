@@ -424,21 +424,35 @@ class CheckListBankRules extends CheckListBankWeb
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
             */
 
-            /* main operation
-            $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
-            // $obj->full_reference = str_replace("there_is_a_cat", ".", $line); //maybe sufficent already, but better to use $orig_line instead.
-            $obj->full_reference = $orig_line;
-            // print_r($obj); //good debug
-            */
-
-            $obj = (object) array('full_reference' => $orig_line); //temporary sol'n
+            if(Functions::is_production()) $obj = (object) array('full_reference' => $orig_line); //temporary sol'n
+            else {
+                // /* main operation
+                $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
+                // $obj->full_reference = str_replace("there_is_a_cat", ".", $line); //maybe sufficent already, but better to use $orig_line instead.
+                $obj->full_reference = $orig_line;
+                // print_r($obj); //good debug
+                // */
+            }
 
             /* dev only --- used in searching for a reference, happened to be blank namepublishedIN
             if(isset($this->debug['namePublishedIn'][$orig_line])) {}
             else echo "\nhuli ref ka...[$orig_line]\n";
             */
             
-            $reks = self::convert_anystyle_obj_2save($obj);
+            $reks = self::convert_anystyle_obj_2save($obj); // print_r($reks); exit;
+            /*Array(
+                [0] => Array(
+                        [author] => Amsel H.G.|Hering M.
+                        [title] => Beitrag zur Kenntnis der Minenfauna Palästinas
+                        [volume] => 1931
+                        [pages] => 113–152, 111–112
+                        [doi] => 10.1002/mmnd.193119310203.
+                        [date] => 1931
+                        [type] => article-journal
+                        [container-title] => Deutsche Entomologische Zeitschrift
+                        [full_reference] => Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).
+                    )
+            )*/
             
             // /* write to References
             $fields = array("identifier", "full_reference", "author", "title", "type", "container-title", "volume", "pages", "doi", "date", "url", "editor", "location", "publisher", "edition");
@@ -461,10 +475,45 @@ class CheckListBankRules extends CheckListBankWeb
                 'publisher' => 'publisher',
                 'edition'   => 'edition');
 
+                /* ITIS References fields
+                reference_author
+                title
+                publication_name
+                actual_pub_date
+                publisher
+                pub_place
+                pages
+                -listed_pub_date
+                -isbn
+                -issn
+                -pub_comment                
+                */
+
+            $fields = array("type", "identifier", "full_reference", "author", "editor", "title",  "container-title", "date", "pages", "publisher", "location", "url", "doi", "language");
+            $ref_map_ITIS = array( //ITIS counterpart
+                'type'              => 'Item type',
+                'identifier'        => 'ID',
+                'full_reference'    => 'dwc',
+                'author'            => 'reference_author',
+                'editor'            => 'Editors',
+                'title'             => 'title',
+                'container-title'   => 'publication_name',
+                'date'              => 'actual_pub_date',
+                'pages'             => 'pages',
+                'publisher'         => 'publisher',
+                'location'          => 'pub_place',
+                'url'               => 'URLs',
+                'doi'               => 'DOI',
+                'language'          => 'Language'
+                // 'volume'     => No counterpart in ITIS. Let us ignore for now.
+                // 'issue'      => No counterpart in ITIS. Let us ignore for now.
+                // 'edition'    => No counterpart in ITIS. Let us ignore for now.
+            );
+    
             foreach($reks as $rec) {
                 $save = array();
                 foreach($fields as $field)  {
-                    $save_field = $ref_map[$field];
+                    $save_field = $ref_map_ITIS[$field];
                     if($field == 'identifier') $save[$save_field] = md5($rec['full_reference']);
                     else                       $save[$save_field] = @$rec[$field];
                 }
@@ -521,7 +570,6 @@ class CheckListBankRules extends CheckListBankWeb
                 [date] => Array(
                         [0] => 1972
                     )
-
                 [type] => article-journal
                 [container-title] => Array(
                         [0] => Polskie Pismo Entomologiczne
@@ -538,7 +586,7 @@ class CheckListBankRules extends CheckListBankWeb
                 else {
                     $tmp = array();
                     // if(in_array($field, array('author', 'editor'))) continue; //'container-title'
-                    if(is_object($values_or_value[0])) { //an array of objects
+                    if(is_object(@$values_or_value[0])) { //an array of objects
                         $rek2 = array();
                         foreach($values_or_value as $object) {
                             $auth = "";
@@ -589,7 +637,6 @@ class CheckListBankRules extends CheckListBankWeb
         // B. Letters
         // $str = str_replace("B. Letters", "B. The Letters", $str);
         
-
         if(preg_match_all("/\((.*?)\)/ims", $str, $arr)) {
             // print_r($arr[1]);
             $words = array();
