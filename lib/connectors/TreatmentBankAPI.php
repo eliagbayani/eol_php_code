@@ -51,7 +51,18 @@ class TreatmentBankAPI
         $path = CONTENT_RESOURCE_LOCAL_PATH."/reports/TreatmentBank";
         if(!is_dir($path)) mkdir($path);
         $this->dwca_list_txt = $path . "/Plazi_DwCA_list.txt";
-        
+
+        /* source text: "reef" -> marine reef
+        Many erroneous mappings for non-marine species. 
+        We could try to filter out insects, arachnids, amphibians, mammals & squamates, 
+        but I suspect that there are also many false positives among the marine taxa. 
+        Can't we get pretty good data on reef taxa from WoRMS or reef-specific checklists @jhammock ?
+            Insecta
+            Arachnida
+            Amphibia
+            Mammalia
+            Squamata 
+        */
         /* Some notes:
         From XML rss:
         <item>
