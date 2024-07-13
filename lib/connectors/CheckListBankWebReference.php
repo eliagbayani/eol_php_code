@@ -88,7 +88,7 @@ class CheckListBankWebReference
                             echo "<input type='hidden' name='".$fld."[$rows]' value='$val'>"; continue;
                         }
                         $bgcolor = 'white';
-                        if(in_array($fld, $included_fields)) $bgcolor = 'yellow';
+                        if(in_array($fld, $included_fields)) $bgcolor = 'lightblue';
                         echo "<tr bgcolor='$bgcolor'>";
                         echo "<td>$fld</td><td width='85%'><input type='$type' name='".$fld."[$rows]' value='$val' size='100'></td>";
                         echo "</tr>";
