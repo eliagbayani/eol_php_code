@@ -32,7 +32,7 @@ class CheckListBankWebReference
         // included_fields: the 11 Jen fields
 
         echo "<pre>";
-        $fields[0] = "Item_type";
+        // $fields[0] = "Item_type";
         print_r($fields); //echo"<hr>"; print_r($references);
         ?>
         <table border="1" cellpadding="15" cellspacing="1" align="center" width="40%">
@@ -68,19 +68,21 @@ class CheckListBankWebReference
                 $rows = -1;
                 foreach($references as $r) { $rows++;
                     $ref = explode("\t", $r); //exit;
-                    $i = -1; foreach($fields as $fld) { $i++; $rek[$fld] = $ref[$i]; } //assignment
+                    $i = -1; foreach($fields as $fld) { $i++; $rek[$fld] = @$ref[$i]; } //assignment
 
-                    echo "<tr><td colspan='2'>";
-                    print_r($rek);
-                    echo "</td><tr>";
+                    // echo "<tr><td colspan='2'>";print_r($rek); echo "</td><tr>"; //debug only
 
+                    echo "<tr><td colspan='2'>$rek[dwc]</td><tr>";                    
                     foreach($rek as $fld => $val) {
+                        $type = 'text';
+                        if(in_array($fld, array('ID', 'dwc'))) {
+                            echo "<input type='hidden' name='".$fld."[$rows]' value='$val'>"; continue;
+                        }
                         echo "<tr>";
-                        echo "<td>$fld</td><td><input type='text' name='".$fld."[$rows]' value='$val'></td>";
-
+                        echo "<td>$fld</td><td><input type='$type' name='".$fld."[$rows]' value='$val'></td>";
                         echo "</tr>";
                     }
-                    // if($rows >= 3) break; //debug only
+                    if($rows >= 3) break; //debug only
                 }
 
 
