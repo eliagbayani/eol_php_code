@@ -64,7 +64,7 @@ class CheckListBankWebReference
                     [12] => DOI
                     [13] => Language
                 ) --->
-                <table><tr rowspan='2'><td align='center' colspan='2'><b>References</b><br>&nbsp;</td></tr><?php
+                <table border='0'><tr rowspan='2'><td align='center' colspan='2'><b>References</b><br>&nbsp;</td></tr><?php
                 $rows = -1;
                 foreach($references as $r) { $rows++;
                     $ref = explode("\t", $r); //exit;
@@ -79,7 +79,7 @@ class CheckListBankWebReference
                             echo "<input type='hidden' name='".$fld."[$rows]' value='$val'>"; continue;
                         }
                         echo "<tr>";
-                        echo "<td>$fld</td><td><input type='$type' name='".$fld."[$rows]' value='$val'></td>";
+                        echo "<td>$fld</td><td width='85%'><input type='$type' name='".$fld."[$rows]' value='$val' size='100'></td>";
                         echo "</tr>";
                     }
                     echo "<tr><td colspan='2'><hr></td><tr>";
