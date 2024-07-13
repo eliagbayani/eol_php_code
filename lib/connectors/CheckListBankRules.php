@@ -29,19 +29,7 @@ class CheckListBankRules extends CheckListBankWeb
             mkdir($this->temp_dir);
             shell_exec("chmod 777 ".$this->temp_dir);
         }
-        // $filenames = array('matchedNames', 'processed', 'unmatchedNames');
-        // foreach($filenames as $filename) {
-        //     $filename = $this->temp_dir.$filename.".txt";
-        //     debug("\n[$filename]\n");
-        //     $WRITE = Functions::file_open($filename, "w"); fclose($WRITE);
-        // }
         // */
-
-        /* didn't use anymore
-        require_library('connectors/WikiDataMtce_ResourceAPI');
-        require_library('connectors/WikiDataMtceAPI');
-        $this->other_funcs = new WikiDataMtceAPI(); //func is: parse_citation_using_anystyle(citation, all)
-        */
 
         // /*
         require_library('connectors/AnystyleAPI');
