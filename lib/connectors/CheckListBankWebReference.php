@@ -6,10 +6,12 @@ class CheckListBankWebReference
     {
     }
     function start($params)
-    {
-        echo "<pre>";
-        print_r($params);
-        echo "</pre>";
+    {   // echo "<pre>"; print_r($params); echo "</pre>";
+        /*Array(
+            [resource_id] => 1720883775
+            [temp_resource_dir] => /opt/homebrew/var/www/eol_php_code/applications/content_server/resources_3/CheckListBank_files/1720883775/
+            [temp_tool_folder] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/
+        )*/
     }
     function create_web_form_reference()
     {
