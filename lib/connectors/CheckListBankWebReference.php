@@ -31,12 +31,13 @@ class CheckListBankWebReference
         $included_fields = array("reference_author", "title", "publication_name", "actual_pub_date", "listed_pub_date", "publisher", "pub_place", "pages", "isbn", "issn", "pub_comment");
         // included_fields: the 11 Jen fields
 
-        echo "<pre>"; 
+        echo "<pre>";
+        $fields[0] = "Item_type";
         print_r($fields); //echo"<hr>"; print_r($references);
         ?>
         <table border="1" cellpadding="15" cellspacing="1" align="center" width="40%">
         <tr align="center"><td><b>CheckListBank Tool</b></td></tr>
-        <form action="form_result_map.php" method="post" enctype="multipart/form-data">
+        <form action="form_result_reference.php" method="post" enctype="multipart/form-data">
         <tr><td>
                 <font size="3">Mapping Exercise</font>
                 <?php echo "ID: $this->resource_id <br>
@@ -64,17 +65,22 @@ class CheckListBankWebReference
                     [13] => Language
                 ) --->
                 <table><tr rowspan='2'><td align='center' colspan='2'><b>References</b><br>&nbsp;</td></tr><?php
-                $rows = 0;
-                foreach($references as $r) { $rows++; echo "<tr>";
+                $rows = -1;
+                foreach($references as $r) { $rows++;
                     $ref = explode("\t", $r); //exit;
-                    
                     $i = -1; foreach($fields as $fld) { $i++; $rek[$fld] = $ref[$i]; } //assignment
 
+                    echo "<tr><td colspan='2'>";
+                    print_r($rek);
+                    echo "</td><tr>";
+
                     foreach($rek as $fld => $val) {
-                        echo "<td>$fld</td><td>$val</td>";
+                        echo "<tr>";
+                        echo "<td>$fld</td><td><input type='text' name='".$fld."[$rows]' value='$val'></td>";
+
+                        echo "</tr>";
                     }
-                    echo "</tr>";
-                    if($rows >= 5) break; //debug only
+                    // if($rows >= 3) break; //debug only
                 }
 
 
