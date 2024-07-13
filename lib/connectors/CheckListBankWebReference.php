@@ -82,6 +82,7 @@ class CheckListBankWebReference
                         echo "<td>$fld</td><td><input type='$type' name='".$fld."[$rows]' value='$val'></td>";
                         echo "</tr>";
                     }
+                    echo "<tr><td colspan='2'><hr></td><tr>";
                     if($rows >= 3) break; //debug only
                 }
 
