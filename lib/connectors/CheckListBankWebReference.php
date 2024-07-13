@@ -1,5 +1,8 @@
 <?php
 namespace php_active_record;
+/* Warning: Unknown: Multipart body parts limit exceeded 50000. To increase the limit change max_multipart_body_parts in php.ini. in Unknown on line 0
+   Warning: Unknown: Input variables exceeded 50000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+   Both were set to 100000. */
 class CheckListBankWebReference
 {
     function __construct()
@@ -27,6 +30,12 @@ class CheckListBankWebReference
         // echo "\ndito na siya...\n";
         $references = self::get_text_contents('References');
         $fields = explode("\t", $references[0]);
+        // additional fields:
+        $fields[] = 'listed_pub_date';
+        $fields[] = 'isbn';
+        $fields[] = 'issn';
+        $fields[] = 'pub_comment';
+
         array_shift($references);
         $included_fields = array("reference_author", "title", "publication_name", "actual_pub_date", "listed_pub_date", "publisher", "pub_place", "pages", "isbn", "issn", "pub_comment");
         // included_fields: the 11 Jen fields
@@ -78,12 +87,14 @@ class CheckListBankWebReference
                         if(in_array($fld, array('ID', 'dwc'))) {
                             echo "<input type='hidden' name='".$fld."[$rows]' value='$val'>"; continue;
                         }
-                        echo "<tr>";
+                        $bgcolor = 'white';
+                        if(in_array($fld, $included_fields)) $bgcolor = 'yellow';
+                        echo "<tr bgcolor='$bgcolor'>";
                         echo "<td>$fld</td><td width='85%'><input type='$type' name='".$fld."[$rows]' value='$val' size='100'></td>";
                         echo "</tr>";
                     }
                     echo "<tr><td colspan='2'><hr></td><tr>";
-                    if($rows >= 3) break; //debug only
+                    // if($rows >= 3) break; //debug only
                 }
 
 

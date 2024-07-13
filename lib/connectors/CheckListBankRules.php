@@ -481,7 +481,9 @@ class CheckListBankRules extends CheckListBankWeb
                 'book'              => 'Book',
                 'chapter'           => 'Book Chapter',
                 'paper-conference'  => 'Conference Paper',
-                ''                  => 'Miscellaneous'
+                ''                  => 'Miscellaneous',
+                'report'            => 'Report',
+                'thesis'            => 'Thesis'
             );
 
             $fields = array("type", "identifier", "full_reference", "author", "editor", "title",  "container-title", "date", "pages", "publisher", "location", "url", "doi", "language");
