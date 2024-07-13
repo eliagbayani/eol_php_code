@@ -63,6 +63,7 @@ $source      = $temp_dir . 'Main_Table.txt';
 $destination = $temp_dir . 'Taxa.txt';
 parse_TSV_file($source, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map, $var_unaccepted);
 
+/* ====================================== working OK - postponed ======================================
 echo "\nCompressing...\n";
 $source1 = $temp_dir.'Taxa.txt';
 $source2 = $temp_dir.'References.txt';
@@ -72,7 +73,7 @@ $target = $target_dir."ITIS_format_$resource_id.zip";
 $output = shell_exec("zip -j $target $source1 $source2");
 echo "\n$output\n";
 
-if(stripos($output, "error") !== false) exit("\nGo back to Main.\n");
+if(stripos($output, "error") !== false) exit("\nError encountered:\n[$output]\nGo back to Main.\n");
 echo "\nCompressed OK\n";
 if(Functions::is_production()) $domain = "https://editors.eol.org";
 else                           $domain = "http://localhost";
@@ -83,6 +84,7 @@ echo "<br>Download ITIS-formatted file: [<a href='$final_zip_url'>".pathinfo($fi
 
 shell_exec("chmod 777 ".$temp_dir);
 recursive_rmdir($temp_dir); //un-comment in real operation
+
 $tmp_file = $temp_folder . $resource_id."_Distribution.tsv";    if(is_file($tmp_file)) unlink($tmp_file);
 $tmp_file = $temp_folder . $resource_id."_Taxon.tsv";           if(is_file($tmp_file)) unlink($tmp_file);
 ?>
@@ -91,7 +93,20 @@ This file will remain in our server for two (2) weeks.<br>
 <!--- <a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br> --->
 <a href='main.php'> &lt;&lt; Back to menu</a>
 <?php
+*/ // ====================================== end postponed ======================================
+
 echo "</pre>";
+ini_set('memory_limit','14096M');
+require_library('connectors/CheckListBankWebReference');
+$func = new CheckListBankWebReference();
+$params = array(
+    'resource_id' => $resource_id,
+    'temp_resource_dir' => $temp_dir,
+    'temp_tool_folder' => $temp_folder,
+);
+$func->start($params);
+
+
 
 function get_val_var($v)
 {
