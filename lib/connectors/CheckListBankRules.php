@@ -475,8 +475,7 @@ class CheckListBankRules extends CheckListBankWeb
                 -issn
                 -pub_comment                
                 */
-
-
+                													
             $ref_type_values_map = array( //anystyle vs ITIS Jen values
                 'article-journal'   => 'Journal Article',
                 'book'              => 'Book',
