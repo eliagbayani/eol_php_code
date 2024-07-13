@@ -15,31 +15,51 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 $form = $_POST;
 // echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
 /*Array(
+    [resource_id] => 1720884786
+    [temp_dir] => /opt/homebrew/var/www/eol_php_code/applications/content_server/resources_3/CheckListBank_files/1720884786/
+    [temp_folder] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/
+    [accepted_or_valid] => accepted
     [taxonRank] => Array(
-            [0] => Kingdom
-            [1] => Phylum
-            [2] => Class
-            [3] => Order
-            [4] => Superfamily
-            [5] => Family
-            [6] => Genus
-            [7] => Species
+            [0] => Kingdom|Kingdom
+            [1] => Phylum|Phylum
+            [2] => Class|Class
+            [3] => Order|Order
+            [4] => Superfamily|Superfamily
+            [5] => Family|Family
+            [6] => Genus|Genus
+            [7] => Species|Species
         )
     [taxonomicStatus] => Array(
-            [0] => accepted
-            [1] => 
-            [2] => misapplied
-            [3] => 
+            [0] => accepted|accepted
+            [1] => ambiguous synonym|unavailable, database artifact
+            [2] => misapplied|misapplied
+            [3] => synonym|homonym & junior synonym
         )
     [locality] => Array(
-            [0] => 
-            [1] => Australia
-            [2] => 
-            [19] => Western Atlantic Ocean
-            [20] => Western Atlantic Ocean
+            [0] => Afrotropical region|
+            [1] => Australian and Pacific regions|
+            [2] => East Palearctic region|
+            [3] => East Palearctic region (fossil)|
+            [4] => Nearctic region|
+            [5] => Nearctic region, Neotropical region|
+            [6] => Neotropical region|
+            [7] => Neotropical region (fossil)|
+            [8] => Oriental region|
+            [9] => Oriental region, East Palearctic region|
+            [10] => Oriental region, West Palearctic region|
+            [11] => West Palearctic region|
+            [12] => West Palearctic region (fossil)|
+            [13] => West Palearctic region, Afrotropical region|
+            [14] => West Palearctic region, East Palearctic region|
+            [15] => West Palearctic region, East Palearctic region, Nearctic region|
+            [16] => West Palearctic region, East Palearctic region, Oriental region|
+            [17] => West Palearctic region, East Palearctic region, [Nearctic region, Australian and Pacific regions]|
+            [18] => West Palearctic region, East Palearctic region, [Nearctic region]|
+            [19] => West Palearctic region, Nearctic region|
+            [20] => West Palearctic region, [Nearctic region]|
         )
     [occurrenceStatus] => Array(
-            [0] => Native
+            [0] => Native|Native
         )
 )*/
 $resource_id = @get_val_var('resource_id');
@@ -55,6 +75,17 @@ if($accepted_or_valid == 'valid') $var_unaccepted = 'invalid';
 echo "<pre>"; 
 // echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
 $taxonRank_map          = generate_array_map($form, 'taxonRank');        //print_r($taxonRank_map); //exit;
+// print_r($taxonRank_map);
+/*Array(
+    [Kingdom] => Kingdom
+    [Phylum] => Phylum
+    [Class] => Class
+    [Order] => Order
+    [Superfamily] => Superfamily
+    [Family] => Family
+    [Genus] => Genus
+    [Species] => Species
+)*/
 $taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');  //print_r($taxonomicStatus_map);
 $locality_map           = generate_array_map($form, 'locality');         //print_r($locality_map); 
 $occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus'); //print_r($occurrenceStatus_map); //exit;
@@ -101,8 +132,8 @@ require_library('connectors/CheckListBankWebReference');
 $func = new CheckListBankWebReference();
 $params = array(
     'resource_id' => $resource_id,
-    'temp_resource_dir' => $temp_dir,
-    'temp_tool_folder' => $temp_folder,
+    'temp_dir' => $temp_dir,
+    'temp_folder' => $temp_folder,
 );
 $func->start($params);
 
