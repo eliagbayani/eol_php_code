@@ -29,6 +29,8 @@ class CheckListBankWebReference
     {
         // echo "\ndito na siya...\n";
         $references = self::get_text_contents('References');
+        $unique_types = self::get_unique_values($references, 'Item type'); //print_r($unique_types); exit;
+
         $fields = explode("\t", $references[0]);
         // additional fields:
         $fields[] = 'listed_pub_date';
@@ -90,7 +92,21 @@ class CheckListBankWebReference
                         $bgcolor = 'white';
                         if(in_array($fld, $included_fields)) $bgcolor = 'lightblue';
                         echo "<tr bgcolor='$bgcolor'>";
-                        echo "<td>$fld</td><td width='85%'><input type='$type' name='".$fld."[$rows]' value='$val' size='100'></td>";
+                        if($fld != 'Item type') echo "<td>$fld</td><td width='85%'><input type='$type' name='".$fld."[$rows]' value='$val' size='100'></td>";
+                        else {
+                            echo "<td>$fld</td>";
+                            echo "<td>
+                                <select name='".$fld."[$rows]'>";
+                                foreach($unique_types as $type) {
+                                    if($val == $type) $selected = "selected";
+                                    else              $selected = "";
+                                    echo "<option value='$type' $selected >$type</option>";
+                                }
+                                echo'</select>
+                            </td>';                            
+    
+                        }
+                        
                         echo "</tr>";
                     }
                     echo "<tr><td colspan='2'><hr></td><tr>";
@@ -131,6 +147,17 @@ class CheckListBankWebReference
         $filename = $this->temp_dir.$basename.".txt"; //echo "\nfilename: [$filename]\n";
         $contents = file_get_contents($filename);
         return explode("\n", $contents);
+    }
+    private function get_unique_values($references, $type)
+    {
+        $i = -1;
+        foreach($references as $r) { $i++;
+            if($i <= 0) continue;
+            $ref = explode("\t", $r);
+            // print_r($ref); exit;
+            $final[$ref[0]] = '';
+        }
+        return array_keys($final);
     }
 }
 ?>
