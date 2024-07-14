@@ -75,7 +75,7 @@ class CheckListBankWebReference
                     [12] => DOI
                     [13] => Language
                 ) --->
-                <table border='0'><tr rowspan='2'><td align='center' colspan='2'><b>References</b><br>&nbsp;</td></tr><?php
+                <table border='0'><tr rowspan='2'><td align='center' colspan='2'><b>References n=<?php echo count($references)-1 ?></b><br>&nbsp;</td></tr><?php
                 $rows = -1;
                 foreach($references as $r) { $rows++;
                     $ref = explode("\t", $r); //exit;
@@ -83,7 +83,8 @@ class CheckListBankWebReference
                     if(!$rek['dwc']) continue;
                     // echo "<tr><td colspan='2'>";print_r($rek); echo "</td><tr>"; //debug only
 
-                    echo "<tr><td colspan='2'>$rek[dwc]</td><tr>";                    
+                    $count = $rows + 1;
+                    echo "<tr><td colspan='2'>$count. $rek[dwc]</td><tr>";                    
                     foreach($rek as $fld => $val) {
                         $type = 'text';
                         if(in_array($fld, array('ID', 'dwc'))) {
