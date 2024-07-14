@@ -116,7 +116,7 @@ echo "<pre>";
 
 $source      = $temp_dir . 'Taxa.txt';
 $destination = $temp_dir . 'Taxa_final.txt';
-parse_TSV_file($source, $destination);
+parse_TSV_file($source, $destination, $ref_info_list, $included_fields);
 
 /* ====================================== working OK - postponed ======================================
 echo "\nCompressing...\n";
@@ -192,7 +192,7 @@ function generate_ref_info_list($form)
     // echo "<pre>"; print_r($final); echo "</pre>"; exit("\nstopx\n");
     return $final;
 }
-function parse_TSV_file($txtfile, $destination)
+function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields)
 {
     $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa_final.txt\n");
     $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
@@ -233,10 +233,18 @@ function parse_TSV_file($txtfile, $destination)
 
         // /* append reference fields
         if($referenceID = $rec['referenceID']) {
-            
+            if($ref_array = @$ref_info_list[$referenceID]) {
+                foreach($included_fields as $fld) $save[$fld] = $ref_array[$fld];
+            }
+            else {
+                print_r($rec);
+                exit("\nShould not go here. referenceID not found in ref_info_list.\n");
+            }
+        }
+        else {
+            foreach($included_fields as $fld) $save[$fld] = '';
         }
         // */
-
 
         // ----- write -----
         // echo "<pre>"; print_r($save); echo "</pre>"; //exit;

@@ -111,7 +111,7 @@ class CheckListBankWebReference
                         echo "</tr>";
                     }
                     echo "<tr><td colspan='2'><hr></td><tr>";
-                    if($rows >= 3) break; //debug only
+                    // if($rows >= 3) break; //debug only
                 }
 
 
