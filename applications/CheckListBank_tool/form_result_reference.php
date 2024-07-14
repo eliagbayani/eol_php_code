@@ -12,8 +12,16 @@ ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
+
+/* test
+$arr = array("Name" => "Eli", "Age" => 52);
+$json = json_encode($arr);
+echo "\n$json\n";
+exit("\n-end test-\n");
+*/
+
 $form = $_POST;
-echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
+// echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
 /*Array(
     [resource_id] => 1720970264
     [temp_dir] => /opt/homebrew/var/www/eol_php_code/applications/content_server/resources_3/CheckListBank_files/1720970264/
@@ -94,34 +102,21 @@ echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
 $resource_id = @get_val_var('resource_id');
 $temp_dir = @get_val_var('temp_dir');
 $temp_folder = @get_val_var('temp_folder');
-$accepted_or_valid = @get_val_var('accepted_or_valid');
+$included_fields = json_decode(@get_val_var('included_fields'), true);
+// print_r($included_fields); exit;
+unset($form['resource_id']);
+unset($form['temp_dir']);
+unset($form['temp_folder']);
+unset($form['included_fields']);
 
-if($accepted_or_valid == 'accepted') $var_unaccepted = 'unaccepted';
-if($accepted_or_valid == 'valid') $var_unaccepted = 'invalid';
-
-// echo("\n[$resource_id][$temp_dir][$temp_folder]\n");
+$ref_info_list = generate_ref_info_list($form); //to be used in generating the Taxa_final.txt
 
 echo "<pre>"; 
 // echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
-$taxonRank_map          = generate_array_map($form, 'taxonRank');        //print_r($taxonRank_map); //exit;
-// print_r($taxonRank_map);
-/*Array(
-    [Kingdom] => Kingdom
-    [Phylum] => Phylum
-    [Class] => Class
-    [Order] => Order
-    [Superfamily] => Superfamily
-    [Family] => Family
-    [Genus] => Genus
-    [Species] => Species
-)*/
-$taxonomicStatus_map    = generate_array_map($form, 'taxonomicStatus');  //print_r($taxonomicStatus_map);
-$locality_map           = generate_array_map($form, 'locality');         //print_r($locality_map); 
-$occurrenceStatus_map   = generate_array_map($form, 'occurrenceStatus'); //print_r($occurrenceStatus_map); //exit;
 
-$source      = $temp_dir . 'Main_Table.txt';
-$destination = $temp_dir . 'Taxa.txt';
-parse_TSV_file($source, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map, $var_unaccepted);
+$source      = $temp_dir . 'Taxa.txt';
+$destination = $temp_dir . 'Taxa_final.txt';
+parse_TSV_file($source, $destination);
 
 /* ====================================== working OK - postponed ======================================
 echo "\nCompressing...\n";
@@ -156,17 +151,15 @@ This file will remain in our server for two (2) weeks.<br>
 */ // ====================================== end postponed ======================================
 
 echo "</pre>";
-ini_set('memory_limit','14096M');
-require_library('connectors/CheckListBankWebReference');
-$func = new CheckListBankWebReference();
-$params = array(
-    'resource_id' => $resource_id,
-    'temp_dir' => $temp_dir,
-    'temp_folder' => $temp_folder,
-);
-$func->start($params);
-
-
+// ini_set('memory_limit','14096M');
+// require_library('connectors/CheckListBankWebReference');
+// $func = new CheckListBankWebReference();
+// $params = array(
+//     'resource_id' => $resource_id,
+//     'temp_dir' => $temp_dir,
+//     'temp_folder' => $temp_folder,
+// );
+// $func->start($params);
 
 function get_val_var($v)
 {
@@ -181,18 +174,27 @@ function get_text_contents($basename)
     $contents = file_get_contents($filename);
     return explode("\n", $contents);
 }
-function generate_array_map($form, $table)
+function generate_ref_info_list($form)
 {
-    $final = array();
-    foreach($form[$table] as $whole) {
-        $parts = explode("|", $whole);
-        $final[$parts[0]] = @$parts[1];
+    $fields = array_keys($form); //print_r($fields); exit;
+    $i = -1;
+    foreach($form['ID'] as $identifier) { $i++; //we try to generate json: e.g. {"Name":"Eli","Age":52}
+        $tmp = "{";
+        foreach($fields as $fld) { // ID dwc etc.
+            $val = $form[$fld][$i];
+            $tmp .= '"'.$fld.'":"'.$val.'",';
+        }
+        $tmp = substr($tmp, 0, -1); //very important to remove the "," ending comma.
+        $tmp .= "}";
+        $arr = json_decode($tmp, true); //print_r($arr); exit("\n[$tmp]\nstop 01\n");
+        $final[$identifier] = $arr;
     }
+    // echo "<pre>"; print_r($final); echo "</pre>"; exit("\nstopx\n");
     return $final;
 }
-function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map, $var_unaccepted)
+function parse_TSV_file($txtfile, $destination)
 {
-    $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa.txt\n");
+    $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa_final.txt\n");
     $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
     foreach(new FileIterator($txtfile) as $line_number => $line) {
         if(!$line) continue;
@@ -212,8 +214,7 @@ function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus
             [scientific_nameID] => x4
             [parent_nameID] => 
             [accepted_nameID] => 
-            [pre_name_usage] => accepted
-            [name_usage] => 
+            [name_usage] => accepted
             [unacceptability_reason] => 
             [rank_name] => Kingdom
             [taxon_author] => 
@@ -223,42 +224,20 @@ function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus
             [unit_name4] => 
             [geographic_value] => 
             [origin] => 
-            [referenceID] => d41d8cd98f00b204e9800998ecf8427e
+            [referenceID] => 
         )*/
         // ===========================start saving
         $save = array();
         $fields = array_keys($rec); //print_r($fields);
         foreach($fields as $field) $save[$field] = $rec[$field];
-        // ----- 1st -----
-        if(in_array($save['pre_name_usage'], array('accepted', 'valid'))) {
-            $save['name_usage'] = $save['pre_name_usage'];
-            $save['unacceptability_reason'] = ''; //must be blank
-        }    
-        elseif(in_array($save['pre_name_usage'], array('unaccepted', 'not accepted', 'invalid'))) { //unacceptability_reason should be populated
-            $save['name_usage'] = $save['pre_name_usage'];
-            $save['unacceptability_reason'] = '';
+
+        // /* append reference fields
+        if($referenceID = $rec['referenceID']) {
+            
         }
-        elseif($val = $save['pre_name_usage']) {
-            $save['name_usage'] = $var_unaccepted; //'unaccepted' or 'invalid'
-            $save['unacceptability_reason'] = $val;
-        }
-        // ----- 2nd ----- name_usage | unacceptability_reason
-        if($val = $save['name_usage']) {
-            if($val2 = @$taxonomicStatus_map[$val]) $save['name_usage'] = $val2;
-        }
-        if($val = $save['unacceptability_reason']) {
-            if($val2 = @$taxonomicStatus_map[$val]) $save['unacceptability_reason'] = $val2;
-        }
-        // ----- 3rd ----- rank_name | geographic_value | origin
-        if($val = $save['rank_name']) {
-            if($val2 = @$taxonRank_map[$val]) $save['rank_name'] = $val2;
-        }
-        if($val = $save['geographic_value']) {
-            if($val2 = @$locality_map[$val]) $save['geographic_value'] = $val2;
-        }
-        if($val = $save['origin']) {
-            if($val2 = @$occurrenceStatus_map[$val]) $save['origin'] = $val2;
-        }
+        // */
+
+
         // ----- write -----
         // echo "<pre>"; print_r($save); echo "</pre>"; //exit;
         unset($save['pre_name_usage']);

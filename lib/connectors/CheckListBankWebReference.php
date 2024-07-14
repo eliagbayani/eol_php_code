@@ -55,6 +55,7 @@ class CheckListBankWebReference
                 <input type='hidden' name='resource_id' value='$this->resource_id'>
                 <input type='hidden' name='temp_dir' value='$this->temp_dir'>
                 <input type='hidden' name='temp_folder' value='$this->temp_folder'>
+                <input type='hidden' name='included_fields' value='".json_encode($included_fields)."'>
                 "; 
                 ?>
         </td></tr>
