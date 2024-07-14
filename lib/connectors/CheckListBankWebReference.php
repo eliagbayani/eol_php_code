@@ -80,7 +80,7 @@ class CheckListBankWebReference
                 foreach($references as $r) { $rows++;
                     $ref = explode("\t", $r); //exit;
                     $i = -1; foreach($fields as $fld) { $i++; $rek[$fld] = @$ref[$i]; } //assignment
-
+                    if(!$rek['dwc']) continue;
                     // echo "<tr><td colspan='2'>";print_r($rek); echo "</td><tr>"; //debug only
 
                     echo "<tr><td colspan='2'>$rek[dwc]</td><tr>";                    
