@@ -124,10 +124,10 @@ unset($ref_info_list);
 $destination = $temp_dir . 'References_final.txt';
 generate_References_final($form, $destination);
 
-/* ====================================== working OK - postponed ======================================
+// /* ====================================== working OK - postponed ======================================
 echo "\nCompressing...\n";
-$source1 = $temp_dir.'Taxa.txt';
-$source2 = $temp_dir.'References.txt';
+$source1 = $temp_dir.'Taxa_final.txt';
+$source2 = $temp_dir.'References_final.txt';
 $target_dir = str_replace("$resource_id/", "", $temp_dir);
 $target = $target_dir."ITIS_format_$resource_id.zip";
 // $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
@@ -154,7 +154,7 @@ This file will remain in our server for two (2) weeks.<br>
 <!--- <a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br> --->
 <a href='main.php'> &lt;&lt; Back to menu</a>
 <?php
-*/ // ====================================== end postponed ======================================
+// /* ====================================== end postponed ======================================
 
 echo "</pre>";
 
@@ -200,7 +200,7 @@ function generate_References_final($form, $destination)
             $save[$fld] = $form[$fld][$i];
         }
         // ----- write -----
-        echo "<pre>"; print_r($save); echo "</pre>"; //exit;
+        // echo "<pre>"; print_r($save); echo "</pre>"; //exit;
         write_output_rec_2txt($save, $destination);
     }
     // echo "<pre>"; print_r($final); echo "</pre>"; exit("\nstopx\n");
