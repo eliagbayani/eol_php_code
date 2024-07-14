@@ -13,53 +13,82 @@ ini_set('display_errors', true);
 $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 $form = $_POST;
-echo "<pre>"; print_r($form); echo "</pre>"; exit("\neli 200\n");
+echo "<pre>"; print_r($form); echo "</pre>"; //exit("\neli 200\n");
 /*Array(
-    [resource_id] => 1720884786
-    [temp_dir] => /opt/homebrew/var/www/eol_php_code/applications/content_server/resources_3/CheckListBank_files/1720884786/
+    [resource_id] => 1720970264
+    [temp_dir] => /opt/homebrew/var/www/eol_php_code/applications/content_server/resources_3/CheckListBank_files/1720970264/
     [temp_folder] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/
-    [accepted_or_valid] => accepted
-    [taxonRank] => Array(
-            [0] => Kingdom|Kingdom
-            [1] => Phylum|Phylum
-            [2] => Class|Class
-            [3] => Order|Order
-            [4] => Superfamily|Superfamily
-            [5] => Family|Family
-            [6] => Genus|Genus
-            [7] => Species|Species
+    [Item_type] => Array(
+            [0] => Journal Article
+            [1] => Conference Paper
         )
-    [taxonomicStatus] => Array(
-            [0] => accepted|accepted
-            [1] => ambiguous synonym|unavailable, database artifact
-            [2] => misapplied|misapplied
-            [3] => synonym|homonym & junior synonym
+    [ID] => Array(
+            [0] => fd4d02f442272f88f5123b18d0e66e69
+            [1] => 0556739d27e90cae8ac4efe76464af95
         )
-    [locality] => Array(
-            [0] => Afrotropical region|
-            [1] => Australian and Pacific regions|
-            [2] => East Palearctic region|
-            [3] => East Palearctic region (fossil)|
-            [4] => Nearctic region|
-            [5] => Nearctic region, Neotropical region|
-            [6] => Neotropical region|
-            [7] => Neotropical region (fossil)|
-            [8] => Oriental region|
-            [9] => Oriental region, East Palearctic region|
-            [10] => Oriental region, West Palearctic region|
-            [11] => West Palearctic region|
-            [12] => West Palearctic region (fossil)|
-            [13] => West Palearctic region, Afrotropical region|
-            [14] => West Palearctic region, East Palearctic region|
-            [15] => West Palearctic region, East Palearctic region, Nearctic region|
-            [16] => West Palearctic region, East Palearctic region, Oriental region|
-            [17] => West Palearctic region, East Palearctic region, [Nearctic region, Australian and Pacific regions]|
-            [18] => West Palearctic region, East Palearctic region, [Nearctic region]|
-            [19] => West Palearctic region, Nearctic region|
-            [20] => West Palearctic region, [Nearctic region]|
+    [dwc] => Array(
+            [0] => Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).
+            [1] => Bedell G. Description of Microsetia quinquella, a new species of moth of the family Tineidae. Zoologist 6: 1986. (1848).
         )
-    [occurrenceStatus] => Array(
-            [0] => Native|Native
+    [reference_author] => Array(
+            [0] => Amsel H.G.|Hering M.
+            [1] => Bedell G.
+        )
+    [Editors] => Array(
+            [0] => 
+            [1] => 
+        )
+    [title] => Array(
+            [0] => Beitrag zur Kenntnis der Minenfauna Palästinas
+            [1] => Description of Microsetia quinquella, a new species of moth of the family Tineidae
+        )
+    [publication_name] => Array(
+            [0] => Deutsche Entomologische Zeitschrift
+            [1] => Zoologist
+        )
+    [actual_pub_date] => Array(
+            [0] => 1931
+            [1] => 1848
+        )
+    [pages] => Array(
+            [0] => 113–152, 111–112
+            [1] => 1986
+        )
+    [publisher] => Array(
+            [0] => 
+            [1] => 
+        )
+    [pub_place] => Array(
+            [0] => 
+            [1] => 
+        )
+    [URLs] => Array(
+            [0] => http://www.jstor.org/pss/20490833.
+            [1] => http://dx.doi.org/10.5962/bhl.title.35818.
+        )
+    [DOI] => Array(
+            [0] => 10.1002/mmnd.193119310203.
+            [1] => 10.5962/bhl.title.35818.
+        )
+    [Language] => Array(
+            [0] => 
+            [1] => 
+        )
+    [listed_pub_date] => Array(
+            [0] => 
+            [1] => 
+        )
+    [isbn] => Array(
+            [0] => 
+            [1] => 
+        )
+    [issn] => Array(
+            [0] => 
+            [1] => 
+        )
+    [pub_comment] => Array(
+            [0] => 
+            [1] => 
         )
 )*/
 $resource_id = @get_val_var('resource_id');
