@@ -114,9 +114,15 @@ $ref_info_list = generate_ref_info_list($form); //to be used in generating the T
 echo "<pre>"; 
 // echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
 
+//====================================== generate Taxa_final.txt
 $source      = $temp_dir . 'Taxa.txt';
 $destination = $temp_dir . 'Taxa_final.txt';
 parse_TSV_file($source, $destination, $ref_info_list, $included_fields);
+unset($ref_info_list);
+
+//====================================== generate References_final.txt
+$destination = $temp_dir . 'References_final.txt';
+generate_References_final($form, $destination);
 
 /* ====================================== working OK - postponed ======================================
 echo "\nCompressing...\n";
@@ -151,16 +157,8 @@ This file will remain in our server for two (2) weeks.<br>
 */ // ====================================== end postponed ======================================
 
 echo "</pre>";
-// ini_set('memory_limit','14096M');
-// require_library('connectors/CheckListBankWebReference');
-// $func = new CheckListBankWebReference();
-// $params = array(
-//     'resource_id' => $resource_id,
-//     'temp_dir' => $temp_dir,
-//     'temp_folder' => $temp_folder,
-// );
-// $func->start($params);
 
+// ====================================== START FUNCTIONS ======================================
 function get_val_var($v)
 {
     if     (isset($_GET["$v"])) $var = $_GET["$v"];
@@ -191,6 +189,21 @@ function generate_ref_info_list($form)
     }
     // echo "<pre>"; print_r($final); echo "</pre>"; exit("\nstopx\n");
     return $final;
+}
+function generate_References_final($form, $destination)
+{
+    $fields = array_keys($form); //print_r($fields); exit;
+    $i = -1;
+    foreach($form['ID'] as $identifier) { $i++; //we try to generate json: e.g. {"Name":"Eli","Age":52}
+        $save = array();
+        foreach($fields as $fld) { // ID dwc etc.
+            $save[$fld] = $form[$fld][$i];
+        }
+        // ----- write -----
+        echo "<pre>"; print_r($save); echo "</pre>"; //exit;
+        write_output_rec_2txt($save, $destination);
+    }
+    // echo "<pre>"; print_r($final); echo "</pre>"; exit("\nstopx\n");
 }
 function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields)
 {

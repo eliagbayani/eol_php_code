@@ -56,8 +56,7 @@ class CheckListBankWebReference
                 <input type='hidden' name='temp_dir' value='$this->temp_dir'>
                 <input type='hidden' name='temp_folder' value='$this->temp_folder'>
                 <input type='hidden' name='included_fields' value='".json_encode($included_fields)."'>
-                "; 
-                ?>
+                ";?>
         </td></tr>
         <tr align="center">
             <td><!--- Array(
@@ -114,22 +113,6 @@ class CheckListBankWebReference
                     // if($rows >= 3) break; //debug only
                 }
 
-
-                // foreach($references as $r) { $i++;
-                //         ?><tr><?php
-                //         if(!$r) continue;
-                //         echo "<td>$r</td>";
-                //         echo "<td>
-                //             <select name='taxonRank[$i]' id='tR'>";
-                //             foreach($this->map['taxonRank'] as $tr) {
-                //                 if($r == $tr) $selected = "selected";
-                //                 else          $selected = "";
-                //                 echo "<option value='$r|$tr' $selected >$tr</option>";
-                //             }
-                //             echo'</select>
-                //         </td>';                            
-                //         ?></tr><?php
-                // } //end foreach()
                 ?></table>
             </td>
         </tr>
