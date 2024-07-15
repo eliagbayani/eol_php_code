@@ -414,6 +414,15 @@ class CheckListBankRules extends CheckListBankWeb
 
             // if(true) $obj = (object) array('full_reference' => $orig_line); //dev only debug only
             if(true) $obj = (object) self::eli_anystyle($orig_line); //dev only debug only
+            /*Array(
+                [actual_pub_date] => 1972, 1931
+                [DOI] => 10.1002/mmnd.193119310203.
+                [URLs] => http://eol.org/main/eli.html
+                [isbn] => 978-2-9545484-0-1
+                [Editors] => A. G. J. Rhodin and K. Miyata, Eli
+                [pages] => 116-129, 1-7, 121-134, 143, 113-152, 111-112, 1-218
+                [publisher] => Avuls. Mus. Par. Emélio Goeldi 
+            )*/
 
             // if(Functions::is_production()) $obj = (object) array('full_reference' => $orig_line); //temporary sol'n until anystyle is working
             else {
@@ -699,36 +708,87 @@ class CheckListBankRules extends CheckListBankWeb
         //    'doi'               => 'DOI',
         //    'language'          => 'Language'
 
-
-
         $final = array();
-        // ----- actual_pub_date -----
+        // ------------------------- actual_pub_date -------------------------
         $dates = array();
-        if(preg_match_all("/\((.*?)\)/ims", $citation, $arr)) {
-            // print_r($arr[1]);
+        if(preg_match_all("/\((.*?)\)/ims", $citation, $arr)) { // print_r($arr[1]);
             foreach($arr[1] as $str) {
                 if(is_numeric($str) && strlen($str) == 4) $dates[$str] = '';
                 // else echo "\nhindi [$str] [".strlen($str)."]\n";
             }
         }
-        if($dates) $final['actual_pub_date'] = implode(",", array_keys($dates));
-        // ----- DOI -----
+        if($dates) $final['date'] = array(implode(", ", array_keys($dates)));
+        // ------------------------- DOI -------------------------
         $DOIs = array();
-        if(preg_match_all("/doi[':'][' '](.*?) /ims", $citation, $arr)) {
-            // print_r($arr[1]);
-            foreach($arr[1] as $str) {
+        if(preg_match_all("/doi[':'][' '](.*?) /ims", $citation, $arr)) { // print_r($arr[1]);
+            $arr = array_map('trim', $arr[1]);
+            foreach($arr as $str) {
                 $DOIs[$str] = '';
             }
         }
-        if($DOIs) $final['DOI'] = implode(",", array_keys($DOIs));
-
-
-        // ---------------------------------------------
-        if($final) {
-            // print_r($final); exit("\nstopx\n");
+        if($DOIs) $final['doi'] = array(implode(", ", array_keys($DOIs)));
+        // ------------------------- URLs -------------------------
+        $URLs = array();
+        if(preg_match_all("/http(.*?) /ims", $citation, $arr)) { //print_r($arr[1]);
+            $arr = array_map('trim', $arr[1]);
+            foreach($arr as $str) {
+                $URLs["http".$str] = '';
+            }
         }
-
+        if($URLs) $final['url'] = array(implode(", ", array_keys($URLs)));
+        // ------------------------- isbn -------------------------
+        $needles = array();
+        if(preg_match_all("/isbn (.*?)['.',' ']/ims", $citation, $arr)) { //print_r($arr[1]);
+            $arr = array_map('trim', $arr[1]);
+            foreach($arr as $str) {
+                $needles[$str] = '';
+            }
+        }
+        if($needles) $final['isbn'] = implode(", ", array_keys($needles));
+        // ------------------------- Editors -------------------------
+        $needles = array();
+        if(preg_match_all("/In: (.*?)eds*/ims", $citation, $arr)) { //print_r($arr[1]);
+            $arr = array_map('trim', $arr[1]);
+            foreach($arr as $str) {
+                $str = trim(str_replace(array("(", "["), "", $str));
+                $needles[$str] = '';
+            }
+        }
+        if($needles) $final['editor'] = array('family' => implode(", ", array_keys($needles)));
+        // ------------------------- pages ------------------------- ending in perio . or semicolon ;
+        $needles = array();
+        if(preg_match_all("/ Pp\.(.*?)['.',';',',']/ims", $citation, $arr)) { //print_r($arr[1]);
+            $arr = array_map('trim', $arr[1]);
+            foreach($arr as $str) {
+                $needles[$str] = '';
+            }
+        }
+        if(preg_match_all("/ Page (.*?)['.',';']/ims", $citation, $arr)) { //print_r($arr[1]);
+            $arr = array_map('trim', $arr[1]);
+            foreach($arr as $str) {
+                if(is_numeric($str)) $needles[$str] = '';
+            }
+        }
+        if(preg_match_all("/\d+-\d+/", $citation, $matches)) {
+            foreach($matches[0] as $match) {
+                $parts = explode("-", $match);
+                if(@$parts[0] < @$parts[1] && is_numeric(@$parts[0]) && is_numeric(@$parts[1])) $needles[$match] = '';
+            }
+        }
+        if($needles) $final['pages'] = array(implode(", ", array_keys($needles)));
+        // ------------------------- publisher -------------------------
+        $needles = array();
+        if(preg_match_all("/Publ. (.*?)[1]/ims", $citation, $arr)) { //print_r($arr[1]);
+            $arr = array_map('trim', $arr[1]);
+            foreach($arr as $str) {
+                $str = substr($str, 0, -1); //remove last char
+                $needles[$str] = '';
+            }
+        }
+        if($needles) $final['publisher'] = array(implode(", ", array_keys($needles)));
+        // ------------------------------------------------------------
         $final['full_reference'] = $citation;
+        // if($final) print_r($final);
         // exit("\nstp muna\n");
         return $final;
     }

@@ -53,7 +53,10 @@ class AnystyleAPI
         $json = substr(trim($json), 1, -1); # remove first and last char
         // $json = str_replace("\\", "", $json); # remove "\" from converted json from Ruby
         // */
-        $obj = json_decode($json); //print_r($obj);
+
+        // $arr = json_decode($json, true); print_r($arr); //exit("\ncheck anystle output\n"); //debug only
+
+        $obj = json_decode($json); print_r($obj);
         return $obj;
     }
 
