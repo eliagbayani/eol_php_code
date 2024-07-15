@@ -1,7 +1,7 @@
 <?php
 namespace php_active_record;
 /* ALL THIS FROM COPIED TEMPLATE: TraitDataImportAPI.php
-real connector now: [CheckListBank_tool.php] TRAM-997: Taxonomic validation tool for the EOL DH
+real connector now: [CheckListBank_tool.php]
 */
 class CheckListBankAPI extends CheckListBankRules
 {

@@ -6,8 +6,7 @@ class CheckListBankWeb
     {
     }
     function create_web_form()
-    {
-        // echo "\ndito na siya...\n";
+    {   // echo "\ndito na siya...\n";
         $taxonRanks = self::get_text_contents('taxonRank');
         $taxonomicStatuses = self::get_text_contents('taxonomicStatus');
         if(in_array('accepted', $taxonomicStatuses) || 
@@ -37,9 +36,7 @@ class CheckListBankWeb
                 <input type='hidden' name='temp_dir' value='$this->temp_dir'>
                 <input type='hidden' name='temp_folder' value='$this->temp_folder'>
                 <input type='hidden' name='accepted_or_valid' value='$accepted_or_valid'>
-                "; 
-
-                ?>
+                "; ?>
         </td></tr>
         <tr align="center">
             <td>

@@ -412,8 +412,8 @@ class CheckListBankRules extends CheckListBankWeb
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
             */
 
-            // if(true) $obj = (object) array('full_reference' => $orig_line); //dev only debug only
-            if(Functions::is_production()) $obj = (object) array('full_reference' => $orig_line); //temporary sol'n until anystyle is working
+            if(true) $obj = (object) array('full_reference' => $orig_line); //dev only debug only
+            // if(Functions::is_production()) $obj = (object) array('full_reference' => $orig_line); //temporary sol'n until anystyle is working
             else {
                 // /* main operation
                 $obj = $this->other_funcs->parse_citation_using_anystyle_cli($line, $this->input_file); // print_r($obj); exit;
