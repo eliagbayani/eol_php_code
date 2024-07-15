@@ -799,6 +799,9 @@ class CheckListBankRules extends CheckListBankWeb
         }
         if($needles) $final['publisher'] = array(implode(", ", array_keys($needles)));
         // ------------------------------------------------------------
+
+        if(@$final['doi'] == @$final['url']) $final['url'] = array();
+
         $final['full_reference'] = $citation;
         // if($final) print_r($final);
         // exit("\nstp muna\n");
