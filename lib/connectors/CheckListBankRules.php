@@ -12,7 +12,18 @@ class CheckListBankRules extends CheckListBankWeb
     {
     }
     private function initialize()
-    {   /* 1st:
+    {   
+        $this->ref_type_values_map = array( //anystyle vs ITIS Jen values
+            'article-journal'   => 'Journal Article',
+            'book'              => 'Book',
+            'chapter'           => 'Book Chapter',
+            'paper-conference'  => 'Conference Paper',
+            ''                  => 'Miscellaneous',
+            'report'            => 'Report',
+            'thesis'            => 'Thesis'
+        );        
+        
+        /* 1st:
         require_library('connectors/RetrieveOrRunAPI');
         $task2run = 'gnparser';
         $download_options['expire_seconds'] = false; //doesn't expire
@@ -487,15 +498,15 @@ class CheckListBankRules extends CheckListBankWeb
                 -pub_comment                
                 */
                 													
-            $ref_type_values_map = array( //anystyle vs ITIS Jen values
-                'article-journal'   => 'Journal Article',
-                'book'              => 'Book',
-                'chapter'           => 'Book Chapter',
-                'paper-conference'  => 'Conference Paper',
-                ''                  => 'Miscellaneous',
-                'report'            => 'Report',
-                'thesis'            => 'Thesis'
-            );
+            // $ref_type_values_map = array( //anystyle vs ITIS Jen values
+            //     'article-journal'   => 'Journal Article',
+            //     'book'              => 'Book',
+            //     'chapter'           => 'Book Chapter',
+            //     'paper-conference'  => 'Conference Paper',
+            //     ''                  => 'Miscellaneous',
+            //     'report'            => 'Report',
+            //     'thesis'            => 'Thesis'
+            // );
 
             $fields = array("type", "identifier", "full_reference", "author", "editor", "title",  "container-title", "date", "pages", "publisher", "location", "url", "doi", "language");
             $ref_map_ITIS = array( //ITIS counterpart
@@ -525,7 +536,7 @@ class CheckListBankRules extends CheckListBankWeb
 
                     if($field == 'type') {
                         $val = @$rec[$field];
-                        $rec[$field] = $ref_type_values_map[$val];
+                        $rec[$field] = $this->ref_type_values_map[$val];
                     }
 
                     if($field == 'identifier') $save[$save_field] = md5($rec['full_reference']);

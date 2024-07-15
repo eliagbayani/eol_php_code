@@ -27,9 +27,11 @@ class CheckListBankWebReference
     }
     function create_web_form_reference()
     {
+        $reference_types = array('Journal Article', 'Book', 'Book Chapter', 'Conference Paper', 'Report', 'Thesis', 'Miscellaneous');
+
         // echo "\ndito na siya...\n";
         $references = self::get_text_contents('References');
-        $unique_types = self::get_unique_values($references, 'Item type'); //print_r($unique_types); exit;
+        // $unique_types = self::get_unique_values($references, 'Item type'); //print_r($unique_types); exit; //works but not used anymore
 
         $fields = explode("\t", $references[0]);
         // additional fields:
@@ -97,7 +99,7 @@ class CheckListBankWebReference
                             echo "<td>$fld</td>";
                             echo "<td>
                                 <select name='".$fld."[$rows]'>";
-                                foreach($unique_types as $type) {
+                                foreach($reference_types as $type) {
                                     if($val == $type) $selected = "selected";
                                     else              $selected = "";
                                     echo "<option value='$type' $selected >$type</option>";
