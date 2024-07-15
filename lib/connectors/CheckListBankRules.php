@@ -412,7 +412,9 @@ class CheckListBankRules extends CheckListBankWeb
             $line = htmlentities($line); //worked perfectly for special chars | htmlspecialchars_decode() and others didn't work
             */
 
-            if(true) $obj = (object) array('full_reference' => $orig_line); //dev only debug only
+            // if(true) $obj = (object) array('full_reference' => $orig_line); //dev only debug only
+            if(true) $obj = (object) self::eli_anystyle($orig_line); //dev only debug only
+
             // if(Functions::is_production()) $obj = (object) array('full_reference' => $orig_line); //temporary sol'n until anystyle is working
             else {
                 // /* main operation
@@ -673,6 +675,61 @@ class CheckListBankRules extends CheckListBankWeb
             $val = ucfirst(strtolower($val));
             $final[] = $val;
         }
+        return $final;
+    }
+    private function eli_anystyle($citation)
+    {   /* Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. 
+           Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931). */
+
+        // $citation = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. (1972) 
+        //    Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).";
+
+        //    'type'              => 'Item type',
+        //    'identifier'        => 'ID',
+        //    'full_reference'    => 'dwc',
+        //    'author'            => 'reference_author',
+        //    'editor'            => 'Editors',
+        //    'title'             => 'title',
+        //    'container-title'   => 'publication_name',
+        //    'date'              => 'actual_pub_date',
+        //    'pages'             => 'pages',
+        //    'publisher'         => 'publisher',
+        //    'location'          => 'pub_place',
+        //    'url'               => 'URLs',
+        //    'doi'               => 'DOI',
+        //    'language'          => 'Language'
+
+
+
+        $final = array();
+        // ----- actual_pub_date -----
+        $dates = array();
+        if(preg_match_all("/\((.*?)\)/ims", $citation, $arr)) {
+            // print_r($arr[1]);
+            foreach($arr[1] as $str) {
+                if(is_numeric($str) && strlen($str) == 4) $dates[$str] = '';
+                // else echo "\nhindi [$str] [".strlen($str)."]\n";
+            }
+        }
+        if($dates) $final['actual_pub_date'] = implode(",", array_keys($dates));
+        // ----- DOI -----
+        $DOIs = array();
+        if(preg_match_all("/doi[':'][' '](.*?) /ims", $citation, $arr)) {
+            // print_r($arr[1]);
+            foreach($arr[1] as $str) {
+                $DOIs[$str] = '';
+            }
+        }
+        if($DOIs) $final['DOI'] = implode(",", array_keys($DOIs));
+
+
+        // ---------------------------------------------
+        if($final) {
+            // print_r($final); exit("\nstopx\n");
+        }
+
+        $final['full_reference'] = $citation;
+        // exit("\nstp muna\n");
         return $final;
     }
     /* DwCA Reference

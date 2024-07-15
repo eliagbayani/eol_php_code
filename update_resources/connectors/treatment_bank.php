@@ -132,6 +132,119 @@ require_library('connectors/TreatmentBankAPI');
 $GLOBALS["ENV_DEBUG"] = true; //false;
 $timestart = time_elapsed();
 
+// /* test only
+
+$citation = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. (1972) 
+La Guyane, Pp. 116-129; 
+Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. Pp. 1-7, http://eol.org/main/eli.html Page 143;  doi: 10.1002/mmnd.193119310203. (1931).
+    ISBN 978-2-9545484-0-1.  Pp. 121-134. In: A. G. J. Rhodin and K. Miyata (eds.) in: Eli [eds] Publ. Avuls. Mus. Par. Emélio Goeldi 31: 1-218.";
+
+//    'type'              => 'Item type',
+//    'identifier'        => 'ID',
+//    'full_reference'    => 'dwc',
+//    'author'            => 'reference_author',
+//    'editor'            => 'Editors',
+//    'title'             => 'title',
+//    'container-title'   => 'publication_name',
+//    'date'              => 'actual_pub_date',
+//    'pages'             => 'pages',
+//    'publisher'         => 'publisher',
+//    'location'          => 'pub_place',
+//    'url'               => 'URLs',
+//    'doi'               => 'DOI',
+//    'language'          => 'Language'
+
+$final = array();
+// ----- actual_pub_date -----
+$dates = array();
+if(preg_match_all("/\((.*?)\)/ims", $citation, $arr)) { // print_r($arr[1]);
+    foreach($arr[1] as $str) {
+        if(is_numeric($str) && strlen($str) == 4) $dates[$str] = '';
+        else echo "\nhindi [$str] [".strlen($str)."]\n";
+    }
+}
+if($dates) $final['actual_pub_date'] = implode(",", array_keys($dates));
+// ----- DOI -----
+$DOIs = array();
+if(preg_match_all("/doi[':'][' '](.*?) /ims", $citation, $arr)) { // print_r($arr[1]);
+    $arr = array_map('trim', $arr[1]);
+    foreach($arr as $str) {
+        $DOIs[$str] = '';
+    }
+}
+if($DOIs) $final['DOI'] = implode(",", array_keys($DOIs));
+// ----- URLs -----
+$URLs = array();
+if(preg_match_all("/http(.*?) /ims", $citation, $arr)) { //print_r($arr[1]);
+    $arr = array_map('trim', $arr[1]);
+    foreach($arr as $str) {
+        $URLs["http".$str] = '';
+    }
+}
+if($URLs) $final['URLs'] = implode(",", array_keys($URLs));
+// ----- isbn -----
+$needles = array();
+if(preg_match_all("/isbn (.*?)['.',' ']/ims", $citation, $arr)) { //print_r($arr[1]);
+    $arr = array_map('trim', $arr[1]);
+    foreach($arr as $str) {
+        $needles[$str] = '';
+    }
+}
+if($needles) $final['isbn'] = implode(",", array_keys($needles));
+
+// ----- Editors -----
+$needles = array();
+if(preg_match_all("/In: (.*?)eds*/ims", $citation, $arr)) { //print_r($arr[1]);
+    $arr = array_map('trim', $arr[1]);
+    foreach($arr as $str) {
+        $str = trim(str_replace(array("(", "["), "", $str));
+        $needles[$str] = '';
+    }
+}
+if($needles) $final['Editors'] = implode(",", array_keys($needles));
+// ----- pages ----- ending in perio . or semicolon ;
+$needles = array();
+if(preg_match_all("/ Pp\.(.*?)['.',';',',']/ims", $citation, $arr)) { //print_r($arr[1]);
+    $arr = array_map('trim', $arr[1]);
+    foreach($arr as $str) {
+        $needles[$str] = '';
+    }
+}
+if(preg_match_all("/ Page (.*?)['.',';']/ims", $citation, $arr)) { //print_r($arr[1]);
+    $arr = array_map('trim', $arr[1]);
+    foreach($arr as $str) {
+        if(is_numeric($str)) $needles[$str] = '';
+    }
+}
+if($needles) $final['pages'] = implode(",", array_keys($needles));
+
+// ----- publisher -----
+$needles = array();
+if(preg_match_all("/Publ. (.*?)[1]/ims", $citation, $arr)) { //print_r($arr[1]);
+    $arr = array_map('trim', $arr[1]);
+    foreach($arr as $str) {
+        $str = trim(str_replace(array("(", "["), "", $str));
+        $needles[$str] = '';
+    }
+}
+if($needles) $final['publisher'] = implode(",", array_keys($needles));
+
+
+// Publ. Avuls. Mus. Par. Emélio Goeldi 31: 1-218.
+
+// ---------------------------------------------
+echo "\n$citation\n";
+if($final) {
+ print_r($final); exit("\nstopx\n");
+}
+
+exit("\nend test\n");
+
+
+// */
+
+
+
 /* Important function for Pensoft. Used as retrieve_annotation() in Pensoft2EOLAPI.php
 $orig_batch_length = 5; //4;
 $batch_length = $orig_batch_length;
