@@ -43,8 +43,7 @@ class CheckListBankWebReference
         // included_fields: the 11 Jen fields
 
         echo "<pre>";
-        // $fields[0] = "Item_type";
-        print_r($fields); //echo"<hr>"; print_r($references);
+        // print_r($fields); //echo"<hr>"; print_r($references);
         ?>
         <table border="1" cellpadding="15" cellspacing="1" align="center" width="40%">
         <tr align="center"><td><b>CheckListBank Tool</b></td></tr>
