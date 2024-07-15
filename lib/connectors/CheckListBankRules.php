@@ -690,8 +690,8 @@ class CheckListBankRules extends CheckListBankWeb
     {   /* Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. 
            Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931). */
 
-        // $citation = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. (1972) 
-        //    Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).";
+        // $citation = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. (1972) Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).";
+        // $citation = "Puplesis RK, Ivinskis PP. Obzor fauny moleï-malyutok roda Obrussa Braun SSSR i opisanie 4 novykh vidov Obrussa capesella sp. n., O. tigrinella sp. n., O. peterseni sp. n., O. sabina sp. n. [Review of nepticulid moths fauna of the Obrussa Braun genus in the USSR and a description o. Trudy Akademii Nauk Litovskoi SSR Seriya C 92: 36-46. (1985).";
 
         //    'type'              => 'Item type',
         //    'identifier'        => 'ID',
@@ -760,7 +760,8 @@ class CheckListBankRules extends CheckListBankWeb
         if(preg_match_all("/ Pp\.(.*?)['.',';',',']/ims", $citation, $arr)) { //print_r($arr[1]);
             $arr = array_map('trim', $arr[1]);
             foreach($arr as $str) {
-                $needles[$str] = '';
+                $parts = explode("-", $str);
+                if(@$parts[0] < @$parts[1] && is_numeric(@$parts[0]) && is_numeric(@$parts[1])) $needles[$str] = '';
             }
         }
         if(preg_match_all("/ Page (.*?)['.',';']/ims", $citation, $arr)) { //print_r($arr[1]);
