@@ -5,9 +5,20 @@ class CheckListBankWeb
     function __construct()
     {
     }
+    private function check_for_default_value($geographic_value)
+    {
+        $hit = false;
+        foreach($this->default_geographic_values as $needle => $region) {
+            if(stripos($geographic_value, $needle) !== false) { //string is found
+                return $region;
+                break;
+            }
+        }
+        return $geographic_value;
+    }
     function create_web_form()
     {   // echo "\ndito na siya...\n";
-        $default_geographic_values = self::get_default_geographic_values();
+        $this->default_geographic_values = self::get_default_geographic_values();
         $taxonRanks = self::get_text_contents('taxonRank');
         $taxonomicStatuses = self::get_text_contents('taxonomicStatus');
         if(in_array('accepted', $taxonomicStatuses) || 
@@ -97,16 +108,17 @@ class CheckListBankWeb
 
         <tr align="center">
             <td>
-                <table><tr rowspan='2'><td align='center' colspan='2'><b>geographic_value</b><br>&nbsp;</td></tr><?php
+                <table><tr rowspan='2'><td align='center' colspan='2'><b>geographic_value n=<?php echo count($localities) ?></b><br>&nbsp;</td></tr><?php
                 $i = -1;
                 foreach($localities as $r) { $i++;
+                        $needle = self::check_for_default_value($r);
                         ?><tr><?php
                         if(!$r) continue;
                         echo "<td>$r</td>";
                         echo "<td>
                             <select name='locality[$i]' id='l'>";
                             foreach($this->map['locality'] as $tr) {
-                                if($r == $tr) $selected = "selected";
+                                if($needle == $tr) $selected = "selected";
                                 else          $selected = "";
                                 echo "<option value='$r|$tr' $selected >$tr</option>";
                             }
