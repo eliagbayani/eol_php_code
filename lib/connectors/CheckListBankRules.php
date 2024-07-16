@@ -727,11 +727,18 @@ class CheckListBankRules extends CheckListBankWeb
         for ($i = 0; $i <= $len; $i++) {
             $char = substr($citation, $i, 1);
             if(is_numeric($char)) continue;
-            if($char == "." || $char == ":" || $char == ",") {
+            if($char == "." || $char == ",") {
                 $str = trim($str);
                 $count = str_word_count($str);
                 $pattern = '/\pL+/u';
                 $pattern = "/[\pL']+/u";
+        
+                if(stripos($str, "(Ed)") !== false || stripos($str, "eds.") !== false) { //string is found
+                    $needles[-2][] = $str;
+                    $str = ""; //works even without this line
+                    continue;
+                }
+        
                 $count = preg_match_all($pattern, $str, $matches);
                 if(ctype_upper(@$str[0])) $needles[$count][] = $str;
                 else                      $needles[-1][] = $str;

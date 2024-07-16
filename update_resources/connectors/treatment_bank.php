@@ -133,25 +133,35 @@ $GLOBALS["ENV_DEBUG"] = true; //false;
 $timestart = time_elapsed();
 
 // /* test only
-$citation = "ABDALA C. S., R. V. SEMHAN, D. L. MORENO AZOCAR, M. BONINO, M. M. PAZ & F. CRUZ. (2012). Taxonomic study and morphology based phylogeny of the patagonic clade Liolaemus melanops group (Iguania: Liolaemidae), with the description of three new taxa. Zootaxa 3163: 1–32.";
 // $citation = "Beirne BP. The male genitalia of the British Stigmellidae (Nepticulidae) (Lep.). Proceedings of the Royal Irish Academy Section B 50: 191-218. doi: http://www.jstor.org/pss/20490833. (1945).";
 // $citation = "Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil VI. Die Verbreitung der Nepticuliden in Polen. Polskie Pismo Entomologiczne 45: 487-535, 410 pls. (1975).";
 // $citation = "Borkowski A. Studien an Stigmelliden (Lepidoptera). Teil II. Fedalmia thymi sp. n.: eine neue Art aus Mitteleuropa. Polskie Pismo Entomologiczne 40: 69-78. (1970).";
 // $citation = "Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil V. Die europäischen Arten der Gattung Nepticula Heyden von Eichen. Polskie Pismo Entomologiczne 42: 767-799. (1972).";
-// $citation = "Bourquin F. Microlepidopteros nuevos con sus biologias. Revista de la Sociedad Entomológica Argentina 23: 31-46. (1961).";
+$citation = "Bourquin F. Microlepidopteros nuevos con sus biologias. Revista de la Sociedad Entomológica Argentina 23: 31-46. (1961).";
 // $citation = "Frey H, Boll J. Tineen aus Texas. Stettiner Entomologische Zeitung 39: 249-280. (1878).";
 // $citation = "Frey H. A new Nepticula. Entomologist's Weekly Intelligencer 4: 14. (1858).";
-$citation = "Chrétien P. Contribution à la connaissance des Lépidoptères du Nord de l'Afrique. Annales dela Société Entomologique de France 84: 289-374, figs. 281-211. (1915).";
+// $citation = "Chrétien P. Contribution à la connaissance des Lépidoptères du Nord de l'Afrique. Annales dela Société Entomologique de France 84: 289-374, figs. 281-211. (1915).";
+// $citation = "Chrétien P. Lés Lépidoptères du Maroc. Galleriinae - Micropterygidae. In: Oberthür C (Ed) Études de Lépidoptérologie comparée. Oberthür, Rennes, 324-379. (1922).";
+// $citation = "ABDALA C. S., R. V. SEMHAN, D. L. MORENO AZOCAR, M. BONINO, M. M. PAZ & F. CRUZ. (2012). Taxonomic study and morphology based phylogeny of the patagonic clade Liolaemus melanops group (Iguania: Liolaemidae), with the description of three new taxa. Zootaxa 3163: 1–32.";
+// $citation = "ABDALA, CRISTIAN SIMÓN; DIEGO ESTEBAN PROCOPIO, OSCAR ANÍBAL STELLATELLI, ALEJANDRO TRAVAINI, ALEJANDRO RODRÍGUEZ & MARIO RICARDO RUIZ MONACHESI. (2014). New Patagonian species of Liolaemus (Iguania: Liolaemidae) and novelty in the lepidosis of the southernmost lizard of the world: Liolaemus magellanicus. Zootaxa 3866 (4): 526–542.";
+
 $citation = str_ireplace("de la", "dela", $citation); //will undo below
 $len = strlen($citation); $needles = array(); $str = "";
 for ($i = 0; $i <= $len; $i++) {
     $char = substr($citation, $i, 1);
     if(is_numeric($char)) continue;
-    if($char == "." || $char == ":" || $char == ",") {
+    if($char == "." || $char == "_" || $char == ",") {
         $str = trim($str);
         $count = str_word_count($str);
         $pattern = '/\pL+/u';
         $pattern = "/[\pL']+/u";
+
+        if(stripos($str, "(Ed)") !== false || stripos($str, "eds.") !== false) { //string is found
+            $needles[-2][] = $str;
+            $str = ""; //works even without this line
+            continue;
+        }
+
         $count = preg_match_all($pattern, $str, $matches);
         if(ctype_upper(@$str[0])) $needles[$count][] = $str;
         else                      $needles[-1][] = $str;
