@@ -740,27 +740,21 @@ class CheckListBankRules extends CheckListBankWeb
         $DOIs = array();
         if(preg_match_all("/doi[':'][' '](.*?) /ims", $citation, $arr)) { // print_r($arr[1]);
             $arr = array_map('trim', $arr[1]);
-            foreach($arr as $str) {
-                $DOIs[$str] = '';
-            }
+            foreach($arr as $str) $DOIs[$str] = '';
         }
         if($DOIs) $final['doi'] = array(implode(", ", array_keys($DOIs)));
         // ------------------------- URLs -------------------------
         $URLs = array();
         if(preg_match_all("/http(.*?) /ims", $citation, $arr)) { //print_r($arr[1]);
             $arr = array_map('trim', $arr[1]);
-            foreach($arr as $str) {
-                $URLs["http".$str] = '';
-            }
+            foreach($arr as $str) $URLs["http".$str] = '';
         }
         if($URLs) $final['url'] = array(implode(", ", array_keys($URLs)));
         // ------------------------- isbn -------------------------
         $needles = array();
         if(preg_match_all("/isbn (.*?)['.',' ']/ims", $citation, $arr)) { //print_r($arr[1]);
             $arr = array_map('trim', $arr[1]);
-            foreach($arr as $str) {
-                $needles[$str] = '';
-            }
+            foreach($arr as $str) $needles[$str] = '';
         }
         if($needles) $final['isbn'] = implode(", ", array_keys($needles));
         // ------------------------- Editors -------------------------
