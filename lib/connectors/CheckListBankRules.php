@@ -69,7 +69,10 @@ class CheckListBankRules extends CheckListBankWeb
     {
         self::initialize();
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'process Taxon.tsv'); //generate unique lists from Taxon.tsv
+        // echo "\ndebug namePublishedIn: ".count($this->debug['namePublishedIn'])."\n";
         $a = self::sort_key_val_array($this->debug['namePublishedIn']);     self::write_array_2txt(array_keys($a), "namePublishedIn");      //print_r($a);
+        // echo "\n a: ".count($a)."\n";
+
         // /* main operation
         $a = self::sort_key_val_array($this->debug['infragenericEpithet']); self::write_array_2txt(array_keys($a), "infragenericEpithet");  //print_r($a);
         $a = self::sort_key_val_array($this->debug['taxonomicStatus']);     self::write_array_2txt(array_keys($a), "taxonomicStatus");      //print_r($a);
@@ -529,6 +532,8 @@ class CheckListBankRules extends CheckListBankWeb
                 // 'edition'    => No counterpart in ITIS. Let us ignore for now.
             );
     
+            // print_r($reks);
+
             foreach($reks as $rec) {
                 $save = array();
                 foreach($fields as $field)  {
@@ -540,9 +545,20 @@ class CheckListBankRules extends CheckListBankWeb
                     }
 
                     if($field == 'identifier') {
-                        if($val = $rec['full_reference']) $save[$save_field] = md5($val);
+                        if($val = $rec['full_reference']) {
+                            $save[$save_field] = md5($val);
+//                             if($val == "
+// Leraut P. Liste systématique et synonymique des Lépidoptères de France, Belgique et Corse. Supplément à Alexanor et au Bulletin de la Société Entomologique de France: 1-334. pp. (1980).
+// Leraut P. Liste systématique et synonymique des Lépidoptères de France, Belgique et Corse. Supplément à Alexanor et au Bulletin dela Société Entomologique de France: 1-334. pp. (1980).
+
+// ") {
+//                                 print_r($rec);
+//                                 exit("\n".md5($val)."\nhuli 100\n");
+//                             }
+                        }
+                        else exit("\nCannot be blank at this point.\n");
                     }
-                    else                       $save[$save_field] = @$rec[$field];
+                    else $save[$save_field] = @$rec[$field];
                 }
                 // print_r($save); exit;
                 self::write_output_rec_2txt($save, "References");
@@ -751,7 +767,10 @@ class CheckListBankRules extends CheckListBankWeb
         krsort($needles); //print_r($needles);
         $tmp_arr = array_shift($needles);
         $title = array(array_shift($tmp_arr)); //get the first element of array using array_shift()
-        $title = str_ireplace("dela", "de la", $title); //undo what was done above
+
+        $title = str_ireplace("dela", "de la", $title);         //undo what was done above
+        $citation = str_ireplace("dela", "de la", $citation);   //undo what was done above
+
         $final['title'] = $title;
         // print_r($final); exit("\n[$citation]\nstop\n");        
         // ------------------------- actual_pub_date -------------------------

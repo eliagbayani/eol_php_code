@@ -188,6 +188,5 @@ class CheckListBankWeb
 
         return $final;
     }
-
 }
 ?>

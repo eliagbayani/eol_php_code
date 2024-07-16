@@ -7,11 +7,11 @@ ini_set('error_reporting', false);
 ini_set('display_errors', false);
 $GLOBALS['ENV_DEBUG'] = false; //set to false in production
 */
-// /* during development
+/* during development
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
 $GLOBALS['ENV_DEBUG'] = true; //set to true during development
-// */
+*/
 
 /* test
 $arr = array("Name" => "Eli", "Age" => 52);
@@ -111,7 +111,8 @@ unset($form['included_fields']);
 
 $ref_info_list = generate_ref_info_list($form); //to be used in generating the Taxa_final.txt
 
-echo "<pre>"; 
+echo "<pre>";
+echo "\n".count($form['ID'])."\n";
 // echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
 
 //====================================== generate Taxa_final.txt
@@ -247,12 +248,12 @@ function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields
         // /* append reference fields
         if($referenceID = $rec['referenceID']) {
             if($ref_array = @$ref_info_list[$referenceID]) {
+                @$eli_debug['referenceID found']++;
                 foreach($included_fields as $fld) $save[$fld] = $ref_array[$fld];
             }
             else {
-                print_r($ref_info_list);
-                print_r($rec);
-                exit("\nShould not go here. referenceID not found in ref_info_list.\n");
+                // print_r($ref_info_list); print_r($rec);
+                @$eli_debug['Should not go here. referenceID not found'][$referenceID]++;
             }
         }
         else {
@@ -265,6 +266,7 @@ function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields
         unset($save['pre_name_usage']);
         write_output_rec_2txt($save, $destination);
     } //end foreach()
+    if($eli_debug) print_r($eli_debug);
 }
 function write_output_rec_2txt($rec, $filename)
 {   
