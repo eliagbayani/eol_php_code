@@ -539,7 +539,9 @@ class CheckListBankRules extends CheckListBankWeb
                         $rec[$field] = $this->ref_type_values_map[$val];
                     }
 
-                    if($field == 'identifier') $save[$save_field] = md5($rec['full_reference']);
+                    if($field == 'identifier') {
+                        if($val = $rec['full_reference']) $save[$save_field] = md5($val);
+                    }
                     else                       $save[$save_field] = @$rec[$field];
                 }
                 // print_r($save); exit;
