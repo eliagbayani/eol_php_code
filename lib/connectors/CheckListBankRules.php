@@ -542,6 +542,7 @@ class CheckListBankRules extends CheckListBankWeb
                     if($field == 'identifier') $save[$save_field] = md5($rec['full_reference']);
                     else                       $save[$save_field] = @$rec[$field];
                 }
+                // print_r($save); exit;
                 self::write_output_rec_2txt($save, "References");
             }
             // */
@@ -721,13 +722,29 @@ class CheckListBankRules extends CheckListBankWeb
 
         $final = array();
         // ------------------------- title -------------------------
-        $needles = array();
-        if(preg_match_all("/\.(.*?)\./ims", $citation, $arr)) { //print_r($arr[1]);
-            $arr = array_map('trim', $arr[1]);
-            foreach($arr as $str) $needles[str_word_count($str)] = $str;
+        $citation = str_ireplace("de la", "dela", $citation); //will undo below
+        $len = strlen($citation); $needles = array(); $str = "";
+        for ($i = 0; $i <= $len; $i++) {
+            $char = substr($citation, $i, 1);
+            if(is_numeric($char)) continue;
+            if($char == "." || $char == ":" || $char == ",") {
+                $str = trim($str);
+                $count = str_word_count($str);
+                $pattern = '/\pL+/u';
+                $pattern = "/[\pL']+/u";
+                $count = preg_match_all($pattern, $str, $matches);
+                if(ctype_upper(@$str[0])) $needles[$count][] = $str;
+                else                      $needles[-1][] = $str;
+                $str = "";
+            }
+            else $str .= $char;
         }
-        krsort($needles); // print_r($needles);
-        $final['title'] = array(array_shift($needles)); //get the first element of array using array_shift()
+        krsort($needles); //print_r($needles);
+        $tmp_arr = array_shift($needles);
+        $title = array(array_shift($tmp_arr)); //get the first element of array using array_shift()
+        $title = str_ireplace("dela", "de la", $title); //undo what was done above
+        $final['title'] = $title;
+        // print_r($final); exit("\n[$citation]\nstop\n");        
         // ------------------------- actual_pub_date -------------------------
         $dates = array();
         if(preg_match_all("/\((.*?)\)/ims", $citation, $arr)) { // print_r($arr[1]);

@@ -132,53 +132,40 @@ require_library('connectors/TreatmentBankAPI');
 $GLOBALS["ENV_DEBUG"] = true; //false;
 $timestart = time_elapsed();
 
-/* test only
-$citation = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. (1972) 
-La Guyane, Pp. 116-129; 
-Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. Pp. 1-7, http://eol.org/main/eli.html Page 143;  doi: 10.1002/mmnd.193119310203. (1931).
-    ISBN 978-2-9545484-0-1.  Pp. 121-134. In: A. G. J. Rhodin and K. Miyata (eds.) in: Eli [eds] Publ. Avuls. Mus. Par. Emélio Goeldi 31: 1-218.";
-
-//    'type'              => 'Item type',
-//    'identifier'        => 'ID',
-//    'full_reference'    => 'dwc',
-//    'author'            => 'reference_author',
-//    'editor'            => 'Editors',
-//    'title'             => 'title',
-//    'container-title'   => 'publication_name',
-//    'date'              => 'actual_pub_date',
-//    'pages'             => 'pages',
-//    'publisher'         => 'publisher',
-//    'location'          => 'pub_place',
-//    'url'               => 'URLs',
-//    'doi'               => 'DOI',
-//    'language'          => 'Language'
-
-$final = array();
-// ------------------------- actual_pub_date -------------------------
-$dates = array();
-if(preg_match_all("/\((.*?)\)/ims", $citation, $arr)) { // print_r($arr[1]);
-    foreach($arr[1] as $str) {
-        if(is_numeric($str) && strlen($str) == 4) $dates[$str] = '';
-        // else echo "\nhindi [$str] [".strlen($str)."]\n";
+// /* test only
+$citation = "ABDALA C. S., R. V. SEMHAN, D. L. MORENO AZOCAR, M. BONINO, M. M. PAZ & F. CRUZ. (2012). Taxonomic study and morphology based phylogeny of the patagonic clade Liolaemus melanops group (Iguania: Liolaemidae), with the description of three new taxa. Zootaxa 3163: 1–32.";
+// $citation = "Beirne BP. The male genitalia of the British Stigmellidae (Nepticulidae) (Lep.). Proceedings of the Royal Irish Academy Section B 50: 191-218. doi: http://www.jstor.org/pss/20490833. (1945).";
+// $citation = "Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil VI. Die Verbreitung der Nepticuliden in Polen. Polskie Pismo Entomologiczne 45: 487-535, 410 pls. (1975).";
+// $citation = "Borkowski A. Studien an Stigmelliden (Lepidoptera). Teil II. Fedalmia thymi sp. n.: eine neue Art aus Mitteleuropa. Polskie Pismo Entomologiczne 40: 69-78. (1970).";
+// $citation = "Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil V. Die europäischen Arten der Gattung Nepticula Heyden von Eichen. Polskie Pismo Entomologiczne 42: 767-799. (1972).";
+// $citation = "Bourquin F. Microlepidopteros nuevos con sus biologias. Revista de la Sociedad Entomológica Argentina 23: 31-46. (1961).";
+// $citation = "Frey H, Boll J. Tineen aus Texas. Stettiner Entomologische Zeitung 39: 249-280. (1878).";
+// $citation = "Frey H. A new Nepticula. Entomologist's Weekly Intelligencer 4: 14. (1858).";
+$citation = "Chrétien P. Contribution à la connaissance des Lépidoptères du Nord de l'Afrique. Annales dela Société Entomologique de France 84: 289-374, figs. 281-211. (1915).";
+$citation = str_ireplace("de la", "dela", $citation); //will undo below
+$len = strlen($citation); $needles = array(); $str = "";
+for ($i = 0; $i <= $len; $i++) {
+    $char = substr($citation, $i, 1);
+    if(is_numeric($char)) continue;
+    if($char == "." || $char == ":" || $char == ",") {
+        $str = trim($str);
+        $count = str_word_count($str);
+        $pattern = '/\pL+/u';
+        $pattern = "/[\pL']+/u";
+        $count = preg_match_all($pattern, $str, $matches);
+        if(ctype_upper(@$str[0])) $needles[$count][] = $str;
+        else                      $needles[-1][] = $str;
+        $str = "";
     }
+    else $str .= $char;
 }
-if($dates) $final['actual_pub_date'] = implode(", ", array_keys($dates));
-// ------------------------- DOI -------------------------
-$DOIs = array();
-if(preg_match_all("/doi[':'][' '](.*?) /ims", $citation, $arr)) { // print_r($arr[1]);
-    $arr = array_map('trim', $arr[1]);
-    foreach($arr as $str) {
-        $DOIs[$str] = '';
-    }
-}
-if($DOIs) $final['DOI'] = implode(", ", array_keys($DOIs));
-// ------------------------------------------------------------
-echo "\n$citation\n";
-if($final) {
- print_r($final); //exit("\nstopx\n");
-}
-exit("\nend test\n");
-*/
+krsort($needles); print_r($needles);
+$tmp_arr = array_shift($needles);
+$title = array(array_shift($tmp_arr)); //get the first element of array using array_shift()
+$title = str_ireplace("dela", "de la", $title); //undo what was done above
+$final['title'] = $title;
+print_r($final); exit("\n[$citation]\nstop\n");
+// */
 
 
 

@@ -94,7 +94,10 @@ class CheckListBankWebReference
                         $bgcolor = 'white';
                         if(in_array($fld, $included_fields)) $bgcolor = 'lightblue';
                         echo "<tr bgcolor='$bgcolor'>";
-                        if($fld != 'Item type') echo "<td>$fld</td><td width='85%'><input type='$type' name='".$fld."[$rows]' value='$val' size='100'></td>";
+                        if($fld != 'Item type') {
+                            echo "<td>$fld</td><td width='85%'>";
+                            echo '<input type="'.$type.'", name="'.$fld.'['.$rows.']" value="'.$val.'" size="100"></td>';                                                
+                        }
                         else {
                             echo "<td>$fld</td>";
                             echo "<td>
