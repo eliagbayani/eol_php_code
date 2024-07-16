@@ -7,6 +7,7 @@ class CheckListBankWeb
     }
     function create_web_form()
     {   // echo "\ndito na siya...\n";
+        $default_geographic_values = self::get_default_geographic_values();
         $taxonRanks = self::get_text_contents('taxonRank');
         $taxonomicStatuses = self::get_text_contents('taxonomicStatus');
         if(in_array('accepted', $taxonomicStatuses) || 
@@ -155,5 +156,26 @@ class CheckListBankWeb
         $contents = file_get_contents($filename);
         return explode("\n", $contents);
     }
+    private function get_default_geographic_values() //sheet found here: https://github.com/EOL/ContentImport/issues/14#issuecomment-2229202520
+    {
+        require_library('connectors/GoogleClientAPI');
+        $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
+        $params['spreadsheetID'] = '14WAnVriSmeBHRXgA6p84EiqsJyT164I2qq9pJ-Y3UfY';
+        $params['range']         = 'A2:B512'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
+        $arr = $func->access_google_sheet($params);
+        //start massage array
+        /* option 1
+        foreach($arr as $item) $final[$item[0]][] = $item[1];
+        print_r($final); exit;
+        */
+
+        // /* option 2
+        foreach($arr as $item) $final[$item[1]] = $item[0];
+        // print_r($final); exit;
+        // */
+
+        return $final;
+    }
+
 }
 ?>
