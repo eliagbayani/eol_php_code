@@ -250,6 +250,7 @@ function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields
                 foreach($included_fields as $fld) $save[$fld] = $ref_array[$fld];
             }
             else {
+                print_r($ref_info_list);
                 print_r($rec);
                 exit("\nShould not go here. referenceID not found in ref_info_list.\n");
             }
