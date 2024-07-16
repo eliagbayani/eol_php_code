@@ -720,12 +720,19 @@ class CheckListBankRules extends CheckListBankWeb
         //    'language'          => 'Language'
 
         $final = array();
+        // ------------------------- title -------------------------
+        $needles = array();
+        if(preg_match_all("/\.(.*?)\./ims", $citation, $arr)) { //print_r($arr[1]);
+            $arr = array_map('trim', $arr[1]);
+            foreach($arr as $str) $needles[str_word_count($str)] = $str;
+        }
+        krsort($needles); // print_r($needles);
+        $final['title'] = array(array_shift($needles)); //get the first element of array using array_shift()
         // ------------------------- actual_pub_date -------------------------
         $dates = array();
         if(preg_match_all("/\((.*?)\)/ims", $citation, $arr)) { // print_r($arr[1]);
             foreach($arr[1] as $str) {
                 if(is_numeric($str) && strlen($str) == 4) $dates[$str] = '';
-                // else echo "\nhindi [$str] [".strlen($str)."]\n";
             }
         }
         if($dates) $final['date'] = array(implode(", ", array_keys($dates)));
