@@ -207,7 +207,7 @@ class CheckListBankWeb
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
         $params['spreadsheetID'] = '14WAnVriSmeBHRXgA6p84EiqsJyT164I2qq9pJ-Y3UfY';
         $params['range']         = 'A2:B512'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
-        $arr = $func->access_google_sheet($params);
+        $arr = $func->access_google_sheet($params, false); //2nd param false means not to use cache and download again.
         //start massage array
         
         /* option 1
