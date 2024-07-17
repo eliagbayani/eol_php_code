@@ -79,7 +79,7 @@ if($accepted_or_valid == 'valid') $var_unaccepted = 'invalid';
 
 
 $arr_2_save = generate_array_comment_UR($form);
-echo "<pre>"; print_r($arr_2_save); echo "</pre>";
+// echo "<pre>"; print_r($arr_2_save); echo "</pre>";
 $WRITE = Functions::file_open($temp_dir . 'comment_unacceptability_reason.txt', "w");
 fwrite($WRITE, json_encode($arr_2_save));
 fclose($WRITE);

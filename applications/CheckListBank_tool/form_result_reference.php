@@ -132,10 +132,11 @@ generate_References_final($form, $destination);
 echo "\nCompressing...\n";
 $source1 = $temp_dir.'Taxa_final.txt';
 $source2 = $temp_dir.'References_final.txt';
+$source3 = $temp_dir.'Taxa.txt';
 $target_dir = str_replace("$resource_id/", "", $temp_dir);
 $target = $target_dir."ITIS_format_$resource_id.zip";
 // $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
-$output = shell_exec("zip -j $target $source1 $source2");
+$output = shell_exec("zip -j $target $source1 $source2 $source3");
 echo "\n$output\n";
 
 if(stripos($output, "error") !== false) exit("\nError encountered:\n[$output]\nGo back to Main.\n");
