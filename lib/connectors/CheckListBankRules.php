@@ -717,9 +717,7 @@ class CheckListBankRules extends CheckListBankWeb
         return $final;
     }
     private function eli_anystyle($citation)
-    {   /* Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. 
-           Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931). */
-
+    {   
         // $citation = "Amsel HG, Hering M. Beitrag zur Kenntnis der Minenfauna Palästinas. (1972) Deutsche Entomologische Zeitschrift 1931: 113-152, pls 111-112. doi: 10.1002/mmnd.193119310203. (1931).";
         // $citation = "Puplesis RK, Ivinskis PP. Obzor fauny moleï-malyutok roda Obrussa Braun SSSR i opisanie 4 novykh vidov Obrussa capesella sp. n., O. tigrinella sp. n., O. peterseni sp. n., O. sabina sp. n. [Review of nepticulid moths fauna of the Obrussa Braun genus in the USSR and a description o. Trudy Akademii Nauk Litovskoi SSR Seriya C 92: 36-46. (1985).";
 
