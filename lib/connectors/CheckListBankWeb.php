@@ -6,8 +6,12 @@ class CheckListBankWeb
     {
     }
     private function check_for_default_value($geographic_value)
-    {
-        $hit = false;
+    {   /*Array(
+            [Scotia Sea] => Antarctica/Southern Ocean
+            [Marielandia] => Antarctica/Southern Ocean
+            [Southern Ocean] => Antarctica/Southern Ocean        
+        */
+        /* implementation for one to one: orig works OK
         foreach($this->default_geographic_values as $needle => $region) {
             if(stripos($geographic_value, $needle) !== false) { //string is found
                 return $region;
@@ -15,6 +19,29 @@ class CheckListBankWeb
             }
         }
         return $geographic_value;
+        */
+
+        /*Array(
+        [Scotia Sea] => Array(
+                [0] => Antarctica/Southern Ocean
+            )
+        [Aruba] => Array(
+                [0] => North America
+                [1] => Caribbean
+            )
+        */
+
+        // /* implementation for one to many
+        foreach($this->default_geographic_values as $needle => $regions) {
+            if(stripos($geographic_value, $needle) !== false) { //string is found
+                if(count($regions) == 1) return $regions[0];
+                else return ""; //for multiple matches suggest nothing: https://github.com/EOL/ContentImport/issues/14#issuecomment-2233125520
+                break;
+            }
+        }
+        return "";
+        // */
+
     }
     function create_web_form()
     {   // echo "\ndito na siya...\n";
@@ -119,7 +146,7 @@ class CheckListBankWeb
                             <select name='locality[$i]' id='l'>";
                             foreach($this->map['locality'] as $tr) {
                                 if($needle == $tr) $selected = "selected";
-                                else          $selected = "";
+                                else               $selected = "";
                                 echo "<option value='$r|$tr' $selected >$tr</option>";
                             }
                             echo'</select>
@@ -176,13 +203,15 @@ class CheckListBankWeb
         $params['range']         = 'A2:B512'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
         $arr = $func->access_google_sheet($params);
         //start massage array
+        
         /* option 1
         foreach($arr as $item) $final[$item[0]][] = $item[1];
         print_r($final); exit;
         */
 
         // /* option 2
-        foreach($arr as $item) $final[$item[1]] = $item[0];
+        // foreach($arr as $item) $final[$item[1]] = $item[0]; //orig working | one to one
+        foreach($arr as $item) $final[$item[1]][] = $item[0]; //2nd option after Jen's feedback | one to many 
         // print_r($final); exit;
         // */
 
