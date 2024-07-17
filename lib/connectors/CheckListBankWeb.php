@@ -132,7 +132,7 @@ class CheckListBankWeb
                             echo "<td align='right'>Comment:</td>";
                             echo "<td><input type='text' name='comment_unacceptability_reason[$r]' size='75'></td>";
                         }
-                        ?></td></tr><?php
+                        ?></td></tr><tr><td>&nbsp;</td></tr><?php
 
                 } //end foreach()
                 ?></table>
