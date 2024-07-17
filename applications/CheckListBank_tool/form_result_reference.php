@@ -111,6 +111,9 @@ unset($form['included_fields']);
 
 $ref_info_list = generate_ref_info_list($form); //to be used in generating the Taxa_final.txt
 
+$json = file_get_contents($temp_dir . 'comment_unacceptability_reason.txt');
+$comments_reason = json_decode($json, true); // print_r($comments_reason);
+
 echo "<pre>";
 echo "\n".count($form['ID'])."\n";
 // echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
@@ -118,7 +121,7 @@ echo "\n".count($form['ID'])."\n";
 //====================================== generate Taxa_final.txt
 $source      = $temp_dir . 'Taxa.txt';
 $destination = $temp_dir . 'Taxa_final.txt';
-parse_TSV_file($source, $destination, $ref_info_list, $included_fields);
+parse_TSV_file($source, $destination, $ref_info_list, $included_fields, $comments_reason);
 unset($ref_info_list);
 
 //====================================== generate References_final.txt
@@ -206,7 +209,7 @@ function generate_References_final($form, $destination)
     }
     // echo "<pre>"; print_r($final); echo "</pre>"; exit("\nstopx\n");
 }
-function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields)
+function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields, $comments_reason)
 {
     $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa_final.txt\n");
     $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
@@ -258,6 +261,20 @@ function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields
         }
         else {
             foreach($included_fields as $fld) $save[$fld] = '';
+        }
+        // */
+
+        // /* save comments from "name_usage | unacceptability_reason" section
+        $unacceptability_reason = $save['unacceptability_reason'];
+        // Array(
+        //     [accepted] => 
+        //     [homonym & junior synonym] => remark for ambiguous
+        //     [misapplied] => remark for misapplied
+        //     [junior synonym] => remark for junior syn
+        // )
+        if($val = @$comments_reason[$unacceptability_reason]) {
+            if($save['pub_comment']) $save['pub_comment'] .= " | Comments for [$unacceptability_reason]: $val";
+            else                     $save['pub_comment'] = "Comments for [$unacceptability_reason]: $val";
         }
         // */
 
