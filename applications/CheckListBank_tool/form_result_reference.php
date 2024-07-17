@@ -115,7 +115,7 @@ $json = file_get_contents($temp_dir . 'comment_unacceptability_reason.txt');
 $comments_reason = json_decode($json, true); // print_r($comments_reason);
 
 echo "<pre>";
-echo "\n".count($form['ID'])."\n";
+echo "\nTotal References: ".count($form['ID'])."\n";
 // echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
 
 //====================================== generate Taxa_final.txt
