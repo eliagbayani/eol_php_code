@@ -533,7 +533,6 @@ class CheckListBankRules extends CheckListBankWeb
             );
     
             // print_r($reks);
-
             foreach($reks as $rec) {
                 $save = array();
                 foreach($fields as $field)  {
@@ -547,14 +546,8 @@ class CheckListBankRules extends CheckListBankWeb
                     if($field == 'identifier') {
                         if($val = $rec['full_reference']) {
                             $save[$save_field] = md5($val);
-//                             if($val == "
-// Leraut P. Liste systématique et synonymique des Lépidoptères de France, Belgique et Corse. Supplément à Alexanor et au Bulletin de la Société Entomologique de France: 1-334. pp. (1980).
-// Leraut P. Liste systématique et synonymique des Lépidoptères de France, Belgique et Corse. Supplément à Alexanor et au Bulletin dela Société Entomologique de France: 1-334. pp. (1980).
-
-// ") {
-//                                 print_r($rec);
-//                                 exit("\n".md5($val)."\nhuli 100\n");
-//                             }
+                            // Leraut P. Liste systématique et synonymique des Lépidoptères de France, Belgique et Corse. Supplément à Alexanor et au Bulletin de la Société Entomologique de France: 1-334. pp. (1980).
+                            // Leraut P. Liste systématique et synonymique des Lépidoptères de France, Belgique et Corse. Supplément à Alexanor et au Bulletin dela Société Entomologique de France: 1-334. pp. (1980).
                         }
                         else exit("\nCannot be blank at this point.\n");
                     }
