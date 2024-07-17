@@ -35,6 +35,11 @@ $form = $_POST;
             [2] => misapplied|misapplied
             [3] => synonym|homonym & junior synonym
         )
+    [comment_unacceptability_reason] => Array(
+            [ambiguous synonym] => remark for ambiguous
+            [misapplied] => remark for misapplied
+            [synonym] => remark for junior syn
+        )            
     [locality] => Array(
             [0] => Afrotropical region|
             [1] => Australian and Pacific regions|
@@ -71,6 +76,13 @@ if($accepted_or_valid == 'accepted') $var_unaccepted = 'unaccepted';
 if($accepted_or_valid == 'valid') $var_unaccepted = 'invalid';
 
 // echo("\n[$resource_id][$temp_dir][$temp_folder]\n");
+
+
+$arr_2_save = generate_array_comment_UR($form);
+echo "<pre>"; print_r($arr_2_save); echo "</pre>";
+$WRITE = Functions::file_open($temp_dir . 'comment_unacceptability_reason.txt', "w");
+fwrite($WRITE, json_encode($arr_2_save));
+fclose($WRITE);
 
 echo "<pre>"; 
 // echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
@@ -255,5 +267,28 @@ function write_output_rec_2txt($rec, $filename)
     $tab_separated = (string) implode("\t", $save); 
     fwrite($WRITE, $tab_separated . "\n");
     fclose($WRITE);
+}
+// [taxonomicStatus] => Array(
+//     [0] => accepted|accepted
+//     [1] => ambiguous synonym|subsequent name/combination
+//     [2] => misapplied|misapplied
+//     [3] => synonym|junior synonym
+// )
+// [comment_unacceptability_reason] => Array(
+//     [ambiguous synonym] => remark for ambiguous
+//     [misapplied] => remark for misapplied
+//     [synonym] => remark for junior syn
+// )
+function generate_array_comment_UR($form)
+{
+    $tS = $form['taxonomicStatus'];
+    $CUR = $form['comment_unacceptability_reason'];
+    foreach($tS as $pipe) {
+        $parts = explode("|", $pipe);
+        $left = $parts[0];
+        $right = $parts[1];
+        $final[$right] = @$CUR[$left];
+    }
+    return $final;
 }
 ?>
