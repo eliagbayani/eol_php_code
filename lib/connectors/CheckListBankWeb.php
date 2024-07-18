@@ -39,7 +39,7 @@ class CheckListBankWeb
             // If you template how that should look in the mapping file, when a string, if detected, should rule out any suggestion, 
             $suggest_nothing = array("Palearctic", "Neotropic", "global", "worldwide", "cosmopolitan");
             foreach($suggest_nothing as $sn) {
-                if(stripos($geographic_value, $sn) !== false) return ""; //string is found
+                if(stripos($geographic_value, $sn) !== false) return ""; //suggest nothing //string is found
             }
             // */
 
