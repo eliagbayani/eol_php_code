@@ -33,6 +33,16 @@ class CheckListBankWeb
 
         // /* implementation for one to many
         foreach($this->default_geographic_values as $needle => $regions) {
+
+            // /* Arg, and for now, it's also best to suggest nothing if either "Palearctic" or "Neotropic" is detected; 
+            // those embrace multiple regions. I suppose the same treatment could go for "global", "worldwide" and "cosmopolitan". 
+            // If you template how that should look in the mapping file, when a string, if detected, should rule out any suggestion, 
+            $suggest_nothing = array("Palearctic", "Neotropic", "global", "worldwide", "cosmopolitan");
+            foreach($suggest_nothing as $sn) {
+                if(stripos($geographic_value, $sn) !== false) return ""; //string is found
+            }
+            // */
+
             if(stripos($geographic_value, $needle) !== false) { //string is found
                 if(count($regions) == 1) return $regions[0];
                 else return ""; //for multiple matches suggest nothing: https://github.com/EOL/ContentImport/issues/14#issuecomment-2233125520
