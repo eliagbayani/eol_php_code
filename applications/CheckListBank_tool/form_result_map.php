@@ -241,7 +241,8 @@ function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus
             else                             $save['geographic_value'] = ""; //new: https://github.com/EOL/ContentImport/issues/14#issuecomment-2231523013
         }
         if($val = $save['origin']) {
-            if($val2 = @$occurrenceStatus_map[$val]) $save['origin'] = $val2;
+            // if($val2 = @$occurrenceStatus_map[$val]) $save['origin'] = $val2;    //orig
+            $save['origin'] = @$occurrenceStatus_map[$val];                         //now same with geographic_value
         }
         // ----- write -----
         // echo "<pre>"; print_r($save); echo "</pre>"; //exit;
