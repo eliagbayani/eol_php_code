@@ -208,10 +208,7 @@ if($file_type = @$_FILES["file_upload3"]["type"]) { // Reference file
     else exit("<hr>$file_type<hr>Invalid file type. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");    
 }
 
-
-
-
-exit("<br>stop muna<br>");
+// exit("<br>stop muna<br>");
 
 /* replaced by Jenkins call
 print "<br><b>Processing, please wait...</b><br><hr>";
