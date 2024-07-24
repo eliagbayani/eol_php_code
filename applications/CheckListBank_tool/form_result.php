@@ -143,7 +143,7 @@ if($file_type = @$_FILES["file_upload"]["type"]) { //Taxa File
         // /* ---------- Added block: 
         if(pathinfo($newfile, PATHINFO_EXTENSION) == "zip") $newfile = local_unzip_file($newfile);
         // ---------- */
-        echo "<hr>newfile: [$newfile]<hr>"; //exit;
+        // echo "<hr>newfile: [$newfile]<hr>"; //exit;
         $orig_taxa_file = pathinfo($newfile, PATHINFO_BASENAME); //will be used in jenkins_call.php
 
 
@@ -186,7 +186,7 @@ if($file_type = @$_FILES["file_upload3"]["type"]) { // Reference file
         // /* ---------- Added block:
         if(pathinfo($newfile, PATHINFO_EXTENSION) == "zip") $newfile = local_unzip_file($newfile);
         // ---------- */
-        echo "<hr>newfile: [$newfile]<hr>"; //exit;
+        // echo "<hr>newfile: [$newfile]<hr>"; //exit;
         $orig_reference_file = pathinfo($newfile, PATHINFO_BASENAME); //will be used in jenkins_call.php
 
 

@@ -27,7 +27,6 @@ else {
                [true_root] => /opt/homebrew/var/www/eol_php_code/)
     */
     /* Delete temp files */
-    $dirname = pathinfo($params['destination'], PATHINFO_DIRNAME).'/'; //obsolete
     // $dirname = $params['true_root'].'applications/specimen_image_export/temp/';
     // $dirname = $params['true_root'].'applications/trait_data_import/temp/';
     $dirname = $params['true_root'].'applications/CheckListBank_tool/temp/';
@@ -45,8 +44,15 @@ else {
     // /*
     // $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "MarineGEO_sie/" . $params['uuid'] . ".xls";
     // $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "Trait_Data_Import/" . $params['uuid'] . ".tar.gz";
-    $final_archive_gzip_url = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_files/" . $params['uuid'] . "/Main_Table.txt";
-    if(file_exists($final_archive_gzip_url)) {
+    $final_archive_gzip_url  = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_files/" . $params['uuid'] . "/Main_Table.txt";  //1st interface
+    $final_archive_gzip_url2 = CONTENT_RESOURCE_LOCAL_PATH . "CheckListBank_files/" . "/ITIS_format_".$params['uuid'].".zip"; //2nd interface
+
+    if(file_exists($final_archive_gzip_url2)) {
+        $file = $dirname.$params['uuid']."_orig_taxa.zip";       if(file_exists($file)) unlink($file);
+        $file = $dirname.$params['uuid']."_orig_reference.zip";  if(file_exists($file)) unlink($file);
+    }
+
+    if(file_exists($final_archive_gzip_url) || file_exists($final_archive_gzip_url2)) {
         /*
         // NEW start: to accommodate Filename_ID implementation
         if($Filename_ID = @$params['Filename_ID']) {
@@ -102,7 +108,10 @@ else {
     }
     // */
 }
-if($build_status) echo "<hr><b>Build status 3: Mapping Exercise</b><pre>".$build_status."</pre><hr>";
+if($build_status) {
+    if(file_exists($final_archive_gzip_url2))   echo "<hr><b>Build status 3: Done</b><pre>".$build_status."</pre><hr>";
+    else                                        echo "<hr><b>Build status 3: Mapping Exercise</b><pre>".$build_status."</pre><hr>";
+}
 else {
     if($ctrler->is_task_in_queue('xls2dwca_job', $params['uuid'].$postfix)) { //job_name = 'specmnXport_job' or 'xls2dwca_job'
         echo "<hr><b>Build status 1:</b><pre>This job is now in queue...</pre><hr>";
