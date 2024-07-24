@@ -7,8 +7,7 @@ class CheckListBank_2ndInterface
     {
     }
     private function initialize($resource_id)
-    {
-        // /*
+    {   // /*
         $this->temp_dir = CONTENT_RESOURCE_LOCAL_PATH . 'CheckListBank_files/'.$resource_id."/";
         if(!is_dir($this->temp_dir)) {
             mkdir($this->temp_dir);
@@ -18,25 +17,57 @@ class CheckListBank_2ndInterface
     }
     function go_2ndInterface($params)
     {
-        // $references = self::get_text_contents('References');    
-        // $fields = explode("\t", $references[0]);
         self::initialize($params['resource_id']);
-        print_r($params);
-        echo "\n".$this->temp_dir."\n";
+        // print_r($params); echo "\n".$this->temp_dir."\n";
         /*Array(
             [resource_id]    => 1721818051
             [temp_folder]    => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/
             [orig_taxa]      => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1721818051_orig_taxa.tsv
             [orig_reference] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1721818051_orig_reference.txt
         )*/
-
         $ref_info_list = self::generate_ref_info_list($params['orig_reference']);
         $included_fields = array("reference_author", "title", "publication_name", "actual_pub_date", "listed_pub_date", "publisher", "pub_place", "pages", "isbn", "issn", "pub_comment");
         $source      = $params['orig_taxa'];
         $destination = $this->temp_dir . 'Taxa_final.txt';
         self::parse_TSV_file($source, $destination, $ref_info_list, $included_fields);
         unset($ref_info_list);
-   }
+        self::prep_download_link($params);
+    }
+    private function prep_download_link($params)
+    {
+        echo "\nCompressing...\n";
+        $resource_id = $params['resource_id'];
+        $source1 = $this->temp_dir.'Taxa_final.txt';
+        $source2 = $params['orig_taxa'];
+        $source3 = $params['orig_reference'];
+        $target_dir = str_replace("$resource_id/", "", $this->temp_dir);
+        $target = $target_dir."ITIS_format_$resource_id.zip";
+        // $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
+        $output = shell_exec("zip -j $target $source1 $source2 $source3");
+        echo "\n$output\n";
+        
+        if(stripos($output, "error") !== false) exit("\nError encountered:\n[$output]\nGo back to Main.\n");
+        echo "\nCompressed OK\n";
+        if(Functions::is_production()) $domain = "https://editors.eol.org";
+        else                           $domain = "http://localhost";
+        $rec['url'] = $domain.'/eol_php_code/applications/content_server/resources/Trait_Data_Import/'.$resource_id.'.tar.gz';
+        
+        $final_zip_url = str_replace(DOC_ROOT, WEB_ROOT, $target);
+        echo "<br>Download ITIS-formatted file: [<a href='$final_zip_url'>".pathinfo($final_zip_url, PATHINFO_BASENAME)."</a>]<br><br>";
+        
+        shell_exec("chmod 777 ".$this->temp_dir);
+        recursive_rmdir($this->temp_dir); //un-comment in real operation
+        
+        if(is_file($source2)) unlink($source2);
+        if(is_file($source3)) unlink($source3);
+        ?>
+        You can save this file to your computer.<br>
+        This file will remain in our server for two (2) weeks.<br>
+        <!--- <a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br> --->
+        <a href='main.php'> &lt;&lt; Back to menu</a>
+        <?php
+        
+    }
     private function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields)
     {
         $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa_final.txt\n");

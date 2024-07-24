@@ -101,10 +101,10 @@ class CheckListBankAPI extends CheckListBankRules
         $file_3 = $this->temp_folder . @$this->arr_json['orig_taxa'];
         $file_4 = $this->temp_folder . @$this->arr_json['orig_reference'];
 
-        echo "\nfile_1: [$file_1]\n";
-        echo "\nfile_2: [$file_2]\n";
-        echo "\nfile_3: [$file_3]\n";
-        echo "\nfile_4: [$file_4]\n";
+        // echo "\nfile_1: [$file_1]\n";
+        // echo "\nfile_2: [$file_2]\n";
+        // echo "\nfile_3: [$file_3]\n";
+        // echo "\nfile_4: [$file_4]\n";
 
         if(is_file($file_1) && is_file($file_2)) {
             $this->start_CheckListBank_process();
