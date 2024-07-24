@@ -109,8 +109,9 @@ else {
     // */
 }
 if($build_status) {
-    if(file_exists($final_archive_gzip_url2))   echo "<hr><b>Build status 3: Done</b><pre>".$build_status."</pre><hr>";
-    else                                        echo "<hr><b>Build status 3: Mapping Exercise</b><pre>".$build_status."</pre><hr>";
+    if(file_exists(@$final_archive_gzip_url2))       echo "<hr><b>Build status 3: Done</b><pre>".$build_status."</pre><hr>";
+    elseif(file_exists(@$final_archive_gzip_url))    echo "<hr><b>Build status 3: Mapping Exercise</b><pre>".$build_status."</pre><hr>";
+    else                                             echo "<hr><b>Build status 3: </b><pre>".$build_status."</pre><hr>";
 }
 else {
     if($ctrler->is_task_in_queue('xls2dwca_job', $params['uuid'].$postfix)) { //job_name = 'specmnXport_job' or 'xls2dwca_job'

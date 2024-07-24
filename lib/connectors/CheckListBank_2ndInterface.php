@@ -63,10 +63,8 @@ class CheckListBank_2ndInterface
         ?>
         You can save this file to your computer.<br>
         This file will remain in our server for two (2) weeks.<br>
-        <!--- <a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br> --->
         <a href='main.php'> &lt;&lt; Back to menu</a>
-        <?php
-        
+        <?php        
     }
     private function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields, $params)
     {
