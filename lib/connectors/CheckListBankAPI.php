@@ -114,7 +114,7 @@ class CheckListBankAPI extends CheckListBankRules
             $func = new CheckListBank_2ndInterface();
             $params = array(
                 'resource_id'    => $this->resource_id,
-                'temp_dir'       => CONTENT_RESOURCE_LOCAL_PATH.'CheckListBank_files/',
+                // 'temp_dir'       => CONTENT_RESOURCE_LOCAL_PATH.'CheckListBank_files/'.$this->resource_id.'/',
                 'temp_folder'    => $this->temp_folder,
                 'orig_taxa'      => $file_3,
                 'orig_reference' => $file_4
