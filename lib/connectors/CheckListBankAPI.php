@@ -72,12 +72,11 @@ class CheckListBankAPI extends CheckListBankRules
         */
         
         if(!$filename) exit("\nNo filename: [$filename]. Will terminate.\n");
-        $input_file = $this->input['path'].$filename;
-        // echo "\nfilename is: [$filename]\n";
-        // echo "\ninput_file is: [$input_file]\n"; //exit("\nstop 1\n");
-        // filename is: [1719649213.zip]
-        // input_file is: [/opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1719649213.zip]
-        $this->temp_folder = str_replace($filename, "", $input_file);
+        // $input_file = $this->input['path'].$filename;
+        // $this->temp_folder = str_replace($filename, "", $input_file);
+        $this->temp_folder = $this->input['path'];
+
+        // print_r($this->arr_json); exit("\n$this->temp_folder\n".$this->input['path']."\nstop 1\n"); //good debug
         /*Array( $this->arr_json
             [Filename_ID] => 
             [Short_Desc] => 
@@ -85,18 +84,35 @@ class CheckListBankAPI extends CheckListBankRules
             [Taxon_file]        => 1719638494_Taxon.tsv
             [Distribution_file] => 1719638494_Distribution.tsv
             [timestart] => 0.007148
+        )
+        Array(
+            [Filename_ID] => 
+            [Short_Desc] => 
+            [TransID] => 1721807000
+            [orig_taxa] => 1721807000_orig_taxa.tsv
+            [orig_reference] => 1721807000_orig_reference.tsv
+            [timestart] => 0.007816
         )*/
-        if(file_exists($input_file)) {
-            $this->resource_id = pathinfo($input_file, PATHINFO_FILENAME); //exit("\nEli is here...\n[".$this->resource_id."]\n");
-            $this->start_CheckListBank_process();
 
-            /* copied template from trait_data_import tool
-            self::read_input_file($input_file); //writes to text files for reading in next step.
-            self::create_output_file($timestart); //generates the DwCA
-            self::create_or_update_OpenData_resource();
-            */
+        $this->resource_id = $this->arr_json['TransID']; // exit("\nEli is here...\n[".$this->resource_id."]\n");
+        
+        $file_1 = $this->temp_folder . @$this->arr_json['Taxon_file'];
+        $file_2 = $this->temp_folder . @$this->arr_json['Distribution_file'];
+        $file_3 = $this->temp_folder . @$this->arr_json['orig_taxa'];
+        $file_4 = $this->temp_folder . @$this->arr_json['orig_reference'];
+
+        echo "\nfile_1: [$file_1]\n";
+        echo "\nfile_2: [$file_2]\n";
+        echo "\nfile_3: [$file_3]\n";
+        echo "\nfile_4: [$file_4]\n";
+
+        if(is_file($file_1) && is_file($file_2)) {
+            $this->start_CheckListBank_process();
         }
-        else debug("\nInput file not found: [$input_file]\n");
+        elseif(is_file($file_3) && is_file($file_4)) {
+            exit("\ndo 2nd interface\n");
+        }
+        else debug("\nInput files not found\n");
     }
 
     /*=======================================================================================================*/ //COPIED TEMPLATE BELOW
@@ -134,9 +150,12 @@ class CheckListBankAPI extends CheckListBankRules
         else echo "\nERRORx: file_rename failed.\n";
         // exit("\nditox 100\n");
         //remove these 2 that were used above if file is a zip file
-        unlink($local);
-        recursive_rmdir($test_temp_dir);
-
+        unlink($local);                     //echo "\nFile deleted: [$local]\n";
+        recursive_rmdir($test_temp_dir);    //echo "\nFolder deleted: [$test_temp_dir]\n";
+        /*
+        File deleted: [/Volumes/AKiTiO4/eol_php_code_tmp/tmp_18704.file] 
+        Folder deleted: [/Volumes/AKiTiO4/eol_php_code_tmp/dir_17044]
+        */
         return pathinfo($destination, PATHINFO_BASENAME);
     }
     function convert_csv2tsv($csv_file) // temp/1687855441.csv
