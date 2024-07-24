@@ -111,7 +111,7 @@ class CheckListBank_2ndInterface
             if($referenceID = $rec['referenceID']) {
                 if($ref_array = @$ref_info_list[$referenceID]) {
                     @$eli_debug['referenceID found']++;
-                    foreach($included_fields as $fld) $save[$fld] = $ref_array[$fld];
+                    foreach($included_fields as $fld) $save[$fld] = @$ref_array[$fld];
                 }
                 else {
                     // print_r($ref_info_list); print_r($rec);
