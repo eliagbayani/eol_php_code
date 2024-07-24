@@ -79,6 +79,7 @@ class CheckListBank_2ndInterface
             if($i == 1) {
                 $fields = $row;
                 $fields = array_filter($fields); //print_r($fields);
+                if(!in_array('referenceID', $fields)) exit("\nTaxa file does not have a [referenceID] column. <a href='javascript:history.go(-2)'>Back to menu</a>\n");
                 continue;
             }
             else {
@@ -153,6 +154,7 @@ class CheckListBank_2ndInterface
             if($i == 1) {
                 $fields = $row;
                 $fields = array_filter($fields); //print_r($fields);
+                if(!in_array('ID', $fields)) exit("\nReference file does not have an [ID] column. <a href='javascript:history.go(-2)'>Back to menu</a>\n");
                 continue;
             }
             else {
