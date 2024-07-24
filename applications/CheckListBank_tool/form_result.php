@@ -134,15 +134,17 @@ if($file_type = @$_FILES["file_upload"]["type"]) { //Taxa File
             else echo "<br>uploading file - ERROR<br>";
         }
         $newfile = "temp/" . $time_var . "_orig_taxa." . pathinfo($orig_file, PATHINFO_EXTENSION);
-        echo "<hr>file_type: [$file_type]";
-        echo "<hr>orig_file: [$orig_file]";
-        echo "<hr>url: [$url]";
-        echo "<hr>newfile: [$newfile]<hr>"; //exit;
+
+        // echo "<hr>file_type: [$file_type]";
+        // echo "<hr>orig_file: [$orig_file]";
+        // echo "<hr>url: [$url]";
+        // echo "<hr>newfile: [$newfile]<hr>"; //exit;
 
         // /* ---------- Added block: 
         if(pathinfo($newfile, PATHINFO_EXTENSION) == "zip") $newfile = local_unzip_file($newfile);
         // ---------- */
         echo "<hr>newfile: [$newfile]<hr>"; //exit;
+        $orig_taxa_file = pathinfo($newfile, PATHINFO_BASENAME); //will be used in jenkins_call.php
 
 
         /* copied template but not used in CheckListBank
@@ -176,15 +178,16 @@ if($file_type = @$_FILES["file_upload3"]["type"]) { // Reference file
         }
         $newfile = "temp/" . $time_var . "_orig_reference." . pathinfo($orig_file, PATHINFO_EXTENSION);
 
-        echo "<hr>file_type: [$file_type]";
-        echo "<hr>orig_file: [$orig_file]";
-        echo "<hr>url: [$url]";
-        echo "<hr>newfile: [$newfile]<hr>"; //exit;
+        // echo "<hr>file_type: [$file_type]";
+        // echo "<hr>orig_file: [$orig_file]";
+        // echo "<hr>url: [$url]";
+        // echo "<hr>newfile: [$newfile]<hr>"; //exit;
 
         // /* ---------- Added block:
         if(pathinfo($newfile, PATHINFO_EXTENSION) == "zip") $newfile = local_unzip_file($newfile);
         // ---------- */
         echo "<hr>newfile: [$newfile]<hr>"; //exit;
+        $orig_reference_file = pathinfo($newfile, PATHINFO_BASENAME); //will be used in jenkins_call.php
 
 
         /* copied template but not used in CheckListBank
