@@ -23,6 +23,7 @@ $server_script_name = str_replace("form_result.php", "generate_jenkins.php", $se
 
 $params['true_root'] = $true_DOC_ROOT;
 $params['uuid'] = pathinfo($newfile, PATHINFO_FILENAME);
+$params['uuid'] = $time_var;
 
 // echo "<pre>"; print_r($form); echo "</pre>"; exit("\neli 100\n");
 /*Array(
@@ -34,19 +35,24 @@ Array(
     [Filename_ID] => 124
 )*/
 
-if(isset($form['Proj_refresh'])) $Proj_refresh = 1;
-else                             $Proj_refresh = 0;
-/* copied template
-$json = '{"Proj":"'.$form['Proj'].'", "Dept":"'.$dept_map[$form['Dept']].'"
-         , "Proj_refresh":"'.$Proj_refresh.'"
-         , "timestart":"'.$timestart.'", "Lic_yr":"'.$form['Lic_yr'].'", "Lic_inst":"'.$form['Lic_inst'].'", "Lic_cont":"'.$form['Lic_cont'].'"}';
-*/
-$json = '{"Filename_ID":"'.$form['Filename_ID'].'",
-         "Short_Desc":"'.$form['Short_Desc'].'" , 
-         "TransID":"'.$time_var.'" , 
-         "Taxon_file":"'.$time_var."_".$taxon_file.'" , 
-         "Distribution_file":"'.$time_var."_".$distribution_file.'" , 
-         "timestart":"'.$timestart.'"}';
+if(isset($form['interface_1'])) {
+    $json = '{"Filename_ID":"'.$form['Filename_ID'].'",
+    "Short_Desc":"'.$form['Short_Desc'].'" , 
+    "TransID":"'.$time_var.'" , 
+    "Taxon_file":"'.$time_var."_".$taxon_file.'" , 
+    "Distribution_file":"'.$time_var."_".$distribution_file.'" , 
+    "timestart":"'.$timestart.'"}';
+}
+elseif(isset($form['interface_2'])) {
+    $json = '{"Filename_ID":"'.$form['Filename_ID'].'",
+    "Short_Desc":"'.$form['Short_Desc'].'" , 
+    "TransID":"'.$time_var.'" , 
+    "orig_taxa":"'.$orig_taxa_file.'" , 
+    "orig_reference":"'.$orig_reference_file.'" , 
+    "timestart":"'.$timestart.'"}';
+}
+
+
 
 
 $params['json'] = $json;
