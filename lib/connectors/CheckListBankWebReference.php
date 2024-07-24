@@ -47,17 +47,26 @@ class CheckListBankWebReference
         echo "<pre>";
         // print_r($fields); //echo"<hr>"; print_r($references);
         ?>
+        <a name="top"></a>
         <table border="1" cellpadding="15" cellspacing="1" align="center" width="40%">
         <tr align="center"><td><b>CheckListBank Tool</b></td></tr>
         <form action="form_result_reference.php" method="post" enctype="multipart/form-data">
         <tr><td>
-                <font size="3">Mapping Exercise</font>
-                <?php echo "ID: $this->resource_id <br>
-                <input type='hidden' name='resource_id' value='$this->resource_id'>
-                <input type='hidden' name='temp_dir' value='$this->temp_dir'>
-                <input type='hidden' name='temp_folder' value='$this->temp_folder'>
-                <input type='hidden' name='included_fields' value='".json_encode($included_fields)."'>
-                ";?>
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <font size="3">Mapping Exercise</font>
+                            <?php echo "ID: $this->resource_id <br>
+                            <input type='hidden' name='resource_id' value='$this->resource_id'>
+                            <input type='hidden' name='temp_dir' value='$this->temp_dir'>
+                            <input type='hidden' name='temp_folder' value='$this->temp_folder'>
+                            <input type='hidden' name='included_fields' value='".json_encode($included_fields)."'>
+                            ";?> 
+                        </td>
+                        <td align="right"><a href='#down'>Go down</a></td>
+                    </tr>
+                </table>
+                
         </td></tr>
         <tr align="center">
             <td><!--- Array(
@@ -124,7 +133,9 @@ class CheckListBankWebReference
         <tr><td align='center' colspan="2">
                 <input type="submit" value=" Submit ">
                 <input type="reset" value=" Reset ">
-                <a href='javascript:history.go(-2)'> &lt;&lt; Back to menu</a>
+                <!-- <a href='javascript:history.go(-2)'> &lt;&lt; Back to menu</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#top">Go top</a> -->
+                <a href='main.php'> &lt;&lt; Back to menu</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#top">Go top</a>
+                <a name="down"></a>
         </td></tr>
         </form>
         </table>

@@ -212,7 +212,7 @@ function generate_References_final($form, $destination)
 }
 function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields, $comments_reason)
 {
-    $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa_final.txt\n");
+    $i = 0; debug("\nLoading: [".pathinfo($txtfile, PATHINFO_BASENAME)."]...creating final Taxa_final.txt\n");
     $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
     foreach(new FileIterator($txtfile) as $line_number => $line) {
         if(!$line) continue;
