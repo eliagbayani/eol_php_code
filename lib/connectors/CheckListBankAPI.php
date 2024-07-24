@@ -110,9 +110,18 @@ class CheckListBankAPI extends CheckListBankRules
             $this->start_CheckListBank_process();
         }
         elseif(is_file($file_3) && is_file($file_4)) {
-            exit("\ndo 2nd interface\n");
+            require_library('connectors/CheckListBank_2ndInterface');
+            $func = new CheckListBank_2ndInterface();
+            $params = array(
+                'resource_id'    => $this->resource_id,
+                'temp_dir'       => CONTENT_RESOURCE_LOCAL_PATH.'CheckListBank_files/',
+                'temp_folder'    => $this->temp_folder,
+                'orig_taxa'      => $file_3,
+                'orig_reference' => $file_4
+            );
+            $func->go_2ndInterface($params);    
         }
-        else debug("\nInput files not found\n");
+        else debug("\nInvestigate: Input files not found\n");
     }
 
     /*=======================================================================================================*/ //COPIED TEMPLATE BELOW

@@ -66,18 +66,27 @@ else                      $browser_comment = "Choose File"; //Safari Chrome etc
     <form action="form_result.php" method="post" enctype="multipart/form-data">
     <tr><td>
             <font size="3">
-            <b>Taxa File</b> (plain text, tsv or csv): a taxa file in Darwin Core Archive format, but without a meta.xml file. 
+            <b>Taxa File</b>: a taxa file in Darwin Core Archive format, but without a meta.xml file. 
             In this case, the file should have headers that we can use to infer the mapping for each column. <br><br>
             Upload Taxa file: </font><input type="file" name="file_upload" id="file_upload" size="100">
             <br><br><small>(.tsv or .txt) OR (.tsv.zip, .txt.zip)</small>
     </td></tr>
     <tr><td>
             <font size="3">
-            <b>Reference File</b> (plain text, tsv or csv): a reference file in Darwin Core Archive format, but without a meta.xml file. 
+            <b>Reference File</b>: a reference file in Darwin Core Archive format, but without a meta.xml file. 
             In this case, the file should have headers that we can use to infer the mapping for each column. <br><br>
             Upload Reference file: </font><input type="file" name="file_upload3" id="file_upload3" size="100">
             <br><br><small>(.tsv or .txt) OR (.tsv.zip, .txt.zip)</small>
     </td></tr>
+
+    <tr><td>
+            <font size="3">
+            The <b>Taxa File</b> should have a <b>referenceID</b> column. <br>
+            The <b>Reference File</b> should have an <b>ID</b> column. <br>
+            This will serve as the link between the two files.
+    </td></tr>
+    
+
     <tr align="center">
         <td>
             <input type='text' name='interface_2' hidden>
