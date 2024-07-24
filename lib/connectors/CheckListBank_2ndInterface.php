@@ -25,11 +25,11 @@ class CheckListBank_2ndInterface
             [orig_taxa]      => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1721818051_orig_taxa.tsv
             [orig_reference] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1721818051_orig_reference.txt
         )*/
-        $ref_info_list = self::generate_ref_info_list($params['orig_reference']);
+        $ref_info_list = self::generate_ref_info_list($params);
         $included_fields = array("reference_author", "title", "publication_name", "actual_pub_date", "listed_pub_date", "publisher", "pub_place", "pages", "isbn", "issn", "pub_comment");
         $source      = $params['orig_taxa'];
         $destination = $this->temp_dir . 'Taxa_final.txt';
-        self::parse_TSV_file($source, $destination, $ref_info_list, $included_fields);
+        self::parse_TSV_file($source, $destination, $ref_info_list, $included_fields, $params);
         unset($ref_info_list);
         self::prep_download_link($params);
     }
@@ -68,7 +68,7 @@ class CheckListBank_2ndInterface
         <?php
         
     }
-    private function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields)
+    private function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields, $params)
     {
         $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa_final.txt\n");
         $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
@@ -79,7 +79,10 @@ class CheckListBank_2ndInterface
             if($i == 1) {
                 $fields = $row;
                 $fields = array_filter($fields); //print_r($fields);
-                if(!in_array('referenceID', $fields)) exit("\nTaxa file does not have a [referenceID] column. <a href='javascript:history.go(-2)'>Back to menu</a>\n");
+                if(!in_array('referenceID', $fields)) {
+                    self::delete_transaction_files($params);
+                    exit("\nTaxa file does not have a [referenceID] column. <a href='javascript:history.go(-2)'>Back to menu</a>\n");
+                }
                 continue;
             }
             else {
@@ -144,8 +147,9 @@ class CheckListBank_2ndInterface
         } //end foreach()
         if($eli_debug) print_r($eli_debug);
     }    
-    private function generate_ref_info_list($txtfile)
+    private function generate_ref_info_list($params)
     {
+        $txtfile = $params['orig_reference'];
         $i = 0; debug("\nLoading: [$txtfile]...\n");
         foreach(new FileIterator($txtfile) as $line_number => $line) {
             if(!$line) continue;
@@ -154,7 +158,10 @@ class CheckListBank_2ndInterface
             if($i == 1) {
                 $fields = $row;
                 $fields = array_filter($fields); //print_r($fields);
-                if(!in_array('ID', $fields)) exit("\nReference file does not have an [ID] column. <a href='javascript:history.go(-2)'>Back to menu</a>\n");
+                if(!in_array('ID', $fields)) {
+                    self::delete_transaction_files($params);
+                    exit("\nReference file does not have an [ID] column. <a href='javascript:history.go(-2)'>Back to menu</a>\n");
+                }
                 continue;
             }
             else {
@@ -233,6 +240,26 @@ class CheckListBank_2ndInterface
         $tab_separated = (string) implode("\t", $save); 
         fwrite($WRITE, $tab_separated . "\n");
         fclose($WRITE);
-    }    
+    }
+    private function delete_transaction_files($params)
+    {
+        recursive_rmdir($this->temp_dir); //un-comment in real operation
+        /*Array(
+            [resource_id]    => 1721818051
+            [temp_folder]    => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/
+            [orig_taxa]      => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1721818051_orig_taxa.tsv
+            [orig_reference] => /opt/homebrew/var/www/eol_php_code//applications/CheckListBank_tool/temp/1721818051_orig_reference.txt
+        )
+            1721835616_orig_taxa.zip
+            1721835616_orig_reference.zip
+        */
+        unlink($params['orig_taxa']);
+        unlink($params['orig_reference']);
+
+        $file = $params['temp_folder'].$params['resource_id']."_orig_taxa.zip";
+        if(file_exists($file)) unlink($file);
+        $file = $params['temp_folder'].$params['resource_id']."_orig_reference.zip";
+        if(file_exists($file)) unlink($file);
+    }
 }
 ?>
