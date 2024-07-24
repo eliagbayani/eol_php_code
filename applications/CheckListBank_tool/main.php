@@ -69,20 +69,20 @@ else                      $browser_comment = "Choose File"; //Safari Chrome etc
             <font size="3">
             <b>Taxa File</b> (plain text, tsv or csv): a taxa file in Darwin Core Archive format, but without a meta.xml file. 
             In this case, the file should have headers that we can use to infer the mapping for each column. <br><br>
-            Upload user file: </font><input type="file" name="file_upload" id="file_upload" size="100">
-            <br><br><small>(.tab or .tsv or .txt or .csv) OR (.tab.zip, .tsv.zip, .txt.zip, .csv.zip)</small>
+            Upload Taxa file: </font><input type="file" name="file_upload" id="file_upload" size="100">
+            <br><br><small>(.tsv or .txt) OR (.tsv.zip, .txt.zip)</small>
     </td></tr>
     <tr><td>
             <font size="3">
-            <b>Taxa List</b> (plain text, txt): a simple, one column document, with one name per line. 
-            We will treat the content of this column as a scientificName value. <br><br>
-            Upload user file: </font><input type="file" name="file_upload3" id="file_upload3" size="100">
-            <br><br><small>(.txt) OR (.txt.zip)</small>
+            <b>Reference File</b> (plain text, tsv or csv): a reference file in Darwin Core Archive format, but without a meta.xml file. 
+            In this case, the file should have headers that we can use to infer the mapping for each column. <br><br>
+            Upload Reference file: </font><input type="file" name="file_upload3" id="file_upload3" size="100">
+            <br><br><small>(.tsv or .txt) OR (.tsv.zip, .txt.zip)</small>
     </td></tr>
     <tr align="center">
         <td>
-            <input type='text' name='Filename_ID' hidden>
-            <input type='text' name='Short_Desc' hidden>
+            <!-- <input type='text' name='Filename_ID' hidden>
+            <input type='text' name='Short_Desc' hidden> -->
             <input type="submit" value="Insert Reference fields to Taxa file">
             <input type="reset" value="Reset">
         </td>

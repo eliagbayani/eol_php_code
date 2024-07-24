@@ -42,8 +42,15 @@ if($val = @$form['Filename_ID']) $time_var = $val;
 else                             $time_var = time();
 */
 
-$form_url = @get_val_var('form_url');
 
+if($file_type = @$_FILES["file_upload2"]["type"]) {} // Darwin Core Archive
+else {
+    if($file_type = @$_FILES["file_upload"]["type"] && $file_type = @$_FILES["file_upload3"]["type"]) {} //Taxa File Reference file
+    else exit("<hr>Please select a file to continue. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
+}
+
+
+$form_url = @get_val_var('form_url');
 if($form_url) { //URL is pasted.
     $orig_file = pathinfo($form_url, PATHINFO_BASENAME);
     $newfile = $time_var . "." . pathinfo($orig_file, PATHINFO_EXTENSION);
@@ -57,47 +64,6 @@ if($form_url) { //URL is pasted.
     echo "<hr>newfile: [$newfile]<hr>";
     // exit;
     */
-}
-elseif($file_type = @$_FILES["file_upload"]["type"]) { //Taxa File
-    debug("<br>orig_file: [".$_FILES["file_upload"]["name"]."]<br>");
-    debug("<br>file type: [".$file_type."]<br>"); 
-    // echo "<pre>"; print_r($_FILES); echo "</pre>"; exit; //good debug
-    /*
-    [taxon.tab] [application/octet-stream]
-    [taxon.tsv] [text/tab-separated-values]
-    [taxon.txt] [text/plain]
-    [taxon.csv] [text/csv]
-    */
-    $allowed_file_types = array("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel", "application/zip");
-    $allowed_file_types = array("application/octet-stream", "text/tab-separated-values", "text/plain", "text/csv", "application/zip"); //
-
-    if(in_array($file_type, $allowed_file_types)) {
-        if($_FILES["file_upload"]["error"] > 0) {}
-        else {
-            $orig_file = $_FILES["file_upload"]["name"];
-            $url = "temp/" . $time_var . "." . pathinfo($orig_file, PATHINFO_EXTENSION);
-            if(move_uploaded_file($_FILES["file_upload"]["tmp_name"] , $url)) {
-                debug("<br>file uploaded - OK<br>");
-            }
-            else echo "<br>uploading file - ERROR<br>";
-        }
-        $newfile = "temp/" . $time_var . "." . pathinfo($orig_file, PATHINFO_EXTENSION);
-        // echo "<hr>file_type: [$file_type]";
-        // echo "<hr>orig_file: [$orig_file]";
-        // echo "<hr>url: [$url]";
-        // echo "<hr>newfile: [$newfile]<hr>"; exit;
-        // /* ---------- Added block:
-        if(strtolower(pathinfo($newfile, PATHINFO_EXTENSION)) == 'csv') { // echo "<br>csv nga<br>";
-            require_library('connectors/CheckListBankRules');
-            require_library('connectors/CheckListBankAPI');
-            $func = new CheckListBankAPI('CheckListBank_tool');
-            $newfile = $func->convert_csv2tsv($newfile); // exit("\n[$newfile]\n");
-        }
-        // else echo "<br>hindi csv<br>";
-        // print_r(pathinfo($newfile)); exit("<br>$newfile<br>stop 1<br>");
-        // ---------- */
-    }
-    else exit("<hr>$file_type<hr>Invalid file type. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
 }
 elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
     debug("<br>orig_file: [".$_FILES["file_upload2"]["name"]."]<br>"); debug("<br>file type: [".$file_type."]<br>");
@@ -142,22 +108,87 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
     }
     else exit("<hr><i>$file_type</i><hr>Invalid file type. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");    
 }
-elseif($file_type = @$_FILES["file_upload3"]["type"]) { // Taxa List
+
+
+if($file_type = @$_FILES["file_upload"]["type"]) { //Taxa File
+    debug("<br>orig_file: [".$_FILES["file_upload"]["name"]."]<br>");
+    debug("<br>file type: [".$file_type."]<br>"); 
+    // echo "<pre>"; print_r($_FILES); echo "</pre>"; exit; //good debug
+    /*
+    [taxon.tab] [application/octet-stream]
+    [taxon.tsv] [text/tab-separated-values]
+    [taxon.txt] [text/plain]
+    [taxon.csv] [text/csv]
+    */
+    $allowed_file_types = array("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel", "application/zip");
+    $allowed_file_types = array("application/octet-stream", "text/tab-separated-values", "text/plain", "text/csv", "application/zip"); //
+
+    if(in_array($file_type, $allowed_file_types)) {
+        if($_FILES["file_upload"]["error"] > 0) {}
+        else {
+            $orig_file = $_FILES["file_upload"]["name"];
+            $url = "temp/" . $time_var . "_orig_taxa." . pathinfo($orig_file, PATHINFO_EXTENSION);
+            if(move_uploaded_file($_FILES["file_upload"]["tmp_name"] , $url)) {
+                debug("<br>file uploaded - OK<br>");
+            }
+            else echo "<br>uploading file - ERROR<br>";
+        }
+        $newfile = "temp/" . $time_var . "_orig_taxa." . pathinfo($orig_file, PATHINFO_EXTENSION);
+        echo "<hr>file_type: [$file_type]";
+        echo "<hr>orig_file: [$orig_file]";
+        echo "<hr>url: [$url]";
+        echo "<hr>newfile: [$newfile]<hr>"; //exit;
+
+        // /* ---------- Added block: 
+        if(pathinfo($newfile, PATHINFO_EXTENSION) == "zip") $newfile = local_unzip_file($newfile);
+        // ---------- */
+        echo "<hr>newfile: [$newfile]<hr>"; //exit;
+
+
+        /* copied template but not used in CheckListBank
+        ---------- Added block:
+        if(strtolower(pathinfo($newfile, PATHINFO_EXTENSION)) == 'csv') { // echo "<br>csv nga<br>";
+            require_library('connectors/CheckListBankRules');
+            require_library('connectors/CheckListBankAPI');
+            $func = new CheckListBankAPI('CheckListBank_tool');
+            $newfile = $func->convert_csv2tsv($newfile); // exit("\n[$newfile]\n");
+        }
+        // else echo "<br>hindi csv<br>";
+        // print_r(pathinfo($newfile)); exit("<br>$newfile<br>stop 1<br>");
+        ---------- */
+    }
+    else exit("<hr>$file_type<hr>Invalid file type. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
+}
+if($file_type = @$_FILES["file_upload3"]["type"]) { // Reference file
     debug("<br>orig_file: [".$_FILES["file_upload3"]["name"]."]<br>"); debug("<br>file type: [".$file_type."]<br>");
     $allowed_file_types = array("text/plain", "application/zip");
+    $allowed_file_types = array("application/octet-stream", "text/tab-separated-values", "text/plain", "text/csv", "application/zip"); //
+
     if(in_array($file_type, $allowed_file_types)) {
         if($_FILES["file_upload3"]["error"] > 0) {}
         else {
             $orig_file = $_FILES["file_upload3"]["name"];
-            $url = "temp/" . $time_var . "." . pathinfo($orig_file, PATHINFO_EXTENSION);
+            $url = "temp/" . $time_var . "_orig_reference." . pathinfo($orig_file, PATHINFO_EXTENSION);
             if(move_uploaded_file($_FILES["file_upload3"]["tmp_name"] , $url)) {
                 debug("<br>file uploaded - OK<br>");
             }
             else echo "<br>uploading file - ERROR<br>";
         }
-        $newfile = "temp/" . $time_var . "." . pathinfo($orig_file, PATHINFO_EXTENSION);
+        $newfile = "temp/" . $time_var . "_orig_reference." . pathinfo($orig_file, PATHINFO_EXTENSION);
+
+        echo "<hr>file_type: [$file_type]";
+        echo "<hr>orig_file: [$orig_file]";
+        echo "<hr>url: [$url]";
+        echo "<hr>newfile: [$newfile]<hr>"; //exit;
 
         // /* ---------- Added block:
+        if(pathinfo($newfile, PATHINFO_EXTENSION) == "zip") $newfile = local_unzip_file($newfile);
+        // ---------- */
+        echo "<hr>newfile: [$newfile]<hr>"; //exit;
+
+
+        /* copied template but not used in CheckListBank
+        ---------- Added block: 
         require_library('connectors/CheckListBankRules');
         require_library('connectors/CheckListBankAPI');
         if(pathinfo($newfile, PATHINFO_EXTENSION) == "zip") { //e.g. taxa_list.txt.zip
@@ -172,11 +203,15 @@ elseif($file_type = @$_FILES["file_upload3"]["type"]) { // Taxa List
             $func2 = new CheckListBankRules();
             $func2->add_header_to_file($newfile, "scientificName");
         }
-        // ---------- */
+        ---------- */
     }
     else exit("<hr>$file_type<hr>Invalid file type. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");    
 }
-else exit("<hr>Please select a file to continue. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
+
+
+
+
+exit("<br>stop muna<br>");
 
 /* replaced by Jenkins call
 print "<br><b>Processing, please wait...</b><br><hr>";
@@ -233,5 +268,14 @@ function copy_file_now($some_file, $download_directory, $time_var)
         $newfile = $destination; //success OK
     }
     else exit("<br>ERROR: Investigate, file copy failed [$source] [$destination]<br>");
+}
+function local_unzip_file($newfile)
+{
+    require_library('connectors/CheckListBankWeb');
+    require_library('connectors/CheckListBankRules');
+    require_library('connectors/CheckListBankAPI');    
+    $func1 = new CheckListBankAPI('CheckListBank_tool');
+    $newfile = $func1->process_zip_file(str_replace("temp/", "", $newfile)); // exit("\n[$newfile]\n");
+    return $newfile;
 }
 ?>
