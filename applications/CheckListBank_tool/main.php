@@ -47,8 +47,7 @@ else                      $browser_comment = "Choose File"; //Safari Chrome etc
     --->
     <tr align="center">
         <td>
-            <input type='text' name='Filename_ID' hidden>
-            <input type='text' name='Short_Desc' hidden>
+            <input type='text' name='interface_1' hidden>
             <input type="submit" value="Convert archive file to ITIS format">
             <input type="reset" value="Reset">
         </td>
@@ -81,8 +80,7 @@ else                      $browser_comment = "Choose File"; //Safari Chrome etc
     </td></tr>
     <tr align="center">
         <td>
-            <!-- <input type='text' name='Filename_ID' hidden>
-            <input type='text' name='Short_Desc' hidden> -->
+            <input type='text' name='interface_2' hidden>
             <input type="submit" value="Insert Reference fields to Taxa file">
             <input type="reset" value="Reset">
         </td>
