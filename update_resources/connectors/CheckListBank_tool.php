@@ -4,9 +4,6 @@ namespace php_active_record;
 Instructions here: https://eol-jira.bibalex.org/browse/COLLAB-1004?focusedCommentId=64188&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-64188
 */
 /* how to run during dev:
-$json = '{"Proj":"KANB", "Dept":"FISH", "Lic":"CreativeCommons – Attribution Non-Commercial (by-nc)", "Lic_yr":"", "Lic_inst":"", "Lic_cont":""}';
-php update_resources/connectors/marine_geo_image.php _ image_input.xlsx _ _ '$json'
-php update_resources/connectors/marine_geo_image.php _ _ 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/MarineGEO/image_input.xlsx' uuid001 '$json'
 
 from jenkins_call.php: 1686049284
 /opt/homebrew/opt/php@5.6/bin/php CheckListBank_tool.php jenkins '1719632821.tab' _ _ '{"Filename_ID":"","Short_Desc":"" , "timestart":"0.006125"}'
