@@ -52,9 +52,6 @@ elseif(isset($form['interface_2'])) {
     "timestart":"'.$timestart.'"}';
 }
 
-
-
-
 $params['json'] = $json;
 // exit("\n$json\n");
 // $params['destination'] = $for_DOC_ROOT . "/applications/specimen_image_export/" . $newfile; --- copied template
