@@ -56,7 +56,7 @@ class AnystyleAPI
 
         // $arr = json_decode($json, true); print_r($arr); //exit("\ncheck anystle output\n"); //debug only
 
-        $obj = json_decode($json); print_r($obj);
+        $obj = json_decode($json); //print_r($obj); //good debug
         return $obj;
     }
 
