@@ -46,7 +46,7 @@ class AnystyleAPI
 
         $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model_core  --stdout -f json parse $input_file";
         // $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model_gold  --stdout -f json parse $input_file";
-        // $cmd = "$this->anystyle_path                                             --stdout -f json parse $input_file";
+        // $cmd = "$this->anystyle_path                                                  --stdout -f json parse $input_file";
 
         $json = shell_exec($cmd);
         // /* seems not needed here, only in Ruby below
