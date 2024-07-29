@@ -275,6 +275,7 @@ function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields
         // ----- write -----
         // echo "<pre>"; print_r($save); echo "</pre>"; //exit;
         unset($save['pre_name_usage']);
+        unset($save['referenceID']);
         write_output_rec_2txt($save, $destination);
     } //end foreach()
     if($eli_debug) print_r($eli_debug);

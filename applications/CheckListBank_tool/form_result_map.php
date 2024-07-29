@@ -175,7 +175,7 @@ function generate_array_map($form, $table)
 }
 function parse_TSV_file($txtfile, $destination, $taxonRank_map, $taxonomicStatus_map, $locality_map, $occurrenceStatus_map, $var_unaccepted)
 {
-    $i = 0; debug("\nLoading: [$txtfile]...creating final Taxa.txt\n");
+    $i = 0; debug("\nLoading: [".pathinfo($txtfile, PATHINFO_BASENAME)."]...creating final Taxa.txt\n");
     $WRITE = Functions::file_open($destination, "w"); fclose($WRITE);
     foreach(new FileIterator($txtfile) as $line_number => $line) {
         if(!$line) continue;

@@ -163,6 +163,7 @@ class CheckListBank_2ndInterface
     
             // ----- write -----
             // echo "<pre>"; print_r($save); echo "</pre>"; //exit;
+            unset($save['referenceID']);
             self::write_output_rec_2txt($save, $destination);
         } //end foreach()
         if($eli_debug) print_r($eli_debug);
