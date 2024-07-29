@@ -119,46 +119,34 @@ echo "\nTotal References: ".count($form['ID'])."\n";
 // echo "\n[".DOC_ROOT."]\n[$resource_id]\n[$temp_dir]\n[$temp_folder]";
 
 //====================================== generate Taxa_final.txt
-$source      = $temp_dir . 'Taxa.txt';
-$destination = $temp_dir . 'Taxa_final.txt';
-parse_TSV_file($source, $destination, $ref_info_list, $included_fields, $comments_reason);
+$source             = $temp_dir . 'Taxa.txt';
+$taxa_destination   = $temp_dir . 'Taxa_final.txt';
+parse_TSV_file($source, $taxa_destination, $ref_info_list, $included_fields, $comments_reason);
 unset($ref_info_list);
 
 //====================================== generate References_final.txt
 $destination = $temp_dir . 'References_final.txt';
 generate_References_final($form, $destination);
 
+// /*
+require_library('connectors/CheckListBank_2ndInterface');
+$func = new CheckListBank_2ndInterface();
+
+$source = $taxa_destination;
+$basename = pathinfo($source, PATHINFO_BASENAME);
+$destination = str_replace($basename, "Taxa_formatted.txt", $source);
+$func->convert_tab_2_pipe_delimited($source, $destination);
+$params['taxa_formatted'] = $destination;
+// */
+
 // /* ====================================== working OK - postponed ======================================
-echo "\nCompressing...\n";
-$source1 = $temp_dir.'Taxa_final.txt';
-$source2 = $temp_dir.'References_final.txt';
-$source3 = $temp_dir.'Taxa.txt';
-$target_dir = str_replace("$resource_id/", "", $temp_dir);
-$target = $target_dir."ITIS_format_$resource_id.zip";
-// $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
-$output = shell_exec("zip -j $target $source1 $source2 $source3");
-echo "\n$output\n";
-
-if(stripos($output, "error") !== false) exit("\nError encountered:\n[$output]\nGo back to Main.\n");
-echo "\nCompressed OK\n";
-if(Functions::is_production()) $domain = "https://editors.eol.org";
-else                           $domain = "http://localhost";
-$rec['url'] = $domain.'/eol_php_code/applications/content_server/resources/Trait_Data_Import/'.$resource_id.'.tar.gz';
-
-$final_zip_url = str_replace(DOC_ROOT, WEB_ROOT, $target);
-echo "<br>Download ITIS-formatted file: [<a href='$final_zip_url'>".pathinfo($final_zip_url, PATHINFO_BASENAME)."</a>]<br><br>";
-
-shell_exec("chmod 777 ".$temp_dir);
-recursive_rmdir($temp_dir); //un-comment in real operation
-
-$tmp_file = $temp_folder . $resource_id."_Distribution.tsv";    if(is_file($tmp_file)) unlink($tmp_file);
-$tmp_file = $temp_folder . $resource_id."_Taxon.tsv";           if(is_file($tmp_file)) unlink($tmp_file);
-?>
-You can save this file to your computer.<br>
-This file will remain in our server for two (2) weeks.<br>
-<!--- <a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br> --->
-<a href='main.php'> &lt;&lt; Back to menu</a>
-<?php
+$params = array();
+$params['source1'] = $taxa_destination;
+$params['source2'] = $temp_dir.'References_final.txt';
+$params['source3'] = $temp_dir.'Taxa.txt';
+$params['target_dir'] = str_replace("$resource_id/", "", $temp_dir);
+$params['target'] = $target_dir."ITIS_format_$resource_id.zip";
+prep_download_link($params);
 // /* ====================================== end postponed ======================================
 
 echo "</pre>";
@@ -304,5 +292,38 @@ function write_output_rec_2txt($rec, $filename)
     $tab_separated = (string) implode("\t", $save); 
     fwrite($WRITE, $tab_separated . "\n");
     fclose($WRITE);
+}
+function prep_download_link($params)
+{
+    echo "\nCompressing...\n";
+    $source1 = $params['source1'];
+    $source2 = $params['source2'];
+    $source3 = $params['source3'];
+    $target_dir = $params['target_dir'];
+    $target = $params['target'];
+    // $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
+    $output = shell_exec("zip -j $target $source1 $source2 $source3");
+    echo "\n$output\n";
+    
+    if(stripos($output, "error") !== false) exit("\nError encountered:\n[$output]\nGo back to Main.\n");
+    echo "\nCompressed OK\n";
+    if(Functions::is_production()) $domain = "https://editors.eol.org";
+    else                           $domain = "http://localhost";
+    $rec['url'] = $domain.'/eol_php_code/applications/content_server/resources/Trait_Data_Import/'.$resource_id.'.tar.gz';
+    
+    $final_zip_url = str_replace(DOC_ROOT, WEB_ROOT, $target);
+    echo "<br>Download ITIS-formatted file: [<a href='$final_zip_url'>".pathinfo($final_zip_url, PATHINFO_BASENAME)."</a>]<br><br>";
+    
+    shell_exec("chmod 777 ".$temp_dir);
+    recursive_rmdir($temp_dir); //un-comment in real operation
+    
+    $tmp_file = $temp_folder . $resource_id."_Distribution.tsv";    if(is_file($tmp_file)) unlink($tmp_file);
+    $tmp_file = $temp_folder . $resource_id."_Taxon.tsv";           if(is_file($tmp_file)) unlink($tmp_file);
+    ?>
+    You can save this file to your computer.<br>
+    This file will remain in our server for two (2) weeks.<br>
+    <!--- <a href='javascript:history.go(-1)'> &lt;&lt; Update mapping</a><br> --->
+    <a href='main.php'> &lt;&lt; Back to menu</a>
+    <?php    
 }
 ?>

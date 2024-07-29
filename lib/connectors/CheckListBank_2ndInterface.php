@@ -31,6 +31,15 @@ class CheckListBank_2ndInterface
         $destination = $this->temp_dir . 'Taxa_final.txt';
         self::parse_TSV_file($source, $destination, $ref_info_list, $included_fields, $params);
         unset($ref_info_list);
+        
+        // /*
+        $source = $destination;
+        $basename = pathinfo($source, PATHINFO_BASENAME);
+        $destination = str_replace($basename, "Taxa_formatted.txt", $source);
+        self::convert_tab_2_pipe_delimited($source, $destination);
+        $params['taxa_formatted'] = $destination;
+        // */
+
         self::prep_download_link($params);
     }
     private function prep_download_link($params)
@@ -38,12 +47,13 @@ class CheckListBank_2ndInterface
         echo "\nCompressing...\n";
         $resource_id = $params['resource_id'];
         $source1 = $this->temp_dir.'Taxa_final.txt';
-        $source2 = $params['orig_taxa'];
-        $source3 = $params['orig_reference'];
+        $source2 = $params['taxa_formatted'];
+        $source3 = $params['orig_taxa'];
+        $source4 = $params['orig_reference'];
         $target_dir = str_replace("$resource_id/", "", $this->temp_dir);
         $target = $target_dir."ITIS_format_$resource_id.zip";
         // $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
-        $output = shell_exec("zip -j $target $source1 $source2 $source3");
+        $output = shell_exec("zip -j $target $source1 $source2 $source3 $source4");
         echo "\n$output\n";
         
         if(stripos($output, "error") !== false) exit("\nError encountered:\n[$output]\nGo back to Main.\n");
@@ -65,6 +75,18 @@ class CheckListBank_2ndInterface
         This file will remain in our server for two (2) weeks.<br>
         <a href='main.php'> &lt;&lt; Back to menu</a>
         <?php        
+    }
+    function convert_tab_2_pipe_delimited($source, $destination)
+    {
+        echo "\nsource: [$source]\ndestination: [$destination]\n";
+        debug("\nConverting: [".pathinfo($source, PATHINFO_BASENAME)."]...to Taxa_formatted.txt\n");
+        $WRITE = Functions::file_open($destination, "w");
+        foreach(new FileIterator($source) as $line_number => $line) {
+            if(!$line) continue;
+            $pipe_delimited = str_replace("\t", "|", $line);
+            fwrite($WRITE, $pipe_delimited."\n");
+        } //end foreach()
+        fclose($WRITE);
     }
     private function parse_TSV_file($txtfile, $destination, $ref_info_list, $included_fields, $params)
     {
