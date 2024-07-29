@@ -78,7 +78,7 @@ class CheckListBank_2ndInterface
     }
     function convert_tab_2_pipe_delimited($source, $destination)
     {
-        echo "\nsource: [$source]\ndestination: [$destination]\n";
+        // echo "\nsource: [$source]\ndestination: [$destination]\n"; //good debug
         debug("\nConverting: [".pathinfo($source, PATHINFO_BASENAME)."]...to Taxa_formatted.txt\n");
         $WRITE = Functions::file_open($destination, "w");
         foreach(new FileIterator($source) as $line_number => $line) {
