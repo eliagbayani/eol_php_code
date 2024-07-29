@@ -161,6 +161,8 @@ class CheckListBank_2ndInterface
             }
             */
     
+            if($save['geographic_value'] == "") $save['origin'] = "";
+
             // ----- write -----
             // echo "<pre>"; print_r($save); echo "</pre>"; //exit;
             unset($save['referenceID']);
