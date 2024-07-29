@@ -134,18 +134,23 @@ $func = new CheckListBank_2ndInterface();
 
 $source = $taxa_destination;
 $basename = pathinfo($source, PATHINFO_BASENAME);
-$destination = str_replace($basename, "Taxa_formatted.txt", $source);
-$func->convert_tab_2_pipe_delimited($source, $destination);
-$params['taxa_formatted'] = $destination;
+$Taxa_formatted_destination = str_replace($basename, "Taxa_formatted.txt", $source);
+$func->convert_tab_2_pipe_delimited($source, $Taxa_formatted_destination);
 // */
 
 // /* ====================================== working OK - postponed ======================================
 $params = array();
+$params['taxa_formatted'] = $Taxa_formatted_destination;
 $params['source1'] = $taxa_destination;
 $params['source2'] = $temp_dir.'References_final.txt';
 $params['source3'] = $temp_dir.'Taxa.txt';
 $params['target_dir'] = str_replace("$resource_id/", "", $temp_dir);
-$params['target'] = $target_dir."ITIS_format_$resource_id.zip";
+$params['target'] = $params['target_dir']."ITIS_format_$resource_id.zip";
+
+$params['resource_id']  = $resource_id;
+$params['temp_dir']     = $temp_dir;
+$params['temp_folder']  = $temp_folder;
+
 prep_download_link($params);
 // /* ====================================== end postponed ======================================
 
@@ -296,13 +301,19 @@ function write_output_rec_2txt($rec, $filename)
 function prep_download_link($params)
 {
     echo "\nCompressing...\n";
+
+    $resource_id = $params['resource_id'];
+    $temp_dir = $params['temp_dir'];
+    $temp_folder = $params['temp_folder'];
+
+    $taxa_formatted = $params['taxa_formatted'];
     $source1 = $params['source1'];
     $source2 = $params['source2'];
     $source3 = $params['source3'];
     $target_dir = $params['target_dir'];
     $target = $params['target'];
     // $output = shell_exec("gzip -cv $source1, $source2 > ".$target);
-    $output = shell_exec("zip -j $target $source1 $source2 $source3");
+    $output = shell_exec("zip -j $target $source1 $taxa_formatted $source2 $source3");
     echo "\n$output\n";
     
     if(stripos($output, "error") !== false) exit("\nError encountered:\n[$output]\nGo back to Main.\n");

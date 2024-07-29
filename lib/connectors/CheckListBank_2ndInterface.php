@@ -68,8 +68,8 @@ class CheckListBank_2ndInterface
         shell_exec("chmod 777 ".$this->temp_dir);
         recursive_rmdir($this->temp_dir); //un-comment in real operation
         
-        if(is_file($source2)) unlink($source2);
         if(is_file($source3)) unlink($source3);
+        if(is_file($source4)) unlink($source4);
         ?>
         You can save this file to your computer.<br>
         This file will remain in our server for two (2) weeks.<br>
