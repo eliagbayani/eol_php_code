@@ -19,7 +19,27 @@ class ZenodoAPI
     function start()
     {
         echo "\n".ZENODO_TOKEN."\n";
-        self::create_dataset();
+        // self::create_dataset();
+        self::upload_dataset();
+        // self::publish_dataset();
+    }
+    private function upload_dataset()
+    {
+        $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/568377dd-daf8-4235-85e1-a56011ad454b/file.dat?access_token='.ZENODO_TOKEN;
+        echo "\n$cmd\n";
+        $json = shell_exec($cmd);           echo "\n$json\n";
+        $obj = json_decode(trim($json));    print_r($obj);
+
+    }
+    private function publish_dataset()
+    {
+        
+        $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
+        // $cmd .= " 2>&1";
+        echo "\n$cmd\n";
+        $json = shell_exec($cmd);           echo "\n$json\n";
+        $obj = json_decode(trim($json));    print_r($obj);
+
     }
     private function create_dataset()
     {   /* sample: https://developers.zenodo.org/?shell#create
