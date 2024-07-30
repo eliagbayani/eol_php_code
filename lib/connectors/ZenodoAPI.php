@@ -53,7 +53,8 @@ Copyright Owner (unless image is in the Public Domain)
                                                                          "identifier" => "https://eol.org/data/media_manifest.tgz",
                                                                          "resource_type" => "dataset")), 
                                     //Example: [{'relation': 'isSupplementTo', 'identifier':'10.1234/foo'}, {'relation': 'cites', 'identifier':'https://doi.org/10.1234/bar', 'resource_type': 'image-diagram'}]
-
+                                    "access_right" => "open", //defaults to 'open'
+                                    "license" => "cc-by",
                             );        
         $json = json_encode($input);
         print_r($input);
