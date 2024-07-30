@@ -41,10 +41,13 @@ EOL Full-Size Copy URL (recommended for download, eg: https://content.eol.org/da
 License (eg: cc-by-nc-sa-3.0, see https://creativecommons.org/licenses/ for details)
 Copyright Owner (unless image is in the Public Domain)
                                     ",
-                                    "creators" => array(array("name" => "", "affiliation" => "")),
+                                    "creators" => array(array("name" => "EOL staff", "affiliation" => "Encyclopedia of Life")), 
+                                    //Example: [{'name':'Doe, John', 'affiliation': 'Zenodo'}, 
+                                    //          {'name':'Smith, Jane', 'affiliation': 'Zenodo', 'orcid': '0000-0002-1694-233X'}, 
+                                    //          {'name': 'Kowalski, Jack', 'affiliation': 'Zenodo', 'gnd': '170118215'}]
                                     "keywords" => array("Aggregate Datasets"),
                                     // "publication_date" => "2020-02-04", //required. Date of publication in ISO8601 format (YYYY-MM-DD). Defaults to current date.                                                                        
-                                    // "notes" => "--- EOL file last updated: Jul 26, 2024 12:17 AM ---",
+                                    "notes" => "For questions or use cases calling for large, multi-use aggregate data files, please visit the EOL Services forum at http://discuss.eol.org/c/eol-services",
                                     "communities" => array(array("identifier" => "eol")), //Example: [{'identifier':'eol'}]
                                     "dates" => array(array("start" => "2020-02-04", "end" => "2020-02-04", "type" => "Created"), //CKAN's created
                                                      array("start" => "2024-07-26", "end" => "2024-07-26", "type" => "Updated"), //CKAN's updated   
@@ -58,7 +61,19 @@ Copyright Owner (unless image is in the Public Domain)
                             );        
         $json = json_encode($input);
         print_r($input);
-        echo "\n$json\n";
+        // echo "\n$json\n";
+
+        $cmd = 'curl -i -H "Content-Type: application/json" -X POST --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN;
+        // $cmd .= " 2>&1";
+        echo "\n$cmd\n";
+        $json = shell_exec($cmd);           echo "\n$json\n";
+        $obj = json_decode(trim($json));    print_r($obj);
+
+        // $cmd = 'curl -s "'.$url.'" -H "X-Authentication-Token:'.$this->service['token'].'"';
+        // $cmd = 'curl --insecure --include --user '.$this->gbif_username.':'.$this->gbif_pw.' --header "Content-Type: application/json" --data @'.$filename.' -s https://api.gbif.org/v1/occurrence/download/request';
+        // $output = shell_exec($cmd);
+        // echo "\nRequest output:\n[$output]\n";
+    
     }
 
 
