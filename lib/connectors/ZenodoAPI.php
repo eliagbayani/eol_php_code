@@ -12,23 +12,40 @@ class ZenodoAPI
             'download_wait_time' => 1000000, 'timeout' => 60*3, 'download_attempts' => 1, 'delay_in_minutes' => 0.5);
 
         $this->debug = array();
-        // if(Functions::is_production()) $this->anystyle_path = "/opt/rh/rh-ruby25/root/usr/local/bin/anystyle";
-        // else                           $this->anystyle_path = "/usr/local/bin/anystyle";
+        $this->api['domain'] = 'https://zenodo.org';
+        if(Functions::is_production()) $this->path_2_file_dat = '/extra/other_files/Zenodo/';
+        else                           $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
+        if(!is_dir($this->path_2_file_dat)) mkdir(path_2_file_dat);
     }
 
     function start()
     {
         echo "\n".ZENODO_TOKEN."\n";
         // self::create_dataset();
-        self::upload_dataset();
+        $obj = self::retrieve_dataset('13136202'); self::upload_dataset($obj);
         // self::publish_dataset();
     }
-    private function upload_dataset()
+    private function retrieve_dataset($id)
     {
-        $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/568377dd-daf8-4235-85e1-a56011ad454b/file.dat?access_token='.ZENODO_TOKEN;
+        echo "\nRetrieving ".$id."...\n";
+        // $cmd = 'curl -i '.$this->api['domain'].'/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN; //orig from Zenodo, -i more complete output. Not used.
+        $cmd = 'curl -s '.$this->api['domain'].'/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN; //better curl output, -s just the json output.
+        $cmd .= " 2>&1";
+        $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
+        $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+        return $obj;
+    }
+    private function upload_dataset($obj)
+    {
+        echo "\nUploading ".$obj['id']."...\n";
+        self::initialize_file_dat($obj);
+        $bucket = $obj['links']['bucket']; //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
+        $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
+        $cmd = 'curl --upload-file '.self::generate_file_dat($obj).' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
+
         echo "\n$cmd\n";
-        $json = shell_exec($cmd);           echo "\n$json\n";
-        $obj = json_decode(trim($json));    print_r($obj);
+        $json = shell_exec($cmd);               echo "\n$json\n";
+        $obj = json_decode(trim($json), true);  print_r($obj);
 
     }
     private function publish_dataset()
@@ -140,6 +157,17 @@ Copyright Owner (unless image is in the Public Domain)
             }
         }
         echo ("\n-end muna-\n");
+    }
+    private function initialize_file_dat($obj)
+    {
+        $file = self::generate_file_dat($obj);
+        $WRITE = Functions::file_open($file, "w");
+        fwrite($WRITE, json_encode($obj));
+        fclose($WRITE);
+    }
+    private function generate_file_dat($obj)
+    {
+        return $this->path_2_file_dat . $obj['id'] . ".dat";        
     }
 }
 ?>
