@@ -16,6 +16,17 @@ class ZenodoAPI
         if(Functions::is_production()) $this->path_2_file_dat = '/extra/other_files/Zenodo/';
         else                           $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
+        /*
+
+        https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
+        https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life
+
+        https://opendata.eol.org/api/3/action/organization_list
+
+        https://opendata.eol.org/api/3/action/package_list
+        https://opendata.eol.org/api/3/action/package_show?id=images-list
+
+        */
     }
 
     function start()
