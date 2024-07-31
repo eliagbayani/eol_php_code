@@ -8,8 +8,9 @@ class ZenodoAPI
     {
         $this->download_options = array(
             'resource_id'        => 'zenodo',  //resource_id here is just a folder name in cache
-            'expire_seconds'     => 60*60*24*30, //maybe 1 month to expire
+            'expire_seconds'     => 60*60*24*1, //maybe 1 day to expire
             'download_wait_time' => 1000000, 'timeout' => 60*3, 'download_attempts' => 1, 'delay_in_minutes' => 0.5);
+        // $this->download_options['expire_seconds'] = 0;
 
         $this->debug = array();
         $this->api['domain'] = 'https://zenodo.org';
@@ -17,19 +18,82 @@ class ZenodoAPI
         else                           $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
         /*
-
-        https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
-        https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life
-
-        https://opendata.eol.org/api/3/action/organization_list
-
         https://opendata.eol.org/api/3/action/package_list
         https://opendata.eol.org/api/3/action/package_show?id=images-list
-
         */
+        $this->ckan['organization_list'] = 'https://opendata.eol.org/api/3/action/organization_list';
+        $this->ckan['organization_show'] = 'https://opendata.eol.org/api/3/action/organization_show?id=ORGANIZATION_ID&include_datasets=true';
+        // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
+        // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life
+
+        /* very helpful
+        https://www.whatismybrowser.com/detect/what-is-my-user-agent/
+        */
+        $this->ckan['user_show'] = 'https://opendata.eol.org/api/3/action/user_show?id='; //e.g. 47d700d6-0f4c-43e8-a0c5-a5e739bc390c
     }
 
     function start()
+    {
+        if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
+            $o = json_decode($json, true); //print_r($o);
+            foreach($o['result'] as $organization_id) {
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                echo "\n" . $organization_id;
+                self::process_organization($organization_id);
+            }
+        }
+    }
+    private function process_organization($organization_id)
+    {
+        $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
+        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
+        $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json';
+
+        // if($json = Functions::get_remote_file_fake_browser($url, $this->download_options)) {
+
+        if($json = Functions::lookup_with_cache($url, $this->download_options)) {
+            $o = json_decode($json, true); //print_r($o);
+            echo "\npackage_count: ".$o['result']['package_count'];
+            foreach($o['result']['packages'] as $p) {
+                if($p['title'] != 'Images list') continue; //debug only dev only
+                print_r($p);
+                $input = self::generate_input_field($p);
+            }
+        }
+    }
+    private function generate_input_field($p)
+    {
+        $input = array();
+        
+        $dates = array();
+        if($val = $p['metadata_created'])   $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
+        if($val = $p['metadata_modified'])  $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
+
+        $creator = "";
+        if($val = $p['creator_user_id']) $creator = self::lookup_user_using_id($val);
+
+        $input['metadata'] = array( "title" => $p['title'], //"Images list",
+                                    "upload_type" => "dataset", //controlled vocab.
+                                    "description" => $p['notes'],
+                                    "creators" => array(array("name" => $creator, "affiliation" => "Encyclopedia of Life")), 
+                                    //Example: [{'name':'Doe, John', 'affiliation': 'Zenodo'}, 
+                                    //          {'name':'Smith, Jane', 'affiliation': 'Zenodo', 'orcid': '0000-0002-1694-233X'}, 
+                                    //          {'name': 'Kowalski, Jack', 'affiliation': 'Zenodo', 'gnd': '170118215'}]
+                                    "keywords" => array($p['organization']['title']), //array("Aggregate Datasets"),
+                                    // "publication_date" => "2020-02-04", //required. Date of publication in ISO8601 format (YYYY-MM-DD). Defaults to current date.                                                                        
+                                    "notes" => $p['organization']['description'], //"For questions or use cases calling for large, multi-use aggregate data files, please visit the EOL Services forum at http://discuss.eol.org/c/eol-services",
+                                    "communities" => array(array("identifier" => "eol")), //Example: [{'identifier':'eol'}]
+                                    "dates" => $dates, //Example: [{"start": "2018-03-21", "end": "2018-03-25", "type": "Collected", "description": "Specimen A5 collection period."}]
+                                    "related_identifiers" => array(array("relation" => "isSupplementTo", 
+                                                                         "identifier" => "https://eol.org/data/media_manifest.tgz",
+                                                                         "resource_type" => "dataset")), 
+                                    //Example: [{'relation': 'isSupplementTo', 'identifier':'10.1234/foo'}, {'relation': 'cites', 'identifier':'https://doi.org/10.1234/bar', 'resource_type': 'image-diagram'}]
+                                    "access_right" => "open", //defaults to 'open'
+                                    "license" => "cc-by",
+                            );        
+
+    }
+    function test()
     {
         // echo "\n".ZENODO_TOKEN."\n";
         // self::create_dataset();
@@ -234,6 +298,33 @@ Copyright Owner (unless image is in the Public Domain)
     private function generate_file_dat($obj)
     {
         return $this->path_2_file_dat . $obj['id'] . ".dat";        
+    }
+    private function lookup_user_using_id($id)
+    {
+        if($json = Functions::lookup_with_cache($this->ckan['user_show'].$id, $this->download_options)) {
+            $o = json_decode($json, true); print_r($o); exit;
+            /*Array(
+                [help] => https://opendata.eol.org/api/3/action/help_show?name=user_show
+                [success] => 1
+                [result] => Array(
+                        [openid] => 
+                        [about] => 
+                        [display_name] => Jen Hammock
+                        [name] => jhammock
+                        [created] => 2017-02-06T11:20:32.160756
+                        [email_hash] => e9470a1777b5a8165a47b223b48593f9
+                        [sysadmin] => 1
+                        [activity_streams_email_notifications] => 
+                        [state] => active
+                        [number_of_edits] => 4753
+                        [fullname] => Jen Hammock
+                        [id] => 3330d6a7-b9fd-42a9-aad7-8d30b87817c3
+                        [number_created_packages] => 483
+                    )
+            )*/
+            return @$o['result']['fullname'];
+        }
+
     }
 }
 ?>
