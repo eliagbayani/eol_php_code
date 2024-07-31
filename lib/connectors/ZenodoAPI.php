@@ -19,12 +19,15 @@ class ZenodoAPI
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
         /*
         https://opendata.eol.org/api/3/action/package_list
-        https://opendata.eol.org/api/3/action/package_show?id=images-list
         */
         $this->ckan['organization_list'] = 'https://opendata.eol.org/api/3/action/organization_list';
         $this->ckan['organization_show'] = 'https://opendata.eol.org/api/3/action/organization_show?id=ORGANIZATION_ID&include_datasets=true';
         // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
         // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life
+
+        $this->ckan['package_show'] = 'https://opendata.eol.org/api/3/action/package_show?id='; //e.g. images-list
+        // https://opendata.eol.org/api/3/action/package_show?id=images-list
+
 
         /* very helpful
         https://www.whatismybrowser.com/detect/what-is-my-user-agent/
@@ -56,7 +59,7 @@ class ZenodoAPI
             echo "\npackage_count: ".$o['result']['package_count'];
             foreach($o['result']['packages'] as $p) {
                 if($p['title'] != 'Images list') continue; //debug only dev only
-                print_r($p);
+                // print_r($p); exit;
                 $input = self::generate_input_field($p);
             }
         }
@@ -69,13 +72,30 @@ class ZenodoAPI
         if($val = $p['metadata_created'])   $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
         if($val = $p['metadata_modified'])  $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
 
+        $creators = array();
         $creator = "";
-        if($val = $p['creator_user_id']) $creator = self::lookup_user_using_id($val);
+        if($val = $p['creator_user_id']) {
+            if($creator = self::lookup_user_using_id($val)) {
+                $creators[] = array("name" => $creator, "affiliation" => "Encyclopedia of Life");
+            }
+        }
+
+        $related_identifiers = array();
+        $package_obj = self::lookup_package_using_id($p['id']);
+        if($val = @$package_obj['result']['resources'][0]['url']) { //"https://eol.org/data/media_manifest.tgz"
+            $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
+        }
+
+        $license = 'cc-by';
+        if($val = @$p['license_id']) {
+            if($val != 'notspecified') $license = $val;
+        }
+
 
         $input['metadata'] = array( "title" => $p['title'], //"Images list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "description" => $p['notes'],
-                                    "creators" => array(array("name" => $creator, "affiliation" => "Encyclopedia of Life")), 
+                                    "creators" => $creators, 
                                     //Example: [{'name':'Doe, John', 'affiliation': 'Zenodo'}, 
                                     //          {'name':'Smith, Jane', 'affiliation': 'Zenodo', 'orcid': '0000-0002-1694-233X'}, 
                                     //          {'name': 'Kowalski, Jack', 'affiliation': 'Zenodo', 'gnd': '170118215'}]
@@ -84,14 +104,12 @@ class ZenodoAPI
                                     "notes" => $p['organization']['description'], //"For questions or use cases calling for large, multi-use aggregate data files, please visit the EOL Services forum at http://discuss.eol.org/c/eol-services",
                                     "communities" => array(array("identifier" => "eol")), //Example: [{'identifier':'eol'}]
                                     "dates" => $dates, //Example: [{"start": "2018-03-21", "end": "2018-03-25", "type": "Collected", "description": "Specimen A5 collection period."}]
-                                    "related_identifiers" => array(array("relation" => "isSupplementTo", 
-                                                                         "identifier" => "https://eol.org/data/media_manifest.tgz",
-                                                                         "resource_type" => "dataset")), 
+                                    "related_identifiers" => $related_identifiers, 
                                     //Example: [{'relation': 'isSupplementTo', 'identifier':'10.1234/foo'}, {'relation': 'cites', 'identifier':'https://doi.org/10.1234/bar', 'resource_type': 'image-diagram'}]
                                     "access_right" => "open", //defaults to 'open'
-                                    "license" => "cc-by",
+                                    "license" => $license,
                             );        
-
+        print_r($input); exit("\nstop muna\n");
     }
     function test()
     {
@@ -302,7 +320,7 @@ Copyright Owner (unless image is in the Public Domain)
     private function lookup_user_using_id($id)
     {
         if($json = Functions::lookup_with_cache($this->ckan['user_show'].$id, $this->download_options)) {
-            $o = json_decode($json, true); print_r($o); exit;
+            $o = json_decode($json, true); //print_r($o); exit;
             /*Array(
                 [help] => https://opendata.eol.org/api/3/action/help_show?name=user_show
                 [success] => 1
@@ -325,6 +343,13 @@ Copyright Owner (unless image is in the Public Domain)
             return @$o['result']['fullname'];
         }
 
+    }
+    private function lookup_package_using_id($id)
+    {
+        if($json = Functions::lookup_with_cache($this->ckan['package_show'].$id, $this->download_options)) {
+            $o = json_decode($json, true); //print_r($o); exit;
+            return $o;
+        }
     }
 }
 ?>
