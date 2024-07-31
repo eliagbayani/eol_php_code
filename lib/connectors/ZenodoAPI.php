@@ -67,11 +67,11 @@ class ZenodoAPI
     private function generate_input_field($p)
     {
         $input = array();
-        
+        // -------------------------------------------------------------------
         $dates = array();
         if($val = $p['metadata_created'])   $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
         if($val = $p['metadata_modified'])  $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
-
+        // -------------------------------------------------------------------
         $creators = array();
         $creator = "";
         if($val = $p['creator_user_id']) {
@@ -79,19 +79,18 @@ class ZenodoAPI
                 $creators[] = array("name" => $creator, "affiliation" => "Encyclopedia of Life");
             }
         }
-
+        // -------------------------------------------------------------------
         $related_identifiers = array();
         $package_obj = self::lookup_package_using_id($p['id']);
         if($val = @$package_obj['result']['resources'][0]['url']) { //"https://eol.org/data/media_manifest.tgz"
             $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
         }
-
+        // -------------------------------------------------------------------
         $license = 'cc-by';
         if($val = @$p['license_id']) {
             if($val != 'notspecified') $license = $val;
         }
-
-
+        // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $p['title'], //"Images list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "description" => $p['notes'],
@@ -109,7 +108,8 @@ class ZenodoAPI
                                     "access_right" => "open", //defaults to 'open'
                                     "license" => $license,
                             );        
-        print_r($input); exit("\nstop muna\n");
+        print_r($input); //exit("\nstop muna\n");
+        return $input;
     }
     function test()
     {
@@ -158,7 +158,8 @@ Copyright Owner (unless image is in the Public Domain)
                             "related_identifiers" => array(array("relation" => "isSupplementTo", 
                                                                  "identifier" => "https://eol.org/data/media_manifest.tgz",
                                                                  "resource_type" => "dataset")), 
-                            //Example: [{'relation': 'isSupplementTo', 'identifier':'10.1234/foo'}, {'relation': 'cites', 'identifier':'https://doi.org/10.1234/bar', 'resource_type': 'image-diagram'}]
+                            //Example: [{'relation': 'isSupplementTo', 'identifier':'10.1234/foo'}, 
+                            //          {'relation': 'cites', 'identifier':'https://doi.org/10.1234/bar', 'resource_type': 'image-diagram'}]
                             "access_right" => "open", //defaults to 'open'
                             "license" => "cc-by",
                     );        
