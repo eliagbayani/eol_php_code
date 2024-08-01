@@ -58,7 +58,9 @@ class ZenodoAPI
             $o = json_decode($json, true); //print_r($o);
             echo "\npackage_count: ".$o['result']['package_count'];
             foreach($o['result']['packages'] as $p) {
-                if($p['title'] != 'Images list') continue; //debug only dev only
+                // if($p['title'] != 'Images list') continue; //debug only dev only
+                if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
+
                 // print_r($p); exit;
                 self::process_a_package($p);
             }
@@ -68,9 +70,9 @@ class ZenodoAPI
     {
         // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
-        foreach(@$package_obj['result']['resources'] as $r) { print_r($p); print_r($r); 
+        foreach(@$package_obj['result']['resources'] as $r) { //print_r($p); print_r($r); 
             $input = self::generate_input_field($p, $r);
-            exit("\na resource object\n");
+            // exit("\na resource object\n");
         }
 
 
@@ -119,6 +121,11 @@ class ZenodoAPI
         if($p['private'] == 'false') $access_right = 'open';
         else                         $access_right = 'restricted';
         // -------------------------------------------------------------------
+        $notes = "";
+        if($val = @$r['description']) $notes = $val;
+        if($notes) $notes .= "\n".$p['organization']['description'];
+        else       $notes = $p['organization']['description'];
+        // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $p['title'].": ".$r['name'], //"Images list: image list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "description" => $p['notes'],
@@ -128,7 +135,7 @@ class ZenodoAPI
                                     //          {'name': 'Kowalski, Jack', 'affiliation': 'Zenodo', 'gnd': '170118215'}]
                                     "keywords" => array($p['organization']['title'].": ".$p['title']), //array("Aggregate Datasets: Images list"),
                                     // "publication_date" => "2020-02-04", //required. Date of publication in ISO8601 format (YYYY-MM-DD). Defaults to current date.                                                                        
-                                    "notes" => $p['organization']['description'], //"For questions or use cases calling for large, multi-use aggregate data files, please visit the EOL Services forum at http://discuss.eol.org/c/eol-services",
+                                    "notes" => $notes, //"For questions or use cases calling for large, multi-use aggregate data files, please visit the EOL Services forum at http://discuss.eol.org/c/eol-services",
                                     "communities" => array(array("identifier" => "eol")), //Example: [{'identifier':'eol'}]
                                     "dates" => $dates, //Example: [{"start": "2018-03-21", "end": "2018-03-25", "type": "Collected", "description": "Specimen A5 collection period."}]
                                     "related_identifiers" => $related_identifiers, 
@@ -136,7 +143,7 @@ class ZenodoAPI
                                     "access_right" => $access_right, //defaults to 'open'
                                     "license" => $license,
                             );        
-        print_r($input); exit("\nstop muna\n");
+        print_r($input); //exit("\nstop muna\n");
         return $input;
     }
     function test()
