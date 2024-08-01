@@ -62,6 +62,7 @@ class ZenodoAPI
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
 
                 // print_r($p); exit;
+                if($p['private'] == 'true') continue;
                 self::process_a_package($p);
             }
         }
@@ -70,12 +71,10 @@ class ZenodoAPI
     {
         // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
-        foreach(@$package_obj['result']['resources'] as $r) { //print_r($p); print_r($r); 
+        foreach(@$package_obj['result']['resources'] as $r) { print_r($p); print_r($r); 
             $input = self::generate_input_field($p, $r);
             // exit("\na resource object\n");
         }
-
-
 
     }
     private function generate_input_field($p, $r) //todo loop into resources and have $input for each resource...
