@@ -50,7 +50,7 @@ class ZenodoAPI
     {
         $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
         $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
-        $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json';
+        $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json'; //an organization: Aggregate Datasets
 
         // if($json = Functions::get_remote_file_fake_browser($url, $this->download_options)) {
 
@@ -60,43 +60,49 @@ class ZenodoAPI
             foreach($o['result']['packages'] as $p) {
                 if($p['title'] != 'Images list') continue; //debug only dev only
                 // print_r($p); exit;
-                $input = self::generate_input_field($p);
+                self::process_a_package($p);
             }
         }
     }
-    private function generate_input_field($p) //todo loop into resources and have $input for each resource...
+    private function process_a_package($p)
+    {
+        // loop to each of the resources of a package
+        $package_obj = self::lookup_package_using_id($p['id']);
+        foreach(@$package_obj['result']['resources'] as $r) { print_r($p); print_r($r); 
+            $input = self::generate_input_field($p, $r);
+            exit("\na resource object\n");
+        }
+
+
+
+    }
+    private function generate_input_field($p, $r) //todo loop into resources and have $input for each resource...
     {
         $input = array();
         // -------------------------------------------------------------------
         $dates = array();
-        if($val = $p['metadata_created'])   $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
-        if($val = $p['metadata_modified'])  $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
+        // if($val = $p['metadata_created'])   $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
+        // if($val = $p['metadata_modified'])  $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
+        if($val = @$r['created'])           $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
+        if($val = @$r['last_modified'])     $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
         // -------------------------------------------------------------------
         $creators = array();
         $creator = "";
         if($val = $p['creator_user_id']) {
-            if($creator = self::lookup_user_using_id($val)) {
-                $creators[] = array("name" => $creator, "affiliation" => "Encyclopedia of Life");
+            if($user_obj = self::lookup_user_using_id($val)) {
+                if(@$user_obj['result']['sysadmin'] == 'true') $affiliation = "Encyclopedia of Life";
+                else                                           $affiliation = "";
+                if($creator = @$user_obj['result']['fullname']) {
+                    $creators[] = array("name" => $creator, "affiliation" => $affiliation);
+                }
             }
         }
         // -------------------------------------------------------------------
         $related_identifiers = array();
-        $package_obj = self::lookup_package_using_id($p['id']);
-        foreach($package_obj['result']['resources'] as $r) { print_r($r);
-            if($val = @$r['url']) { //"https://eol.org/data/media_manifest.tgz"
-                $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
-            }
-
-            // /*
-            if(!$p['metadata_created']) {
-                if($val = @$r['created'])           $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
-            }
-            if(!$p['metadata_modified']) {
-                if($val = @$r['last_modified'])     $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
-            }
-            // */
-
+        if($val = @$r['url']) { //"https://eol.org/data/media_manifest.tgz"
+            $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
         }
+
 
         // -------------------------------------------------------------------
         $license = 'cc-by';
@@ -113,14 +119,14 @@ class ZenodoAPI
         if($p['private'] == 'false') $access_right = 'open';
         else                         $access_right = 'restricted';
         // -------------------------------------------------------------------
-        $input['metadata'] = array( "title" => $p['title'], //"Images list",
+        $input['metadata'] = array( "title" => $p['title'].": ".$r['name'], //"Images list: image list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "description" => $p['notes'],
                                     "creators" => $creators, 
                                     //Example: [{'name':'Doe, John', 'affiliation': 'Zenodo'}, 
                                     //          {'name':'Smith, Jane', 'affiliation': 'Zenodo', 'orcid': '0000-0002-1694-233X'}, 
                                     //          {'name': 'Kowalski, Jack', 'affiliation': 'Zenodo', 'gnd': '170118215'}]
-                                    "keywords" => array($p['organization']['title']), //array("Aggregate Datasets"),
+                                    "keywords" => array($p['organization']['title'].": ".$p['title']), //array("Aggregate Datasets: Images list"),
                                     // "publication_date" => "2020-02-04", //required. Date of publication in ISO8601 format (YYYY-MM-DD). Defaults to current date.                                                                        
                                     "notes" => $p['organization']['description'], //"For questions or use cases calling for large, multi-use aggregate data files, please visit the EOL Services forum at http://discuss.eol.org/c/eol-services",
                                     "communities" => array(array("identifier" => "eol")), //Example: [{'identifier':'eol'}]
@@ -130,7 +136,7 @@ class ZenodoAPI
                                     "access_right" => $access_right, //defaults to 'open'
                                     "license" => $license,
                             );        
-        print_r($input); //exit("\nstop muna\n");
+        print_r($input); exit("\nstop muna\n");
         return $input;
     }
     function test()
@@ -343,7 +349,7 @@ Copyright Owner (unless image is in the Public Domain)
     private function lookup_user_using_id($id)
     {
         if($json = Functions::lookup_with_cache($this->ckan['user_show'].$id, $this->download_options)) {
-            $o = json_decode($json, true); //print_r($o); exit;
+            $user_obj = json_decode($json, true); //print_r($o); exit;
             /*Array(
                 [help] => https://opendata.eol.org/api/3/action/help_show?name=user_show
                 [success] => 1
@@ -363,7 +369,7 @@ Copyright Owner (unless image is in the Public Domain)
                         [number_created_packages] => 483
                     )
             )*/
-            return @$o['result']['fullname'];
+            return $user_obj;
         }
 
     }
