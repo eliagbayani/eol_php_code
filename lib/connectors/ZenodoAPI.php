@@ -64,7 +64,7 @@ class ZenodoAPI
             }
         }
     }
-    private function generate_input_field($p)
+    private function generate_input_field($p) todo loop into resources and have $input for each resource...
     {
         $input = array();
         // -------------------------------------------------------------------
@@ -82,9 +82,22 @@ class ZenodoAPI
         // -------------------------------------------------------------------
         $related_identifiers = array();
         $package_obj = self::lookup_package_using_id($p['id']);
-        if($val = @$package_obj['result']['resources'][0]['url']) { //"https://eol.org/data/media_manifest.tgz"
-            $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
+        foreach($package_obj['result']['resources'] as $r) { print_r($r);
+            if($val = @$r['url']) { //"https://eol.org/data/media_manifest.tgz"
+                $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
+            }
+
+            // /*
+            if(!$p['metadata_created']) {
+                if($val = @$r['created'])           $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
+            }
+            if(!$p['metadata_modified']) {
+                if($val = @$r['last_modified'])     $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
+            }
+            // */
+
         }
+
         // -------------------------------------------------------------------
         $license = 'cc-by';
         if($val = @$p['license_id']) {
