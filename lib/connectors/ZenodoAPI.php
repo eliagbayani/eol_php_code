@@ -49,7 +49,7 @@ class ZenodoAPI
     private function process_organization($organization_id)
     {
         $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
-        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
         $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json'; //an organization: Aggregate Datasets
 
         // if($json = Functions::get_remote_file_fake_browser($url, $this->download_options)) {
@@ -59,7 +59,7 @@ class ZenodoAPI
             echo "\npackage_count: ".$o['result']['package_count'];
             foreach($o['result']['packages'] as $p) {
                 // if($p['title'] != 'Images list') continue; //debug only dev only
-                if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
+                // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
 
                 // print_r($p); exit;
                 self::process_a_package($p);
