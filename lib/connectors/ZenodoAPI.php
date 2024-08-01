@@ -64,7 +64,7 @@ class ZenodoAPI
             }
         }
     }
-    private function generate_input_field($p) todo loop into resources and have $input for each resource...
+    private function generate_input_field($p) //todo loop into resources and have $input for each resource...
     {
         $input = array();
         // -------------------------------------------------------------------
@@ -104,6 +104,15 @@ class ZenodoAPI
             if($val != 'notspecified') $license = $val;
         }
         // -------------------------------------------------------------------
+        /*Controlled vocabulary:
+            * open: Open Access
+            * embargoed: Embargoed Access
+            * restricted: Restricted Access
+            * closed: Closed Access        
+        */
+        if($p['private'] == 'false') $access_right = 'open';
+        else                         $access_right = 'restricted';
+        // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $p['title'], //"Images list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "description" => $p['notes'],
@@ -118,7 +127,7 @@ class ZenodoAPI
                                     "dates" => $dates, //Example: [{"start": "2018-03-21", "end": "2018-03-25", "type": "Collected", "description": "Specimen A5 collection period."}]
                                     "related_identifiers" => $related_identifiers, 
                                     //Example: [{'relation': 'isSupplementTo', 'identifier':'10.1234/foo'}, {'relation': 'cites', 'identifier':'https://doi.org/10.1234/bar', 'resource_type': 'image-diagram'}]
-                                    "access_right" => "open", //defaults to 'open'
+                                    "access_right" => $access_right, //defaults to 'open'
                                     "license" => $license,
                             );        
         print_r($input); //exit("\nstop muna\n");
