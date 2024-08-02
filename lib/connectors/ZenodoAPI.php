@@ -60,9 +60,7 @@ class ZenodoAPI
                     $final[$org_title_name]['dataset_count'] = $o['result']['package_count'];
                     foreach($o['result']['packages'] as $p) {
                         $package_title_name = $p['title'].": ".$p['name'];
-                        $arr = array();
-                        $arr['private'] = $p['private'];
-                        if($p['private']) $final[$org_title_name]["Excluded datasets since it's private"][$package_title_name] = '';
+                        if($p['private'] == 1) $final[$org_title_name]["Excluded datasets since it's private"][$package_title_name] = '';
                     }
                 }
 
