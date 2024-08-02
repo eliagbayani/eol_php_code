@@ -9,7 +9,8 @@ $timestart = time_elapsed();
 
 
 $func = new ZenodoAPI();
-$func->start();
+// $func->start();
+$func->list_private_datasets(); //utility
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
