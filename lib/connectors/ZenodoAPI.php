@@ -42,7 +42,7 @@ class ZenodoAPI
     {
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
-            $i = 0;
+            $i = 0; $e = 0;
             foreach($o['result'] as $organization_id) { $i++;
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // echo "\n" . $organization_id;
@@ -68,10 +68,11 @@ class ZenodoAPI
                             // /* loop to each of the resources of a package
                             $package_obj = self::lookup_package_using_id($p['id']);
                             foreach(@$package_obj['result']['resources'] as $r) { //print_r($p); print_r($r); 
-                                if($val = @$r['url']) { //"https://eol.org/data/media_manifest.tgz"
+                                if($val = @$r['url']) { $e++; //"https://eol.org/data/media_manifest.tgz"
                                     $this->debug['urls'][$val] = '';
                                     $parse = parse_url($val);
                                     $this->debug['urls pathinfo'][$parse['host']] = '';
+                                    self::deal_with_ckan_urls($val, $parse, $r);
                                 }
                                 // exit("\na resource object\n");
                             }
@@ -81,6 +82,7 @@ class ZenodoAPI
                 }
 
                 // break; //debug only
+                // if($e >= 100) break; //debug only
             }
         }
         echo "\n\n"; print_r($final);
@@ -437,7 +439,6 @@ Copyright Owner (unless image is in the Public Domain)
             )*/
             return $user_obj;
         }
-
     }
     private function lookup_package_using_id($id)
     {
@@ -446,6 +447,47 @@ Copyright Owner (unless image is in the Public Domain)
         if($json = Functions::lookup_with_cache($this->ckan['package_show'].$id, $options)) {
             $o = json_decode($json, true); //print_r($o); exit;
             return $o;
+        }
+    }
+    private function deal_with_ckan_urls($url, $parse, $r)
+    {   /* [https://opendata.eol.org/dataset/e62665f5-c992-4e18-894f-454a188af411/resource/19ba1335-d661-41bf-be4f-ce2f08f9eac1/download/archive.zip] => 
+           [https://opendata.eol.org/dataset/fe8bddda-74e5-44bc-b541-dc197b347d31/resource/a6cd53d7-76ae-484a-9f98-0321072decd0/download/identifierswithimages.csv.gz] => 
+        [urls pathinfo] => Array(
+                [editors.eol.org] => 
+                [opendata.eol.org] => 
+                [www.dropbox.com] => 
+                [eol.org] => 
+        )*/
+        if($parse['host'] == 'opendata.eol.org') {
+            // print_r($r); print_r($parse); exit("\n$url\n");
+            self::duplicate_actual_file_from_url($r, $url);
+        }
+        else { //the rest
+        }
+    }
+    private function duplicate_actual_file_from_url($r, $url)
+    {   /*
+        https://opendata.eol.org/dataset/fe8bddda-74e5-44bc-b541-dc197b347d31/resource/a6cd53d7-76ae-484a-9f98-0321072decd0/download/identifierswithimages.csv.gz
+        generate actual file: identifierswithimages.csv.gz  
+        cp /extra/ckan_resources/a6c/d53/d7-76ae-484a-9f98-0321072decd0 /extra/ckan_resources/a6c/d53/identifierswithimages.csv.gz
+        OS path:    cd /extra/ckan_resources/a6c/d53/d7-76ae-484a-9f98-0321072decd0
+        www path:   cd /var/www/html/uploaded_resources/a6c/d53/d7-76ae-484a-9f98-0321072decd0
+        */
+        // print_r($r); exit("\n$url\n");
+        $id = $r['id'];
+        $basename = pathinfo($url, PATHINFO_BASENAME); //e.g. dh21.zip
+        $folder_1 = substr($id,0,3);
+        $folder_2 = substr($id,3,3);
+        $file = trim(substr($id,6,strlen($id)));
+        $source = "/extra/ckan_resources/$folder_1/$folder_2/$file";
+        $destination = "/extra/ckan_resources/$folder_1/$folder_2/$basename";
+        if(is_file($source)) {
+            $cmd = "cp $source $destination";
+            echo "\n[$cmd]\n";
+        }
+        else {
+            print_r($r);
+            exit("\nFile not found. Investigate.\n");
         }
     }
 }
