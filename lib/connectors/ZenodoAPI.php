@@ -83,6 +83,7 @@ class ZenodoAPI
                 self::process_organization($organization_id);
             }
         }
+        print_r($this->debug);
     }
     private function process_organization($organization_id)
     {
@@ -142,6 +143,7 @@ class ZenodoAPI
         // -------------------------------------------------------------------
         $related_identifiers = array();
         if($val = @$r['url']) { //"https://eol.org/data/media_manifest.tgz"
+            $this->debug['urls'][$val] = '';
             $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
         }
 
