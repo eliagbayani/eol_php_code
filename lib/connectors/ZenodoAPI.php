@@ -38,7 +38,7 @@ class ZenodoAPI
         // useful to get all datasets; even private ones
     }
 
-    function list_private_datasets()
+    function list_all_datasets($privateYN = 1)
     {
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
@@ -54,13 +54,17 @@ class ZenodoAPI
                 if($json = Functions::lookup_with_cache($url, $this->download_options)) {
                     $o = json_decode($json, true); //print_r($o); exit;
                     if(!$o['success']) exit("\nWhy not successfull\n");
-                    $org_title_name = $o['result']['title'].": ".$o['result']['name'];
-                    echo "\n$i. $org_title_name ($organization_id)";
+                    $org_title_name = $o['result']['title'].": (".$o['result']['name'].")";
+                    echo "\n$i. $org_title_name";
 
                     $final[$org_title_name]['dataset_count'] = $o['result']['package_count'];
                     foreach($o['result']['packages'] as $p) {
                         $package_title_name = $p['title'].": ".$p['name'];
-                        if($p['private'] == 1) $final[$org_title_name]["Excluded datasets since it's private"][$package_title_name] = '';
+                        if($privateYN) $label = 'private datasets';
+                        else $label = 'public datasets';
+                        if($p['private'] == $privateYN) {
+                            $final[$org_title_name][$label][$package_title_name] = '';
+                        }
                     }
                 }
 

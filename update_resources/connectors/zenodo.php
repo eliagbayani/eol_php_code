@@ -10,7 +10,12 @@ $timestart = time_elapsed();
 
 $func = new ZenodoAPI();
 // $func->start();
-$func->list_private_datasets(); //utility
+
+// /*
+$privateYN = 1; //meaning private datasets
+$privateYN = ''; //meaing public datasets
+$func->list_all_datasets($privateYN); //utility
+// */
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
