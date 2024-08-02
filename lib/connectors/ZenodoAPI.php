@@ -42,9 +42,10 @@ class ZenodoAPI
     {
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
-            foreach($o['result'] as $organization_id) {
+            $i = 0;
+            foreach($o['result'] as $organization_id) { $i++;
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
-                echo "\n" . $organization_id;
+                // echo "\n" . $organization_id;
 
                 $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
                 // $url = "http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json";
@@ -54,18 +55,21 @@ class ZenodoAPI
                     $o = json_decode($json, true); //print_r($o); exit;
                     if(!$o['success']) exit("\nWhy not successfull\n");
                     $org_title_name = $o['result']['title'].": ".$o['result']['name'];
-                    $final[$org_title_name]['package_count'] = $o['result']['package_count'];
+                    echo "\n$i. $org_title_name ($organization_id)";
+
+                    $final[$org_title_name]['dataset_count'] = $o['result']['package_count'];
                     foreach($o['result']['packages'] as $p) {
                         $package_title_name = $p['title'].": ".$p['name'];
+                        $arr = array();
                         $arr['private'] = $p['private'];
-                        if($p['private']) $final[$org_title_name]['Excluded since private'][$package_title_name] = $arr;
+                        if($p['private']) $final[$org_title_name]["Excluded datasets since it's private"][$package_title_name] = '';
                     }
                 }
 
                 // break; //debug only
             }
         }
-        echo "\n"; print_r($final);
+        echo "\n\n"; print_r($final);
     }
     function start()
     {
