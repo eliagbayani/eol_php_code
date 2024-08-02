@@ -8,7 +8,7 @@ class ZenodoAPI
     {
         $this->download_options = array(
             'resource_id'        => 'zenodo',  //resource_id here is just a folder name in cache
-            'expire_seconds'     => 60*60*24*1, //maybe 1 day to expire
+            'expire_seconds'     => 60*60*24*30, //maybe 1 day to expire
             'download_wait_time' => 1000000, 'timeout' => 60*3, 'download_attempts' => 1, 'delay_in_minutes' => 0.5);
         // $this->download_options['expire_seconds'] = 0;
 
@@ -64,6 +64,18 @@ class ZenodoAPI
                         else $label = 'public datasets';
                         if($p['private'] == $privateYN) {
                             $final[$org_title_name][$label][$package_title_name] = '';
+
+                            // /* loop to each of the resources of a package
+                            $package_obj = self::lookup_package_using_id($p['id']);
+                            foreach(@$package_obj['result']['resources'] as $r) { //print_r($p); print_r($r); 
+                                if($val = @$r['url']) { //"https://eol.org/data/media_manifest.tgz"
+                                    $this->debug['urls'][$val] = '';
+                                    $parse = parse_url($val);
+                                    $this->debug['urls pathinfo'][$parse['host']] = '';
+                                }
+                                // exit("\na resource object\n");
+                            }
+                            // */
                         }
                     }
                 }
@@ -72,6 +84,7 @@ class ZenodoAPI
             }
         }
         echo "\n\n"; print_r($final);
+        print_r($this->debug);
     }
     function start()
     {
@@ -110,14 +123,12 @@ class ZenodoAPI
         }
     }
     private function process_a_package($p)
-    {
-        // loop to each of the resources of a package
+    {   // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
         foreach(@$package_obj['result']['resources'] as $r) { print_r($p); print_r($r); 
             $input = self::generate_input_field($p, $r);
             // exit("\na resource object\n");
         }
-
     }
     private function generate_input_field($p, $r) //todo loop into resources and have $input for each resource...
     {
@@ -144,6 +155,8 @@ class ZenodoAPI
         $related_identifiers = array();
         if($val = @$r['url']) { //"https://eol.org/data/media_manifest.tgz"
             $this->debug['urls'][$val] = '';
+            $parse = parse_url($val);
+            $this->debug['urls pathinfo'][$parse['host']] = '';
             $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
         }
 
@@ -428,7 +441,9 @@ Copyright Owner (unless image is in the Public Domain)
     }
     private function lookup_package_using_id($id)
     {
-        if($json = Functions::lookup_with_cache($this->ckan['package_show'].$id, $this->download_options)) {
+        $options = $this->download_options;
+        $options['expire_seconds'] = false; //doesn't expire
+        if($json = Functions::lookup_with_cache($this->ckan['package_show'].$id, $options)) {
             $o = json_decode($json, true); //print_r($o); exit;
             return $o;
         }
