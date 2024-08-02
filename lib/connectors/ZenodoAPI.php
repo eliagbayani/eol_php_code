@@ -469,21 +469,25 @@ Copyright Owner (unless image is in the Public Domain)
     {   /*
         https://opendata.eol.org/dataset/fe8bddda-74e5-44bc-b541-dc197b347d31/resource/a6cd53d7-76ae-484a-9f98-0321072decd0/download/identifierswithimages.csv.gz
         generate actual file: identifierswithimages.csv.gz  
-        cp /extra/ckan_resources/a6c/d53/d7-76ae-484a-9f98-0321072decd0 /extra/ckan_resources/a6c/d53/identifierswithimages.csv.gz
+        $ cp /extra/ckan_resources/a6c/d53/d7-76ae-484a-9f98-0321072decd0 /extra/ckan_resources/a6c/d53/identifierswithimages.csv.gz
         OS path:    cd /extra/ckan_resources/a6c/d53/d7-76ae-484a-9f98-0321072decd0
         www path:   cd /var/www/html/uploaded_resources/a6c/d53/d7-76ae-484a-9f98-0321072decd0
+                    https://editors.eol.org/uploaded_resources/a6c/d53/identifierswithimages.csv.gz
         */
         // print_r($r); exit("\n$url\n");
         $id = $r['id'];
         $basename = pathinfo($url, PATHINFO_BASENAME); //e.g. dh21.zip
-        $folder_1 = substr($id,0,3);
-        $folder_2 = substr($id,3,3);
-        $file = trim(substr($id,6,strlen($id)));
+        $folder_1 = substr($id, 0, 3);
+        $folder_2 = substr($id, 3, 3);
+        $file = trim(substr($id, 6, strlen($id)));
         $source = "/extra/ckan_resources/$folder_1/$folder_2/$file";
         $destination = "/extra/ckan_resources/$folder_1/$folder_2/$basename";
         if(is_file($source)) {
-            $cmd = "cp $source $destination";
-            echo "\n[$cmd]\n";
+            if(!is_file($destination)) {
+                $cmd = "cp $source $destination"; echo "\n[$cmd OK]\n";
+                shell_exec($cmd);
+            }
+            else echo "\n[$cmd COPIED already.]\n";
         }
         else {
             print_r($r);
