@@ -33,6 +33,9 @@ class ZenodoAPI
         https://www.whatismybrowser.com/detect/what-is-my-user-agent/
         */
         $this->ckan['user_show'] = 'https://opendata.eol.org/api/3/action/user_show?id='; //e.g. 47d700d6-0f4c-43e8-a0c5-a5e739bc390c
+
+        // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
+        // useful to get all datasets; even private ones
     }
 
     function start()
@@ -62,7 +65,9 @@ class ZenodoAPI
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
 
                 // print_r($p); exit;
-                if($p['private'] == 'true') continue;
+                // if($p['private'] == 'true') continue;
+                // if($p['private'] == 'false' || $p['private'] == '') continue;
+
                 self::process_a_package($p);
             }
         }
@@ -117,8 +122,12 @@ class ZenodoAPI
             * restricted: Restricted Access
             * closed: Closed Access        
         */
+        $access_conditions = '';
         if($p['private'] == 'false') $access_right = 'open';
-        else                         $access_right = 'restricted';
+        else {
+            $access_right = 'restricted';
+            $access_conditions = 'This is not available publicly. Only community members can see this record.';
+        }
         // -------------------------------------------------------------------
         $notes = "";
         if($val = @$r['description']) $notes = $val;
