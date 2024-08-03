@@ -509,19 +509,17 @@ Copyright Owner (unless image is in the Public Domain)
     {
         $ckan_resource_id = $r['id'];
         $rec = array();
-        $rec['package_id'] = $r['package_id']; //"trait-spreadsheet-repository"; // https://opendata.eol.org/dataset/trait-spreadsheet-repository
         
-        $rec['clear_upload'] = "true"; //comment this line once new CKAN is installed.
-         
         // /* ---------- for Zenodo CKAN resource update ---------- start
+        $rec['id'] = $ckan_resource_id; //e.g. a4b749ea-1134-4351-9fee-ac1e3df91a4f
+        $rec['clear_upload'] = "true"; //comment this line once new CKAN is installed.
         $rec['url_type'] = ""; //orig value here is 'upload', which will be replaced by just blank ""
         $rec['state'] = 'active';
+        $rec['url'] = $new_url;
         // ---------- for Zenodo CKAN resource update ---------- end */
 
-        $rec['url'] = $new_url;
-
-        $rec['id'] = $ckan_resource_id; //e.g. a4b749ea-1134-4351-9fee-ac1e3df91a4f
         /* not needed in Zenodo task
+        // $rec['package_id'] = $r['package_id']; //"trait-spreadsheet-repository"; // https://opendata.eol.org/dataset/trait-spreadsheet-repository
         if($val = @$this->arr_json['Short_Desc']) $rec['name'] = $val;
         $rec['description'] = "Updated: ".date("Y-m-d h:i:s A");
         $rec['format'] = "Darwin Core Archive";
@@ -535,14 +533,7 @@ Copyright Owner (unless image is in the Public Domain)
         $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
         // */
 
-        /* for new CKAN
-        $cmd = 'curl -X PUT '.$this->pre_ckan_api.'/action/resource_update';
-        $cmd .= ' -H "Content-Type: application/json"';
-        $cmd .= " -d '".$json."'";
-        $cmd .= ' -H "Authorization: Bearer '+NEW_CKAN_TOKEN+'"';
-        */
-
-        // sleep(2); //we only upload one at a time, no need for delay
+        sleep(2); //may need to delay since there are many records involved
         $output1 = shell_exec($cmd);            echo "\n$output1\n";
         $output2 = json_decode($output1, true); print_r($output2);
         if($output2['success'] == 1) echo "\nOpenData resource UPDATE OK.\n";
