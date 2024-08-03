@@ -36,6 +36,8 @@ class ZenodoAPI
 
         // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
         // useful to get all datasets; even private ones
+
+        $this->temp_count = 0;
     }
 
     function list_all_datasets($privateYN = 1)
@@ -83,7 +85,7 @@ class ZenodoAPI
                 }
 
                 // break; //debug only
-                // if($e >= 100) break; //debug only
+                // if($e >= 10) break; //debug only
             }
         }
         echo "\n\n"; //print_r($final);
@@ -497,6 +499,7 @@ Copyright Owner (unless image is in the Public Domain)
                     echo "\n[$cmd --- Copied OK]\n";
                     shell_exec("chmod 775 $destination"); //main operation
                     self::UPDATE_ckan_resource($r, $new_url);
+                    $this->temp_count++;
                 }
             }
             else echo "\n[$cmd COPIED already.]\n";
@@ -509,7 +512,8 @@ Copyright Owner (unless image is in the Public Domain)
             print_r($r);
             exit("\nFile not found. Investigate.\n"); //main operation
         }
-        exit("\nstop muna 1\n");
+
+        if($this->temp_count >= 10) exit("\nstop muna 2\n");
     }
     private function UPDATE_ckan_resource($r, $new_url) //https://docs.ckan.org/en/ckan-2.7.3/api/        COPIED TEMPLATE from TraitDataImportAPI.php
     {
