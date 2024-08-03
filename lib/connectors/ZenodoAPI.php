@@ -488,9 +488,10 @@ Copyright Owner (unless image is in the Public Domain)
         // if(true) {
         if(is_file($source)) {
             if(!is_file($destination)) {
-                $cmd = "cp $source $destination"; echo "\n[$cmd OK]\n";
+                $cmd = "cp $source $destination"; echo "\n[$cmd --- Copying...]\n";
                 shell_exec($cmd); //main operation
                 if(is_file($destination)) {
+                    echo "\n[$cmd --- Copied OK]\n";
                     shell_exec("chmod 775 $destination"); //main operation
                     self::UPDATE_ckan_resource($r, $new_url);
                 }
