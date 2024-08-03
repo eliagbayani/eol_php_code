@@ -504,6 +504,7 @@ Copyright Owner (unless image is in the Public Domain)
             echo "\nold url: $url";
             echo "\nnew_url: $new_url\n";
         }
+        elseif(is_file($destination)) echo "\nCopied already.\n";
         else {
             print_r($r);
             exit("\nFile not found. Investigate.\n"); //main operation
