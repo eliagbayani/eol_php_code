@@ -458,7 +458,7 @@ Copyright Owner (unless image is in the Public Domain)
                 [www.dropbox.com] => 
                 [eol.org] => 
         )*/
-        print_r($r);
+        // print_r($r);
         if($parse['host'] == 'opendata.eol.org') {
             // print_r($r); print_r($parse); exit("\n$url\n");
             self::duplicate_actual_file_from_url($r, $url);
@@ -485,25 +485,26 @@ Copyright Owner (unless image is in the Public Domain)
         $destination = "/extra/ckan_resources/$folder_1/$folder_2/$basename";
         $new_url = "https://editors.eol.org/uploaded_resources/$folder_1/$folder_2/$basename";
 
-        if(true) {
-        // if(is_file($source)) {
+        // if(true) {
+        if(is_file($source)) {
             if(!is_file($destination)) {
                 $cmd = "cp $source $destination"; echo "\n[$cmd OK]\n";
-                // shell_exec($cmd); //main operation
+                shell_exec($cmd); //main operation
                 if(is_file($destination)) {
-                    // shell_exec("chmod 775 $destination"); //main operation
-                    // self::UPDATE_ckan_resource($r, $new_url);
+                    shell_exec("chmod 775 $destination"); //main operation
+                    self::UPDATE_ckan_resource($r, $new_url);
                 }
             }
             else echo "\n[$cmd COPIED already.]\n";
             print_r($r);
             echo "\nold url: $url";
-            echo "\nnew_url: $new_url\n"; //exit("\nstop muna 1\n");
+            echo "\nnew_url: $new_url\n";
         }
         else {
             print_r($r);
             exit("\nFile not found. Investigate.\n"); //main operation
         }
+        exit("\nstop muna 1\n");
     }
     private function UPDATE_ckan_resource($r, $new_url) //https://docs.ckan.org/en/ckan-2.7.3/api/        COPIED TEMPLATE from TraitDataImportAPI.php
     {
@@ -514,12 +515,12 @@ Copyright Owner (unless image is in the Public Domain)
         $rec['id'] = $ckan_resource_id; //e.g. a4b749ea-1134-4351-9fee-ac1e3df91a4f
         $rec['clear_upload'] = "true"; //comment this line once new CKAN is installed.
         $rec['url_type'] = ""; //orig value here is 'upload', which will be replaced by just blank ""
-        $rec['state'] = 'active';
         $rec['url'] = $new_url;
         // ---------- for Zenodo CKAN resource update ---------- end */
 
         /* not needed in Zenodo task
-        // $rec['package_id'] = $r['package_id']; //"trait-spreadsheet-repository"; // https://opendata.eol.org/dataset/trait-spreadsheet-repository
+        $rec['state'] = 'active';
+        $rec['package_id'] = $r['package_id']; //"trait-spreadsheet-repository"; // https://opendata.eol.org/dataset/trait-spreadsheet-repository
         if($val = @$this->arr_json['Short_Desc']) $rec['name'] = $val;
         $rec['description'] = "Updated: ".date("Y-m-d h:i:s A");
         $rec['format'] = "Darwin Core Archive";
