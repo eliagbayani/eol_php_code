@@ -10,7 +10,7 @@ class ZenodoAPI
             'resource_id'        => 'zenodo',  //resource_id here is just a folder name in cache
             'expire_seconds'     => 60*60*24*30, //maybe 1 day to expire
             'download_wait_time' => 1000000, 'timeout' => 60*3, 'download_attempts' => 1, 'delay_in_minutes' => 0.5);
-        // $this->download_options['expire_seconds'] = 0;
+        $this->download_options['expire_seconds'] = 0;
 
         $this->debug = array();
         $this->api['domain'] = 'https://zenodo.org';
