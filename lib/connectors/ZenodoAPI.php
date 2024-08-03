@@ -505,7 +505,13 @@ Copyright Owner (unless image is in the Public Domain)
                     $this->temp_count++;
                 }
             }
-            else echo "\n[($destination) COPIED already.]\n";
+            else { //seems the actual file already generated but the URL was not updated
+                echo "\n[($destination) COPIED already.]\n";
+                self::UPDATE_ckan_resource($r, $new_url);
+                echo "\n xx old url: $url";
+                echo "\n xx new_url: $new_url\n";    
+                exit("\neli muna\n");
+            }
             print_r($r);
             echo "\nold url: $url";
             echo "\nnew_url: $new_url\n";
