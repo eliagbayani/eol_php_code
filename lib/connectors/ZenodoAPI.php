@@ -519,7 +519,9 @@ Copyright Owner (unless image is in the Public Domain)
         elseif(is_file($destination)) echo "\nCopied already.\n";
         else {
             print_r($r);
-            exit("\nFile not found. Investigate.\n"); //main operation
+            echo "\nFile not found. Investigate.\n";
+            @$this->debug['File not found. Investigate.']++;
+            // exit("\nFile not found. Investigate.\n"); //main operation
         }
 
         if($this->temp_count >= 10) exit("\nstop muna 2\n"); //debug only
