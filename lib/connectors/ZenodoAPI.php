@@ -448,7 +448,7 @@ Copyright Owner (unless image is in the Public Domain)
     private function lookup_package_using_id($id)
     {
         $options = $this->download_options;
-        $options['expire_seconds'] = false; //doesn't expire
+        $options['expire_seconds'] = 0; //doesn't expire
         if($json = Functions::lookup_with_cache($this->ckan['package_show'].$id, $options)) {
             $o = json_decode($json, true); //print_r($o); exit;
             return $o;
@@ -490,6 +490,9 @@ Copyright Owner (unless image is in the Public Domain)
         $destination = "/extra/ckan_resources/$folder_1/$folder_2/$basename";
         $new_url = "https://editors.eol.org/uploaded_resources/$folder_1/$folder_2/$basename";
 
+        echo "\nsource: [$source]\n";
+        echo "\ndestination: [$destination]\n";
+
         // if(true) {
         if(is_file($source)) {
             if(!is_file($destination)) {
@@ -502,7 +505,7 @@ Copyright Owner (unless image is in the Public Domain)
                     $this->temp_count++;
                 }
             }
-            else echo "\n[$cmd COPIED already.]\n";
+            else echo "\n[($destination) COPIED already.]\n";
             print_r($r);
             echo "\nold url: $url";
             echo "\nnew_url: $new_url\n";
@@ -513,7 +516,7 @@ Copyright Owner (unless image is in the Public Domain)
             exit("\nFile not found. Investigate.\n"); //main operation
         }
 
-        // if($this->temp_count >= 10) exit("\nstop muna 2\n"); //debug only
+        if($this->temp_count >= 10) exit("\nstop muna 2\n"); //debug only
     }
     private function UPDATE_ckan_resource($r, $new_url) //https://docs.ckan.org/en/ckan-2.7.3/api/        COPIED TEMPLATE from TraitDataImportAPI.php
     {
