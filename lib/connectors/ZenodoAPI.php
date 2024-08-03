@@ -70,7 +70,8 @@ class ZenodoAPI
 
                             // /* loop to each of the resources of a package
                             $package_obj = self::lookup_package_using_id($p['id']);
-                            foreach(@$package_obj['result']['resources'] as $r) { //print_r($p); print_r($r); 
+                            foreach(@$package_obj['result']['resources'] as $r) { //print_r($p); print_r($r);
+                                echo "\n -------------- start resource -------------- \n";
                                 if($val = @$r['url']) { $e++; //"https://eol.org/data/media_manifest.tgz"
                                     $this->debug['urls'][$val] = '';
                                     $parse = parse_url($val);
@@ -78,6 +79,7 @@ class ZenodoAPI
                                     self::deal_with_ckan_urls($val, $parse, $r);
                                 }
                                 // exit("\na resource object\n");
+                                echo "\n -------------- end resource -------------- \n";
                             }
                             // */
                         }
@@ -512,7 +514,6 @@ Copyright Owner (unless image is in the Public Domain)
                 echo "\n xx new_url: $new_url\n";    
                 // exit("\neli muna\n");
             }
-            print_r($r);
             echo "\nold url: $url";
             echo "\nnew_url: $new_url\n";
         }
