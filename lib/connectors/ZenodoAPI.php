@@ -513,7 +513,7 @@ Copyright Owner (unless image is in the Public Domain)
             exit("\nFile not found. Investigate.\n"); //main operation
         }
 
-        if($this->temp_count >= 10) exit("\nstop muna 2\n");
+        // if($this->temp_count >= 10) exit("\nstop muna 2\n"); //debug only
     }
     private function UPDATE_ckan_resource($r, $new_url) //https://docs.ckan.org/en/ckan-2.7.3/api/        COPIED TEMPLATE from TraitDataImportAPI.php
     {
