@@ -510,7 +510,7 @@ Copyright Owner (unless image is in the Public Domain)
                 self::UPDATE_ckan_resource($r, $new_url);
                 echo "\n xx old url: $url";
                 echo "\n xx new_url: $new_url\n";    
-                exit("\neli muna\n");
+                // exit("\neli muna\n");
             }
             print_r($r);
             echo "\nold url: $url";
