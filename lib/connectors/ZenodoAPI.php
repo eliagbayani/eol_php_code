@@ -85,8 +85,8 @@ class ZenodoAPI
                 // if($e >= 100) break; //debug only
             }
         }
-        echo "\n\n"; print_r($final);
-        print_r($this->debug);
+        echo "\n\n"; //print_r($final);
+        // print_r($this->debug);
     }
     function start()
     {
@@ -458,6 +458,7 @@ Copyright Owner (unless image is in the Public Domain)
                 [www.dropbox.com] => 
                 [eol.org] => 
         )*/
+        print_r($r);
         if($parse['host'] == 'opendata.eol.org') {
             // print_r($r); print_r($parse); exit("\n$url\n");
             self::duplicate_actual_file_from_url($r, $url);
@@ -482,17 +483,103 @@ Copyright Owner (unless image is in the Public Domain)
         $file = trim(substr($id, 6, strlen($id)));
         $source = "/extra/ckan_resources/$folder_1/$folder_2/$file";
         $destination = "/extra/ckan_resources/$folder_1/$folder_2/$basename";
-        if(is_file($source)) {
+        $new_url = "https://editors.eol.org/uploaded_resources/$folder_1/$folder_2/$basename";
+
+        if(true) {
+        // if(is_file($source)) {
             if(!is_file($destination)) {
                 $cmd = "cp $source $destination"; echo "\n[$cmd OK]\n";
-                shell_exec($cmd);
+                // shell_exec($cmd); //main operation
+                if(is_file($destination)) {
+                    // shell_exec("chmod 775 $destination"); //main operation
+                    // self::UPDATE_ckan_resource($r, $new_url);
+                }
             }
             else echo "\n[$cmd COPIED already.]\n";
+            print_r($r);
+            echo "\nold url: $url";
+            echo "\nnew_url: $new_url\n"; //exit("\nstop muna 1\n");
         }
         else {
             print_r($r);
-            exit("\nFile not found. Investigate.\n");
+            exit("\nFile not found. Investigate.\n"); //main operation
         }
     }
+    private function UPDATE_ckan_resource($r, $new_url) //https://docs.ckan.org/en/ckan-2.7.3/api/        COPIED TEMPLATE from TraitDataImportAPI.php
+    {
+        $ckan_resource_id = $r['id'];
+        $rec = array();
+        $rec['package_id'] = $r['package_id']; //"trait-spreadsheet-repository"; // https://opendata.eol.org/dataset/trait-spreadsheet-repository
+        
+        $rec['clear_upload'] = "true"; //comment this line once new CKAN is installed.
+         
+        // /* ---------- for Zenodo CKAN resource update ---------- start
+        $rec['url_type'] = ""; //orig value here is 'upload', which will be replaced by just blank ""
+        $rec['state'] = 'active';
+        // ---------- for Zenodo CKAN resource update ---------- end */
+
+        $rec['url'] = $new_url;
+
+        $rec['id'] = $ckan_resource_id; //e.g. a4b749ea-1134-4351-9fee-ac1e3df91a4f
+        /* not needed in Zenodo task
+        if($val = @$this->arr_json['Short_Desc']) $rec['name'] = $val;
+        $rec['description'] = "Updated: ".date("Y-m-d h:i:s A");
+        $rec['format'] = "Darwin Core Archive";
+        */
+        $json = json_encode($rec);
+        
+        // /* for old CKAN
+        // $cmd = 'curl https://opendata.eol.org/api/3/action/resource_update'; // orig but not used here.
+        $cmd = 'curl https://opendata.eol.org/api/3/action/resource_patch';     // those fields not updated will remain
+        $cmd .= " -d '".$json."'";
+        $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+        // */
+
+        /* for new CKAN
+        $cmd = 'curl -X PUT '.$this->pre_ckan_api.'/action/resource_update';
+        $cmd .= ' -H "Content-Type: application/json"';
+        $cmd .= " -d '".$json."'";
+        $cmd .= ' -H "Authorization: Bearer '+NEW_CKAN_TOKEN+'"';
+        */
+
+        // sleep(2); //we only upload one at a time, no need for delay
+        $output1 = shell_exec($cmd);            echo "\n$output1\n";
+        $output2 = json_decode($output1, true); print_r($output2);
+        if($output2['success'] == 1) echo "\nOpenData resource UPDATE OK.\n";
+        else{
+            echo "\n-----------\n"; echo($output1); echo "\n-----------\n";        
+            echo "\n-----------\n"; print_r($output2); echo "\n-----------\n";        
+            echo "\nERROR: OpenData resource UPDATE failed xxx.\n";
+        }
+        /*Array(
+            [help] => https://opendata.eol.org/api/3/action/help_show?name=resource_update
+            [success] => 1
+            [result] => Array(
+                    [cache_last_updated] => 
+                    [cache_url] => 
+                    [mimetype_inner] => 
+                    [hash] => hash-cha_02
+                    [description] => Updated: 2022-02-03 05:36
+                    [format] => Darwin Core Archive
+                    [url] => http://localhost/eol_php_code/applications/content_server/resources/Trait_Data_Import/cha_02.tar.gz
+                    [created] => 2022-02-03T01:40:54.782481
+                    [state] => active
+                    [webstore_last_updated] => 
+                    [webstore_url] => 
+                    [package_id] => dab391f0-7ec0-4055-8ead-66b1dea55f28
+                    [last_modified] => 
+                    [mimetype] => 
+                    [url_type] => 
+                    [position] => 1
+                    [revision_id] => 3c3f2587-c0b3-4fdd-bb5e-c6ae23d79afe
+                    [size] => 
+                    [id] => a4b749ea-1134-4351-9fee-ac1e3df91a4f
+                    [resource_type] => 
+                    [name] => Fishes of Philippines
+                )
+        )*/
+        // echo "\n$output\n";
+    }
+
 }
 ?>
