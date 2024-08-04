@@ -93,8 +93,8 @@ class ZenodoAPI
                 // if($e >= 10) break; //debug only
             }
         }
-        echo "\n\n"; //print_r($final); //stats report
-        // print_r($this->debug);
+        echo "\n\n"; print_r($final); //stats report
+        print_r($this->debug);
     }
     function start()
     {
@@ -542,10 +542,10 @@ Copyright Owner (unless image is in the Public Domain)
             print_r($r);
             echo "\nFile not found. Investigate.\n";
             @$this->debug['File not found. Investigate.']++;
-            // exit("\nFile not found. Investigate.\n"); //main operation
+            exit("\nFile not found. Investigate.\n"); //main operation
         }
 
-        if($this->temp_count >= 10) exit("\nstop muna 2\n"); //debug only
+        // if($this->temp_count >= 10) exit("\nstop muna 2\n"); //debug only
     }
     private function UPDATE_ckan_resource($r, $new_url) //https://docs.ckan.org/en/ckan-2.7.3/api/        COPIED TEMPLATE from TraitDataImportAPI.php
     {
