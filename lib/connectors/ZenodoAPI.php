@@ -40,7 +40,7 @@ class ZenodoAPI
         $this->temp_count = 0;
     }
 
-    function list_all_datasets($privateYN = 1)
+    function list_all_datasets($sought_privateYN = 1)
     {
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
@@ -63,34 +63,37 @@ class ZenodoAPI
                     $final[$org_title_name]['dataset_count'] = $o['result']['package_count'];
                     foreach($o['result']['packages'] as $p) {
                         $package_title_name = $p['title'].": ".$p['name'];
-                        if($privateYN) $label = 'private datasets';
-                        else $label = 'public datasets';
-                        if($p['private'] == $privateYN) {
-                            $final[$org_title_name][$label][$package_title_name] = '';
+                        if($sought_privateYN)   $label = 'private datasets';
+                        else                    $label = 'public datasets';
+                        if($p['private'] == $sought_privateYN) {
+                            $final[$org_title_name][$label][$package_title_name] = $p['id'];
 
                             // /* loop to each of the resources of a package
                             $package_obj = self::lookup_package_using_id($p['id']);
-                            foreach(@$package_obj['result']['resources'] as $r) { //print_r($p); print_r($r);
-                                echo "\n -------------- start resource -------------- \n";
-                                if($val = @$r['url']) { $e++; //"https://eol.org/data/media_manifest.tgz"
-                                    $this->debug['urls'][$val] = '';
-                                    $parse = parse_url($val);
-                                    $this->debug['urls pathinfo'][$parse['host']] = '';
-                                    self::deal_with_ckan_urls($val, $parse, $r);
-                                }
-                                // exit("\na resource object\n");
-                                echo "\n -------------- end resource -------------- \n";
+                            if($resources = @$package_obj['result']['resources']) {
+                                foreach($resources as $r) { //print_r($p); print_r($r);
+                                    echo "\n -------------- start resource -------------- \n";
+                                    if($val = @$r['url']) { $e++; //"https://eol.org/data/media_manifest.tgz"
+                                        $this->debug['urls'][$val] = '';
+                                        $parse = parse_url($val);
+                                        $this->debug['urls pathinfo'][$parse['host']] = '';
+                                        /* main operation
+                                        self::deal_with_ckan_urls($val, $parse, $r);
+                                        */
+                                    }
+                                    // print_r($r); exit("\na resource object\n");
+                                    echo "\n -------------- end resource -------------- \n";
+                                }    
                             }
                             // */
                         }
                     }
                 }
-
                 // break; //debug only
                 // if($e >= 10) break; //debug only
             }
         }
-        echo "\n\n"; //print_r($final);
+        echo "\n\n"; //print_r($final); //stats report
         // print_r($this->debug);
     }
     function start()
@@ -450,11 +453,28 @@ Copyright Owner (unless image is in the Public Domain)
     private function lookup_package_using_id($id)
     {
         $options = $this->download_options;
-        $options['expire_seconds'] = 0; //doesn't expire
-        if($json = Functions::lookup_with_cache($this->ckan['package_show'].$id, $options)) {
+        // $options['expire_seconds'] = 0; //doesn't expire
+
+        $url = $this->ckan['package_show'].$id; //main operation
+        // $url = "https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true";
+        // $url = "https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true";
+        
+        // /* working OK but doesn't get private datasets --- private = 1
+        if($json = Functions::lookup_with_cache($url, $options)) {
             $o = json_decode($json, true); //print_r($o); exit;
             return $o;
         }
+        else {
+            // /* this can return private datasets
+            $cmd = 'curl '.$url;
+            // $cmd .= " -d '".$json."'";
+            $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+            $json = shell_exec($cmd);
+            $o = json_decode($json, true); //print_r($o); exit;
+            return $o;
+            // */
+        }
+        // */
     }
     private function deal_with_ckan_urls($url, $parse, $r)
     {   /* [https://opendata.eol.org/dataset/e62665f5-c992-4e18-894f-454a188af411/resource/19ba1335-d661-41bf-be4f-ce2f08f9eac1/download/archive.zip] => 
