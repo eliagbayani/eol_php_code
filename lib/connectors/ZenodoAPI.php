@@ -46,7 +46,7 @@ class ZenodoAPI
             $o = json_decode($json, true); //print_r($o);
             $i = 0; $e = 0;
             foreach($o['result'] as $organization_id) { $i++;
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // echo "\n" . $organization_id;
 
                 $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
@@ -77,9 +77,9 @@ class ZenodoAPI
                                         $this->debug['urls'][$val] = '';
                                         $parse = parse_url($val);
                                         $this->debug['urls pathinfo'][$parse['host']] = '';
-                                        /* main operation
+                                        // /* main operation
                                         self::deal_with_ckan_urls($val, $parse, $r);
-                                        */
+                                        // */
                                     }
                                     // print_r($r); exit("\na resource object\n");
                                     echo "\n -------------- end resource -------------- \n";
