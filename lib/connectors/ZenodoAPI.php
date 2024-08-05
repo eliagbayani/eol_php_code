@@ -176,10 +176,11 @@ class ZenodoAPI
         $creators = array();
         $creator = "";
         if($val = $p['creator_user_id']) {
-            if($user_obj = self::lookup_user_using_id($val)) {
+            if($user_obj = self::lookup_user_using_id($val)) { //print_r($user_obj);
                 if(@$user_obj['result']['sysadmin'] == 'true') $affiliation = "Encyclopedia of Life";
                 else                                           $affiliation = "";
                 if($creator = @$user_obj['result']['fullname']) {
+                    if($email = @$user_obj['result']['email']) $creator .= " ($email)"; //this will only work using curl with Authorization. Won't work with just plain lookup_with_cache().
                     $creators[] = array("name" => $creator, "affiliation" => $affiliation);
                 }
             }
