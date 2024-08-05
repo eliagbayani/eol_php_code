@@ -119,18 +119,6 @@ class ZenodoAPI
         print_r($this->debug);
         self::check_license_values();
     }
-    private function check_license_values()
-    {
-        $zenodo_licenses = self::get_all_Zenodo_licence_IDs();
-        $opendata_licenses = array_keys($this->debug['license_id']);
-        foreach($opendata_licenses as $ol) {
-            if(isset($zenodo_licenses[$ol])) $ret['found'][$ol] = '';
-            else {
-                $ret['not_found'][$ol] = '';
-            }
-        }
-        print_r($ret);
-    }
     private function process_organization($organization_id)
     {
         $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
@@ -625,6 +613,16 @@ Copyright Owner (unless image is in the Public Domain)
             exit;
             return $o;
         }
+    }
+    private function check_license_values()
+    {
+        $zenodo_licenses = self::get_all_Zenodo_licence_IDs();
+        $opendata_licenses = array_keys($this->debug['license_id']);
+        foreach($opendata_licenses as $ol) {
+            if(isset($zenodo_licenses[$ol])) $ret['found'][$ol] = '';
+            else                             $ret['not_found'][$ol] = '';
+        }
+        print_r($ret);
     }
 }
 ?>
