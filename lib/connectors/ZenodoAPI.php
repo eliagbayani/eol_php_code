@@ -137,8 +137,10 @@ class ZenodoAPI
                 // if($p['title'] != 'Vernacular names') continue; //debug only dev only
                 // */
 
-                if(self::is_dataset_private_YN($p)) continue; //private --- waiting for Jen to cherry-pick those to include to migrate to Zenodo
-                else {} //public --- the rest will be processed    
+                // /* comment this if u want to migrate both public and private datasets.
+                if(self::is_dataset_private_YN($p)) continue;   //private --- waiting for Jen to cherry-pick those to include to migrate to Zenodo
+                else {}                                         //public --- the rest will be processed    
+                // */
 
                 // print_r($p); //exit;
                 self::process_a_package($p); //main operation
