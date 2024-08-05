@@ -7,6 +7,18 @@ include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/ZenodoAPI');
 $timestart = time_elapsed();
 
+/* normal operation
+ini_set('error_reporting', false);
+ini_set('display_errors', false);
+$GLOBALS['ENV_DEBUG'] = false; //set to false in production
+*/
+
+// /* during development
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', true);
+$GLOBALS['ENV_DEBUG'] = true; //set to true during development
+// */
+
 
 $func = new ZenodoAPI();
 $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
