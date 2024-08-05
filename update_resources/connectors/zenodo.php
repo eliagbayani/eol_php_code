@@ -9,7 +9,7 @@ $timestart = time_elapsed();
 
 
 $func = new ZenodoAPI();
-$func->start();
+$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
 /*
 $privateYN = 1; //meaning private datasets
