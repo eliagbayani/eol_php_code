@@ -127,8 +127,8 @@ class ZenodoAPI
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
 
                 // print_r($p); exit;
-                if(self::is_dataset_private_YN($p)) continue; //waiting for Jen to cherry-pick those to include to migrate to Zenodo
-                else {} //the rest will be processed    
+                if(self::is_dataset_private_YN($p)) continue; //private --- waiting for Jen to cherry-pick those to include to migrate to Zenodo
+                else {} //public --- the rest will be processed    
 
                 self::process_a_package($p);
             }
@@ -136,8 +136,8 @@ class ZenodoAPI
     }
     private function is_dataset_private_YN($p)
     {
-        if($p['private'] == 'true' || $p['private'] == 1) return true;
-        if($p['private'] == 'false' || $p['private'] == '') return false;
+        if($p['private'] == 'true' || $p['private'] == 1 || $p['private'] == '1') return true;  //private
+        if($p['private'] == 'false' || $p['private'] == '') return false;                       //public
     }
     private function process_a_package($p)
     {   // loop to each of the resources of a package
