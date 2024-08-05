@@ -171,8 +171,14 @@ class ZenodoAPI
         $dates = array();
         // if($val = $p['metadata_created'])   $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
         // if($val = $p['metadata_modified'])  $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
-        if($val = @$r['created'])           $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
-        if($val = @$r['last_modified'])     $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
+        if($val = @$r['created']) {
+            $val = substr($val,0,10);
+            $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
+        }
+        if($val = @$r['last_modified']) {
+            $val = substr($val,0,10);
+            $dates[] = array("start" => $val, "end" => $val, "type" => "Updated");
+        }
         // -------------------------------------------------------------------
         $creators = array();
         $creator = "";
@@ -255,7 +261,7 @@ class ZenodoAPI
     {
         if(@$o['status'] > 204) {
             echo "\n--- ($what) Zenodo error detected ---\n";
-            print_r($obj);
+            print_r($o);
             return true;
         }
         else return false;
