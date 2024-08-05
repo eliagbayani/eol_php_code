@@ -127,12 +127,17 @@ class ZenodoAPI
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
 
                 // print_r($p); exit;
-                if($p['private'] == 'true') continue;
-                // if($p['private'] == 'false' || $p['private'] == '') continue;
+                if(self::is_dataset_private_YN($p)) continue; //waiting for Jen to cherry-pick those to include to migrate to Zenodo
+                else {} //the rest will be processed    
 
                 self::process_a_package($p);
             }
         }
+    }
+    private function is_dataset_private_YN($p)
+    {
+        if($p['private'] == 'true' || $p['private'] == 1) return true;
+        if($p['private'] == 'false' || $p['private'] == '') return false;
     }
     private function process_a_package($p)
     {   // loop to each of the resources of a package
@@ -185,12 +190,15 @@ class ZenodoAPI
             * restricted: Restricted Access
             * closed: Closed Access        
         */
-        $access_conditions = '';
-        if($p['private'] == 'false') $access_right = 'open';
-        else {
+        $access_conditions = '';        
+        if(self::is_dataset_private_YN($p)) {
             $access_right = 'restricted';
             $access_conditions = 'This is not available publicly. Only community members can see this record.';
         }
+        else { //public
+            $access_right = 'open';
+        }
+
         // -------------------------------------------------------------------
         $notes = "";
         if($val = @$r['description']) $notes = $val;
