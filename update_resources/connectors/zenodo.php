@@ -9,13 +9,13 @@ $timestart = time_elapsed();
 
 
 $func = new ZenodoAPI();
-// $func->start();
+$func->start();
 
-// /*
+/*
 $privateYN = 1; //meaning private datasets
 // $privateYN = ''; //meaing public datasets
-$func->list_all_datasets($privateYN); //utility - this updates CKAN resource, generates the actual file and sets URL to local editors.eol.org file.
-// */
+$func->list_all_datasets($privateYN); //works OK //utility - this updates CKAN resource, sets URL to local editors.eol.org file and generates the actual file.
+*/
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
