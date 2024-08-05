@@ -265,11 +265,12 @@ class ZenodoAPI
         $create_obj = self::create_Zenodo_dataset($input);
         if(self::if_error($create_obj, 'create')) {}
         else {
-            // $obj = self::retrieve_dataset('13136202'); //works OK
+            $id = $create_obj['id'];
+            $obj = self::retrieve_dataset($id); //works OK
             $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
             if(self::if_error($upload_obj, 'upload')) {}
             else {
-                // $obj = self::retrieve_dataset('13136202'); //works OK
+                $obj = self::retrieve_dataset($id); //works OK
                 $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
                 if(self::if_error($publish_obj, 'publish')) {}
                 else {
@@ -294,9 +295,9 @@ class ZenodoAPI
         $cmd = 'curl -i -H "Content-Type: application/json" -X POST --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN;
         $cmd = 'curl -s -H "Content-Type: application/json" -X POST --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN;
         // $cmd .= " 2>&1";
-        echo "\n$cmd\n";
+        echo "\ncreate cmd: [$cmd]\n";
         $json = shell_exec($cmd);               echo "\n$json\n";
-        $obj = json_decode(trim($json, true));  print_r($obj);
+        $obj = json_decode(trim($json), true);  print_r($obj);
         return $obj;
         // copied template:
         // $cmd = 'curl -s "'.$url.'" -H "X-Authentication-Token:'.$this->service['token'].'"';
@@ -310,31 +311,35 @@ class ZenodoAPI
         // $cmd = 'curl -i '.$this->api['domain'].'/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN; //orig from Zenodo, -i more complete output. Not used.
         $cmd = 'curl -s '.$this->api['domain'].'/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN; //better curl output, -s just the json output.
         $cmd .= " 2>&1";
+        echo "\nretrieve cmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n";
         return $obj;
     }
     private function upload_Zenodo_dataset($obj)
     {
         echo "\nUploading ".$obj['id']."...\n";
         self::initialize_file_dat($obj);
-        $bucket = $obj['links']['bucket']; //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
-        $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
-        $cmd = 'curl --upload-file '.self::generate_file_dat($obj).' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
-        echo "\n$cmd\n";
-        $json = shell_exec($cmd);               echo "\n$json\n";
-        $obj = json_decode(trim($json), true);  //print_r($obj);
-        return $obj;
+        if($bucket = @$obj['links']['bucket']) { //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
+            // $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
+            $cmd = 'curl --upload-file '.self::generate_file_dat($obj).' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
+            echo "\nupload cmd: [$cmd]\n";
+            $json = shell_exec($cmd);               echo "\n$json\n";
+            $obj = json_decode(trim($json), true);  print_r($obj);
+            return $obj;    
+        }
     }
     private function publish_Zenodo_dataset($obj)
     {
-        $publish = $obj['links']['publish']; //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
-        $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
-        $cmd = 'curl -i -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
-        // $cmd .= " 2>&1";
-        echo "\n$cmd\n";
-        $json = shell_exec($cmd);           echo "\n$json\n";
-        $obj = json_decode(trim($json));    print_r($obj);
+        if($publish = @$obj['links']['publish']) { //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
+            // $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
+            $cmd = 'curl -i -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
+            // $cmd .= " 2>&1";
+            echo "\npublish cmd: [$cmd]\n";
+            $json = shell_exec($cmd);               echo "\n$json\n";
+            $obj = json_decode(trim($json), true);  print_r($obj);
+            return $obj;    
+        }
     }
     private function update_Zenodo_record($obj)
     {   /*
@@ -383,7 +388,6 @@ Copyright Owner (unless image is in the Public Domain)
 
         $cmd = 'curl -i -H "Content-Type: application/json" -X PUT --data '."'$json'".' https://zenodo.org/api/deposit/depositions/'.$obj['id'].'?access_token='.ZENODO_TOKEN;
         // $cmd = 'curl -i -H "Content-Type: application/json" -X PUT --data '."'$json'".' https://zenodo.org/api/deposit/depositions/13136202?access_token='.ZENODO_TOKEN;
-
         // $cmd .= " 2>&1";
         echo "\n$cmd\n";
         $json = shell_exec($cmd);           echo "\n$json\n";
