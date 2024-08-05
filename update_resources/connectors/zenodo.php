@@ -17,6 +17,10 @@ $privateYN = 1; //meaning private datasets
 $func->list_all_datasets($privateYN); //works OK //utility - this updates CKAN resource, sets URL to local editors.eol.org file and generates the actual file.
 */
 
+/* utility - licence
+$func->get_all_Zenodo_licence_IDs(); //works OK
+*/
+
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
 echo "elapsed time = " . $elapsed_time_sec/60 . " minutes \n";

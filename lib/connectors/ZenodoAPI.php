@@ -38,6 +38,10 @@ class ZenodoAPI
         // useful to get all datasets; even private ones
 
         $this->temp_count = 0;
+        $this->license_map = array(
+            "odc-by" => "odc-by-1.0",
+            "cc-by" => "cc-by-1.0",
+        );
     }
 
     function list_all_datasets($sought_privateYN = 1)
@@ -101,12 +105,25 @@ class ZenodoAPI
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
             foreach($o['result'] as $organization_id) {
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 echo "\norganization ID: " . $organization_id;
                 self::process_organization($organization_id);
             }
         }
         print_r($this->debug);
+        self::check_license_values();
+    }
+    private function check_license_values()
+    {
+        $zenodo_licenses = self::get_all_Zenodo_licence_IDs();
+        $opendata_licenses = array_keys($this->debug['license_id']);
+        foreach($opendata_licenses as $ol) {
+            if(isset($zenodo_licenses[$ol])) $ret['found'][$ol] = '';
+            else {
+                $ret['not_found'][$ol] = '';
+            }
+        }
+        print_r($ret);
     }
     private function process_organization($organization_id)
     {
@@ -123,7 +140,7 @@ class ZenodoAPI
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
-                if($p['title'] != 'Vernacular names') continue; //debug only dev only
+                // if($p['title'] != 'Vernacular names') continue; //debug only dev only
                 // */
 
                 if(self::is_dataset_private_YN($p)) continue; //private --- waiting for Jen to cherry-pick those to include to migrate to Zenodo
@@ -148,6 +165,10 @@ class ZenodoAPI
     }
     private function generate_input_field($p, $r) //todo loop into resources and have $input for each resource...
     {
+        if($val = @$p['license_id']) {
+            if($val2 = @$this->license_map[$val]) $p['license_id'] = $val2;
+        }
+
         $input = array();
         // -------------------------------------------------------------------
         $dates = array();
@@ -176,10 +197,11 @@ class ZenodoAPI
             $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
         }
         // -------------------------------------------------------------------
-        $license = 'cc-by';
         if($val = @$p['license_id']) {
-            if($val != 'notspecified') $license = $val;
+            @$this->debug['license_id'][$val]++;
+            $license = $val;
         }
+        else $license = "notspecified";
         // -------------------------------------------------------------------
         /*Controlled vocabulary:
             * open: Open Access
@@ -217,6 +239,7 @@ class ZenodoAPI
                                     "related_identifiers" => $related_identifiers, 
                                     //Example: [{'relation': 'isSupplementTo', 'identifier':'10.1234/foo'}, {'relation': 'cites', 'identifier':'https://doi.org/10.1234/bar', 'resource_type': 'image-diagram'}]
                                     "access_right" => $access_right, //defaults to 'open'
+                                    "access_conditions" => $access_conditions,
                                     "license" => $license,
                             );        
         // print_r($input); //exit("\nstop muna\n");
@@ -580,6 +603,22 @@ Copyright Owner (unless image is in the Public Domain)
     {
         if($p['private'] == 'true' || $p['private'] == 1 || $p['private'] == '1') return true;  //private
         if($p['private'] == 'false' || $p['private'] == '') return false;                       //public
+    }
+    function get_all_Zenodo_licence_IDs()
+    {   $url = "https://zenodo.org/api/vocabularies/licenses?page=1&size=500&sort=title";
+        if($json = Functions::lookup_with_cache($url, $this->download_options)) {
+            $o = json_decode($json, true); //print_r($o); exit;
+            foreach($o['hits']['hits'] as $rec) {
+                $final[$rec['id']] = '';
+            }
+            return $final;
+            $final = array_keys($final);
+            asort($final);
+            print_r($final);
+            echo "\ntotal licenses: ".count($final)."\n";
+            exit;
+            return $o;
+        }
     }
 }
 ?>
