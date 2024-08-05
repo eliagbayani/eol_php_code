@@ -134,11 +134,15 @@ class ZenodoAPI
             }
         }
     }
-    private function process_a_package($p)
-    {   // loop to each of the resources of a package
+    private function process_a_package($p) //process a dataset
+    {   
+        print_r($p);
+        echo "\nnum_resources: ".$p['num_resources']."\n";
+        // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
-        foreach(@$package_obj['result']['resources'] as $r) { print_r($p); print_r($r); 
-            $input = self::generate_input_field($p, $r);
+        foreach(@$package_obj['result']['resources'] as $r) { print_r($r); 
+            $input = self::generate_input_field($p, $r); //main operation
+            print_r($input);
             // exit("\na resource object\n");
         }
     }
@@ -171,8 +175,6 @@ class ZenodoAPI
             $this->debug['urls pathinfo'][$parse['host']] = '';
             $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => $val, "resource_type" => "dataset");
         }
-
-
         // -------------------------------------------------------------------
         $license = 'cc-by';
         if($val = @$p['license_id']) {
@@ -217,7 +219,7 @@ class ZenodoAPI
                                     "access_right" => $access_right, //defaults to 'open'
                                     "license" => $license,
                             );        
-        print_r($input); //exit("\nstop muna\n");
+        // print_r($input); //exit("\nstop muna\n");
         return $input;
     }
     function test()
