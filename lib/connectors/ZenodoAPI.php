@@ -334,6 +334,7 @@ class ZenodoAPI
         if($publish = @$obj['links']['publish']) { //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
             // $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
             $cmd = 'curl -i -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
+            $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
             // $cmd .= " 2>&1";
             echo "\npublish cmd: [$cmd]\n";
             $json = shell_exec($cmd);               echo "\n$json\n";
