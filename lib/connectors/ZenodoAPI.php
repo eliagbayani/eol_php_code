@@ -111,7 +111,7 @@ class ZenodoAPI
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
             foreach($o['result'] as $organization_id) {
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 echo "\norganization ID: " . $organization_id;
                 self::process_organization($organization_id);
             }
@@ -134,7 +134,7 @@ class ZenodoAPI
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
-                if($p['title'] != 'Vernacular names') continue; //debug only dev only
+                // if($p['title'] != 'Vernacular names') continue; //debug only dev only
                 // */
 
                 // /* comment this if u want to migrate both public and private datasets.
@@ -223,7 +223,10 @@ class ZenodoAPI
         // -------------------------------------------------------------------
         $keywords = array();
         $keywords[] = $p['organization']['title'].": ".$p['title'];
-        if($val = @$r['format']) $keywords[] = $val;
+        if($val = @$r['format']) {
+            $keywords[] = "format: $val";
+            @$this->debug['format'][$val]++;
+        }
         //e.g. array("Aggregate Datasets: Images list", "CSV")
         // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $p['title'].": ".$r['name'], //"Images list: image list",
