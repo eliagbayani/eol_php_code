@@ -251,17 +251,18 @@ class ZenodoAPI
         // print_r($input); //exit("\nstop muna\n");
         return $input;
     }
-    function test()
+    function start_Zenodo_process($input)
     {
-        // echo "\n".ZENODO_TOKEN."\n";
-        // self::create_dataset();
-        // $obj = self::retrieve_dataset('13136202'); self::upload_dataset($obj); //worked OK
-        // $obj = self::retrieve_dataset('13136202'); self::publish_dataset($obj); //worked OK
+        $obj = self::create_Zenodo_dataset($input);
+        // $obj = self::retrieve_dataset('13136202'); //works OK
+        self::upload_Zenodo_dataset($obj); //worked OK
+        // $obj = self::retrieve_dataset('13136202'); //works OK
+        self::publish_Zenodo_dataset($obj); //worked OK
 
         // $obj = self::retrieve_dataset('13136202'); self::update_Zenodo_record($obj); //didn't work yet
 
     }
-    private function create_dataset($input)
+    private function create_Zenodo_dataset($input)
     {   /* sample: https://developers.zenodo.org/?shell#create
         curl -i -H "Content-Type: application/json" -X POST
         --data '{"metadata": {  "title": "My first upload", 
@@ -275,7 +276,7 @@ class ZenodoAPI
         echo "\n$cmd\n";
         $json = shell_exec($cmd);               echo "\n$json\n";
         $obj = json_decode(trim($json, true));  print_r($obj);
-
+        return $obj;
         // copied template:
         // $cmd = 'curl -s "'.$url.'" -H "X-Authentication-Token:'.$this->service['token'].'"';
         // $cmd = 'curl --insecure --include --user '.$this->gbif_username.':'.$this->gbif_pw.' --header "Content-Type: application/json" --data @'.$filename.' -s https://api.gbif.org/v1/occurrence/download/request';
@@ -292,7 +293,7 @@ class ZenodoAPI
         $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
         return $obj;
     }
-    private function upload_dataset($obj)
+    private function upload_Zenodo_dataset($obj)
     {
         echo "\nUploading ".$obj['id']."...\n";
         self::initialize_file_dat($obj);
@@ -303,7 +304,7 @@ class ZenodoAPI
         $json = shell_exec($cmd);               echo "\n$json\n";
         $obj = json_decode(trim($json), true);  print_r($obj);
     }
-    private function publish_dataset($obj)
+    private function publish_Zenodo_dataset($obj)
     {
         $publish = $obj['links']['publish']; //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
         $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
@@ -312,7 +313,6 @@ class ZenodoAPI
         echo "\n$cmd\n";
         $json = shell_exec($cmd);           echo "\n$json\n";
         $obj = json_decode(trim($json));    print_r($obj);
-
     }
     private function update_Zenodo_record($obj)
     {   /*
