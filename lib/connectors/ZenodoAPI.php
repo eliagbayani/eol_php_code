@@ -251,10 +251,10 @@ class ZenodoAPI
         // print_r($input); //exit("\nstop muna\n");
         return $input;
     }
-    private function if_error($o)
+    private function if_error($o, $what)
     {
         if(@$o['status'] > 204) {
-            echo "\n--- Zenodo error detected ---\n";
+            echo "\n--- ($what) Zenodo error detected ---\n";
             print_r($obj);
             return true;
         }
@@ -262,14 +262,22 @@ class ZenodoAPI
     }
     function start_Zenodo_process($input)
     {
-        $obj = self::create_Zenodo_dataset($input);
-        if(self::if_error($obj)) {
-        }
+        $create_obj = self::create_Zenodo_dataset($input);
+        if(self::if_error($create_obj, 'create')) {}
         else {
             // $obj = self::retrieve_dataset('13136202'); //works OK
-            self::upload_Zenodo_dataset($obj); //worked OK
-            // $obj = self::retrieve_dataset('13136202'); //works OK
-            self::publish_Zenodo_dataset($obj); //worked OK
+            $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
+            if(self::if_error($upload_obj, 'upload')) {}
+            else {
+                // $obj = self::retrieve_dataset('13136202'); //works OK
+                $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
+                if(self::if_error($publish_obj, 'publish')) {}
+                else {
+                    echo "\nSuccessfully migrated to Zenodo\n";
+                    echo $input['metadata']['title']."\n";
+                    echo $input['metadata']['notes']."\n----------\n";
+                }
+            }
         }
 
         // $obj = self::retrieve_dataset('13136202'); self::update_Zenodo_record($obj); //didn't work yet
