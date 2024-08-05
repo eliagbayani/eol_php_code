@@ -39,11 +39,17 @@ class ZenodoAPI
 
         $this->temp_count = 0;
         $this->license_map = array(
-            "odc-by" => "odc-by-1.0",
-            "cc-by" => "cc-by-1.0",
+            "cc-by"           => "cc-by-1.0",
+            "cc-by-sa"        => "cc-by-sa-1.0",
+            "cc-nc"           => "cc-by-nc-1.0",
+            "cc-zero"         => "cc0-1.0",
+            "notspecified"    => "notspecified",
+            "odc-by"          => "odc-by-1.0",
+            "odc-pddl"        => "pddl-1.0",
+            "other-open"      => "other-open",
+            "other-pd"        => "other-pd",            
         );
     }
-
     function list_all_datasets($sought_privateYN = 1)
     {
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
