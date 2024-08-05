@@ -111,7 +111,7 @@ class ZenodoAPI
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
             foreach($o['result'] as $organization_id) {
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 echo "\norganization ID: " . $organization_id;
                 self::process_organization($organization_id);
             }
@@ -134,7 +134,7 @@ class ZenodoAPI
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
-                // if($p['title'] != 'Vernacular names') continue; //debug only dev only
+                if($p['title'] != 'Vernacular names') continue; //debug only dev only
                 // */
 
                 // /* comment this if u want to migrate both public and private datasets.
@@ -249,10 +249,10 @@ class ZenodoAPI
         // $obj = self::retrieve_dataset('13136202'); self::upload_dataset($obj); //worked OK
         // $obj = self::retrieve_dataset('13136202'); self::publish_dataset($obj); //worked OK
 
-        // $obj = self::retrieve_dataset('13136202'); self::update_dataset($obj); //didn't work yet
+        // $obj = self::retrieve_dataset('13136202'); self::update_Zenodo_record($obj); //didn't work yet
 
     }
-    private function update_dataset($obj)
+    private function update_Zenodo_record($obj)
     {
         /*
         curl -i -H "Content-Type: application/json" -X PUT
