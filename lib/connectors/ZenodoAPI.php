@@ -111,7 +111,7 @@ class ZenodoAPI
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
             foreach($o['result'] as $organization_id) {
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 echo "\norganization ID: " . $organization_id;
                 self::process_organization($organization_id);
             }
@@ -133,7 +133,7 @@ class ZenodoAPI
             foreach($o['result']['packages'] as $p) {
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
-                // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
+                if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
                 // if($p['title'] != 'Vernacular names') continue; //debug only dev only
                 // */
 
@@ -628,12 +628,14 @@ Copyright Owner (unless image is in the Public Domain)
     private function check_license_values()
     {
         $zenodo_licenses = self::get_all_Zenodo_licence_IDs();
-        $opendata_licenses = array_keys($this->debug['license_id']);
-        foreach($opendata_licenses as $ol) {
-            if(isset($zenodo_licenses[$ol])) $ret['found'][$ol] = '';
-            else                             $ret['not_found'][$ol] = '';
+        if($val = @$this->debug['license_id']) {
+            $opendata_licenses = array_keys($val);
+            foreach($opendata_licenses as $ol) {
+                if(isset($zenodo_licenses[$ol])) $ret['found'][$ol] = '';
+                else                             $ret['not_found'][$ol] = '';
+            }
+            print_r($ret);
         }
-        print_r($ret);
     }
 }
 ?>
