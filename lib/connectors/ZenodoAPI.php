@@ -221,6 +221,11 @@ class ZenodoAPI
         if($notes) $notes .= "\n".$p['organization']['description'];
         else       $notes = $p['organization']['description'];
         // -------------------------------------------------------------------
+        $keywords = array();
+        $keywords[] = $p['organization']['title'].": ".$p['title'];
+        if($val = @$r['format']) $keywords[] = $val;
+        //e.g. array("Aggregate Datasets: Images list", "CSV")
+        // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $p['title'].": ".$r['name'], //"Images list: image list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "description" => $p['notes'],
@@ -228,7 +233,7 @@ class ZenodoAPI
                                     //Example: [{'name':'Doe, John', 'affiliation': 'Zenodo'}, 
                                     //          {'name':'Smith, Jane', 'affiliation': 'Zenodo', 'orcid': '0000-0002-1694-233X'}, 
                                     //          {'name': 'Kowalski, Jack', 'affiliation': 'Zenodo', 'gnd': '170118215'}]
-                                    "keywords" => array($p['organization']['title'].": ".$p['title']), //array("Aggregate Datasets: Images list"),
+                                    "keywords" => $keywords,
                                     // "publication_date" => "2020-02-04", //required. Date of publication in ISO8601 format (YYYY-MM-DD). Defaults to current date.                                                                        
                                     "notes" => $notes, //"For questions or use cases calling for large, multi-use aggregate data files, please visit the EOL Services forum at http://discuss.eol.org/c/eol-services",
                                     "communities" => array(array("identifier" => "eol")), //Example: [{'identifier':'eol'}]
