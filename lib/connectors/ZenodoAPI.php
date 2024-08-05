@@ -156,8 +156,8 @@ class ZenodoAPI
         foreach(@$package_obj['result']['resources'] as $r) { print_r($r); 
             $input = self::generate_input_field($p, $r); //main operation
             print_r($input);
+            self::start_Zenodo_process($input);
             // exit("\na resource object\n");
-
         }
     }
     private function generate_input_field($p, $r) //todo loop into resources and have $input for each resource...
