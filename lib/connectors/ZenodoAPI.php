@@ -251,13 +251,26 @@ class ZenodoAPI
         // print_r($input); //exit("\nstop muna\n");
         return $input;
     }
+    private function if_error($o)
+    {
+        if(@$o['status'] > 204) {
+            echo "\n--- Zenodo error detected ---\n";
+            print_r($obj);
+            return true;
+        }
+        else return false;
+    }
     function start_Zenodo_process($input)
     {
         $obj = self::create_Zenodo_dataset($input);
-        // $obj = self::retrieve_dataset('13136202'); //works OK
-        self::upload_Zenodo_dataset($obj); //worked OK
-        // $obj = self::retrieve_dataset('13136202'); //works OK
-        self::publish_Zenodo_dataset($obj); //worked OK
+        if(self::if_error($obj)) {
+        }
+        else {
+            // $obj = self::retrieve_dataset('13136202'); //works OK
+            self::upload_Zenodo_dataset($obj); //worked OK
+            // $obj = self::retrieve_dataset('13136202'); //works OK
+            self::publish_Zenodo_dataset($obj); //worked OK
+        }
 
         // $obj = self::retrieve_dataset('13136202'); self::update_Zenodo_record($obj); //didn't work yet
 
@@ -302,7 +315,8 @@ class ZenodoAPI
         $cmd = 'curl --upload-file '.self::generate_file_dat($obj).' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
         echo "\n$cmd\n";
         $json = shell_exec($cmd);               echo "\n$json\n";
-        $obj = json_decode(trim($json), true);  print_r($obj);
+        $obj = json_decode(trim($json), true);  //print_r($obj);
+        return $obj;
     }
     private function publish_Zenodo_dataset($obj)
     {
