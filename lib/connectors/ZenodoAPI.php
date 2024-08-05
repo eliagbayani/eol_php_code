@@ -371,48 +371,6 @@ Copyright Owner (unless image is in the Public Domain)
 
 
     // ===================================== copied template below =====================================
-    function parse_citation_using_anystyle_cli($citation, $input_file)
-    {
-        $WRITE = Functions::file_open($input_file, "w");
-        fwrite($WRITE, $citation);
-        fclose($WRITE);
-
-        $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model_core  --stdout -f json parse $input_file";
-        // $cmd = "$this->anystyle_path --parser-model $this->anystyle_parse_model_gold  --stdout -f json parse $input_file";
-        // $cmd = "$this->anystyle_path                                                  --stdout -f json parse $input_file";
-
-        $json = shell_exec($cmd);
-        // /* seems not needed here, only in Ruby below
-        $json = substr(trim($json), 1, -1); # remove first and last char
-        // $json = str_replace("\\", "", $json); # remove "\" from converted json from Ruby
-        // */
-
-        // $arr = json_decode($json, true); print_r($arr); //exit("\ncheck anystle output\n"); //debug only
-
-        $obj = json_decode($json); //print_r($obj); //good debug
-        return $obj;
-    }
-
-    function parse_citation_using_anystyle($citation, $what, $series = false) //$series is optional
-    {
-        // echo("\n----------\nthis runs ruby...[$what][$series]\n----------\n"); //comment in real operation
-        $json = shell_exec($this->anystyle_parse_prog . ' "'.$citation.'"');
-        $json = substr(trim($json), 1, -1); # remove first and last char
-        $json = str_replace("\\", "", $json); # remove "\" from converted json from Ruby
-        $obj = json_decode($json); //print_r($obj);
-        if($what == 'all') return $obj;
-        elseif($what == 'title') {
-            if($val = @$obj[0]->title[0]) return $val;
-            else {
-                echo "\n---------- no title -------------\n";
-                // print_r($obj); 
-                echo "\ncitation:[$citation]\ntitle:[$what]\n";
-                echo "\n---------- end -------------\n";
-                return "-no title-";
-            }
-        }
-        echo ("\n-end muna-\n");
-    }
     private function initialize_file_dat($obj)
     {
         $file = self::generate_file_dat($obj);
@@ -569,8 +527,8 @@ Copyright Owner (unless image is in the Public Domain)
         $json = json_encode($rec);
         
         // /* for old CKAN
-        // $cmd = 'curl https://opendata.eol.org/api/3/action/resource_update'; // orig but not used here.
-        $cmd = 'curl https://opendata.eol.org/api/3/action/resource_patch';     // those fields not updated will remain
+        // $cmd = 'curl https://opendata.eol.org/api/3/action/resource_update'; // orig but not used for Zenodo.
+        $cmd = 'curl https://opendata.eol.org/api/3/action/resource_patch';     // those fields not updated will remain unchanged
         $cmd .= " -d '".$json."'";
         $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
         // */
