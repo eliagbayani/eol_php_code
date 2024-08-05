@@ -8,9 +8,9 @@ class ZenodoAPI
     {
         $this->download_options = array(
             'resource_id'        => 'zenodo',  //resource_id here is just a folder name in cache
-            'expire_seconds'     => 60*60*24*30, //maybe 1 day to expire
+            'expire_seconds'     => 60*60*24*1, //maybe 1 day to expire
             'download_wait_time' => 1000000, 'timeout' => 60*3, 'download_attempts' => 1, 'delay_in_minutes' => 0.5);
-        $this->download_options['expire_seconds'] = 0;
+        // $this->download_options['expire_seconds'] = 0;
 
         $this->debug = array();
         $this->api['domain'] = 'https://zenodo.org';
@@ -102,8 +102,8 @@ class ZenodoAPI
             $o = json_decode($json, true); //print_r($o);
             foreach($o['result'] as $organization_id) {
                 if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
-                echo "\n" . $organization_id;
-                self::process_organization($organization_id);
+                echo "\norganization ID: " . $organization_id;
+                // self::process_organization($organization_id);
             }
         }
         print_r($this->debug);
