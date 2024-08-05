@@ -153,14 +153,18 @@ class ZenodoAPI
         echo "\nnum_resources: ".$p['num_resources']."\n";
         // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
-        foreach(@$package_obj['result']['resources'] as $r) { print_r($r); 
-            $input = self::generate_input_field($p, $r); //main operation
-            print_r($input);
-            self::start_Zenodo_process($input);
-            // exit("\na resource object\n");
+        if($resources = @$package_obj['result']['resources']) {
+            foreach($resources as $r) { print_r($r); 
+                $input = self::generate_input_field($p, $r, $resources); //main operation
+                print_r($input);
+                self::start_Zenodo_process($input);
+                // exit("\na resource object\n");
+            }
+    
         }
+        
     }
-    private function generate_input_field($p, $r) //todo loop into resources and have $input for each resource...
+    private function generate_input_field($p, $r, $resources) //todo loop into resources and have $input for each resource...
     {
         if($val = @$p['license_id']) {
             if($val2 = @$this->license_map[$val]) $p['license_id'] = $val2;
@@ -181,6 +185,9 @@ class ZenodoAPI
         }
         // -------------------------------------------------------------------
         $creators = array();
+        $creators[] = array("name" => "script", "affiliation" => "Zenodo API");
+        // -------------------------------------------------------------------
+        $contributors = array();
         $creator = "";
         if($val = $p['creator_user_id']) {
             if($user_obj = self::lookup_user_using_id($val)) { //print_r($user_obj);
@@ -188,7 +195,7 @@ class ZenodoAPI
                 else                                           $affiliation = "";
                 if($creator = @$user_obj['result']['fullname']) {
                     if($email = @$user_obj['result']['email']) $creator .= " ($email)"; //this will only work using curl with Authorization. Won't work with just plain lookup_with_cache().
-                    $creators[] = array("name" => $creator, "affiliation" => $affiliation);
+                    $contributors[] = array("name" => $creator, "affiliation" => $affiliation, "type" => "HostingInstitution");
                 }
             }
         }
@@ -229,7 +236,8 @@ class ZenodoAPI
         else       $notes = $p['organization']['description'];
         // -------------------------------------------------------------------
         $keywords = array();
-        $keywords[] = $p['organization']['title'].": ".$p['title'];
+        if(count($resources) == 1)  $keywords[] = $p['organization']['title'];
+        else                        $keywords[] = $p['organization']['title'].": ".$p['title'];
         if($val = @$r['format']) {
             $keywords[] = "format: $val";
             @$this->debug['format'][$val]++;
@@ -310,6 +318,14 @@ class ZenodoAPI
         // $cmd = 'curl --insecure --include --user '.$this->gbif_username.':'.$this->gbif_pw.' --header "Content-Type: application/json" --data @'.$filename.' -s https://api.gbif.org/v1/occurrence/download/request';
         // $output = shell_exec($cmd);
         // echo "\nRequest output:\n[$output]\n";
+    }
+    function delete_dataset($id)
+    {
+        $cmd = 'curl -s https://zenodo.org/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN.' -X DELETE';
+        echo "\ndelete cmd: [$cmd]\n";
+        $json = shell_exec($cmd);               echo "\n--------------------\n$json\n--------------------\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+        return $obj;
     }
     private function retrieve_dataset($id)
     {
