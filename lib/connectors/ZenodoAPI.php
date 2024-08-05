@@ -133,8 +133,8 @@ class ZenodoAPI
             foreach($o['result']['packages'] as $p) {
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
-                // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
-                if($p['title'] != 'Vernacular names') continue; //debug only dev only
+                if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
+                // if($p['title'] != 'Vernacular names') continue; //debug only dev only
                 // */
 
                 // /* comment this if u want to migrate both public and private datasets.
@@ -157,7 +157,7 @@ class ZenodoAPI
             foreach($resources as $r) { print_r($r); 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
-                self::start_Zenodo_process($input);
+                // self::start_Zenodo_process($input); //main operation
                 // exit("\na resource object\n");
             }
     

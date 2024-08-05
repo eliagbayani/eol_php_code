@@ -18,11 +18,10 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
 $func = new ZenodoAPI();
-// $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
 // $func->delete_dataset(13136202);
-
-$func->delete_dataset(12730072);
+// $func->delete_dataset(12730072);
 
 /*
 $privateYN = 1; //meaning private datasets
