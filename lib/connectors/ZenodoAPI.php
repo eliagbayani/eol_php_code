@@ -103,7 +103,7 @@ class ZenodoAPI
             foreach($o['result'] as $organization_id) {
                 if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 echo "\norganization ID: " . $organization_id;
-                // self::process_organization($organization_id);
+                self::process_organization($organization_id);
             }
         }
         print_r($this->debug);
@@ -116,28 +116,23 @@ class ZenodoAPI
         $url = "http://localhost/other_files2/Zenodo_files/json/".$organization_id.".json";
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json";
 
-
-        // if($json = Functions::get_remote_file_fake_browser($url, $this->download_options)) //worked but still doesn't include all datasets
-
         if($json = Functions::lookup_with_cache($url, $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
-            echo "\npackage_count: ".$o['result']['package_count'];
+            echo "\npackage_count: ".$o['result']['package_count']."\n";
             foreach($o['result']['packages'] as $p) {
+                // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
+                if($p['title'] != 'Vernacular names') continue; //debug only dev only
+                // */
 
-                // print_r($p); exit;
                 if(self::is_dataset_private_YN($p)) continue; //private --- waiting for Jen to cherry-pick those to include to migrate to Zenodo
                 else {} //public --- the rest will be processed    
 
-                self::process_a_package($p);
+                // print_r($p); //exit;
+                self::process_a_package($p); //main operation
             }
         }
-    }
-    private function is_dataset_private_YN($p)
-    {
-        if($p['private'] == 'true' || $p['private'] == 1 || $p['private'] == '1') return true;  //private
-        if($p['private'] == 'false' || $p['private'] == '') return false;                       //public
     }
     private function process_a_package($p)
     {   // loop to each of the resources of a package
@@ -579,6 +574,10 @@ Copyright Owner (unless image is in the Public Domain)
         )*/
         // echo "\n$output\n";
     }
-
+    private function is_dataset_private_YN($p)
+    {
+        if($p['private'] == 'true' || $p['private'] == 1 || $p['private'] == '1') return true;  //private
+        if($p['private'] == 'false' || $p['private'] == '') return false;                       //public
+    }
 }
 ?>
