@@ -142,9 +142,30 @@ class ZenodoAPI
                 print_r($r); 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
-                // self::start_Zenodo_process($input); //main operation
+                self::start_Zenodo_process($input); //main operation
                 // exit("\na resource object\n");
             }
+        }
+    }
+    function Zenodo_upload_publish($id)
+    {
+        $obj = self::retrieve_dataset($id); //works OK
+        if(self::if_error($obj, 'retrieve', $id)) {}
+        else {
+            $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
+            if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
+            else {
+                $obj = self::retrieve_dataset($id); //works OK
+                if(self::if_error($obj, 'retrieve', $id)) {}
+                else {
+                    $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
+                    if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                    else {
+                        echo "\nSuccessfully migrated to Zenodo";
+                        echo "\n----------\n";
+                    }    
+                }   
+            }    
         }
     }
     function start_Zenodo_process($input)
