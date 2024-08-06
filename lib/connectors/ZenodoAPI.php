@@ -51,62 +51,6 @@ class ZenodoAPI
         $this->debug = array();
         $this->debug['total resources'] = 0;
     }
-    function list_all_datasets($sought_privateYN = 1)
-    {
-        if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
-            $o = json_decode($json, true); //print_r($o);
-            $i = 0; $e = 0;
-            foreach($o['result'] as $organization_id) { $i++;
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
-                // echo "\n" . $organization_id;
-
-                $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
-                // $url = "http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json";
-                $url = "http://localhost/other_files2/Zenodo_files/json/".$organization_id.".json";
-                $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json";
-
-                if($json = Functions::lookup_with_cache($url, $this->download_options)) {
-                    $o = json_decode($json, true); //print_r($o); exit;
-                    if(!$o['success']) exit("\nWhy not successfull\n");
-                    $org_title_name = $o['result']['title'].": (".$o['result']['name'].")";
-                    echo "\n$i. $org_title_name";
-
-                    $final[$org_title_name]['dataset_count'] = $o['result']['package_count'];
-                    foreach($o['result']['packages'] as $p) {
-                        $package_title_name = $p['title'].": ".$p['name'];
-                        if($sought_privateYN)   $label = 'private datasets';
-                        else                    $label = 'public datasets';
-                        if($p['private'] == $sought_privateYN) {
-                            $final[$org_title_name][$label][$package_title_name] = $p['id'];
-
-                            // /* loop to each of the resources of a package
-                            $package_obj = self::lookup_package_using_id($p['id']);
-                            if($resources = @$package_obj['result']['resources']) {
-                                foreach($resources as $r) { //print_r($p); print_r($r);
-                                    echo "\n -------------- start resource -------------- \n";
-                                    if($val = @$r['url']) { $e++; //"https://eol.org/data/media_manifest.tgz"
-                                        $this->debug['urls'][$val] = '';
-                                        $parse = parse_url($val);
-                                        $this->debug['urls pathinfo'][$parse['host']] = '';
-                                        // /* main operation
-                                        self::deal_with_ckan_urls($val, $parse, $r);
-                                        // */
-                                    }
-                                    // print_r($r); exit("\na resource object\n");
-                                    echo "\n -------------- end resource -------------- \n";
-                                }    
-                            }
-                            // */
-                        }
-                    }
-                }
-                // break; //debug only
-                // if($e >= 10) break; //debug only
-            }
-        }
-        echo "\n\n"; print_r($final); //stats report
-        print_r($this->debug);
-    }
     function start()
     {
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
@@ -136,6 +80,7 @@ class ZenodoAPI
         self::check_license_values();
         $sum = 0; foreach($this->debug['license_id'] as $n) $sum += $n; echo "\nlicense_id: [$sum]\n";
         echo "\ntotal resources: [".$this->debug['total resources']."]\n";
+        echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
     }
     private function process_organization($organization_id)
     {
@@ -698,6 +643,62 @@ Copyright Owner (unless image is in the Public Domain)
             }
             print_r($ret);
         }
+    }
+    function list_all_datasets($sought_privateYN = 1)
+    {
+        if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
+            $o = json_decode($json, true); //print_r($o);
+            $i = 0; $e = 0;
+            foreach($o['result'] as $organization_id) { $i++;
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                // echo "\n" . $organization_id;
+
+                $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
+                // $url = "http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json";
+                $url = "http://localhost/other_files2/Zenodo_files/json/".$organization_id.".json";
+                $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json";
+
+                if($json = Functions::lookup_with_cache($url, $this->download_options)) {
+                    $o = json_decode($json, true); //print_r($o); exit;
+                    if(!$o['success']) exit("\nWhy not successfull\n");
+                    $org_title_name = $o['result']['title'].": (".$o['result']['name'].")";
+                    echo "\n$i. $org_title_name";
+
+                    $final[$org_title_name]['dataset_count'] = $o['result']['package_count'];
+                    foreach($o['result']['packages'] as $p) {
+                        $package_title_name = $p['title'].": ".$p['name'];
+                        if($sought_privateYN)   $label = 'private datasets';
+                        else                    $label = 'public datasets';
+                        if($p['private'] == $sought_privateYN) {
+                            $final[$org_title_name][$label][$package_title_name] = $p['id'];
+
+                            // /* loop to each of the resources of a package
+                            $package_obj = self::lookup_package_using_id($p['id']);
+                            if($resources = @$package_obj['result']['resources']) {
+                                foreach($resources as $r) { //print_r($p); print_r($r);
+                                    echo "\n -------------- start resource -------------- \n";
+                                    if($val = @$r['url']) { $e++; //"https://eol.org/data/media_manifest.tgz"
+                                        $this->debug['urls'][$val] = '';
+                                        $parse = parse_url($val);
+                                        $this->debug['urls pathinfo'][$parse['host']] = '';
+                                        // /* main operation
+                                        self::deal_with_ckan_urls($val, $parse, $r);
+                                        // */
+                                    }
+                                    // print_r($r); exit("\na resource object\n");
+                                    echo "\n -------------- end resource -------------- \n";
+                                }    
+                            }
+                            // */
+                        }
+                    }
+                }
+                // break; //debug only
+                // if($e >= 10) break; //debug only
+            }
+        }
+        echo "\n\n"; print_r($final); //stats report
+        print_r($this->debug);
     }
 }
 ?>
