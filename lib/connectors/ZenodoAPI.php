@@ -294,11 +294,13 @@ class ZenodoAPI
         // print_r($input); //exit("\nstop muna\n");
         return $input;
     }
-    private function if_error($o, $what)
+    private function if_error($o, $what, $what2)
     {
         if(@$o['status'] > 204) {
-            echo "\n--- ($what) Zenodo error detected ---\n";
+            $err_msg = "ERROR: ($what) ($what2) [".@$o['message']."]";
+            echo "\n--- $err_msg ---\n";
             print_r($o);
+            $this->debug['zenodo errors'][$err_msg] = '';
             return true;
         }
         else return false;
@@ -307,16 +309,16 @@ class ZenodoAPI
     {
         sleep(5); echo "\nPause 5 seconds...\n";
         $create_obj = self::create_Zenodo_dataset($input);
-        if(self::if_error($create_obj, 'create')) {}
+        if(self::if_error($create_obj, 'create', $input['title'])) {}
         else {
             $id = $create_obj['id'];
             $obj = self::retrieve_dataset($id); //works OK
             $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
-            if(self::if_error($upload_obj, 'upload')) {}
+            if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
             else {
                 $obj = self::retrieve_dataset($id); //works OK
                 $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
-                if(self::if_error($publish_obj, 'publish')) {}
+                if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
                 else {
                     echo "\nSuccessfully migrated to Zenodo\n";
                     echo $input['metadata']['title']."\n";
@@ -683,8 +685,8 @@ Copyright Owner (unless image is in the Public Domain)
         if($val = @$this->debug['license_id']) {
             $opendata_licenses = array_keys($val);
             foreach($opendata_licenses as $ol) {
-                if(isset($zenodo_licenses[$ol])) $ret['found'][$ol] = '';
-                else                             $ret['not_found'][$ol] = '';
+                if(isset($zenodo_licenses[$ol])) @$ret['found'][$ol] = '';
+                else                             @$ret['not_found'][$ol] = '';
             }
             print_r($ret);
         }
