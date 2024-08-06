@@ -12,7 +12,6 @@ class ZenodoAPI
             'download_wait_time' => 1000000, 'timeout' => 60*3, 'download_attempts' => 1, 'delay_in_minutes' => 0.5);
         // $this->download_options['expire_seconds'] = 0;
 
-        $this->debug = array();
         $this->api['domain'] = 'https://zenodo.org';
         if(Functions::is_production()) $this->path_2_file_dat = '/extra/other_files/Zenodo/';
         else                           $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
@@ -49,6 +48,8 @@ class ZenodoAPI
             "other-open"      => "other-open",
             "other-pd"        => "other-pd",            
         );
+        $this->debug = array();
+        $this->debug['total resources'] = 0;
     }
     function list_all_datasets($sought_privateYN = 1)
     {
@@ -119,7 +120,12 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
 
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if(in_array($organization_id, array('encyclopedia_of_life'))) continue; //migrated public datasets already //main operation
+
+
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
+
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
                 echo "\norganization ID: " . $organization_id;
@@ -181,6 +187,7 @@ class ZenodoAPI
         // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
         if($resources = @$package_obj['result']['resources']) {
+            $this->debug['total resources'] += count($resources);
             foreach($resources as $r) { 
                 
                 // if($r['name'] != 'EOL stats for species-level pages') continue;
@@ -309,7 +316,7 @@ class ZenodoAPI
     {
         sleep(5); echo "\nPause 5 seconds...\n";
         $create_obj = self::create_Zenodo_dataset($input);
-        if(self::if_error($create_obj, 'create', $input['title'])) {}
+        if(self::if_error($create_obj, 'create', $input['metadata']['title'])) {}
         else {
             $id = $create_obj['id'];
             $obj = self::retrieve_dataset($id); //works OK
