@@ -155,18 +155,24 @@ class ZenodoAPI
         else {
             $id = $create_obj['id'];
             $obj = self::retrieve_dataset($id); //works OK
-            $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
-            if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
+            if(self::if_error($obj, 'retrieve', $id)) {}
             else {
-                $obj = self::retrieve_dataset($id); //works OK
-                $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
-                if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
+                if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
                 else {
-                    echo "\nSuccessfully migrated to Zenodo\n";
-                    echo $input['metadata']['title']."\n";
-                    echo $input['metadata']['notes']."\n----------\n";
-                    @$this->debug['total resources migrated']++;
-                }
+                    $obj = self::retrieve_dataset($id); //works OK
+                    if(self::if_error($obj, 'retrieve', $id)) {}
+                    else {
+                        $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
+                        if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                        else {
+                            echo "\nSuccessfully migrated to Zenodo\n";
+                            echo $input['metadata']['title']."\n";
+                            echo $input['metadata']['notes']."\n----------\n";
+                            @$this->debug['total resources migrated']++;
+                        }    
+                    }   
+                }    
             }
         }        
         // $obj = self::retrieve_dataset('13136202'); self::update_Zenodo_record($obj); //didn't work yet
