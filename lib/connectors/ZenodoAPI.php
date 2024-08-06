@@ -118,6 +118,7 @@ class ZenodoAPI
                     [3] => legacy-datasets
                     [4] => wikidata-trait-reports
                 )*/
+
                 if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
@@ -149,12 +150,13 @@ class ZenodoAPI
             echo "\npackage_count: ".$o['result']['package_count']."\n";
             foreach($o['result']['packages'] as $p) {
 
-                if(in_array($p['title'], array("Images list", "Vernacular names"))) continue;
+                if(in_array($p['title'], array("Images list", "Vernacular names", "FishBase", "EOL Stats for species level pages"))) continue; //main operation
 
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
                 // if($p['title'] != 'Vernacular names') continue; //debug only dev only
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
+                // if($p['title'] != 'EOL Stats for species level pages') continue; //debug only dev only
                 // */
 
                 // /* UN-COMMENT for PUBLIC datasets.
@@ -166,7 +168,6 @@ class ZenodoAPI
                 if(self::is_dataset_private_YN($p)) {}   //private
                 else continue;                           //public    
                 */
-
 
                 // print_r($p); //exit;
                 self::process_a_package($p); //main operation
@@ -182,7 +183,7 @@ class ZenodoAPI
         if($resources = @$package_obj['result']['resources']) {
             foreach($resources as $r) { 
                 
-                if($r['name'] != 'EOL stats for species-level pages') continue;
+                // if($r['name'] != 'EOL stats for species-level pages') continue;
                 
                 print_r($r); 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
@@ -256,7 +257,6 @@ class ZenodoAPI
         else { //public
             $access_right = 'open';
         }
-
         // -------------------------------------------------------------------
         $notes = "";
         if($val = @$r['description']) $notes = $val;
@@ -305,6 +305,7 @@ class ZenodoAPI
     }
     function start_Zenodo_process($input)
     {
+        sleep(5); echo "\nPause 5 seconds...\n";
         $create_obj = self::create_Zenodo_dataset($input);
         if(self::if_error($create_obj, 'create')) {}
         else {
