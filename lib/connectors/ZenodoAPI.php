@@ -330,6 +330,7 @@ class ZenodoAPI
                     echo "\nSuccessfully migrated to Zenodo\n";
                     echo $input['metadata']['title']."\n";
                     echo $input['metadata']['notes']."\n----------\n";
+                    @$this->debug['total resources migrated']++;
                 }
             }
         }
