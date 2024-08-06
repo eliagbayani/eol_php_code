@@ -301,7 +301,7 @@ class ZenodoAPI
         $cmd = 'curl -s -H "Content-Type: application/json" -X POST --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN;
         // $cmd .= " 2>&1";
         echo "\ncreate cmd: [$cmd]\n";
-        $json = shell_exec($cmd);               echo "\n$json\n";
+        $json = shell_exec($cmd);               //echo "\n$json\n";
         $obj = json_decode(trim($json), true);  print_r($obj);
         return $obj;
         // copied template:
@@ -337,7 +337,7 @@ class ZenodoAPI
             // $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
             $cmd = 'curl --upload-file '.self::generate_file_dat($obj).' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
             echo "\nupload cmd: [$cmd]\n";
-            $json = shell_exec($cmd);               echo "\n$json\n";
+            $json = shell_exec($cmd);               //echo "\n$json\n";
             $obj = json_decode(trim($json), true);  print_r($obj);
             return $obj;    
         }
@@ -350,7 +350,7 @@ class ZenodoAPI
             $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
             // $cmd .= " 2>&1";
             echo "\npublish cmd: [$cmd]\n";
-            $json = shell_exec($cmd);               echo "\n$json\n";
+            $json = shell_exec($cmd);               //echo "\n$json\n";
             $obj = json_decode(trim($json), true);  print_r($obj);
             return $obj;    
         }
@@ -404,7 +404,7 @@ Copyright Owner (unless image is in the Public Domain)
         // $cmd = 'curl -i -H "Content-Type: application/json" -X PUT --data '."'$json'".' https://zenodo.org/api/deposit/depositions/13136202?access_token='.ZENODO_TOKEN;
         // $cmd .= " 2>&1";
         echo "\n$cmd\n";
-        $json = shell_exec($cmd);           echo "\n$json\n";
+        $json = shell_exec($cmd);           //echo "\n$json\n";
         $obj = json_decode(trim($json));    print_r($obj);
     }
     private function initialize_file_dat($obj)
