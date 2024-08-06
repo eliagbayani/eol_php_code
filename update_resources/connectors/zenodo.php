@@ -23,6 +23,8 @@ $func->start(); //main - this reads OpenData using its API and creates Zenodo re
 // $func->delete_dataset(13136202);
 // $func->delete_dataset(12730072);
 
+// $func->test_curl();
+
 /*
 $privateYN = 1; //meaning private datasets
 // $privateYN = ''; //meaing public datasets

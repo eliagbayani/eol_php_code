@@ -109,9 +109,18 @@ class ZenodoAPI
     function start()
     {
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
-            $o = json_decode($json, true); //print_r($o);
+            $o = json_decode($json, true); //print_r($o); exit;
             foreach($o['result'] as $organization_id) {
+                /*Array(
+                    [0] => dynamic-hierarchy
+                    [1] => encyclopedia_of_life
+                    [2] => eol-content-partners
+                    [3] => legacy-datasets
+                    [4] => wikidata-trait-reports
+                )*/
                 if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
+
                 echo "\norganization ID: " . $organization_id;
                 self::process_organization($organization_id);
             }
@@ -121,26 +130,43 @@ class ZenodoAPI
     }
     private function process_organization($organization_id)
     {
-        $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']);
+        $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']); //not getting correct total of packages
+
+        // the 5 organizations - are saved as json files:
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=dynamic-hierarchy&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
-        $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json'; //an organization: Aggregate Datasets
-        $url = "http://localhost/other_files2/Zenodo_files/json/".$organization_id.".json";
-        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json";
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=legacy-datasets&include_datasets=true';
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=wikidata-trait-reports&include_datasets=true';
+
+        // $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json'; //an organization: Aggregate Datasets
+        // $url = "http://localhost/other_files2/Zenodo_files/json/".$organization_id.".json";
+
+        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json"; //main operation
 
         if($json = Functions::lookup_with_cache($url, $this->download_options)) {
             $o = json_decode($json, true); //print_r($o);
             echo "\npackage_count: ".$o['result']['package_count']."\n";
             foreach($o['result']['packages'] as $p) {
+
+                if(in_array($p['title'], array("Images list", "Vernacular names"))) continue;
+
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
-                if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
                 // if($p['title'] != 'Vernacular names') continue; //debug only dev only
+                // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
                 // */
 
-                // /* comment this if u want to migrate both public and private datasets.
+                // /* UN-COMMENT for PUBLIC datasets.
                 if(self::is_dataset_private_YN($p)) continue;   //private --- waiting for Jen to cherry-pick those to include to migrate to Zenodo
                 else {}                                         //public --- the rest will be processed    
                 // */
+
+                /* UN-COMMENT for PRIVATE datasets.
+                if(self::is_dataset_private_YN($p)) {}   //private
+                else continue;                           //public    
+                */
+
 
                 // print_r($p); //exit;
                 self::process_a_package($p); //main operation
@@ -154,15 +180,17 @@ class ZenodoAPI
         // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
         if($resources = @$package_obj['result']['resources']) {
-            foreach($resources as $r) { print_r($r); 
+            foreach($resources as $r) { 
+                
+                if($r['name'] != 'EOL stats for species-level pages') continue;
+                
+                print_r($r); 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
                 // self::start_Zenodo_process($input); //main operation
                 // exit("\na resource object\n");
             }
-    
         }
-        
     }
     private function generate_input_field($p, $r, $resources) //todo loop into resources and have $input for each resource...
     {
@@ -248,6 +276,7 @@ class ZenodoAPI
                                     "upload_type" => "dataset", //controlled vocab.
                                     "description" => $p['notes'],
                                     "creators" => $creators, 
+                                    "contributors" => $contributors,
                                     //Example: [{'name':'Doe, John', 'affiliation': 'Zenodo'}, 
                                     //          {'name':'Smith, Jane', 'affiliation': 'Zenodo', 'orcid': '0000-0002-1694-233X'}, 
                                     //          {'name': 'Kowalski, Jack', 'affiliation': 'Zenodo', 'gnd': '170118215'}]
@@ -478,6 +507,16 @@ Copyright Owner (unless image is in the Public Domain)
             // */
         }
         // */
+    }
+    function test_curl()
+    {
+        $url = "https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true";
+        $cmd = 'curl '.$url;
+        // $cmd .= " -d '".$json."'";
+        $cmd .= ' -s -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+        $json = shell_exec($cmd);
+        $o = json_decode($json, true); print_r($o); exit;
+        return $o;
     }
     private function deal_with_ckan_urls($url, $parse, $r)
     {   /* [https://opendata.eol.org/dataset/e62665f5-c992-4e18-894f-454a188af411/resource/19ba1335-d661-41bf-be4f-ce2f08f9eac1/download/archive.zip] => 
