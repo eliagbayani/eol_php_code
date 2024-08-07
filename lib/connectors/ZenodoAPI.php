@@ -138,11 +138,13 @@ class ZenodoAPI
             foreach($resources as $r) { 
                 
                 // if($r['name'] != 'EOL stats for species-level pages') continue;
+                // if($r['name'] != 'EOL Dynamic Hierarchy Active Version') continue; //name here is CKAN resource name e.g. https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/00adb47b-57ed-4f6b-8f66-83bfdb5120e8
+
                 
                 print_r($r); 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
-                self::start_Zenodo_process($input); //main operation
+                // self::start_Zenodo_process($input); //main operation
                 // exit("\na resource object\n");
             }
         }
@@ -322,8 +324,8 @@ class ZenodoAPI
         $cmd = 'curl -s -H "Content-Type: application/json" -X POST --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN;
         // $cmd .= " 2>&1";
         echo "\ncreate cmd: [$cmd]\n";
-        $json = shell_exec($cmd);               //echo "\n$json\n";
-        $obj = json_decode(trim($json), true);  print_r($obj);
+        $json = shell_exec($cmd);               echo "\n--------------------\n$json\n--------------------\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n";
         return $obj;
         // copied template:
         // $cmd = 'curl -s "'.$url.'" -H "X-Authentication-Token:'.$this->service['token'].'"';
@@ -469,6 +471,9 @@ Copyright Owner (unless image is in the Public Domain)
     {
         $options = $this->download_options;
         // $options['expire_seconds'] = 0; //doesn't expire
+
+        // if($id == "0a023d9a-f8c3-4c80-a8d1-1702475cda18") $options['expire_seconds'] = 0;
+
 
         $url = $this->ckan['package_show'].$id; //main operation
         // $url = "https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true";
