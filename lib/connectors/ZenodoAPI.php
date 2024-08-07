@@ -64,9 +64,9 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
 
-                if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
+                // if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
 
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
@@ -79,6 +79,7 @@ class ZenodoAPI
         $sum = 0; foreach($this->debug['license_id'] as $n) $sum += $n; echo "\nlicense_id: [$sum]\n";
         echo "\ntotal resources: [".$this->debug['total resources']."]\n";
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
+        self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
     }
     private function process_organization($organization_id)
     {
@@ -142,6 +143,11 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Tenebrionidae Patch') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Lizards Patch') continue;
                 // if($r['name'] != 'EOL Mammals Patch Version 1') continue;
+                // if($r['name'] != 'current version') continue;                
+                // if($r['name'] != 'All trait data') continue;
+                // if($r['name'] != 'EOL Dynamic Hierarchy Erebidae Patch') continue;
+                // if($r['name'] != 'EOL Dynamic Hierarchy Trunk Active Version') continue;
+                // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
 
 
                 print_r($r); 
@@ -290,7 +296,10 @@ class ZenodoAPI
         }
         //e.g. array("Aggregate Datasets: Images list", "CSV")
         // -------------------------------------------------------------------
-        $input['metadata'] = array( "title" => $p['title'].": ".$r['name'], //"Images list: image list",
+        $title = $p['title'].": ".$r['name'];
+        $this->debug['titles'][$title] = '';
+        // -------------------------------------------------------------------
+        $input['metadata'] = array( "title" => $title, //"Images list: image list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "description" => $p['notes'],
                                     "creators" => $creators, 
@@ -343,6 +352,46 @@ class ZenodoAPI
         // $cmd = 'curl --insecure --include --user '.$this->gbif_username.':'.$this->gbif_pw.' --header "Content-Type: application/json" --data @'.$filename.' -s https://api.gbif.org/v1/occurrence/download/request';
         // $output = shell_exec($cmd);
         // echo "\nRequest output:\n[$output]\n";
+    }
+    function list_depositions()
+    {
+        // self::retrieve_dataset(13251291);
+        // EOL Mammals Patch (MAM): EOL Mammals Patch Version 1
+
+        // $cmd = 'curl -i https://zenodo.org/api/deposit/depositions/?access_token='.ZENODO_TOKEN;
+
+        // $title = "EOL Mammals Patch (MAM): EOL Mammals Patch Version 1";
+        // $arr['query']['query_string'] = array("query" => $title, "default_field" => "title");
+
+        // $arr = array();
+        // $arr['q'] = $title;
+        // $json = json_encode($arr);
+        // echo "\n$json\n";
+
+        $final = array(); $page = 0;
+        while(true) { $page++;
+            $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
+            $cmd = str_replace('PAGENUM', $page, $cmd);
+            // echo "\nlist depostions cmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
+            $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+            if(!$obj) break;
+            echo "\n".count($obj)."\n";
+            foreach($obj as $o) $final[$o['title']] = '';
+        }
+        print_r($final);
+
+        $titles = array_keys($this->debug['titles']);
+        foreach($titles as $title) {
+            $title = trim($title);
+            if(!isset($final[$title])) echo "\nTitle not found Zenodo: [$title]\n";
+        }
+
+
+
+                
+
+
     }
     function delete_dataset($id)
     {
