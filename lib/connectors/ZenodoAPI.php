@@ -148,7 +148,7 @@ class ZenodoAPI
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
                 // self::start_Zenodo_process($input); //main operation
-                // exit("\na resource object\n");
+                // exit("\n--a resource object--\n");
             }
         }
     }
