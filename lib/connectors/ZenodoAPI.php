@@ -137,10 +137,15 @@ class ZenodoAPI
             $this->debug['total resources'] += count($resources);
             foreach($resources as $r) { 
                 
+                //name here is CKAN resource name 
                 // if($r['name'] != 'EOL stats for species-level pages') continue;
-                // if($r['name'] != 'EOL Dynamic Hierarchy Active Version') continue; //name here is CKAN resource name e.g. https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/00adb47b-57ed-4f6b-8f66-83bfdb5120e8
+                // if($r['name'] != 'EOL Dynamic Hierarchy Active Version') continue; //e.g. https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/00adb47b-57ed-4f6b-8f66-83bfdb5120e8    
+                // if($r['name'] != 'Duplicate DH1.1 page mappings') continue;
+                // if($r['name'] != 'EOL Tenebrionidae Patch') continue;
+                // if($r['name'] != 'EOL Dynamic Hierarchy Lizards Patch') continue;
+                // if($r['name'] != 'EOL Mammals Patch Version 1') continue;
 
-                
+
                 print_r($r); 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
@@ -176,25 +181,26 @@ class ZenodoAPI
         $create_obj = self::create_Zenodo_dataset($input);
         if(self::if_error($create_obj, 'create', $input['metadata']['title'])) {}
         else {
-            $id = $create_obj['id'];
-            $obj = self::retrieve_dataset($id); //works OK
-            if(self::if_error($obj, 'retrieve', $id)) {}
-            else {
-                $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
-                if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
+            if($id = $create_obj['id']) {
+                $obj = self::retrieve_dataset($id); //works OK
+                if(self::if_error($obj, 'retrieve', $id)) {}
                 else {
-                    $obj = self::retrieve_dataset($id); //works OK
-                    if(self::if_error($obj, 'retrieve', $id)) {}
+                    $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
+                    if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
                     else {
-                        $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
-                        if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                        $obj = self::retrieve_dataset($id); //works OK
+                        if(self::if_error($obj, 'retrieve', $id)) {}
                         else {
-                            echo "\nSuccessfully migrated to Zenodo\n";
-                            echo $input['metadata']['title']."\n";
-                            echo $input['metadata']['notes']."\n----------\n";
-                            @$this->debug['total resources migrated']++;
-                        }    
-                    }   
+                            $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
+                            if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                            else {
+                                echo "\nSuccessfully migrated to Zenodo\n";
+                                echo $input['metadata']['title']."\n";
+                                echo $input['metadata']['notes']."\n----------\n";
+                                @$this->debug['total resources migrated']++;
+                            }    
+                        }   
+                    }    
                 }    
             }
         }        
@@ -269,6 +275,13 @@ class ZenodoAPI
         if($val = @$r['description']) $notes = $val;
         if($notes) $notes .= "\n".$p['organization']['description'];
         else       $notes = $p['organization']['description'];
+        // $notes = addcslashes($notes, "'");
+        // $notes = addslashes($notes);
+        $notes = str_replace("'", "\''", $notes);
+        // -------------------------------------------------------------------
+        // $p['notes'] = addcslashes($p['notes'], "'");
+        // $p['notes'] = addslashes($p['notes']);
+        $p['notes'] = str_replace("'", "\''", $p['notes']);
         // -------------------------------------------------------------------
         $keywords = array();
         if(count($resources) == 1)  $keywords[] = $p['organization']['title'];
