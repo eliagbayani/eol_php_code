@@ -64,12 +64,10 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
 
-                if(in_array($organization_id, array('encyclopedia_of_life'))) continue; //migrated public datasets already //main operation
-
+                if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
 
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
-                if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-
+                // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
                 echo "\norganization ID: " . $organization_id;
@@ -277,11 +275,11 @@ class ZenodoAPI
         else       $notes = $p['organization']['description'];
         // $notes = addcslashes($notes, "'");
         // $notes = addslashes($notes);
-        $notes = str_replace("'", "\''", $notes);
+        $notes = str_replace("'", "__", $notes);
         // -------------------------------------------------------------------
         // $p['notes'] = addcslashes($p['notes'], "'");
         // $p['notes'] = addslashes($p['notes']);
-        $p['notes'] = str_replace("'", "\''", $p['notes']);
+        $p['notes'] = str_replace("'", "__", $p['notes']);
         // -------------------------------------------------------------------
         $keywords = array();
         if(count($resources) == 1)  $keywords[] = $p['organization']['title'];
