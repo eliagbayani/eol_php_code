@@ -67,9 +67,9 @@ class ZenodoAPI
 
                 // if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
 
-                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue;
+                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue;
 
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
@@ -157,6 +157,7 @@ class ZenodoAPI
                 // print_r($r);
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
+                $this->input = $input;
 
                 /*
                 self::start_Zenodo_process($input); //main operation
@@ -210,11 +211,13 @@ class ZenodoAPI
                 $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
-                if(file_exists($actual_file)) {
-                // if(true) {
-                    echo "\nfilesize: ".filesize($actual_file)."\n";
+                //if(file_exists($actual_file)) {
+                if(true) {
+                    // echo "\nfilesize: ".filesize($actual_file)."\n";
                     if($new_obj = self::request_newversion($obj)) {
                         $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below.
+
+                        // exit("\nexit muna after new version request\n");
 
                         $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);
                         if(self::if_error($upload_obj, 'upload', $new_obj['id'])) {}
@@ -237,16 +240,20 @@ class ZenodoAPI
                                     )
                             )*/
                             // /* retrieve and publish
-                            $obj = self::retrieve_dataset($id); //works OK
-                            if(self::if_error($obj, 'retrieve', $id)) {}
+                            $update_obj = self::update_Zenodo_record($id, $this->input);
+                            if(self::if_error($update_obj, 'update1', $id)) {}
                             else {
-                                $input['metadata'] = array("publication_date" => date("Y-m-d")); //2010-12-30 --- this is needed for publishing a newly uploaded file.
-                                $publish_obj = self::publish_Zenodo_dataset($obj, $input); //worked OK
-                                if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                                $obj = self::retrieve_dataset($id); //works OK
+                                if(self::if_error($obj, 'retrieve', $id)) {}    
                                 else {
-                                    echo "\nSuccessfully uploaded then published to Zenodo\n";
-                                    echo "\n----------\n";
-                                }    
+                                    // $input['metadata'] = array("publication_date" => date("Y-m-d")); //2010-12-30 --- this is needed for publishing a newly uploaded file.
+                                    $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
+                                    if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                                    else {
+                                        echo "\nSuccessfully uploaded then published to Zenodo\n";
+                                        echo "\n----------\n";
+                                    }    
+                                }
                             }
                             // */
                         }
@@ -288,7 +295,6 @@ class ZenodoAPI
                 }    
             }
         }        
-        // $obj = self::retrieve_dataset('13136202'); self::update_Zenodo_record($obj); //didn't work yet
     }
     private function generate_input_field($p, $r, $resources) //todo loop into resources and have $input for each resource...
     {
@@ -381,6 +387,7 @@ class ZenodoAPI
         // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $title, //"Images list: image list",
                                     "upload_type" => "dataset", //controlled vocab.
+                                    "publication_date" => date("Y-m-d"),
                                     "description" => $p['notes'],
                                     "creators" => $creators, 
                                     "contributors" => $contributors,
@@ -537,57 +544,24 @@ class ZenodoAPI
         }
         else exit("\nERROR: Cannot get newversion URL! [".$obj['id']."]\n");
     }
-    private function update_Zenodo_record($obj) //maybe should use PATCH instead of PUT
+    function update_Zenodo_record($id, $input) //maybe should use PATCH instead of PUT
     {   /*
         curl -i -H "Content-Type: application/json" -X PUT
         --data '{"metadata": {"title": "My first upload", "upload_type": "poster", 
-                    "description": "This is my first upload", 
-                    "creators": [{"name": "Doe, John", "affiliation": "Zenodo"}]}}' https://zenodo.org/api/deposit/depositions/1234?access_token=ACCESS_TOKEN        
+                              "description": "This is my first upload", 
+                              "creators": [{"name": "Doe, John", "affiliation": "Zenodo"}]}}' https://zenodo.org/api/deposit/depositions/1234?access_token=ACCESS_TOKEN        
         */
-        $input = array();
-        $input['metadata'] = array("communities" => array(array("identifier" => "eol")), //Example: [{'identifier':'eol'}]
-                            );        
 
-        $input['metadata'] = array( "title" => "Images list",
-        "upload_type" => "dataset", //controlled vocab.
-        "description" => "
-All the images in EOL, with minimal metadata:
-EOL content ID (can construct eol media page url, eg: https://eol.org/media/15263823)
-EOL page ID (can construct eol taxon page url, eg: https://eol.org/pages/45511218)
-Medium Source URL (if available, eg: https://animaldiversity.org/collections/contributors/phil_myers/ADW_birds_3_4_03/Passeriformes/Emberizidae/lark_sparrow7789/large.jpg)
-EOL Full-Size Copy URL (recommended for download, eg: https://content.eol.org/data/media/be/4a/08/30.d4f396d82dcceeb0615c194f99421c0c.jpg)
-License (eg: cc-by-nc-sa-3.0, see https://creativecommons.org/licenses/ for details)
-Copyright Owner (unless image is in the Public Domain)
-                            ",
-                            "creators" => array(array("name" => "EOL staff", "affiliation" => "Encyclopedia of Life")), 
-                            //Example: [{'name':'Doe, John', 'affiliation': 'Zenodo'}, 
-                            //          {'name':'Smith, Jane', 'affiliation': 'Zenodo', 'orcid': '0000-0002-1694-233X'}, 
-                            //          {'name': 'Kowalski, Jack', 'affiliation': 'Zenodo', 'gnd': '170118215'}]
-                            "keywords" => array("Aggregate Datasets"),
-                            // "publication_date" => "2020-02-04", //required. Date of publication in ISO8601 format (YYYY-MM-DD). Defaults to current date.                                                                        
-                            "notes" => "For questions or use cases calling for large, multi-use aggregate data files, please visit the EOL Services forum at http://discuss.eol.org/c/eol-services",
-                            "communities" => array(array("identifier" => "eol")), //Example: [{'identifier':'eol'}]
-                            "dates" => array(array("start" => "2020-02-04", "end" => "2020-02-04", "type" => "Created"), //CKAN's created
-                                             array("start" => "2024-07-26", "end" => "2024-07-26", "type" => "Updated"), //CKAN's updated   
-                                            ), //Example: [{"start": "2018-03-21", "end": "2018-03-25", "type": "Collected", "description": "Specimen A5 collection period."}]
-                            "related_identifiers" => array(array("relation" => "isSupplementTo", 
-                                                                 "identifier" => "https://eol.org/data/media_manifest.tgz",
-                                                                 "resource_type" => "dataset")), 
-                            //Example: [{'relation': 'isSupplementTo', 'identifier':'10.1234/foo'}, 
-                            //          {'relation': 'cites', 'identifier':'https://doi.org/10.1234/bar', 'resource_type': 'image-diagram'}]
-                            "access_right" => "open", //defaults to 'open'
-                            "license" => "cc-by",
-                    );        
-
+        // $input['metadata'] = array("publication_date" => date("Y-m-d")); //2010-12-30 --- this is needed for publishing a newly uploaded file.
         $json = json_encode($input); // echo "\n$json\n";
-        print_r($input);
+        // print_r($input);
 
-        $cmd = 'curl -i -H "Content-Type: application/json" -X PUT --data '."'$json'".' https://zenodo.org/api/deposit/depositions/'.$obj['id'].'?access_token='.ZENODO_TOKEN;
-        // $cmd = 'curl -i -H "Content-Type: application/json" -X PUT --data '."'$json'".' https://zenodo.org/api/deposit/depositions/13136202?access_token='.ZENODO_TOKEN;
+        $cmd = 'curl -s -H "Content-Type: application/json" -X PUT --data '."'$json'".' https://zenodo.org/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN;
         // $cmd .= " 2>&1";
-        echo "\n$cmd\n";
+        // echo "\n$cmd\n";
         $json = shell_exec($cmd);           //echo "\n$json\n";
-        $obj = json_decode(trim($json));    print_r($obj);
+        $obj = json_decode(trim($json));    echo "\n----------u----------\n"; print_r($obj); echo "\n----------u----------\n";
+        return $obj;
     }
     private function initialize_file_dat($obj)
     {
