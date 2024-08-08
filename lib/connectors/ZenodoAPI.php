@@ -215,7 +215,23 @@ class ZenodoAPI
                 // if(true) {
                     echo "\nfilesize: ".filesize($actual_file)."\n";
                     if($new_obj = self::request_newversion($obj)) {
-                        self::upload_Zenodo_dataset($new_obj, $actual_file);
+                        $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);
+                        /*Array( $upload_obj
+                            [created] => 2024-08-08T14:48:22.623440+00:00
+                            [updated] => 2024-08-08T14:48:30.794780+00:00
+                            [version_id] => e2866bf9-5abe-41c7-a50e-07b1ec17027c
+                            [key] => vernacularnames.csv
+                            [size] => 222967948
+                            [mimetype] => text/csv
+                            [checksum] => md5:8e847b0d4f4ab6267e1c23555b771ca8
+                            [is_head] => 1
+                            [delete_marker] => 
+                            [links] => Array(
+                                    [self] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv
+                                    [version] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?versionId=e2866bf9-5abe-41c7-a50e-07b1ec17027c
+                                    [uploads] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?uploads
+                                )
+                        )*/
                     }
                     else echo "\nERROR: newversion object not created!\n";
                 }
@@ -440,7 +456,7 @@ class ZenodoAPI
         $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n";
         return $obj;
     }
-    private function retrieve_dataset($id)
+    function retrieve_dataset($id)
     {
         echo "\nRetrieving ".$id."...\n";
         // $cmd = 'curl -i '.$this->api['domain'].'/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN; //orig from Zenodo, -i more complete output. Not used.
@@ -460,7 +476,7 @@ class ZenodoAPI
             $basename = $obj['id'].".dat";
         }
         else $basename = pathinfo($actual_file, PATHINFO_BASENAME);
-        
+
         if(file_exists($actual_file)) {
             if($bucket = @$obj['links']['bucket']) { //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
                 // $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
