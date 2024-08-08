@@ -477,8 +477,8 @@ class ZenodoAPI
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/newversion?access_token=ACCESS_TOKEN
             $cmd = 'curl -s -X POST '.$newversion.'?access_token='.ZENODO_TOKEN;
             echo "\ncmd: [$cmd]\n";
-            $json = shell_exec($cmd);               //echo "\n$json\n";
-            $obj = json_decode(trim($json), true);  print_r($obj); exit("\nstop: newversion\n");
+            $json = shell_exec($cmd);               echo "\n----x-----\n$json\n-----x----\n";
+            $obj = json_decode(trim($json), true);  echo "\n=======x=======\n"; print_r($obj); echo "\n=======x=======\n"; exit("\nstop: newversion\n");
             return $obj;    
         }
         else exit("\nCannot get newversion URL!\n");
