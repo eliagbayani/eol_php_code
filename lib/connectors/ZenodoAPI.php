@@ -560,7 +560,7 @@ class ZenodoAPI
         // $cmd .= " 2>&1";
         // echo "\n$cmd\n";
         $json = shell_exec($cmd);           //echo "\n$json\n";
-        $obj = json_decode(trim($json));    echo "\n----------u----------\n"; print_r($obj); echo "\n----------u----------\n";
+        $obj = json_decode(trim($json, true));    echo "\n----------u----------\n"; print_r($obj); echo "\n----------u----------\n";
         return $obj;
     }
     private function initialize_file_dat($obj)
