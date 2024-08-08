@@ -21,7 +21,7 @@ $func = new ZenodoAPI();
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
 
-$retrive_record(13271534);
+$func->retrieve_dataset(13271534);
 
 // $func->list_depositions(); //worked OK
 

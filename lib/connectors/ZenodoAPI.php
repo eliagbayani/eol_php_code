@@ -207,7 +207,6 @@ class ZenodoAPI
             )*/
             $needle = "https://editors.eol.org/uploaded_resources";
             if(stripos($url, $needle) !== false) { //string is found
-
                 $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
@@ -215,28 +214,47 @@ class ZenodoAPI
                 // if(true) {
                     echo "\nfilesize: ".filesize($actual_file)."\n";
                     if($new_obj = self::request_newversion($obj)) {
+                        $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below.
+
                         $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);
-                        /*Array( $upload_obj
-                            [created] => 2024-08-08T14:48:22.623440+00:00
-                            [updated] => 2024-08-08T14:48:30.794780+00:00
-                            [version_id] => e2866bf9-5abe-41c7-a50e-07b1ec17027c
-                            [key] => vernacularnames.csv
-                            [size] => 222967948
-                            [mimetype] => text/csv
-                            [checksum] => md5:8e847b0d4f4ab6267e1c23555b771ca8
-                            [is_head] => 1
-                            [delete_marker] => 
-                            [links] => Array(
-                                    [self] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv
-                                    [version] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?versionId=e2866bf9-5abe-41c7-a50e-07b1ec17027c
-                                    [uploads] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?uploads
-                                )
-                        )*/
+                        if(self::if_error($upload_obj, 'upload', $new_obj['id'])) {}
+                        else {
+                            // it seems the $upload_obj will not be used atm.
+                            /*Array( $upload_obj
+                                [created] => 2024-08-08T14:48:22.623440+00:00
+                                [updated] => 2024-08-08T14:48:30.794780+00:00
+                                [version_id] => e2866bf9-5abe-41c7-a50e-07b1ec17027c
+                                [key] => vernacularnames.csv
+                                [size] => 222967948
+                                [mimetype] => text/csv
+                                [checksum] => md5:8e847b0d4f4ab6267e1c23555b771ca8
+                                [is_head] => 1
+                                [delete_marker] => 
+                                [links] => Array(
+                                        [self] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv
+                                        [version] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?versionId=e2866bf9-5abe-41c7-a50e-07b1ec17027c
+                                        [uploads] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?uploads
+                                    )
+                            )*/
+                            // /* retrieve and publish
+                            $obj = self::retrieve_dataset($id); //works OK
+                            if(self::if_error($obj, 'retrieve', $id)) {}
+                            else {
+                                $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
+                                if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                                else {
+                                    echo "\nSuccessfully uploaded then published to Zenodo\n";
+                                    echo "\n----------\n";
+                                }    
+                            }
+                            // */
+                        }
                     }
                     else echo "\nERROR: newversion object not created!\n";
                 }
                 else echo "\nNo file uploaded. File does not exist. [$actual_file]\n";
             }
+            else echo "\nNot a CKAN URL [$url].\n";
         }
         exit("\n--stop muna ditox--\n");
     }
