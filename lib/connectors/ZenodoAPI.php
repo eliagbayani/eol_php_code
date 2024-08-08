@@ -138,7 +138,9 @@ class ZenodoAPI
         if($resources = @$package_obj['result']['resources']) {
             $this->debug['total resources'] += count($resources);
             foreach($resources as $r) { 
-                
+
+                if($r['name'] == 'vernacular names, May 2020') continue; //ckan file already uploaded.
+
                 //name here is CKAN resource name 
                 // if($r['name'] != 'EOL stats for species-level pages') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Active Version') continue; //e.g. https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/00adb47b-57ed-4f6b-8f66-83bfdb5120e8    
@@ -151,7 +153,7 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Dynamic Hierarchy Erebidae Patch') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Trunk Active Version') continue;
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
-                if($r['name'] != 'vernacular names, May 2020') continue;
+                // if($r['name'] != 'vernacular names, May 2020') continue;
 
 
                 // print_r($r);
