@@ -18,10 +18,14 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
 $func = new ZenodoAPI();
-$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+// $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
 
 // $func->list_depositions();
+$title = "active: World Odonata List";
+$title = "World Odonata List (ODO) - active: World Odonata List";
+$title = "identifier map: current version";
+$func->list_deposition_per_title($title);
 
 
 /* utility
