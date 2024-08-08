@@ -240,7 +240,8 @@ class ZenodoAPI
                             $obj = self::retrieve_dataset($id); //works OK
                             if(self::if_error($obj, 'retrieve', $id)) {}
                             else {
-                                $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
+                                $input['metadata'] = array("publication_date" => date("Y-m-d")); //2010-12-30 --- this is needed for publishing a newly uploaded file.
+                                $publish_obj = self::publish_Zenodo_dataset($obj, $input); //worked OK
                                 if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
                                 else {
                                     echo "\nSuccessfully uploaded then published to Zenodo\n";
@@ -432,6 +433,23 @@ class ZenodoAPI
         // $output = shell_exec($cmd);
         // echo "\nRequest output:\n[$output]\n";
     }
+    private function publish_Zenodo_dataset($obj, $data = false)
+    {
+        if($publish = @$obj['links']['publish']) { //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
+            // $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
+            // $cmd = 'curl -i -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
+            if(!$data) $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
+            else {
+                $json = json_encode($data); // echo "\n$json\n";
+                $cmd = 'curl -s -H "Content-Type: application/json" -X POST  --data '."'$json'".' '.$publish.'?access_token='.ZENODO_TOKEN;
+            }
+            // $cmd .= " 2>&1";
+            echo "\npublish cmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n$json\n";
+            $obj = json_decode(trim($json), true);  print_r($obj);
+            return $obj;    
+        }
+    }
     function get_deposition_by_title($title)
     {        
         $q = "title:($title)";
@@ -518,19 +536,6 @@ class ZenodoAPI
             return $obj;    
         }
         else exit("\nERROR: Cannot get newversion URL! [".$obj['id']."]\n");
-    }
-    private function publish_Zenodo_dataset($obj)
-    {
-        if($publish = @$obj['links']['publish']) { //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
-            // $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
-            $cmd = 'curl -i -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
-            $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
-            // $cmd .= " 2>&1";
-            echo "\npublish cmd: [$cmd]\n";
-            $json = shell_exec($cmd);               //echo "\n$json\n";
-            $obj = json_decode(trim($json), true);  print_r($obj);
-            return $obj;    
-        }
     }
     private function update_Zenodo_record($obj) //maybe should use PATCH instead of PUT
     {   /*
