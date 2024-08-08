@@ -368,50 +368,13 @@ class ZenodoAPI
         // echo "\nRequest output:\n[$output]\n";
     }
     function list_deposition_per_title($title)
-    {
-        // self::retrieve_dataset(13251291);
-        // EOL Mammals Patch (MAM): EOL Mammals Patch Version 1
-
-        // $cmd = 'curl -i https://zenodo.org/api/deposit/depositions/?access_token='.ZENODO_TOKEN;
-
-        // $title = "EOL Mammals Patch (MAM): EOL Mammals Patch Version 1";
-        // $arr['query']['query_string'] = array("query" => $title, "default_field" => "title");
-
-        $arr = array();
-        $arr['query']['query_string'] = array("query" => $title, "default_field" => "title");
-        $json = json_encode($arr);
-        echo "\n$json\n";
-        // exit;
-
-        // curl -X GET "localhost:9200/_search?pretty" -H 'Content-Type: application/json' -d'
-        // {
-        //   "query": {
-        //     "query_string": {
-        //       "query": "(new york city) OR (big apple)",
-        //       "default_field": "content"
-        //     }
-        //   }
-        // }
-        // '
-        
+    {        
         $q = "title:($title)";
-
-        $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page=1&default_field=title&q="'.urlencode($title).' -H "Content-Type: application/json"';
         $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
-        // $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=1" -H "Content-Type: application/json"';
-
-        // curl -i -H "Content-Type: application/json" -X PUT
-        // --data '{"metadata": {"title": "My first upload", "upload_type": "poster", 
-        //             "description": "This is my first upload", 
-        //             "creators": [{"name": "Doe, John", "affiliation": "Zenodo"}]}}' https://zenodo.org/api/deposit/depositions/1234?access_token=ACCESS_TOKEN        
-                    
-        // $cmd = 'curl -H "Content-Type: application/json" -X GET --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=1';
-
-        // echo "\nlist depostions cmd: [$cmd]\n";
-        $json = shell_exec($cmd);               echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n";
-        // print_r($obj[0]);
-    
+        // echo "\ncmd: [$cmd]\n";
+        $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
+        $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+        return $obj;
     }
     function list_depositions()
     {
