@@ -66,7 +66,9 @@ class ZenodoAPI
 
                 // if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
 
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue;
+
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
@@ -102,7 +104,7 @@ class ZenodoAPI
             echo "\npackage_count: ".$o['result']['package_count']."\n";
             foreach($o['result']['packages'] as $p) {
 
-                if(in_array($p['title'], array("Images list", "Vernacular names", "FishBase", "EOL Stats for species level pages"))) continue; //main operation
+                // if(in_array($p['title'], array("Images list", "Vernacular names", "FishBase", "EOL Stats for species level pages"))) continue; //main operation
 
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
@@ -296,7 +298,7 @@ class ZenodoAPI
         }
         //e.g. array("Aggregate Datasets: Images list", "CSV")
         // -------------------------------------------------------------------
-        $title = $p['title'].": ".$r['name'];
+        $title = trim($p['title'].": ".$r['name']);
         $this->debug['titles'][$title] = '';
         // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $title, //"Images list: image list",
@@ -377,21 +379,21 @@ class ZenodoAPI
             $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
             if(!$obj) break;
             echo "\n".count($obj)."\n";
-            foreach($obj as $o) $final[$o['title']] = '';
+            foreach($obj as $o) $final[trim($o['title'])] = '';
         }
         print_r($final);
 
         $titles = array_keys($this->debug['titles']);
         foreach($titles as $title) {
             $title = trim($title);
-            if(!isset($final[$title])) echo "\nTitle not found Zenodo: [$title]\n";
+            if(!isset($final[$title])) echo "\nTitle not found in Zenodo: [$title]\n";
         }
+        // ====================================================
+        foreach(array_keys($final) as $zenodo_title) {
+            $zenodo_title = trim($zenodo_title);
+            if(!isset($this->debug['titles'][$zenodo_title])) echo "\nTitle not found in CKAN: [$zenodo_title]\n";
 
-
-
-                
-
-
+        }
     }
     function delete_dataset($id)
     {
