@@ -130,7 +130,7 @@ class ZenodoAPI
     }
     private function process_a_package($p) //process a dataset
     {   
-        print_r($p);
+        // print_r($p);
         echo "\nnum_resources: ".$p['num_resources']."\n";
         // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
@@ -150,20 +150,21 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Dynamic Hierarchy Erebidae Patch') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Trunk Active Version') continue;
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
-
-                
                 if($r['name'] != 'vernacular names, May 2020') continue;
 
 
-                print_r($r); 
+                // print_r($r);
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
+
                 /*
                 self::start_Zenodo_process($input); //main operation
                 */
+
                 // /*
-                self::start_Zenodo_upload_only($input); //main operation --- upload of actual file to a published Zenodo record
+                self::start_Zenodo_upload_only($input['metadata']['title']); //main operation --- upload of actual file to a published Zenodo record
                 // */
+
                 // exit("\n--a resource object--\n");
             }
         }
@@ -189,9 +190,9 @@ class ZenodoAPI
             }    
         }
     }
-    private function start_Zenodo_upload_only()
+    private function start_Zenodo_upload_only($title) //upload of actual file to a published Zenodo record
     {
-
+        echo "\n[$title]\n";
     }
     function start_Zenodo_process($input)
     {
@@ -371,7 +372,6 @@ class ZenodoAPI
     {        
         $q = "title:($title)";
         $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
-        // echo "\ncmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
         $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
         return $obj;
@@ -447,7 +447,7 @@ class ZenodoAPI
             return $obj;    
         }
     }
-    private function update_Zenodo_record($obj)
+    private function update_Zenodo_record($obj) //maybe should use PATCH instead of PUT
     {   /*
         curl -i -H "Content-Type: application/json" -X PUT
         --data '{"metadata": {"title": "My first upload", "upload_type": "poster", 
