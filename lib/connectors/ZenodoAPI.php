@@ -165,9 +165,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                // /*
+                /*
                 self::start_Zenodo_upload_only($input['metadata']['title']); //main operation --- upload of actual file to a published Zenodo record
-                // */
+                */
 
                 // exit("\n--a resource object--\n");
             }
