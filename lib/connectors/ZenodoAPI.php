@@ -215,9 +215,9 @@ class ZenodoAPI
                 if(true) {
                     // echo "\nfilesize: ".filesize($actual_file)."\n";
 
-                    $new_obj = self::request_newversion($obj);
-
-                    // self::upload_Zenodo_dataset($obj, $actual_file);
+                    if($new_obj = self::request_newversion($obj)) {
+                        self::upload_Zenodo_dataset($new_obj, $actual_file);
+                    }
                 }
                 else echo "\nNo file uploaded. File does not exist. [$actual_file]\n";
             }
@@ -454,35 +454,33 @@ class ZenodoAPI
     private function upload_Zenodo_dataset($obj, $actual_file = false)
     {
         echo "\nUploading ".$obj['id']."...\n";
-
         if(!$actual_file) {
             self::initialize_file_dat($obj);
             $actual_file = self::get_file_dat_path($obj);
         }
-
-        if($bucket = @$obj['links']['bucket']) { //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
-            // $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
-            $cmd = 'curl --upload-file '.$actual_file.' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
-            echo "\nupload cmd: [$cmd]\n";
-            $json = shell_exec($cmd);               //echo "\n$json\n";
-            $obj = json_decode(trim($json), true);  print_r($obj);
-            return $obj;    
+        if(file_exists($actual_file)) {
+            if($bucket = @$obj['links']['bucket']) { //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
+                // $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
+                $cmd = 'curl --upload-file '.$actual_file.' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
+                echo "\nupload cmd: [$cmd]\n";
+                $json = shell_exec($cmd);               //echo "\n$json\n";
+                $obj = json_decode(trim($json), true);  print_r($obj);
+                return $obj;    
+            }    
         }
     }
     private function request_newversion($obj)
     {
         echo "\nRequesting newversion ".$obj['id']."...\n";
-
         if($newversion = @$obj['links']['newversion']) { //e.g. https://zenodo.org/api/deposit/depositions/13268261/actions/newversion
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/newversion?access_token=ACCESS_TOKEN
             $cmd = 'curl -s -X POST '.$newversion.'?access_token='.ZENODO_TOKEN;
             echo "\ncmd: [$cmd]\n";
             $json = shell_exec($cmd);               echo "\n----x-----\n$json\n-----x----\n";
-            $obj = json_decode(trim($json), true);  echo "\n=======x=======\n"; print_r($obj); echo "\n=======x=======\n"; exit("\nstop: newversion\n");
+            $obj = json_decode(trim($json), true);  echo "\n=======x=======\n"; print_r($obj); echo "\n=======x=======\n"; //exit("\nstop: newversion\n");
             return $obj;    
         }
-        else exit("\nCannot get newversion URL!\n");
-
+        else exit("\nERROR: Cannot get newversion URL! [".$obj['id']."]\n");
     }
     private function publish_Zenodo_dataset($obj)
     {
