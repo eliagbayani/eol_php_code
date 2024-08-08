@@ -211,18 +211,18 @@ class ZenodoAPI
                 $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
-                // if(file_exists($actual_file)) {
-                if(true) {
-                    // echo "\nfilesize: ".filesize($actual_file)."\n";
-
+                if(file_exists($actual_file)) {
+                // if(true) {
+                    echo "\nfilesize: ".filesize($actual_file)."\n";
                     if($new_obj = self::request_newversion($obj)) {
                         self::upload_Zenodo_dataset($new_obj, $actual_file);
                     }
+                    else echo "\nERROR: newversion object not created!\n";
                 }
                 else echo "\nNo file uploaded. File does not exist. [$actual_file]\n";
             }
         }
-        exit("\n--stop muna--\n");
+        exit("\n--stop muna ditox--\n");
     }
     function start_Zenodo_process($input)
     {
