@@ -457,11 +457,14 @@ class ZenodoAPI
         if(!$actual_file) {
             self::initialize_file_dat($obj);
             $actual_file = self::get_file_dat_path($obj);
+            $basename = $obj['id'].".dat";
         }
+        else $basename = pathinfo($actual_file, PATHINFO_BASENAME);
+        
         if(file_exists($actual_file)) {
             if($bucket = @$obj['links']['bucket']) { //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
                 // $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
-                $cmd = 'curl --upload-file '.$actual_file.' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
+                $cmd = 'curl --upload-file '.$actual_file.' '.$bucket.'/'.$basename.'?access_token='.ZENODO_TOKEN;
                 echo "\nupload cmd: [$cmd]\n";
                 $json = shell_exec($cmd);               //echo "\n$json\n";
                 $obj = json_decode(trim($json), true);  print_r($obj);
