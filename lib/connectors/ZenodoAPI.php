@@ -240,7 +240,7 @@ class ZenodoAPI
                                     )
                             )*/
                             // /* retrieve and publish
-                            $update_obj = self::update_Zenodo_record($id, $this->input);
+                            $update_obj = self::update_Zenodo_record($id, $this->input); //to fill-in the publication_date
                             if(self::if_error($update_obj, 'update1', $id)) {}
                             else {
                                 $obj = self::retrieve_dataset($id); //works OK
@@ -560,7 +560,7 @@ class ZenodoAPI
         // $cmd .= " 2>&1";
         // echo "\n$cmd\n";
         $json = shell_exec($cmd);           //echo "\n$json\n";
-        $obj = json_decode(trim($json, true));    echo "\n----------u----------\n"; print_r($obj); echo "\n----------u----------\n";
+        $obj = json_decode(trim($json), true);    echo "\n----------u----------\n"; print_r($obj); echo "\n----------u----------\n";
         return $obj;
     }
     private function initialize_file_dat($obj)
