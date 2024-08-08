@@ -28,9 +28,6 @@ class ZenodoAPI
         // https://opendata.eol.org/api/3/action/package_show?id=images-list
 
 
-        /* very helpful
-        https://www.whatismybrowser.com/detect/what-is-my-user-agent/
-        */
         $this->ckan['user_show'] = 'https://opendata.eol.org/api/3/action/user_show?id='; //e.g. 47d700d6-0f4c-43e8-a0c5-a5e739bc390c
 
         // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
@@ -50,6 +47,10 @@ class ZenodoAPI
         );
         $this->debug = array();
         $this->debug['total resources'] = 0;
+
+        /* not helpful since Authorization is required regardless of user-agent
+        https://www.whatismybrowser.com/detect/what-is-my-user-agent/
+        */        
     }
     function start()
     {
@@ -193,6 +194,30 @@ class ZenodoAPI
     private function start_Zenodo_upload_only($title) //upload of actual file to a published Zenodo record
     {
         echo "\n[$title]\n";
+        $obj = self::get_deposition_by_title($title);
+        // print_r($obj);
+
+        if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
+            $info = pathinfo($url);
+            /*Array(
+                [dirname] => https://editors.eol.org/uploaded_resources/bf6/3dc
+                [basename] => vernacularnames.csv
+                [extension] => csv
+                [filename] => vernacularnames
+            )*/
+            $needle = "https://editors.eol.org/uploaded_resources";
+            if(stripos($url, $needle) !== false) { //string is found
+
+                $subfolders = str_replace($needle, "", $info['dirname']); // /bf6/3dc
+                $actual_file = "/extra/ckan_resources/".$subfolders."/".$info['basename'];
+                echo "\nsource: [$actual_file]\n";
+                if(file_exists($actual_file)) {
+                    echo "\nfilesize: ".filesize($actual_file)."\n";
+                    self::upload_Zenodo_dataset($obj, $actual_file);
+                }
+            }
+        }
+        exit("\n--stop muna--\n");
     }
     function start_Zenodo_process($input)
     {
@@ -368,13 +393,13 @@ class ZenodoAPI
         // $output = shell_exec($cmd);
         // echo "\nRequest output:\n[$output]\n";
     }
-    function list_deposition_per_title($title)
+    function get_deposition_by_title($title)
     {        
         $q = "title:($title)";
         $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
         $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
-        return $obj;
+        return $obj[0];
     }
     function list_depositions()
     {
@@ -421,13 +446,18 @@ class ZenodoAPI
         $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n";
         return $obj;
     }
-    private function upload_Zenodo_dataset($obj)
+    private function upload_Zenodo_dataset($obj, $actual_file = false)
     {
         echo "\nUploading ".$obj['id']."...\n";
-        self::initialize_file_dat($obj);
+
+        if(!$actual_file) {
+            self::initialize_file_dat($obj);
+            $actual_file = self::get_file_dat_path($obj);
+        }
+
         if($bucket = @$obj['links']['bucket']) { //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
             // $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
-            $cmd = 'curl --upload-file '.self::generate_file_dat($obj).' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
+            $cmd = 'curl --upload-file '.$actual_file.' '.$bucket.'/'.$obj['id'].'.dat?access_token='.ZENODO_TOKEN;
             echo "\nupload cmd: [$cmd]\n";
             $json = shell_exec($cmd);               //echo "\n$json\n";
             $obj = json_decode(trim($json), true);  print_r($obj);
@@ -501,12 +531,12 @@ Copyright Owner (unless image is in the Public Domain)
     }
     private function initialize_file_dat($obj)
     {
-        $file = self::generate_file_dat($obj);
+        $file = self::get_file_dat_path($obj);
         $WRITE = Functions::file_open($file, "w");
         fwrite($WRITE, json_encode($obj));
         fclose($WRITE);
     }
-    private function generate_file_dat($obj)
+    private function get_file_dat_path($obj)
     {
         return $this->path_2_file_dat . $obj['id'] . ".dat";        
     }
