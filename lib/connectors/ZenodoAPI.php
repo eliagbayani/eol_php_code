@@ -195,7 +195,7 @@ class ZenodoAPI
     {
         echo "\n[$title]\n";
         $obj = self::get_deposition_by_title($title);
-        // print_r($obj);
+        // print_r($obj); exit;
 
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
             $info = pathinfo($url);
@@ -208,13 +208,18 @@ class ZenodoAPI
             $needle = "https://editors.eol.org/uploaded_resources";
             if(stripos($url, $needle) !== false) { //string is found
 
-                $subfolders = str_replace($needle, "", $info['dirname']); // /bf6/3dc
-                $actual_file = "/extra/ckan_resources/".$subfolders."/".$info['basename'];
+                $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
+                $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
-                if(file_exists($actual_file)) {
-                    echo "\nfilesize: ".filesize($actual_file)."\n";
-                    self::upload_Zenodo_dataset($obj, $actual_file);
+                // if(file_exists($actual_file)) {
+                if(true) {
+                    // echo "\nfilesize: ".filesize($actual_file)."\n";
+
+                    $new_obj = self::request_newversion($obj);
+
+                    // self::upload_Zenodo_dataset($obj, $actual_file);
                 }
+                else echo "\nNo file uploaded. File does not exist. [$actual_file]\n";
             }
         }
         exit("\n--stop muna--\n");
@@ -463,6 +468,21 @@ class ZenodoAPI
             $obj = json_decode(trim($json), true);  print_r($obj);
             return $obj;    
         }
+    }
+    private function request_newversion($obj)
+    {
+        echo "\nRequesting newversion ".$obj['id']."...\n";
+
+        if($newversion = @$obj['links']['newversion']) { //e.g. https://zenodo.org/api/deposit/depositions/13268261/actions/newversion
+            // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/newversion?access_token=ACCESS_TOKEN
+            $cmd = 'curl -s -X POST '.$newversion.'?access_token='.ZENODO_TOKEN;
+            echo "\ncmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n$json\n";
+            $obj = json_decode(trim($json), true);  print_r($obj); exit("\nstop: newversion\n");
+            return $obj;    
+        }
+        else exit("\nCannot get newversion URL!\n");
+
     }
     private function publish_Zenodo_dataset($obj)
     {
