@@ -66,12 +66,15 @@ class ZenodoAPI
                     [3] => legacy-datasets
                     [4] => wikidata-trait-reports
                 )*/
-
+                
+                /*
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //uploaded actual files already
+                */
 
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
+                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
                 echo "\norganization ID: " . $organization_id;
@@ -157,19 +160,27 @@ class ZenodoAPI
 
                 // print_r($r);
                 $input = self::generate_input_field($p, $r, $resources); //main operation
-                print_r($input);
+                $title = $input['metadata']['title'];
+
+                // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
+                // if(!in_array($title, array("EOL Hierarchy Entries April 2017: EOL Hierarchy Entries April 2017"))) continue;
+
+                // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
+                if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
+
+
+
+                print_r($input); //exit;
                 $this->input = $input;
 
-                $title = $input['metadata']['title'];
-                if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
 
                 /*
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                /*
+                // /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                */
+                // */
 
                 // exit("\n--a resource object--\n");
             }
@@ -293,6 +304,7 @@ class ZenodoAPI
                                 echo $input['metadata']['title']."\n";
                                 echo $input['metadata']['notes']."\n----------\n";
                                 @$this->debug['total resources migrated']++;
+                                self::log_error(array('migrated', @$obj['id'], @$obj['metadata']['title'], @$obj['metadata']['related_identifiers'][0]['identifier']));
                             }    
                         }   
                     }    
@@ -513,6 +525,7 @@ class ZenodoAPI
         }
         else $basename = pathinfo($actual_file, PATHINFO_BASENAME);
 
+        echo "\nUploading actual file: [".$actual_file."]\n";
         if(file_exists($actual_file)) {
             if($bucket = @$obj['links']['bucket']) { //e.g. https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946 // echo "\n[$bucket]\n";
                 // $cmd = 'curl --upload-file /path/to/your/file.dat https://zenodo.org/api/files/6c1d26b0-7b4a-41e3-a0e8-74cf75710946/file.dat?access_token='.ZENODO_TOKEN;
@@ -796,8 +809,8 @@ class ZenodoAPI
         if($val = @$this->debug['license_id']) {
             $opendata_licenses = array_keys($val);
             foreach($opendata_licenses as $ol) {
-                if(isset($zenodo_licenses[$ol])) @$ret['found'][$ol] = '';
-                else                             @$ret['not_found'][$ol] = '';
+                if(isset($zenodo_licenses[$ol])) @$ret['license_found'][$ol] = '';
+                else                             @$ret['license_not_found'][$ol] = '';
             }
             print_r($ret);
         }
