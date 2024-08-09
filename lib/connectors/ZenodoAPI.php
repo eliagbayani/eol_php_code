@@ -67,9 +67,8 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
 
-                // if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
-
-                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue;
+                if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
+                if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //uploaded actual files already
 
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
@@ -168,9 +167,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                // /*
+                /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                // */
+                */
 
                 // exit("\n--a resource object--\n");
             }
@@ -199,7 +198,7 @@ class ZenodoAPI
     }
     private function start_Zenodo_upload_only($title) //upload of actual file to a published Zenodo record
     {
-        echo "\n[$title]\n";
+        sleep(7); echo "\nPause 7 seconds...\n"; echo "\n[$title]\n";
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
         if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
 
