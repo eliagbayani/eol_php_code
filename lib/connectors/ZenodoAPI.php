@@ -166,8 +166,8 @@ class ZenodoAPI
                 // if(!in_array($title, array("EOL Hierarchy Entries April 2017: EOL Hierarchy Entries April 2017"))) continue;
 
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
-                if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
-
+                // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
+                if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
 
 
                 print_r($input); //exit;
