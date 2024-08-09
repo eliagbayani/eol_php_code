@@ -169,13 +169,13 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
-                // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
+                if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
 
                 // if(!in_array($title, array("EOL v3 data model Ontologies: media_extension.xml"))) continue;
                 // if(!in_array($title, array("DH2.1 working docs: DH1.1 working version"))) continue;
                 // if(!in_array($title, array("Test data sets: Amoebozoa Test"))) continue;
                 // if(!in_array($title, array("Test data sets: COLTest"))) continue;
-                if(!in_array($title, array("EOL v3 data model Ontologies: media_extension.xml"))) continue;
+                // if(!in_array($title, array("EOL v3 data model Ontologies: media_extension.xml"))) continue;
 
 
 
@@ -186,9 +186,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                // /*
+                /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                // */
+                */
 
                 // exit("\n--a resource object--\n");
             }
