@@ -167,12 +167,11 @@ class ZenodoAPI
 
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
-                if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
-
+                // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
+                if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
 
                 print_r($input); //exit;
                 $this->input = $input;
-
 
                 /*
                 self::start_Zenodo_process($input); //main operation
