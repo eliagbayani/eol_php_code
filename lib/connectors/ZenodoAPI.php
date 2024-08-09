@@ -69,9 +69,9 @@ class ZenodoAPI
 
                 // if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
 
-                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue;
+                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue;
 
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
@@ -154,8 +154,7 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Dynamic Hierarchy Trunk Active Version') continue;
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
                 // if($r['name'] != 'vernacular names, May 2020') continue;
-
-                if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
+                // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
 
                 // print_r($r);
                 $input = self::generate_input_field($p, $r, $resources); //main operation
@@ -163,7 +162,7 @@ class ZenodoAPI
                 $this->input = $input;
 
                 $title = $input['metadata']['title'];
-                if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz"))) continue; //ckan file already uploaded
+                if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
 
                 /*
                 self::start_Zenodo_process($input); //main operation
