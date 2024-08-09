@@ -213,8 +213,10 @@ class ZenodoAPI
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
         if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
 
+        exit("\ncha1\n");
+
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
-            $info = pathinfo($url);
+            $info = pathinfo($url); print_r($info);
             /*Array(
                 [dirname] => https://editors.eol.org/uploaded_resources/bf6/3dc
                 [basename] => vernacularnames.csv
@@ -467,7 +469,7 @@ class ZenodoAPI
         $q = "title:($title)";
         $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n";
         return $obj[0];
     }
     function list_depositions()
