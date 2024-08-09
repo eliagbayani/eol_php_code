@@ -71,8 +71,9 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //uploaded actual files already
                 */
+                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
 
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
@@ -165,7 +166,7 @@ class ZenodoAPI
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(!in_array($title, array("EOL Hierarchy Entries April 2017: EOL Hierarchy Entries April 2017"))) continue;
 
-                if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
+                // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
@@ -218,7 +219,7 @@ class ZenodoAPI
         echo "\nretrieved_title: [$retrieved_title]\n";
         if($title != $retrieved_title) {
             echo "\nRetrieved title is not a match. Will not proceed.\n";
-            self::log_error(array("Title not found", "needle:[$title", "haystack:[$retrieved_title]"));
+            self::log_error(array("Title not found", "needle:[$title]", "haystack:[$retrieved_title]"));
             return;
         }
         return; //debug eonly
