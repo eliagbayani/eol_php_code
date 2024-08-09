@@ -141,8 +141,6 @@ class ZenodoAPI
             $this->debug['total resources'] += count($resources);
             foreach($resources as $r) { 
 
-                if($r['name'] == 'vernacular names, May 2020') continue; //ckan file already uploaded.
-
                 //name here is CKAN resource name 
                 // if($r['name'] != 'EOL stats for species-level pages') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Active Version') continue; //e.g. https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/00adb47b-57ed-4f6b-8f66-83bfdb5120e8    
@@ -157,19 +155,22 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
                 // if($r['name'] != 'vernacular names, May 2020') continue;
 
-                if($r['name'] != 'identifiers_with_images.csv.gz') continue; //"Identifiers with Images (EOL v2): identifiers_with_images.csv.gz"
+                if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
 
                 // print_r($r);
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 print_r($input);
                 $this->input = $input;
 
+                $title = $input['metadata']['title'];
+                if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz"))) continue; //ckan file already uploaded
+
                 /*
                 self::start_Zenodo_process($input); //main operation
                 */
 
                 // /*
-                self::start_Zenodo_upload_only($input['metadata']['title']); //main operation --- upload of actual file to a published Zenodo record
+                self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
                 // */
 
                 // exit("\n--a resource object--\n");
@@ -255,10 +256,9 @@ class ZenodoAPI
                                     $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
                                     if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
                                     else {
-                                        echo "\nSuccessfully uploaded then published to Zenodo\n";
-                                        echo "\n----------\n";
-                                        self::log_error(array('uploaded then published', $obj['id'], $obj['metadata']['title']));
-                                    }    
+                                        echo "\nSuccessfully uploaded then published to Zenodo\n-----u & p-----\n";
+                                        self::log_error(array('uploaded then published', @$obj['id'], @$obj['metadata']['title'], @$obj['metadata']['related_identifiers'][0]['identifier']));
+                                    }
                                 }
                             }
                             // */
