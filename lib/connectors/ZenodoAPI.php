@@ -16,6 +16,8 @@ class ZenodoAPI
         if(Functions::is_production()) $this->path_2_file_dat = '/extra/other_files/Zenodo/';
         else                           $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
+        $this->log_file = $this->path_2_file_dat . "error_log.tsv";
+
         /*
         https://opendata.eol.org/api/3/action/package_list
         */
@@ -409,17 +411,6 @@ class ZenodoAPI
                             );        
         // print_r($input); //exit("\nstop muna\n");
         return $input;
-    }
-    private function if_error($o, $what, $what2)
-    {
-        if(@$o['status'] > 204) {
-            $json_error = json_encode($o);
-            $err_msg = "ERROR: ($what) ($what2) [".$json_error."]";
-            echo "\n--- $err_msg ---\n"; print_r($o);
-            $this->debug['zenodo errors'][$err_msg] = '';
-            return true;
-        }
-        else return false;
     }
     private function create_Zenodo_dataset($input)
     {   /* sample: https://developers.zenodo.org/?shell#create
@@ -866,6 +857,24 @@ class ZenodoAPI
         }
         echo "\n\n"; print_r($final); //stats report
         print_r($this->debug);
+    }
+    private function if_error($o, $what, $what2)
+    {
+        if(@$o['status'] > 204) {
+            $json_error = json_encode($o);
+            $err_msg = "ERROR: ($what) ($what2) [".$json_error."]";
+            echo "\n--- $err_msg ---\n"; print_r($o);
+            $this->debug['zenodo errors'][$err_msg] = '';
+            self::log_error(array($what, $what2, $json_error));
+            return true;
+        }
+        else return false;
+    }
+    private function log_error($arr)
+    {
+        if(!($file = Functions::file_open($this->log_file, "a"))) return;
+        fwrite($file, implode("\t", $arr)."\n");
+        fclose($file);
     }
 }
 ?>
