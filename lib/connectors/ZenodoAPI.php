@@ -213,7 +213,6 @@ class ZenodoAPI
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
         if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
 
-        exit("\ncha1\n");
 
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
             $info = pathinfo($url); print_r($info);
@@ -228,6 +227,10 @@ class ZenodoAPI
                 $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
+
+                exit("\ncha2\n");
+
+
                 if(file_exists($actual_file)) {
                 // if(true) {
                     echo "\nfilesize: ".filesize($actual_file)."\n";
