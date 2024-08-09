@@ -157,6 +157,7 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
                 // if($r['name'] != 'vernacular names, May 2020') continue;
 
+                if($r['name'] != 'identifiers_with_images.csv.gz') continue; //"Identifiers with Images (EOL v2): identifiers_with_images.csv.gz"
 
                 // print_r($r);
                 $input = self::generate_input_field($p, $r, $resources); //main operation
