@@ -257,6 +257,7 @@ class ZenodoAPI
                                     else {
                                         echo "\nSuccessfully uploaded then published to Zenodo\n";
                                         echo "\n----------\n";
+                                        self::log_error(array('uploaded then published', $obj['id'], $obj['metadata']['title']));
                                     }    
                                 }
                             }
@@ -866,13 +867,14 @@ class ZenodoAPI
             $err_msg = "ERROR: ($what) ($what2) [".$json_error."]";
             echo "\n--- $err_msg ---\n"; print_r($o);
             $this->debug['zenodo errors'][$err_msg] = '';
-            self::log_error(array($what, $what2, $json_error));
+            self::log_error(array("ERROR", $what, $what2, $json_error));
             return true;
         }
         else return false;
     }
     private function log_error($arr)
     {
+        $arr[] = date("Y-m-d");
         if(!($file = Functions::file_open($this->log_file, "a"))) return;
         fwrite($file, implode("\t", $arr)."\n");
         fclose($file);
