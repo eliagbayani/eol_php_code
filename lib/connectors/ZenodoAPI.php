@@ -210,11 +210,18 @@ class ZenodoAPI
     {
         sleep(7); echo "\nPause 7 seconds...\n"; echo "\n[$title]\n";
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
+        if(!$obj) exit("\nelix muna\n"); //return;
         if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
 
         $retrieved_title = $obj['metadata']['title'];
-        echo "\ntitle to search: [$title]\n";
+        echo "\ntitle to search: [$title]";
         echo "\nretrieved_title: [$retrieved_title]\n";
+        if($title != $retrieved_title) {
+            echo "\nRetrieved title is not a match. Will not proceed.\n";
+            self::log_error(array("Title not found", "needle:[$title", "haystack:[$retrieved_title]"));
+            return;
+        }
+        return; //debug eonly
 
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
             $info = pathinfo($url); print_r($info);
@@ -469,11 +476,41 @@ class ZenodoAPI
         }
     }
     function get_deposition_by_title($title)
-    {        
+    {
+        // /* 1st option: not quite good        
         $q = "title:($title)";
+        // */
+
+        /* 2nd option: very good: from https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+        // curl -X GET "localhost:9200/_search?pretty" -H 'Content-Type: application/json' -d'
+        // {
+        //   "query": {
+        //     "query_string": {
+        //       "query": "(new york city) OR (big apple)",
+        //       "default_field": "content"
+        //     }
+        //   }
+        // }
+        // '
+        $arr["query"]["query_string"] = array("query" => $title, "default_field" => "title");
+        $q = json_encode($arr);        
+        */
+
         $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
+        // $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=5&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n";
+        $obj = json_decode(trim($json), true);  //echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n";
+
+        /* loop the results and get the exact match
+        echo "\nneedle: [$title]\n";
+        foreach($obj as $o) {
+            $result_title = $o['metadata']['title'];
+            echo "\ntesting title results: [$result_title]...\n";
+            if($title == $result_title) {
+                echo "\nFound match: [$result_title]\n"; return $o;
+            }
+        }
+        */
         return $obj[0];
     }
     function list_depositions()
