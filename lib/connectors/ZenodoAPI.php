@@ -228,8 +228,7 @@ class ZenodoAPI
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
 
-                exit("\ncha2\n");
-
+                // exit("\ncha2\n");
 
                 if(file_exists($actual_file)) {
                 // if(true) {
