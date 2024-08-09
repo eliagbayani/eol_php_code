@@ -197,8 +197,8 @@ class ZenodoAPI
     private function start_Zenodo_upload_only($title) //upload of actual file to a published Zenodo record
     {
         echo "\n[$title]\n";
-        $obj = self::get_deposition_by_title($title);
-        // print_r($obj); exit;
+        $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
+        if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
 
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
             $info = pathinfo($url);
@@ -209,13 +209,13 @@ class ZenodoAPI
                 [filename] => vernacularnames
             )*/
             $needle = "https://editors.eol.org/uploaded_resources";
-            if(stripos($url, $needle) !== false) { //string is found
+            if(stripos($url, $needle) !== false) { //string is found --- means this file is originally a ckan uploaded file.
                 $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
-                //if(file_exists($actual_file)) {
-                if(true) {
-                    // echo "\nfilesize: ".filesize($actual_file)."\n";
+                if(file_exists($actual_file)) {
+                // if(true) {
+                    echo "\nfilesize: ".filesize($actual_file)."\n";
                     if($new_obj = self::request_newversion($obj)) {
                         $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below.
 
@@ -413,9 +413,9 @@ class ZenodoAPI
     private function if_error($o, $what, $what2)
     {
         if(@$o['status'] > 204) {
-            $err_msg = "ERROR: ($what) ($what2) [".@$o['message']."]";
-            echo "\n--- $err_msg ---\n";
-            print_r($o);
+            $json_error = json_encode($o);
+            $err_msg = "ERROR: ($what) ($what2) [".$json_error."]";
+            echo "\n--- $err_msg ---\n"; print_r($o);
             $this->debug['zenodo errors'][$err_msg] = '';
             return true;
         }
