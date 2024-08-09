@@ -442,7 +442,7 @@ class ZenodoAPI
             if(!$data) $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
             else {
                 $json = json_encode($data); // echo "\n$json\n";
-                $cmd = 'curl -s -H "Content-Type: application/json" -X POST  --data '."'$json'".' '.$publish.'?access_token='.ZENODO_TOKEN;
+                $cmd = 'curl -s -H "Content-Type: application/json" -X POST  --data '."'$json'".' '.$publish.'?access_token='.ZENODO_TOKEN; //didn't work, param wasn't submitted.
             }
             // $cmd .= " 2>&1";
             echo "\npublish cmd: [$cmd]\n";
