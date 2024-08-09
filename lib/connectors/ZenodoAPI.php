@@ -212,6 +212,9 @@ class ZenodoAPI
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
         if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
 
+        $retrieved_title = $obj['metadata']['title'];
+        echo "\ntitle to search: [$title]\n";
+        echo "\nretrieved_title: [$retrieved_title]\n";
 
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
             $info = pathinfo($url); print_r($info);
@@ -227,7 +230,7 @@ class ZenodoAPI
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
 
-                // exit("\ncha2\n");
+                exit("\ncha2\n");
 
                 if(file_exists($actual_file)) {
                 // if(true) {
