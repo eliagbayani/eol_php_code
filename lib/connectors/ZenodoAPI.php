@@ -171,6 +171,9 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
 
+                if(!in_array($title, array("EOL v3 data model Ontologies: media_extension.xml"))) continue;
+
+
                 print_r($input); //exit;
                 $this->input = $input;
 
@@ -209,9 +212,12 @@ class ZenodoAPI
     }
     private function start_Zenodo_upload_only($title) //upload of actual file to a published Zenodo record
     {
-        sleep(7); echo "\nPause 7 seconds...\n"; echo "\n[$title]\n";
+        sleep(5); echo "\nPause 5 seconds...\n"; echo "\n[$title]\n";
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
-        if(!$obj) exit("\nelix muna\n"); //return;
+        if(!$obj) {
+            self::log_error(array("elix muna", $title));
+            return;
+        }
         if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
 
         $retrieved_title = $obj['metadata']['title'];
@@ -222,7 +228,7 @@ class ZenodoAPI
             self::log_error(array("Title not found", "needle:[$title]", "haystack:[$retrieved_title]"));
             return;
         }
-        return; //debug eonly
+        // return; //debug eonly
 
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
             $info = pathinfo($url); print_r($info);
@@ -238,7 +244,7 @@ class ZenodoAPI
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
 
-                exit("\ncha2\n");
+                // exit("\ncha2\n");
 
                 if(file_exists($actual_file)) {
                 // if(true) {
@@ -478,11 +484,11 @@ class ZenodoAPI
     }
     function get_deposition_by_title($title)
     {
-        // /* 1st option: not quite good        
+        /* 1st option: not quite good        
         $q = "title:($title)";
-        // */
+        */
 
-        /* 2nd option: very good: from https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+        // /* 2nd option: very good: from https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
         // curl -X GET "localhost:9200/_search?pretty" -H 'Content-Type: application/json' -d'
         // {
         //   "query": {
@@ -495,14 +501,14 @@ class ZenodoAPI
         // '
         $arr["query"]["query_string"] = array("query" => $title, "default_field" => "title");
         $q = json_encode($arr);        
-        */
+        // */
 
-        $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
-        // $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=5&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
+        // $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
+        $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=5&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
         $obj = json_decode(trim($json), true);  //echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n";
 
-        /* loop the results and get the exact match
+        // /* loop the results and get the exact match
         echo "\nneedle: [$title]\n";
         foreach($obj as $o) {
             $result_title = $o['metadata']['title'];
@@ -511,8 +517,8 @@ class ZenodoAPI
                 echo "\nFound match: [$result_title]\n"; return $o;
             }
         }
-        */
-        return $obj[0];
+        // */
+        // return @$obj[0];
     }
     function list_depositions()
     {
