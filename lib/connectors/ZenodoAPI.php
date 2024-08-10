@@ -166,7 +166,7 @@ class ZenodoAPI
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(!in_array($title, array("EOL Hierarchy Entries April 2017: EOL Hierarchy Entries April 2017"))) continue;
 
-                // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
+                if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
@@ -177,7 +177,8 @@ class ZenodoAPI
                 // if(!in_array($title, array("EOL v3 data model Ontologies: measurement_extension.xml"))) continue;                    
                 // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
                 // if(!in_array($title, array("DH2.1 working docs: COL2020-08-01"))) continue;
-                if(!in_array($title, array("DH2.1 working docs: DH2.1 working version November 2021"))) continue;
+                // if(!in_array($title, array("DH2.1 working docs: DH2.1 working version November 2021"))) continue;
+                
 
 
 
