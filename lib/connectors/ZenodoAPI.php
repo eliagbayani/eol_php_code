@@ -1,6 +1,8 @@
 <?php
 namespace php_active_record;
 /* 1st client: zenodo.php
+docs:   https://developers.zenodo.org/?shell#representation
+        https://help.zenodo.org/docs/deposit/manage-files/
 */
 class ZenodoAPI
 {
@@ -88,7 +90,7 @@ class ZenodoAPI
         $sum = 0; foreach($this->debug['license_id'] as $n) $sum += $n; echo "\nlicense_id: [$sum]\n";
         echo "\ntotal resources: [".$this->debug['total resources']."]\n";
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
-        // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
+        self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
     }
     private function process_organization($organization_id)
     {
@@ -186,9 +188,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                /*
+                // /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                */
+                // */
 
                 // exit("\n--a resource object--\n");
             }
@@ -222,7 +224,7 @@ class ZenodoAPI
         if(!$obj) {
             // self::log_error(array("elix muna", $title));
             self::log_error(array("Title not found", "needle:[$title]"));
-            echo "\nTitle not found. needle:[$title]\n";
+            echo "\nTitle not found*. needle:[$title]\n";
             return;
         }
         if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
@@ -236,7 +238,7 @@ class ZenodoAPI
             return;
         }
 
-        // return; //debug eonly
+        return; //debug eonly
 
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
             $info = pathinfo($url); print_r($info);
@@ -550,7 +552,7 @@ class ZenodoAPI
                 @$stats[$o['title']]++;
             }
         }
-        asort($stats); print_r($stats); exit("\n-end stats-\n");
+        // asort($stats); print_r($stats); exit("\n-end stats-\n");
 
         print_r($final);
         $titles = array_keys($this->debug['titles']);
@@ -953,7 +955,7 @@ class ZenodoAPI
     }
     private function log_error($arr)
     {
-        $arr[] = date("Y-m-d");
+        $arr[] = date("Y-m-d h:i:s A");
         if(!($file = Functions::file_open($this->log_file, "a"))) return;
         fwrite($file, implode("\t", $arr)."\n");
         fclose($file);
