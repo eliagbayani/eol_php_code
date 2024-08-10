@@ -71,6 +71,7 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //uploaded actual files already
                 */
+
                 if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
 
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
@@ -142,7 +143,7 @@ class ZenodoAPI
         $package_obj = self::lookup_package_using_id($p['id']);
         if($resources = @$package_obj['result']['resources']) {
             $this->debug['total resources'] += count($resources);
-            foreach($resources as $r) { 
+            foreach($resources as $r) { // print_r($r);
 
                 //name here is CKAN resource name 
                 // if($r['name'] != 'EOL stats for species-level pages') continue;
@@ -159,7 +160,6 @@ class ZenodoAPI
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
 
-                // print_r($r);
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
 
@@ -235,6 +235,7 @@ class ZenodoAPI
             self::log_error(array("Title not found", "needle:[$title]", "haystack:[$retrieved_title]"));
             return;
         }
+
         // return; //debug eonly
 
         if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
@@ -544,10 +545,14 @@ class ZenodoAPI
             $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
             if(!$obj) break;
             echo "\n".count($obj)."\n";
-            foreach($obj as $o) $final[trim($o['title'])] = '';
+            foreach($obj as $o)  {
+                $final[trim($o['title'])] = '';
+                @$stats[$o['title']]++;
+            }
         }
-        print_r($final);
+        print_r($stats); exit("\n-end stats-\n");
 
+        print_r($final);
         $titles = array_keys($this->debug['titles']);
         foreach($titles as $title) {
             $title = trim($title);
