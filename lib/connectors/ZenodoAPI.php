@@ -89,7 +89,7 @@ class ZenodoAPI
         $sum = 0; foreach($this->debug['license_id'] as $n) $sum += $n; echo "\nlicense_id: [$sum]\n";
         echo "\ntotal resources: [".$this->debug['total resources']."]\n";
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
-        self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
+        // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
     }
     private function process_organization($organization_id)
     {
@@ -255,7 +255,7 @@ class ZenodoAPI
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
 
-                // exit("\ncha2\n");
+                exit("\ncha2\n");
 
                 if(file_exists($actual_file)) {
                 // if(true) {
