@@ -512,7 +512,7 @@ class ZenodoAPI
         // */
 
         // $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
-        $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=5&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
+        $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
         $obj = json_decode(trim($json), true);  //echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n";
 
