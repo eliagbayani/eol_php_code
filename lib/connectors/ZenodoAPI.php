@@ -171,12 +171,10 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
 
-                // if(!in_array($title, array("EOL v3 data model Ontologies: media_extension.xml"))) continue;
                 // if(!in_array($title, array("DH2.1 working docs: DH1.1 working version"))) continue;
                 // if(!in_array($title, array("Test data sets: Amoebozoa Test"))) continue;
                 // if(!in_array($title, array("Test data sets: COLTest"))) continue;
-                // if(!in_array($title, array("EOL v3 data model Ontologies: media_extension.xml"))) continue;                
-                if(!in_array($title, array("EOL v3 data model Ontologies: reference_extension.xml"))) continue;
+                if(!in_array($title, array("EOL v3 data model Ontologies: media_extension.xml"))) continue;                
 
 
                 print_r($input); //exit;
