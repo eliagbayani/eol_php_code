@@ -176,7 +176,7 @@ class ZenodoAPI
                 // if(!in_array($title, array("Test data sets: Amoebozoa Test"))) continue;
                 // if(!in_array($title, array("Test data sets: COLTest"))) continue;
                 // if(!in_array($title, array("EOL v3 data model Ontologies: media_extension.xml"))) continue;                
-                if(!in_array($title, array("EOL v3 data model Ontologies: agent_extension.xml"))) continue;
+                if(!in_array($title, array("EOL v3 data model Ontologies: reference_extension.xml"))) continue;
 
 
                 print_r($input); //exit;
