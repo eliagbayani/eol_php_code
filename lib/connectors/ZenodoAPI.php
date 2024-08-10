@@ -167,10 +167,9 @@ class ZenodoAPI
                 // if(!in_array($title, array("EOL Hierarchy Entries April 2017: EOL Hierarchy Entries April 2017"))) continue;
 
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
-                if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
+                // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
-
                 // if(!in_array($title, array("DH2.1 working docs: DH1.1 working version"))) continue;
                 // if(!in_array($title, array("Test data sets: Amoebozoa Test"))) continue;
                 // if(!in_array($title, array("Test data sets: COLTest"))) continue;
@@ -187,9 +186,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                // /*
+                /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                // */
+                */
 
                 // exit("\n--a resource object--\n");
             }
@@ -221,7 +220,9 @@ class ZenodoAPI
         sleep(5); echo "\nPause 5 seconds...\n"; echo "\n[$title]\n";
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
         if(!$obj) {
-            self::log_error(array("elix muna", $title));
+            // self::log_error(array("elix muna", $title));
+            self::log_error(array("Title not found", "needle:[$title]"));
+            echo "\nTitle not found. needle:[$title]\n";
             return;
         }
         if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
@@ -530,9 +531,7 @@ class ZenodoAPI
                 }
             }
             // */
-
         } //end while()
-
     }
     function list_depositions()
     {
