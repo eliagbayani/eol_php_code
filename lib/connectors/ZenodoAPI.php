@@ -550,7 +550,7 @@ class ZenodoAPI
                 @$stats[$o['title']]++;
             }
         }
-        print_r($stats); exit("\n-end stats-\n");
+        asort($stats); print_r($stats); exit("\n-end stats-\n");
 
         print_r($final);
         $titles = array_keys($this->debug['titles']);
