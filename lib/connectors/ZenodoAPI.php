@@ -180,8 +180,6 @@ class ZenodoAPI
                 // if(!in_array($title, array("DH2.1 working docs: DH2.1 working version November 2021"))) continue;
                 
 
-
-
                 print_r($input); //exit;
                 $this->input = $input;
 
@@ -511,22 +509,30 @@ class ZenodoAPI
         $q = json_encode($arr);        
         // */
 
-        // $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
-        $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
-        $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  //echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n";
+        $page_num = 0;
+        while(true) { $page_num++;
+            // $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
+            $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page='.$page_num.'&q="'.urlencode($q).' -H "Content-Type: application/json"';
+            $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
+            $obj = json_decode(trim($json), true);  //echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n";
 
-        // /* loop the results and get the exact match
-        echo "\nneedle: [$title]\n";
-        foreach($obj as $o) {
-            $result_title = $o['metadata']['title'];
-            echo "\ntesting title results: [$result_title]...\n";
-            if($title == $result_title) {
-                echo "\nFound match: [$result_title]\n"; return $o;
+            if(!$obj) return;
+            if(count($obj) == 0) return;
+
+            // /* loop the results and get the exact match
+            echo "\nneedle: [$title]\n";
+            $i = 0;
+            foreach($obj as $o) { $i++;
+                $result_title = $o['metadata']['title'];
+                echo "\n- [$page_num] $i. testing title results: [$result_title]...";
+                if($title == $result_title) {
+                    echo "\nFound match: [$result_title]\n"; return $o;
+                }
             }
-        }
-        // */
-        // return @$obj[0];
+            // */
+
+        } //end while()
+
     }
     function list_depositions()
     {
