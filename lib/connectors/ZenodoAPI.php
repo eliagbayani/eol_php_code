@@ -69,19 +69,18 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
                 
-                /*
+                // /*
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //uploaded actual files already
-                */
+                // */
 
-                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
-
+                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
+                if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
-                echo "\norganization ID: " . $organization_id;
+                echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
             }
         }
@@ -161,6 +160,8 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
+                if($r['name'] != 'EOL Hierarchy Entries April 2017') continue;
+
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
@@ -188,9 +189,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                // /*
+                /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                // */
+                */
 
                 // exit("\n--a resource object--\n");
             }
@@ -321,7 +322,14 @@ class ZenodoAPI
                 $obj = self::retrieve_dataset($id); //works OK
                 if(self::if_error($obj, 'retrieve', $id)) {}
                 else {
-                    $upload_obj = self::upload_Zenodo_dataset($obj); //worked OK
+
+                    // /*
+                    if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {}
+                    else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
+                    if($actual_file = self::is_ckan_uploaded_file($url))    $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
+                    else                                                    $upload_obj = self::upload_Zenodo_dataset($obj);                //uploads .dat file
+                    // */
+
                     if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
                     else {
                         $obj = self::retrieve_dataset($id); //works OK
@@ -341,6 +349,24 @@ class ZenodoAPI
                 }    
             }
         }        
+    }
+    private function is_ckan_uploaded_file($url)
+    {
+        $info = pathinfo($url); print_r($info);
+        /*Array(
+            [dirname] => https://editors.eol.org/uploaded_resources/bf6/3dc
+            [basename] => vernacularnames.csv
+            [extension] => csv
+            [filename] => vernacularnames
+        )*/
+        $needle = "https://editors.eol.org/uploaded_resources";
+        if(stripos($url, $needle) !== false) { //string is found --- means this file is originally a ckan uploaded file.    
+            $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
+            $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
+            echo "\nsource: [$actual_file]\n";
+            return $actual_file;
+        }
+        return false;
     }
     private function generate_input_field($p, $r, $resources) //todo loop into resources and have $input for each resource...
     {
@@ -466,8 +492,8 @@ class ZenodoAPI
         $cmd = 'curl -s -H "Content-Type: application/json" -X POST --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN;
         // $cmd .= " 2>&1";
         echo "\ncreate cmd: [$cmd]\n";
-        $json = shell_exec($cmd);               echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+        $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====c=====\n"; print_r($obj); echo "\n=====c=====\n";
         return $obj;
         // copied template:
         // $cmd = 'curl -s "'.$url.'" -H "X-Authentication-Token:'.$this->service['token'].'"';
@@ -582,7 +608,7 @@ class ZenodoAPI
         $cmd .= " 2>&1";
         echo "\nretrieve cmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====r=====\n"; print_r($obj); echo "\n=====r=====\n";
         return $obj;
     }
     private function upload_Zenodo_dataset($obj, $actual_file = false)
