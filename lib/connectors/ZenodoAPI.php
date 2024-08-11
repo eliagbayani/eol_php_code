@@ -160,7 +160,10 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
-                if($r['name'] != 'Hierarchy Entries April 2017') continue;
+
+                // if($r['name'] != 'Hierarchy Entries April 2017') continue; //done -- migrated completely*
+                if($r['name'] != '2019, August 22') continue; //early exports: 2019, August 22
+
 
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
