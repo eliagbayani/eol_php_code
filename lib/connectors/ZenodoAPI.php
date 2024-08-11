@@ -172,6 +172,7 @@ class ZenodoAPI
                 if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
                 if(in_array($title, array("EOL Hierarchy Entries April 2017: Hierarchy Entries April 2017"))) continue; //done -- migrated completely* Legacy datasets
 
+                // ============ dev only
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
@@ -188,9 +189,9 @@ class ZenodoAPI
                 print_r($input); //exit;
                 $this->input = $input;
 
-                // /*
+                /*
                 self::start_Zenodo_process($input); //main operation
-                // */
+                */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
