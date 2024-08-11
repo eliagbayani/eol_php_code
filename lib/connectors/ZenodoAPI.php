@@ -332,6 +332,7 @@ class ZenodoAPI
                     else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
                     if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
                     elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
+                    elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
                     else                                                        $upload_obj = self::upload_Zenodo_dataset($obj);                //uploads .dat file
                     // */
 
@@ -385,6 +386,27 @@ class ZenodoAPI
         if(stripos($url, $needle) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) [/other_files/].    
             $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. /SDR/traits-20191111
             $actual_file = "/extra/other_files".$subfolders."/".$info['basename'];  // e.g. /extra/other_files/SDR/traits-20191111/traits_all_201911.zip
+            echo "\nsource: [$actual_file]\n";
+            return $actual_file;
+        }
+        return false;
+    }
+    private function is_editors_eol_resources($url) /* symlink: resources -> /extra/eol_php_resources/ */
+    {   // https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits/bat-body-masses.txt.gz
+        // https://editors.eol.org/eol_php_code/applications/content_server/resources/173.tar.gz
+        $info = pathinfo($url); print_r($info);
+        /*Array(
+            [dirname] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits
+                         https://editors.eol.org/eol_php_code/applications/content_server/resources
+            [basename] => bat-body-masses.txt.gz OR 173.tar.gz
+            [extension] => ???
+            [filename] => bat-body-masses
+        )*/
+        $needle = "https://editors.eol.org/eol_php_code/applications/content_server/resources";
+        if(stripos($url, $needle) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) as EOL resources. Produced by a general connector.    
+            $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. "/eol_traits" OR ""
+            $actual_file = "/extra/eol_php_resources".$subfolders."/".$info['basename'];  // e.g. /extra/eol_php_resources/eol_traits/bat-body-masses.txt.gz
+                                                                                          //      /extra/eol_php_resources/173.tar.gz
             echo "\nsource: [$actual_file]\n";
             return $actual_file;
         }
