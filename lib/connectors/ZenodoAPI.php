@@ -161,16 +161,16 @@ class ZenodoAPI
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
 
-                // if($r['name'] != 'Hierarchy Entries April 2017') continue; //done -- migrated completely*
-                if($r['name'] != '2019, August 22') continue; //early exports: 2019, August 22
-
+                if($r['name'] == 'Hierarchy Entries April 2017') continue;                      //done -- migrated completely*
+                if($r['name'] == '2019, August 22') continue; //early exports: 2019, August 22  //done -- migrated completely*
 
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
-                // if(!in_array($title, array("EOL Hierarchy Entries April 2017: EOL Hierarchy Entries April 2017"))) continue;
+                if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
+                if(in_array($title, array("EOL Hierarchy Entries April 2017: Hierarchy Entries April 2017"))) continue; //done -- migrated completely* Legacy datasets
 
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
