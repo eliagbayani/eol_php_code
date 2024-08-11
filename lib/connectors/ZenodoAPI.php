@@ -160,7 +160,7 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
-                if($r['name'] != 'Hierarchy Entries April 2017') continue;
+                // if($r['name'] != 'Hierarchy Entries April 2017') continue;
 
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
@@ -326,8 +326,9 @@ class ZenodoAPI
                     // /*
                     if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {}
                     else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
-                    if($actual_file = self::is_ckan_uploaded_file($url))    $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
-                    else                                                    $upload_obj = self::upload_Zenodo_dataset($obj);                //uploads .dat file
+                    if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
+                    elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
+                    else                                                        $upload_obj = self::upload_Zenodo_dataset($obj);                //uploads .dat file
                     // */
 
                     if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
@@ -350,9 +351,8 @@ class ZenodoAPI
             }
         }        
     }
-    private function is_ckan_uploaded_file($url)
-    {
-        $info = pathinfo($url); print_r($info);
+    private function is_ckan_uploaded_file($url) /* symlink: uploaded_resources -> /extra/ckan_resources/ */
+    {   $info = pathinfo($url); print_r($info);
         /*Array(
             [dirname] => https://editors.eol.org/uploaded_resources/bf6/3dc
             [basename] => vernacularnames.csv
@@ -363,6 +363,24 @@ class ZenodoAPI
         if(stripos($url, $needle) !== false) { //string is found --- means this file is originally a ckan uploaded file.    
             $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
             $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
+            echo "\nsource: [$actual_file]\n";
+            return $actual_file;
+        }
+        return false;
+    }
+    private function is_editors_other_files($url) /* symlink: other_files -> /extra/other_files/ */
+    {   // [https://editors.eol.org/other_files/SDR/traits-20191111/traits_all_201911.zip] => 
+        $info = pathinfo($url); print_r($info);
+        /*Array(
+            [dirname] => https://editors.eol.org/other_files/SDR/traits-20191111
+            [basename] => traits_all_201911.zip
+            [extension] => zip
+            [filename] => traits_all_201911
+        )*/
+        $needle = "https://editors.eol.org/other_files";
+        if(stripos($url, $needle) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) [/other_files/].    
+            $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. /SDR/traits-20191111
+            $actual_file = "/extra/other_files".$subfolders."/".$info['basename'];  // e.g. /extra/other_files/SDR/traits-20191111/traits_all_201911.zip
             echo "\nsource: [$actual_file]\n";
             return $actual_file;
         }
