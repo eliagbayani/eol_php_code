@@ -160,7 +160,7 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
-                // if($r['name'] != 'Hierarchy Entries April 2017') continue;
+                if($r['name'] != 'Hierarchy Entries April 2017') continue;
 
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
@@ -185,9 +185,9 @@ class ZenodoAPI
                 print_r($input); //exit;
                 $this->input = $input;
 
-                /*
+                // /*
                 self::start_Zenodo_process($input); //main operation
-                */
+                // */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
