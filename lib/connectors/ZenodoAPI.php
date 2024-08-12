@@ -259,7 +259,6 @@ class ZenodoAPI
             elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             else return;
-            // else                                                        $upload_obj = self::upload_Zenodo_dataset($new_obj);                //uploads .dat file
             */
 
             /* for DH and aggregate datasets
@@ -271,7 +270,6 @@ class ZenodoAPI
             else return;
             */
     
-
             /* for legacy datasets            
             // if($actual_file = self::is_editors_eol_resources($url)) $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             // else return;
