@@ -3,6 +3,9 @@ namespace php_active_record;
 /* 1st client: zenodo.php
 docs:   https://developers.zenodo.org/?shell#representation
         https://help.zenodo.org/docs/deposit/manage-files/
+
+Use this when searching a title in Zenodo. Paste this in the search textbox:
+title:("EOL Dynamic Hierarchy: DH223test.zip")
 */
 class ZenodoAPI
 {
@@ -13,6 +16,7 @@ class ZenodoAPI
             'expire_seconds'     => 60*60*24*1, //maybe 1 day to expire
             'download_wait_time' => 1000000, 'timeout' => 60*3, 'download_attempts' => 1, 'delay_in_minutes' => 0.5);
         // $this->download_options['expire_seconds'] = 0;
+        $this->download_options['expire_seconds'] = 60*60*24*30; //for eol content partners
 
         $this->api['domain'] = 'https://zenodo.org';
         if(Functions::is_production()) $this->path_2_file_dat = '/extra/other_files/Zenodo/';
@@ -69,16 +73,19 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
                 
-                // /*
+                // /* main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 // */
 
-                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
+                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //dev only
+
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
+                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+
 
                 echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
@@ -198,7 +205,24 @@ class ZenodoAPI
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
                 */
 
+                // /*
+                self::just_stats($input);
+                // */
+
                 // exit("\n--a resource object--\n");
+            }
+        }
+    }
+    private function just_stats($input)
+    {
+        if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
+            echo "\n[$url]\n";
+            print_r(pathinfo($url));
+            if(stripos($url, "https://editors.eol.org/") !== false) { //string is found
+                $arr = explode("/", $url);
+                // print_r($arr);
+                if(stripos($url, "https://editors.eol.org/eol_php_code/applications/content_server/resources/") !== false) $this->debug['editors path']['eol resources'] = '';  //string is found
+                else             $this->debug['editors path'][$arr[3]] = '';
             }
         }
     }
@@ -253,6 +277,8 @@ class ZenodoAPI
 
         if($new_obj = self::request_newversion($obj)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
         // if(true) { //debug only dev only
+
+            // PICK 1 OF THE 3 ---    
 
             /* original
             if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file

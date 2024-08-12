@@ -20,6 +20,8 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 $func = new ZenodoAPI();
 $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
+// $title = "EOL Dynamic Hierarchy: DH223test.zip"; $func->get_deposition_by_title($title);
+
 // $func->retrieve_dataset(13271534);
 
 // $func->update_Zenodo_record(13273185);
