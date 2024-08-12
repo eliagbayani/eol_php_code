@@ -183,8 +183,40 @@ class ZenodoAPI
                 // if(!in_array($title, array("EOL v3 data model Ontologies: measurement_extension.xml"))) continue;                    
                 // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
                 // if(!in_array($title, array("DH2.1 working docs: COL2020-08-01"))) continue;
-                // if(!in_array($title, array("IOC World Bird List (IOC) - active: IOC World Bird List"))) continue;
-                if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;
+
+
+                $arr = array("EOL Dynamic Hierarchy: Dynamic Hierarchy Version 1.1",  
+                "EOL Dynamic Hierarchy: EOL Dynamic Hierarchy Index",  
+                "Amphibian Species of the World (ASW) - obsolete: Frost, Darrel R. 2018. Amphibian Species of the World", 
+                "IOC World Bird List (IOC) - active: IOC World Bird List with higherClassification",
+                "Catalogue of Life: Catalogue of Life 2018-03-28",  
+                "Catalogue of Life: Catalog of Life Protists", 
+                "Catalogue of Life: Catalog of Life Extract for DH (TRAM-797)", 
+                "Catalogue of Life: Catalog of Life Protists (20 Feb 2019 dump)", 
+                "Catalogue of Life: Catalog of Life for DH (20 Feb 2019 dump)", 
+                "Catalogue of Life: Catalogue of Life extract for DH2", 
+                "Catalogue of Life Collembola: CoL 2020-08-01 Collembola", 
+                "NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest.tar.gz", 
+                "NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest_no_vernaculars.tar.gz", 
+                "NCBI Taxonomy for DH (TRAM-796): NCBI Taxonomy for DH (TRAM-796)",  
+                "ICTV Virus Taxonomy (ICTV) - active: ICTV-virus_taxonomy-with-higherClassification.tar.gz",
+                "User Generated Content (EOL v2): user-preferred comnames",
+                "User Generated Content (EOL v2): user-added comnames", 
+                "User Generated Content (EOL v2): user added text", 
+                "User Generated Content (EOL v2): curation of media objects", 
+                "User Generated Content (EOL v2): user comments", 
+                "User Generated Content (EOL v2): user image cropping", 
+                "User Generated Content (EOL v2): user image ratings",
+                "User Generated Content (EOL v2): user exemplar images",
+                "User Generated Content (EOL v2): user activity collections", 
+                "User Generated Content (EOL v2): user activity collections (json format)", 
+                "User Generated Content (EOL v2): taxonomic propagation - exemplar images", 
+                "User Generated Content (EOL v2): taxonomic propagation - image ratings", 
+                "WikiData: wikidata_hierarchy.tar.gz", 
+                "All trait data: All trait data", 
+                "Representative records: representative records", 
+                "EOL Stats for species level pages: EOL stats for species-level pages");
+                if(!in_array($title, $arr)) continue;
                 
 
                 print_r($input); //exit;
@@ -269,42 +301,6 @@ class ZenodoAPI
             elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             else return;
             // */
-            // [to process] => Array
-            // (
-            //     [EOL Dynamic Hierarchy: Dynamic Hierarchy Version 1.1] => https://editors.eol.org/other_files/DWH/TRAM-809/DH_v1_1.tar.gz
-            //     [EOL Dynamic Hierarchy: EOL Dynamic Hierarchy Index] => https://editors.eol.org/other_files/DWH/eolDH21index.zip
-            //     [EOL Dynamic Hierarchy: DH223test.zip] => https://editors.eol.org/other_files/DWH/DH223test2.zip
-            //     [Amphibian Species of the World (ASW) - obsolete: Frost, Darrel R. 2018. Amphibian Species of the World] => https://editors.eol.org/eol_php_code/applications/content_server/resources/aotw.tar.gz
-            //     [IOC World Bird List (IOC) - active: IOC World Bird List] => https://editors.eol.org/eol_php_code/applications/content_server/resources/ioc-birdlist.tar.gz
-            //     [IOC World Bird List (IOC) - active: IOC World Bird List with higherClassification] => https://editors.eol.org/eol_php_code/applications/content_server/resources/ioc-birdlist-with-higherClassification.tar.gz
-            //     [Catalogue of Life: Catalogue of Life 2018-03-28] => https://editors.eol.org/eol_php_code/applications/content_server/resources/col_meta_recoded.tar.gz
-            //     [Catalogue of Life: Catalog of Life Protists] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_Protists_DH.tar.gz
-            //     [Catalogue of Life: Catalog of Life Extract for DH (TRAM-797)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_DH.tar.gz
-            //     [Catalogue of Life: Catalog of Life Protists (20 Feb 2019 dump)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_Protists_DH_20Feb2019.tar.gz
-            //     [Catalogue of Life: Catalog of Life for DH (20 Feb 2019 dump)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_DH_20Feb2019.tar.gz
-            //     [Catalogue of Life: Catalogue of Life extract for DH2] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_DH_2019.tar.gz
-            //     [Catalogue of Life Collembola: CoL 2020-08-01 Collembola] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Collembola_DH.tar.gz
-            //     [NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest.tar.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/NCBI_Taxonomy_Harvest.tar.gz
-            //     [NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest_no_vernaculars.tar.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/NCBI_Taxonomy_Harvest_no_vernaculars.tar.gz
-            //     [NCBI Taxonomy for DH (TRAM-796): NCBI Taxonomy for DH (TRAM-796)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/NCBI_Taxonomy_Harvest_DH.tar.gz
-            //     [ICTV Virus Taxonomy (ICTV) - active: ICTV-virus_taxonomy-with-higherClassification.tar.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/ICTV-virus_taxonomy-with-higherClassification.tar.gz
-            //     [User Generated Content (EOL v2): user-preferred comnames] => https://editors.eol.org/other_files/EOL_v2_files/user_preferred_comnames.txt.zip
-            //     [User Generated Content (EOL v2): user-added comnames] => https://editors.eol.org/other_files/EOL_v2_files/user_added_comnames.txt.zip
-            //     [User Generated Content (EOL v2): user added text] => https://editors.eol.org/other_files/EOL_v2_files/user_added_text.tar.gz
-            //     [User Generated Content (EOL v2): curation of media objects] => https://editors.eol.org/other_files/EOL_v2_files/user_object_curation.txt.zip
-            //     [User Generated Content (EOL v2): user comments] => https://editors.eol.org/other_files/EOL_v2_files/user_comments.zip
-            //     [User Generated Content (EOL v2): user image cropping] => https://editors.eol.org/other_files/EOL_v2_files/image_crops_withEOL_pk.txt.zip
-            //     [User Generated Content (EOL v2): user image ratings] => https://editors.eol.org/other_files/EOL_v2_files/image_ratings.txt.zip
-            //     [User Generated Content (EOL v2): user exemplar images] => https://editors.eol.org/other_files/EOL_v2_files/images_selected_as_exemplar.txt.zip
-            //     [User Generated Content (EOL v2): user activity collections] => https://editors.eol.org/eol_php_code/applications/content_server/resources/user_activity_collections.txt.gz
-            //     [User Generated Content (EOL v2): user activity collections (json format)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/user_activity_collections.json.gz
-            //     [User Generated Content (EOL v2): taxonomic propagation - exemplar images] => https://editors.eol.org/other_files/EOL_v2_files/exemplar_images_propagation.txt.zip
-            //     [User Generated Content (EOL v2): taxonomic propagation - image ratings] => https://editors.eol.org/other_files/EOL_v2_files/image_ratings_propagation.txt.zip
-            //     [WikiData: wikidata_hierarchy.tar.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/wikidata_hierarchy.tar.gz
-            //     [All trait data: All trait data] => https://editors.eol.org/other_files/SDR/traits_all.zip
-            //     [Representative records: representative records] => https://editors.eol.org/eol_php_code/applications/content_server/resources/SDR_consolidated.tar.gz
-            //     [EOL Stats for species level pages: EOL stats for species-level pages] => https://editors.eol.org/eol_php_code/applications/content_server/resources/species_richness_score.txt.gz
-            // )
     
 
             /* for legacy datasets            
