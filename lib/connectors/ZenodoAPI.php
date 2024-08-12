@@ -78,11 +78,11 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 */
 
-                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //dev only
+                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
 
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-                if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
+                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
                 // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
@@ -211,9 +211,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                // /*
+                /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                // */
+                */
 
                 /*
                 self::just_stats($input);
@@ -297,7 +297,10 @@ class ZenodoAPI
             if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
-            else return;
+            else {
+                if(isset($new_obj)) self::request_discard($new_obj);
+                return;
+            }
             // */
 
             /* for DH and aggregate datasets
@@ -306,14 +309,20 @@ class ZenodoAPI
             // else return;
             if($actual_file = self::is_editors_other_files($url))       $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
-            else return;
+            else {
+                if(isset($new_obj)) self::request_discard($new_obj);
+                return;
+            }
             */
     
             /* for legacy datasets            
             // if($actual_file = self::is_editors_eol_resources($url)) $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             // else return;
             if($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
-            else return;
+            else {
+                if(isset($new_obj)) self::request_discard($new_obj);
+                return;
+            }
             */
     
             // return; //dev only debug only
@@ -764,17 +773,26 @@ class ZenodoAPI
         }
     }
     private function request_newversion($obj)
-    {
-        echo "\nRequesting newversion ".$obj['id']."...\n";
+    {   echo "\nRequesting newversion ".$obj['id']."...\n";
         if($newversion = @$obj['links']['newversion']) { //e.g. https://zenodo.org/api/deposit/depositions/13268261/actions/newversion
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/newversion?access_token=ACCESS_TOKEN
-            $cmd = 'curl -s -X POST '.$newversion.'?access_token='.ZENODO_TOKEN;
-            echo "\ncmd: [$cmd]\n";
-            $json = shell_exec($cmd);               echo "\n----x-----\n$json\n-----x----\n";
+            $cmd = 'curl -s -X POST '.$newversion.'?access_token='.ZENODO_TOKEN; // echo "\ncmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
             $obj = json_decode(trim($json), true);  echo "\n=======x=======\n"; print_r($obj); echo "\n=======x=======\n"; //exit("\nstop: newversion\n");
             return $obj;    
         }
         else exit("\nERROR: Cannot get newversion URL! [".$obj['id']."]\n");
+    }
+    private function request_discard($obj)
+    {   echo "\nRequesting discard ".$obj['id']."...\n";
+        if($discard = @$obj['links']['discard']) { //e.g. https://zenodo.org/api/deposit/depositions/13306865/actions/discard
+            // curl -i -X POST https://zenodo.org/api/deposit/depositions/13306865/actions/discard?access_token=ACCESS_TOKEN
+            $cmd = 'curl -s -X POST '.$discard.'?access_token='.ZENODO_TOKEN; // echo "\ncmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
+            $obj = json_decode(trim($json), true);  echo "\n=======x=======\n"; print_r($obj); echo "\n=======x=======\n"; //exit("\nstop: newversion\n");
+            return $obj;    
+        }
+        else exit("\nERROR: Cannot discard draft! [".$obj['id']."]\n");
     }
     function update_Zenodo_record($id, $input) //maybe should use PATCH instead of PUT
     {   /*
