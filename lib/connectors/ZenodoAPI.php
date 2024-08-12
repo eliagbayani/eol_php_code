@@ -183,9 +183,8 @@ class ZenodoAPI
                 // if(!in_array($title, array("EOL v3 data model Ontologies: measurement_extension.xml"))) continue;                    
                 // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
                 // if(!in_array($title, array("DH2.1 working docs: COL2020-08-01"))) continue;
-                if(!in_array($title, array("IOC World Bird List (IOC) - active: IOC World Bird List"))) continue;
-                // EOL Dynamic Hierarchy: DH223test.zip
-
+                // if(!in_array($title, array("IOC World Bird List (IOC) - active: IOC World Bird List"))) continue;
+                if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;
                 
 
                 print_r($input); //exit;
