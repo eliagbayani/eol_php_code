@@ -69,15 +69,15 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
                 
-                // /*
+                /*
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //uploaded actual files already
-                // */
+                */
 
-                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
+                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-                if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
+                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
                 echo "\norganization ID: [$organization_id]\n";
@@ -183,7 +183,9 @@ class ZenodoAPI
                 // if(!in_array($title, array("EOL v3 data model Ontologies: measurement_extension.xml"))) continue;                    
                 // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
                 // if(!in_array($title, array("DH2.1 working docs: COL2020-08-01"))) continue;
-                // if(!in_array($title, array("DH2.1 working docs: DH2.1 working version November 2021"))) continue;
+                if(!in_array($title, array("IOC World Bird List (IOC) - active: IOC World Bird List"))) continue;
+                // EOL Dynamic Hierarchy: DH223test.zip
+
                 
 
                 print_r($input); //exit;
@@ -193,9 +195,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                /*
+                // /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                */
+                // */
 
                 // exit("\n--a resource object--\n");
             }
@@ -243,17 +245,15 @@ class ZenodoAPI
             return;
         }
 
-        return; //debug eonly
+        // return; //debug eonly
 
         // start here... include the 3 if-then-else for the diff url types
         // /*
         if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {}
         else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
 
-        if($new_obj = self::request_newversion($obj)) {
-            $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below.
-            // exit("\nexit muna after new version request\n");
-
+        // if($new_obj = self::request_newversion($obj)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
+        if(true) { //debug only dev only
             /* original
             if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
@@ -263,15 +263,60 @@ class ZenodoAPI
             */
 
             // /* for DH and aggregate datasets
-            if($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
-            elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            if($actual_file = self::is_editors_other_files($url))       $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            elseif($actual_file = self::is_editors_eol_resources($url)) $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             else return;
             // */
+            // [to process] => Array
+            // (
+            //     [EOL Dynamic Hierarchy: Dynamic Hierarchy Version 1.1] => https://editors.eol.org/other_files/DWH/TRAM-809/DH_v1_1.tar.gz
+            //     [EOL Dynamic Hierarchy: EOL Dynamic Hierarchy Index] => https://editors.eol.org/other_files/DWH/eolDH21index.zip
+            //     [EOL Dynamic Hierarchy: DH223test.zip] => https://editors.eol.org/other_files/DWH/DH223test2.zip
+            //     [Amphibian Species of the World (ASW) - obsolete: Frost, Darrel R. 2018. Amphibian Species of the World] => https://editors.eol.org/eol_php_code/applications/content_server/resources/aotw.tar.gz
+            //     [IOC World Bird List (IOC) - active: IOC World Bird List] => https://editors.eol.org/eol_php_code/applications/content_server/resources/ioc-birdlist.tar.gz
+            //     [IOC World Bird List (IOC) - active: IOC World Bird List with higherClassification] => https://editors.eol.org/eol_php_code/applications/content_server/resources/ioc-birdlist-with-higherClassification.tar.gz
+            //     [Catalogue of Life: Catalogue of Life 2018-03-28] => https://editors.eol.org/eol_php_code/applications/content_server/resources/col_meta_recoded.tar.gz
+            //     [Catalogue of Life: Catalog of Life Protists] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_Protists_DH.tar.gz
+            //     [Catalogue of Life: Catalog of Life Extract for DH (TRAM-797)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_DH.tar.gz
+            //     [Catalogue of Life: Catalog of Life Protists (20 Feb 2019 dump)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_Protists_DH_20Feb2019.tar.gz
+            //     [Catalogue of Life: Catalog of Life for DH (20 Feb 2019 dump)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_DH_20Feb2019.tar.gz
+            //     [Catalogue of Life: Catalogue of Life extract for DH2] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Catalogue_of_Life_DH_2019.tar.gz
+            //     [Catalogue of Life Collembola: CoL 2020-08-01 Collembola] => https://editors.eol.org/eol_php_code/applications/content_server/resources/Collembola_DH.tar.gz
+            //     [NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest.tar.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/NCBI_Taxonomy_Harvest.tar.gz
+            //     [NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest_no_vernaculars.tar.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/NCBI_Taxonomy_Harvest_no_vernaculars.tar.gz
+            //     [NCBI Taxonomy for DH (TRAM-796): NCBI Taxonomy for DH (TRAM-796)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/NCBI_Taxonomy_Harvest_DH.tar.gz
+            //     [ICTV Virus Taxonomy (ICTV) - active: ICTV-virus_taxonomy-with-higherClassification.tar.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/ICTV-virus_taxonomy-with-higherClassification.tar.gz
+            //     [User Generated Content (EOL v2): user-preferred comnames] => https://editors.eol.org/other_files/EOL_v2_files/user_preferred_comnames.txt.zip
+            //     [User Generated Content (EOL v2): user-added comnames] => https://editors.eol.org/other_files/EOL_v2_files/user_added_comnames.txt.zip
+            //     [User Generated Content (EOL v2): user added text] => https://editors.eol.org/other_files/EOL_v2_files/user_added_text.tar.gz
+            //     [User Generated Content (EOL v2): curation of media objects] => https://editors.eol.org/other_files/EOL_v2_files/user_object_curation.txt.zip
+            //     [User Generated Content (EOL v2): user comments] => https://editors.eol.org/other_files/EOL_v2_files/user_comments.zip
+            //     [User Generated Content (EOL v2): user image cropping] => https://editors.eol.org/other_files/EOL_v2_files/image_crops_withEOL_pk.txt.zip
+            //     [User Generated Content (EOL v2): user image ratings] => https://editors.eol.org/other_files/EOL_v2_files/image_ratings.txt.zip
+            //     [User Generated Content (EOL v2): user exemplar images] => https://editors.eol.org/other_files/EOL_v2_files/images_selected_as_exemplar.txt.zip
+            //     [User Generated Content (EOL v2): user activity collections] => https://editors.eol.org/eol_php_code/applications/content_server/resources/user_activity_collections.txt.gz
+            //     [User Generated Content (EOL v2): user activity collections (json format)] => https://editors.eol.org/eol_php_code/applications/content_server/resources/user_activity_collections.json.gz
+            //     [User Generated Content (EOL v2): taxonomic propagation - exemplar images] => https://editors.eol.org/other_files/EOL_v2_files/exemplar_images_propagation.txt.zip
+            //     [User Generated Content (EOL v2): taxonomic propagation - image ratings] => https://editors.eol.org/other_files/EOL_v2_files/image_ratings_propagation.txt.zip
+            //     [WikiData: wikidata_hierarchy.tar.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/wikidata_hierarchy.tar.gz
+            //     [All trait data: All trait data] => https://editors.eol.org/other_files/SDR/traits_all.zip
+            //     [Representative records: representative records] => https://editors.eol.org/eol_php_code/applications/content_server/resources/SDR_consolidated.tar.gz
+            //     [EOL Stats for species level pages: EOL stats for species-level pages] => https://editors.eol.org/eol_php_code/applications/content_server/resources/species_richness_score.txt.gz
+            // )
+    
 
-            /* for legacy datasets
-            if($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            /* for legacy datasets            
+            if($actual_file = self::is_editors_eol_resources($url)) $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             else return;
             */
+            // [to process] => Array
+            // (
+            //     [growth habit: growth-habit.txt.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits/growth-habit.txt.gz
+            //     [eMammal: eMammal.zip] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eMammal.zip
+            //     [Old world fruit bat body mass: bat-body-masses.txt.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits/bat-body-masses.txt.gz
+            // )
+    
+            return; //dev only
 
             if(self::if_error($upload_obj, 'upload', $new_obj['id'])) {}
             else {
@@ -394,11 +439,11 @@ class ZenodoAPI
         if(stripos($url, $needle) !== false) { //string is found --- means this file is originally a ckan uploaded file.    
             $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
             $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
-            if(file_exists($actual_file)) {
+            // if(file_exists($actual_file)) {
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
-            }
-            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "uploaded_resources"));
+            // }
+            // else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "uploaded_resources"));
         }
         return false;
     }
@@ -415,11 +460,11 @@ class ZenodoAPI
         if(stripos($url, $needle) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) [/other_files/].    
             $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. /SDR/traits-20191111
             $actual_file = "/extra/other_files".$subfolders."/".$info['basename'];  // e.g. /extra/other_files/SDR/traits-20191111/traits_all_201911.zip
-            if(file_exists($actual_file)) {
+            // if(file_exists($actual_file)) {
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
-            }
-            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "other_files"));
+            // }
+            // else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "other_files"));
         }
         return false;
     }
@@ -439,11 +484,11 @@ class ZenodoAPI
             $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. "/eol_traits" OR ""
             $actual_file = "/extra/eol_php_resources".$subfolders."/".$info['basename'];  // e.g. /extra/eol_php_resources/eol_traits/bat-body-masses.txt.gz
                                                                                           //      /extra/eol_php_resources/173.tar.gz
-            if(file_exists($actual_file)) {
+            // if(file_exists($actual_file)) {
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
-            }
-            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "EOL resources"));
+            // }
+            // else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "EOL resources"));
         }
         return false;
     }
