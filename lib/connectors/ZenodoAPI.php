@@ -69,15 +69,15 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
                 
-                /*
-                if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //migrated public datasets already //main operation
-                if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //uploaded actual files already
-                */
+                // /*
+                if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //migrated public datasets already //main operation
+                if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
+                // */
 
                 // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-                if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
+                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
 
                 echo "\norganization ID: [$organization_id]\n";
@@ -184,50 +184,9 @@ class ZenodoAPI
                 // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
                 // if(!in_array($title, array("DH2.1 working docs: COL2020-08-01"))) continue;
 
-
-                // $arr = array("EOL Dynamic Hierarchy: Dynamic Hierarchy Version 1.1",  
-                // "EOL Dynamic Hierarchy: EOL Dynamic Hierarchy Index",  
-                // "Amphibian Species of the World (ASW) - obsolete: Frost, Darrel R. 2018. Amphibian Species of the World", 
-                // "IOC World Bird List (IOC) - active: IOC World Bird List with higherClassification",
-                // "Catalogue of Life: Catalogue of Life 2018-03-28",  
-                // "Catalogue of Life: Catalog of Life Protists", 
-                // "Catalogue of Life: Catalog of Life Extract for DH (TRAM-797)", 
-                // "Catalogue of Life: Catalog of Life Protists (20 Feb 2019 dump)", 
-                // "Catalogue of Life: Catalog of Life for DH (20 Feb 2019 dump)", 
-                // "Catalogue of Life: Catalogue of Life extract for DH2", 
-                // "Catalogue of Life Collembola: CoL 2020-08-01 Collembola", 
-                // "NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest.tar.gz", 
-                // "NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest_no_vernaculars.tar.gz", 
-                // "NCBI Taxonomy for DH (TRAM-796): NCBI Taxonomy for DH (TRAM-796)",  
-                // "ICTV Virus Taxonomy (ICTV) - active: ICTV-virus_taxonomy-with-higherClassification.tar.gz",
-                // "User Generated Content (EOL v2): user-preferred comnames",
-                // "User Generated Content (EOL v2): user-added comnames", 
-                // "User Generated Content (EOL v2): user added text", 
-                // "User Generated Content (EOL v2): curation of media objects", 
-                // "User Generated Content (EOL v2): user comments", 
-                // "User Generated Content (EOL v2): user image cropping", 
-                // "User Generated Content (EOL v2): user image ratings",
-                // "User Generated Content (EOL v2): user exemplar images",
-                // "User Generated Content (EOL v2): user activity collections", 
-                // "User Generated Content (EOL v2): user activity collections (json format)", 
-                // "User Generated Content (EOL v2): taxonomic propagation - exemplar images", 
-                // "User Generated Content (EOL v2): taxonomic propagation - image ratings", 
-                // "WikiData: wikidata_hierarchy.tar.gz", 
-                // "All trait data: All trait data", 
-                // "Representative records: representative records", 
-                // "EOL Stats for species level pages: EOL stats for species-level pages");
-
-                $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
-            // [to process] => Array
-            // (
-            //     [growth habit: growth-habit.txt.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits/growth-habit.txt.gz
-            //     [eMammal: eMammal.zip] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eMammal.zip
-            //     [Old world fruit bat body mass: bat-body-masses.txt.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits/bat-body-masses.txt.gz
-            // )
-                if(!in_array($title, $arr)) continue;
+                // $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
+                // if(!in_array($title, $arr)) continue;
                 
-
-
                 print_r($input); //exit;
                 $this->input = $input;
 
@@ -235,9 +194,9 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                // /*
+                /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                // */
+                */
 
                 // exit("\n--a resource object--\n");
             }
@@ -294,6 +253,7 @@ class ZenodoAPI
 
         if($new_obj = self::request_newversion($obj)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
         // if(true) { //debug only dev only
+
             /* original
             if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
@@ -312,12 +272,12 @@ class ZenodoAPI
             */
     
 
-            // /* for legacy datasets            
+            /* for legacy datasets            
             // if($actual_file = self::is_editors_eol_resources($url)) $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             // else return;
             if($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             else return;
-            // */
+            */
     
             // return; //dev only debug only
 
