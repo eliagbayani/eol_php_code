@@ -245,14 +245,78 @@ class ZenodoAPI
 
         return; //debug eonly
 
-        if($url = $obj['metadata']['related_identifiers'][0]['identifier']) {
+        // start here... include the 3 if-then-else for the diff url types
+        // /*
+        if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {}
+        else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
+
+        if($new_obj = self::request_newversion($obj)) {
+            $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below.
+            // exit("\nexit muna after new version request\n");
+
+            /* original
+            if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            else return;
+            // else                                                        $upload_obj = self::upload_Zenodo_dataset($new_obj);                //uploads .dat file
+            */
+
+            // /* for DH and aggregate datasets
+            if($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            else return;
+            // */
+
+            /* for legacy datasets
+            if($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            else return;
+            */
+
+            if(self::if_error($upload_obj, 'upload', $new_obj['id'])) {}
+            else {
+                // it seems the $upload_obj will not be used atm.
+                /*Array( $upload_obj
+                    [created] => 2024-08-08T14:48:22.623440+00:00
+                    [updated] => 2024-08-08T14:48:30.794780+00:00
+                    [version_id] => e2866bf9-5abe-41c7-a50e-07b1ec17027c
+                    [key] => vernacularnames.csv
+                    [size] => 222967948
+                    [mimetype] => text/csv
+                    [checksum] => md5:8e847b0d4f4ab6267e1c23555b771ca8
+                    [is_head] => 1
+                    [delete_marker] => 
+                    [links] => Array(
+                            [self] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv
+                            [version] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?versionId=e2866bf9-5abe-41c7-a50e-07b1ec17027c
+                            [uploads] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?uploads
+                        )
+                )*/
+                // /* retrieve and publish
+                $update_obj = self::update_Zenodo_record($id, $this->input); //to fill-in the publication_date
+                if(self::if_error($update_obj, 'update1', $id)) {}
+                else {
+                    $obj = self::retrieve_dataset($id); //works OK
+                    if(self::if_error($obj, 'retrieve', $id)) {}    
+                    else {
+                        // $input['metadata'] = array("publication_date" => date("Y-m-d")); //2010-12-30 --- this is needed for publishing a newly uploaded file.
+                        $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
+                        if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
+                        else {
+                            echo "\nSuccessfully uploaded then published to Zenodo\n-----u & p-----\n";
+                            self::log_error(array('uploaded then published', @$obj['id'], @$obj['metadata']['title'], @$obj['metadata']['related_identifiers'][0]['identifier']));
+                        }
+                    }
+                }
+                // */
+            }            
+        }
+        else echo "\nERROR: newversion object not created!\n";
+        // */
+
+        /* this block was eventually refactored:
+        if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {
             $info = pathinfo($url); print_r($info);
-            /*Array(
-                [dirname] => https://editors.eol.org/uploaded_resources/bf6/3dc
-                [basename] => vernacularnames.csv
-                [extension] => csv
-                [filename] => vernacularnames
-            )*/
             $needle = "https://editors.eol.org/uploaded_resources";
             if(stripos($url, $needle) !== false) { //string is found --- means this file is originally a ckan uploaded file.
                 $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
@@ -266,47 +330,8 @@ class ZenodoAPI
                     echo "\nfilesize: ".filesize($actual_file)."\n";
                     if($new_obj = self::request_newversion($obj)) {
                         $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below.
-
                         // exit("\nexit muna after new version request\n");
-
                         $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);
-                        if(self::if_error($upload_obj, 'upload', $new_obj['id'])) {}
-                        else {
-                            // it seems the $upload_obj will not be used atm.
-                            /*Array( $upload_obj
-                                [created] => 2024-08-08T14:48:22.623440+00:00
-                                [updated] => 2024-08-08T14:48:30.794780+00:00
-                                [version_id] => e2866bf9-5abe-41c7-a50e-07b1ec17027c
-                                [key] => vernacularnames.csv
-                                [size] => 222967948
-                                [mimetype] => text/csv
-                                [checksum] => md5:8e847b0d4f4ab6267e1c23555b771ca8
-                                [is_head] => 1
-                                [delete_marker] => 
-                                [links] => Array(
-                                        [self] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv
-                                        [version] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?versionId=e2866bf9-5abe-41c7-a50e-07b1ec17027c
-                                        [uploads] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?uploads
-                                    )
-                            )*/
-                            // /* retrieve and publish
-                            $update_obj = self::update_Zenodo_record($id, $this->input); //to fill-in the publication_date
-                            if(self::if_error($update_obj, 'update1', $id)) {}
-                            else {
-                                $obj = self::retrieve_dataset($id); //works OK
-                                if(self::if_error($obj, 'retrieve', $id)) {}    
-                                else {
-                                    // $input['metadata'] = array("publication_date" => date("Y-m-d")); //2010-12-30 --- this is needed for publishing a newly uploaded file.
-                                    $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
-                                    if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
-                                    else {
-                                        echo "\nSuccessfully uploaded then published to Zenodo\n-----u & p-----\n";
-                                        self::log_error(array('uploaded then published', @$obj['id'], @$obj['metadata']['title'], @$obj['metadata']['related_identifiers'][0]['identifier']));
-                                    }
-                                }
-                            }
-                            // */
-                        }
                     }
                     else echo "\nERROR: newversion object not created!\n";
                 }
@@ -314,6 +339,7 @@ class ZenodoAPI
             }
             else echo "\nNot a CKAN URL [$url].\n";
         }
+        */
         // exit("\n--stop muna ditox--\n");
     }
     function start_Zenodo_process($input)
@@ -368,8 +394,11 @@ class ZenodoAPI
         if(stripos($url, $needle) !== false) { //string is found --- means this file is originally a ckan uploaded file.    
             $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
             $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
-            echo "\nsource: [$actual_file]\n";
-            return $actual_file;
+            if(file_exists($actual_file)) {
+                echo "\nsource: [$actual_file]\n";
+                return $actual_file;    
+            }
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "uploaded_resources"));
         }
         return false;
     }
@@ -386,8 +415,11 @@ class ZenodoAPI
         if(stripos($url, $needle) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) [/other_files/].    
             $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. /SDR/traits-20191111
             $actual_file = "/extra/other_files".$subfolders."/".$info['basename'];  // e.g. /extra/other_files/SDR/traits-20191111/traits_all_201911.zip
-            echo "\nsource: [$actual_file]\n";
-            return $actual_file;
+            if(file_exists($actual_file)) {
+                echo "\nsource: [$actual_file]\n";
+                return $actual_file;    
+            }
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "other_files"));
         }
         return false;
     }
@@ -407,8 +439,11 @@ class ZenodoAPI
             $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. "/eol_traits" OR ""
             $actual_file = "/extra/eol_php_resources".$subfolders."/".$info['basename'];  // e.g. /extra/eol_php_resources/eol_traits/bat-body-masses.txt.gz
                                                                                           //      /extra/eol_php_resources/173.tar.gz
-            echo "\nsource: [$actual_file]\n";
-            return $actual_file;
+            if(file_exists($actual_file)) {
+                echo "\nsource: [$actual_file]\n";
+                return $actual_file;    
+            }
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "EOL resources"));
         }
         return false;
     }
