@@ -73,18 +73,18 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
                 
-                // /* main operation
+                /* main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
-                // */
+                */
 
                 // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //dev only
 
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
+                if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+                // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
 
                 echo "\norganization ID: [$organization_id]\n";
@@ -194,6 +194,16 @@ class ZenodoAPI
                 // $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
                 // if(!in_array($title, $arr)) continue;
                 
+                // /* block of code
+                if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
+                    // $needle = "http://editors.eol.org/eol_php_code/applications/content_server/resources";
+                    $needle = "http://editors.eol.org";
+                    if(stripos($url, $needle) !== false) {} //string is found 
+                    else continue;
+                }
+                else continue;
+                // */
+
                 print_r($input); //exit;
                 $this->input = $input;
 
@@ -201,13 +211,13 @@ class ZenodoAPI
                 self::start_Zenodo_process($input); //main operation
                 */
 
-                /*
-                self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
-                */
-
                 // /*
-                self::just_stats($input);
+                self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
                 // */
+
+                /*
+                self::just_stats($input);
+                */
 
                 // exit("\n--a resource object--\n");
             }
@@ -252,7 +262,6 @@ class ZenodoAPI
         sleep(5); echo "\nPause 5 seconds...\n"; echo "\n[$title]\n";
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
         if(!$obj) {
-            // self::log_error(array("elix muna", $title));
             self::log_error(array("Title not found", "needle:[$title]"));
             echo "\nTitle not found*. needle:[$title]\n";
             return;
@@ -280,12 +289,16 @@ class ZenodoAPI
 
             // PICK 1 OF THE 3 ---    
 
-            /* original
+            // /* original
+            // if($actual_file = self::is_ckan_uploaded_file($url))        $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            // elseif($actual_file = self::is_editors_other_files($url))   $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            // elseif($actual_file = self::is_editors_eol_resources($url)) $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            // else return;
             if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             else return;
-            */
+            // */
 
             /* for DH and aggregate datasets
             // if($actual_file = self::is_editors_other_files($url))       $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
@@ -422,15 +435,17 @@ class ZenodoAPI
             [extension] => csv
             [filename] => vernacularnames
         )*/
-        $needle = "https://editors.eol.org/uploaded_resources";
-        if(stripos($url, $needle) !== false) { //string is found --- means this file is originally a ckan uploaded file.    
-            $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
+        $needle1 = "https://editors.eol.org/uploaded_resources";
+        $needle2 = "http://editors.eol.org/uploaded_resources";
+        if(stripos($url, $needle1) !== false || stripos($url, $needle2) !== false) { //string is found --- means this file is originally a ckan uploaded file.    
+            $subfolders = str_replace($needle1, "", $info['dirname']);                   // e.g. /bf6/3dc
+            $subfolders = str_replace($needle2, "", $info['dirname']);                   // e.g. /bf6/3dc
             $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
-            // if(file_exists($actual_file)) {
+            if(file_exists($actual_file)) {
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
-            // }
-            // else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "uploaded_resources"));
+            }
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "uploaded_resources"));
         }
         return false;
     }
@@ -443,15 +458,17 @@ class ZenodoAPI
             [extension] => zip
             [filename] => traits_all_201911
         )*/
-        $needle = "https://editors.eol.org/other_files";
-        if(stripos($url, $needle) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) [/other_files/].    
-            $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. /SDR/traits-20191111
+        $needle1 = "https://editors.eol.org/other_files";
+        $needle2 = "http://editors.eol.org/other_files";
+        if(stripos($url, $needle1) !== false || stripos($url, $needle2) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) [/other_files/].    
+            $subfolders = str_replace($needle1, "", $info['dirname']);               // e.g. /SDR/traits-20191111
+            $subfolders = str_replace($needle2, "", $info['dirname']);               // e.g. /SDR/traits-20191111
             $actual_file = "/extra/other_files".$subfolders."/".$info['basename'];  // e.g. /extra/other_files/SDR/traits-20191111/traits_all_201911.zip
-            // if(file_exists($actual_file)) {
+            if(file_exists($actual_file)) {
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
-            // }
-            // else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "other_files"));
+            }
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "other_files"));
         }
         return false;
     }
@@ -466,16 +483,18 @@ class ZenodoAPI
             [extension] => ???
             [filename] => bat-body-masses
         )*/
-        $needle = "https://editors.eol.org/eol_php_code/applications/content_server/resources";
-        if(stripos($url, $needle) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) as EOL resources. Produced by a general connector.    
-            $subfolders = str_replace($needle, "", $info['dirname']);               // e.g. "/eol_traits" OR ""
+        $needle1 = "https://editors.eol.org/eol_php_code/applications/content_server/resources";
+        $needle2 = "http://editors.eol.org/eol_php_code/applications/content_server/resources";
+        if(stripos($url, $needle1) !== false || stripos($url, $needle2) !== false) { //string is found --- means this file is stored in eol-archive (editors.eol.org) as EOL resources. Produced by a general connector.    
+            $subfolders = str_replace($needle1, "", $info['dirname']);               // e.g. "/eol_traits" OR ""
+            $subfolders = str_replace($needle2, "", $info['dirname']);               // e.g. "/eol_traits" OR ""
             $actual_file = "/extra/eol_php_resources".$subfolders."/".$info['basename'];  // e.g. /extra/eol_php_resources/eol_traits/bat-body-masses.txt.gz
                                                                                           //      /extra/eol_php_resources/173.tar.gz
-            // if(file_exists($actual_file)) {
+            if(file_exists($actual_file)) {
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
-            // }
-            // else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "EOL resources"));
+            }
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "EOL resources"));
         }
         return false;
     }
