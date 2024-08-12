@@ -252,8 +252,8 @@ class ZenodoAPI
         if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {}
         else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
 
-        // if($new_obj = self::request_newversion($obj)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
-        if(true) { //debug only dev only
+        if($new_obj = self::request_newversion($obj)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
+        // if(true) { //debug only dev only
             /* original
             if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
@@ -263,8 +263,11 @@ class ZenodoAPI
             */
 
             // /* for DH and aggregate datasets
-            if($actual_file = self::is_editors_other_files($url))       $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
-            elseif($actual_file = self::is_editors_eol_resources($url)) $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            // if($actual_file = self::is_editors_other_files($url))       $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            // elseif($actual_file = self::is_editors_eol_resources($url)) $this->debug['to process'][$title]=$url; //$upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            // else return;
+            if($actual_file = self::is_editors_other_files($url))       $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
+            elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);  //uploads actual file
             else return;
             // */
             // [to process] => Array
@@ -316,7 +319,7 @@ class ZenodoAPI
             //     [Old world fruit bat body mass: bat-body-masses.txt.gz] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits/bat-body-masses.txt.gz
             // )
     
-            return; //dev only
+            // return; //dev only debug only
 
             if(self::if_error($upload_obj, 'upload', $new_obj['id'])) {}
             else {
