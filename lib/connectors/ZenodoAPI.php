@@ -141,15 +141,13 @@ class ZenodoAPI
         }
     }
     private function process_a_package($p) //process a dataset
-    {   
-        // print_r($p);
+    {   // print_r($p);
         echo "\nnum_resources: ".$p['num_resources']."\n";
         // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
         if($resources = @$package_obj['result']['resources']) {
             $this->debug['total resources'] += count($resources);
             foreach($resources as $r) { // print_r($r);
-
                 //name here is CKAN resource name 
                 // if($r['name'] != 'EOL stats for species-level pages') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Active Version') continue; //e.g. https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/00adb47b-57ed-4f6b-8f66-83bfdb5120e8    
@@ -185,7 +183,7 @@ class ZenodoAPI
                 // if(!in_array($title, array("Test data sets: COLTest"))) continue;
                 // if(!in_array($title, array("EOL v3 data model Ontologies: measurement_extension.xml"))) continue;                    
                 // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
-                // if(!in_array($title, array("DH2.1 working docs: COL2020-08-01"))) continue;
+                if(!in_array($title, array("Paleobiology Database (PBDB): PBDB (368) in DwCA"))) continue;
 
                 // $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
                 // if(!in_array($title, $arr)) continue;
@@ -203,9 +201,9 @@ class ZenodoAPI
                 print_r($input); //exit;
                 $this->input = $input;
 
-                // /*
+                /*
                 self::start_Zenodo_process($input); //main operation
-                // */
+                */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
