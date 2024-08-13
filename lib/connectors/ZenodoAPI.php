@@ -185,7 +185,7 @@ class ZenodoAPI
                 // if(!in_array($title, array("Test data sets: COLTest"))) continue;
                 // if(!in_array($title, array("EOL v3 data model Ontologies: measurement_extension.xml"))) continue;                    
                 // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
-                // if(!in_array($title, array("xxx"))) continue;
+                if(!in_array($title, array("van Tienhoven, 2003: van Tienhoven, A. 2003"))) continue;
 
                 // $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
                 // if(!in_array($title, $arr)) continue;
