@@ -30,16 +30,15 @@ class ZenodoAPI
         $this->ckan['organization_list'] = 'https://opendata.eol.org/api/3/action/organization_list';
         $this->ckan['organization_show'] = 'https://opendata.eol.org/api/3/action/organization_show?id=ORGANIZATION_ID&include_datasets=true';
         // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
+        // -> useful to get all datasets; even private ones
         // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life
+        // -> no datasets included
 
         $this->ckan['package_show'] = 'https://opendata.eol.org/api/3/action/package_show?id='; //e.g. images-list
         // https://opendata.eol.org/api/3/action/package_show?id=images-list
 
 
         $this->ckan['user_show'] = 'https://opendata.eol.org/api/3/action/user_show?id='; //e.g. 47d700d6-0f4c-43e8-a0c5-a5e739bc390c
-
-        // https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true
-        // useful to get all datasets; even private ones
 
         $this->temp_count = 0;
         $this->license_map = array(
@@ -61,7 +60,7 @@ class ZenodoAPI
         */        
     }
     function start()
-    {
+    {   self::log_error(array("==================== Log starts here ===================="));
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o); exit;
             foreach($o['result'] as $organization_id) {
@@ -174,6 +173,7 @@ class ZenodoAPI
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
                 // if(in_array($title, array("EOL Hierarchy Entries April 2017: Hierarchy Entries April 2017"))) continue; //done -- migrated completely* Legacy datasets
+                if(in_array($title, array("FishBase: FishBase"))) continue; //migrated already
 
                 // ============ dev only
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
@@ -190,7 +190,7 @@ class ZenodoAPI
                 // $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
                 // if(!in_array($title, $arr)) continue;
                 
-                /* block of code --- only accept http://
+                /* ---------- block of code --- only accept "http:" not "https:"
                 if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
                     // $needle = "http://editors.eol.org/eol_php_code/applications/content_server/resources";
                     $needle = "http://editors.eol.org";
@@ -198,22 +198,22 @@ class ZenodoAPI
                     else continue;
                 }
                 else continue;
-                */
+                ---------- */
 
                 print_r($input); //exit;
                 $this->input = $input;
 
-                /*
+                // /*
                 self::start_Zenodo_process($input); //main operation
-                */
+                // */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
                 */
 
-                // /*
+                /*
                 self::just_stats($input);
-                // */
+                */
 
                 // exit("\n--a resource object--\n");
             }
@@ -222,13 +222,14 @@ class ZenodoAPI
     private function just_stats($input)
     {
         if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
-            echo "\n[$url]\n";
-            print_r(pathinfo($url));
-            if(stripos($url, "https://editors.eol.org/") !== false) { //string is found
+            echo "\n[$url]\n"; print_r(pathinfo($url));
+            $needle1 = "https://editors.eol.org/";
+            $needle2 = "http://editors.eol.org/";
+            if(stripos($url, $needle1) !== false || stripos($url, $needle2) !== false) { //string is found
                 $arr = explode("/", $url);
                 // print_r($arr);
-                if(stripos($url, "https://editors.eol.org/eol_php_code/applications/content_server/resources/") !== false) $this->debug['editors path']['eol resources'] = '';  //string is found
-                else             $this->debug['editors path'][$arr[3]] = '';
+                if(stripos($url, "editors.eol.org/eol_php_code/applications/content_server/resources/") !== false) $this->debug['editors path']['eol resources'] = '';  //string is found
+                else $this->debug['editors path'][$arr[3]] = '';
             }
         }
     }
@@ -855,7 +856,6 @@ class ZenodoAPI
 
 
         $url = $this->ckan['package_show'].$id; //main operation
-        // $url = "https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true";
         // $url = "https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true";
         
         // /* working OK but doesn't get private datasets --- private = 1
