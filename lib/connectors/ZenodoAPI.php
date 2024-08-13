@@ -1134,5 +1134,42 @@ class ZenodoAPI
         fwrite($file, implode("\t", $arr)."\n");
         fclose($file);
     }
+    /*
+    $arr = array("EOL Dynamic Hierarchy: Dynamic Hierarchy Version 1.1",  
+        "EOL Dynamic Hierarchy: EOL Dynamic Hierarchy Index",  
+        "EOL Dynamic Hierarchy: DH223test.zip",  
+        "Amphibian Species of the World (ASW) - obsolete: Frost, Darrel R. 2018. Amphibian Species of the World", 
+        "IOC World Bird List (IOC) - active: IOC World Bird List",  
+        "IOC World Bird List (IOC) - active: IOC World Bird List with higherClassification",
+        "Catalogue of Life: Catalogue of Life 2018-03-28",  
+        "Catalogue of Life: Catalog of Life Protists", 
+        "Catalogue of Life: Catalog of Life Extract for DH (TRAM-797)", 
+        "Catalogue of Life: Catalog of Life Protists (20 Feb 2019 dump)", 
+        "Catalogue of Life: Catalog of Life for DH (20 Feb 2019 dump)", 
+        "Catalogue of Life: Catalogue of Life extract for DH2", 
+        "Catalogue of Life Collembola: CoL 2020-08-01 Collembola", 
+        "NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest.tar.gz", 
+        "NCBI Taxonomy Harvest (TRAM-795): NCBI_Taxonomy_Harvest_no_vernaculars.tar.gz", 
+        "NCBI Taxonomy for DH (TRAM-796): NCBI Taxonomy for DH (TRAM-796)",  
+        "ICTV Virus Taxonomy (ICTV) - active: ICTV-virus_taxonomy-with-higherClassification.tar.gz",
+        "User Generated Content (EOL v2): user-preferred comnames",
+        "User Generated Content (EOL v2): user-added comnames", 
+        "User Generated Content (EOL v2): user added text", 
+        "User Generated Content (EOL v2): curation of media objects", 
+        "User Generated Content (EOL v2): user comments", 
+        "User Generated Content (EOL v2): user image cropping", 
+        "User Generated Content (EOL v2): user image ratings",
+        "User Generated Content (EOL v2): user exemplar images",
+        "User Generated Content (EOL v2): user activity collections", 
+        "User Generated Content (EOL v2): user activity collections (json format)", 
+        "User Generated Content (EOL v2): taxonomic propagation - exemplar images", 
+        "User Generated Content (EOL v2): taxonomic propagation - image ratings", 
+        "WikiData: wikidata_hierarchy.tar.gz", 
+        "All trait data: All trait data", 
+        "Representative records: representative records", 
+        "EOL Stats for species level pages: EOL stats for species-level pages");
+    print_r($arr);
+    echo "\n".count($arr)."\n";
+    */
 }
 ?>
