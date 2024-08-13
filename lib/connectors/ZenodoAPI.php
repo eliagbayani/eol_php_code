@@ -22,7 +22,7 @@ class ZenodoAPI
         if(Functions::is_production()) $this->path_2_file_dat = '/extra/other_files/Zenodo/';
         else                           $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
-        $this->log_file = $this->path_2_file_dat . "error_log.tsv";
+        $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
 
         /*
         https://opendata.eol.org/api/3/action/package_list
@@ -54,6 +54,7 @@ class ZenodoAPI
         );
         $this->debug = array();
         $this->debug['total resources'] = 0;
+        $this->divide_and_conquer = 0;
 
         /* not helpful since Authorization is required regardless of user-agent
         https://www.whatismybrowser.com/detect/what-is-my-user-agent/
@@ -1141,6 +1142,7 @@ class ZenodoAPI
     }
     private function log_error($arr)
     {
+        if($this->divide_and_conquer) $arr[] = "[".$this->divide_and_conquer."]";
         $arr[] = date("Y-m-d h:i:s A");
         if(!($file = Functions::file_open($this->log_file, "a"))) return;
         fwrite($file, implode("\t", $arr)."\n");
