@@ -73,19 +73,17 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
                 
-                /* main operation
+                // /* main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
-                */
+                // */
 
-                if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
-
+                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
-
+                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
                 echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
@@ -167,17 +165,15 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
-
-                if($r['name'] == 'Hierarchy Entries April 2017') continue;                      //done -- migrated completely*
-                if($r['name'] == '2019, August 22') continue; //early exports: 2019, August 22  //done -- migrated completely*
-
+                // if($r['name'] == 'Hierarchy Entries April 2017') continue;                      //done -- migrated completely*
+                // if($r['name'] == '2019, August 22') continue; //early exports: 2019, August 22  //done -- migrated completely*
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
-                if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
-                if(in_array($title, array("EOL Hierarchy Entries April 2017: Hierarchy Entries April 2017"))) continue; //done -- migrated completely* Legacy datasets
+                // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
+                // if(in_array($title, array("EOL Hierarchy Entries April 2017: Hierarchy Entries April 2017"))) continue; //done -- migrated completely* Legacy datasets
 
                 // ============ dev only
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
@@ -194,7 +190,7 @@ class ZenodoAPI
                 // $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
                 // if(!in_array($title, $arr)) continue;
                 
-                // /* block of code
+                /* block of code --- only accept http://
                 if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
                     // $needle = "http://editors.eol.org/eol_php_code/applications/content_server/resources";
                     $needle = "http://editors.eol.org";
@@ -202,7 +198,7 @@ class ZenodoAPI
                     else continue;
                 }
                 else continue;
-                // */
+                */
 
                 print_r($input); //exit;
                 $this->input = $input;
@@ -215,9 +211,9 @@ class ZenodoAPI
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
                 */
 
-                /*
+                // /*
                 self::just_stats($input);
-                */
+                // */
 
                 // exit("\n--a resource object--\n");
             }
