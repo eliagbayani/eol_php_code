@@ -432,7 +432,7 @@ class ZenodoAPI
         }        
     }
     private function is_ckan_uploaded_file($url) /* symlink: uploaded_resources -> /extra/ckan_resources/ */
-    {   $info = pathinfo($url); print_r($info);
+    {   $info = pathinfo($url); //print_r($info);
         /*Array(
             [dirname] => https://editors.eol.org/uploaded_resources/bf6/3dc
             [basename] => vernacularnames.csv
@@ -455,7 +455,7 @@ class ZenodoAPI
     }
     private function is_editors_other_files($url) /* symlink: other_files -> /extra/other_files/ */
     {   // [https://editors.eol.org/other_files/SDR/traits-20191111/traits_all_201911.zip] => 
-        $info = pathinfo($url); print_r($info);
+        $info = pathinfo($url); //print_r($info);
         /*Array(
             [dirname] => https://editors.eol.org/other_files/SDR/traits-20191111
             [basename] => traits_all_201911.zip
@@ -479,7 +479,7 @@ class ZenodoAPI
     private function is_editors_eol_resources($url) /* symlink: resources -> /extra/eol_php_resources/ */
     {   // https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits/bat-body-masses.txt.gz
         // https://editors.eol.org/eol_php_code/applications/content_server/resources/173.tar.gz
-        $info = pathinfo($url); print_r($info);
+        $info = pathinfo($url); //print_r($info);
         /*Array(
             [dirname] => https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits
                          https://editors.eol.org/eol_php_code/applications/content_server/resources
@@ -625,7 +625,7 @@ class ZenodoAPI
         $cmd = 'curl -i -H "Content-Type: application/json" -X POST --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN;
         $cmd = 'curl -s -H "Content-Type: application/json" -X POST --data '."'$json'".' https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN;
         // $cmd .= " 2>&1";
-        echo "\ncreate cmd: [$cmd]\n";
+        // echo "\ncreate cmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
         $obj = json_decode(trim($json), true);  echo "\n=====c=====\n"; print_r($obj); echo "\n=====c=====\n";
         return $obj;
