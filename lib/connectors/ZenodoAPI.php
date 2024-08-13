@@ -882,7 +882,7 @@ class ZenodoAPI
             // /* this can return private datasets
             $cmd = 'curl '.$url;
             // $cmd .= " -d '".$json."'";
-            $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+            $cmd .= ' -H "Authorization: '.CKAN_AUTHORIZATION_KEY.'"';
             $json = shell_exec($cmd);
             $o = json_decode($json, true); //print_r($o); exit;
             return $o;
@@ -895,7 +895,7 @@ class ZenodoAPI
         $url = "https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true";
         $cmd = 'curl '.$url;
         // $cmd .= " -d '".$json."'";
-        $cmd .= ' -s -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+        $cmd .= ' -s -H "Authorization: '.CKAN_AUTHORIZATION_KEY.'"';
         $json = shell_exec($cmd);
         $o = json_decode($json, true); print_r($o); exit;
         return $o;
@@ -996,7 +996,7 @@ class ZenodoAPI
         // $cmd = 'curl https://opendata.eol.org/api/3/action/resource_update'; // orig but not used for Zenodo.
         $cmd = 'curl https://opendata.eol.org/api/3/action/resource_patch';     // those fields not updated will remain unchanged
         $cmd .= " -d '".$json."'";
-        $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+        $cmd .= ' -H "Authorization: '.CKAN_AUTHORIZATION_KEY.'"';
         // */
 
         sleep(5); //may need to delay since there are many records involved
