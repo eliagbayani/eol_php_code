@@ -199,7 +199,8 @@ class ZenodoAPI
                 $m = $this->divide_and_conquer;
                 if(    $m >= 1 && $m <= 5)  continue; //done
                 elseif($m > 5  && $m <= 20) continue; //done
-                elseif($m > 20 && $m <= 25) {}
+                elseif($m > 20 && $m <= 25) continue; //done
+                elseif($m > 25 && $m <= 60) {}
                 else continue;
                 // ===== */
 
