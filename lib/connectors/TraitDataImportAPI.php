@@ -159,7 +159,7 @@ class TraitDataImportAPI
         // /* for old CKAN
         $cmd = 'curl '.$this->pre_ckan_api.'/action/resource_update';
         $cmd .= " -d '".$json."'";
-        $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+        $cmd .= ' -H "Authorization: '.CKAN_AUTHORIZATION_KEY.'"';
         // */
 
         /* for new CKAN
@@ -232,7 +232,7 @@ class TraitDataImportAPI
         // /* -------------------------- for old CKAN --------------------------
         $cmd = 'curl '.$this->pre_ckan_api.'/action/resource_create';
         $cmd .= " -d '".$json."'";
-        $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+        $cmd .= ' -H "Authorization: '.CKAN_AUTHORIZATION_KEY.'"';
         // -------------------------- end --------------------------*/
 
         /* -------------------------- for new CKAN -------------------------- https://reqbin.com/req/c-hlt4gkzd/curl-bearer-token-authorization-header-example

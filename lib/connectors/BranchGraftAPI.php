@@ -146,7 +146,7 @@ class BranchGraftAPI extends BranchGraftRules
         
         $cmd = 'curl https://opendata.eol.org/api/3/action/resource_update';
         $cmd .= " -d '".$json."'";
-        $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+        $cmd .= ' -H "Authorization: '.CKAN_AUTHORIZATION_KEY.'"';
         
         // sleep(2); //we only upload one at a time, no need for delay
         $output = shell_exec($cmd);
@@ -202,7 +202,7 @@ class BranchGraftAPI extends BranchGraftRules
         
         $cmd = 'curl https://opendata.eol.org/api/3/action/resource_create';
         $cmd .= " -d '".$json."'";
-        $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
+        $cmd .= ' -H "Authorization: '.CKAN_AUTHORIZATION_KEY.'"';
         
         // sleep(2); //we only upload one at a time, no need for delay
         $output = shell_exec($cmd);
