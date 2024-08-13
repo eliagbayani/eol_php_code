@@ -201,9 +201,9 @@ class ZenodoAPI
                 print_r($input); //exit;
                 $this->input = $input;
 
-                /*
+                // /*
                 self::start_Zenodo_process($input); //main operation
-                */
+                // */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
