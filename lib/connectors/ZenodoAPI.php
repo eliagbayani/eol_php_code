@@ -203,8 +203,10 @@ class ZenodoAPI
                 elseif($m > 20 && $m <= 25) continue; //done
                 elseif($m > 25 && $m <= 60) continue; //done
                 elseif($m > 60 && $m <= 100) continue; //done
-                elseif($m > 100 && $m <= 200) {}
+                elseif($m > 100 && $m <= 200) continue; //done
+                elseif($m > 200 && $m <= 400) {}
                 else continue;
+                if($m == 300) { echo "\nPause 3 minutes ($m counter)\n"; sleep(60*3); }
                 // ===== */
 
                 print_r($input); //exit("\nfirst occurrence\n");
