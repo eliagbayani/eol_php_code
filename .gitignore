@@ -67,6 +67,8 @@ applications/BOLD2iNAT/temp/*
 applications/BOLD2iNAT_csv/temp/*
 applications/dwc_validator_jenkins/temp/*
 applications/CheckListBank_tool/temp/*
+applications/CheckListBank_tool/temp/
+applications/CheckListBank_tool/temp
 
 
 config/constants.php
