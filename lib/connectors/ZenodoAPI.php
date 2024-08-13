@@ -174,21 +174,14 @@ class ZenodoAPI
                 if(in_array($title, array("FishBase: FishBase"))) continue; //migrated already
                 if(in_array($title, array("Paleobiology Database (PBDB): PBDB (368) in DwCA"))) continue; //migrated already
                 if(in_array($title, array("DiscoverLife: Discoverlife Maps"))) continue; //migrated already
+                if(in_array($title, array("van Tienhoven, 2003: van Tienhoven, A. 2003"))) continue; //migrated already
 
                 // ============ dev only
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
-                // if(!in_array($title, array("DH2.1 working docs: DH1.1 working version"))) continue;
-                // if(!in_array($title, array("Test data sets: Amoebozoa Test"))) continue;
-                // if(!in_array($title, array("Test data sets: COLTest"))) continue;
-                // if(!in_array($title, array("EOL v3 data model Ontologies: measurement_extension.xml"))) continue;                    
-                // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
-                if(!in_array($title, array("van Tienhoven, 2003: van Tienhoven, A. 2003"))) continue;
-
-                // $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
-                // if(!in_array($title, $arr)) continue;
+                // if(!in_array($title, array("xxx"))) continue;
                 
                 /* ---------- block of code --- only accept "http:" not "https:"
                 if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
@@ -203,9 +196,9 @@ class ZenodoAPI
                 print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                // /*
+                /*
                 self::start_Zenodo_process($input); //main operation
-                // */
+                */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
