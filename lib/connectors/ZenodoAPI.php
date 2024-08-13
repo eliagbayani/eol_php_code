@@ -63,7 +63,7 @@ class ZenodoAPI
     {   self::log_error(array("==================== Log starts here ===================="));
         if($json = Functions::lookup_with_cache($this->ckan['organization_list'], $this->download_options)) {
             $o = json_decode($json, true); //print_r($o); exit;
-            foreach($o['result'] as $organization_id) {
+            foreach($o['result'] as $organization_id) { $this->organization_id = $organization_id;
                 /*Array(
                     [0] => dynamic-hierarchy
                     [1] => encyclopedia_of_life
@@ -172,6 +172,7 @@ class ZenodoAPI
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
                 // if(in_array($title, array("EOL Hierarchy Entries April 2017: Hierarchy Entries April 2017"))) continue; //done -- migrated completely* Legacy datasets
                 if(in_array($title, array("FishBase: FishBase"))) continue; //migrated already
+                if(in_array($title, array("FishBase"))) continue; //migrated already
                 if(in_array($title, array("Paleobiology Database (PBDB): PBDB (368) in DwCA"))) continue; //migrated already
                 if(in_array($title, array("DiscoverLife: Discoverlife Maps"))) continue; //migrated already
                 if(in_array($title, array("van Tienhoven, 2003: van Tienhoven, A. 2003"))) continue; //migrated already
@@ -193,12 +194,21 @@ class ZenodoAPI
                 else continue;
                 ---------- */
 
+                // /* ===== divide and conquer
+                @$this->divide_and_conquer++;
+                $m = $this->divide_and_conquer;
+                if(    $m >= 1 && $m <= 10) {}
+                elseif($m > 10 && $m <= 20) continue;
+                elseif($m > 20 && $m <= 30) continue;
+                else continue;
+                // ===== */
+
                 print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                /*
+                // /*
                 self::start_Zenodo_process($input); //main operation
-                */
+                // */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
@@ -587,7 +597,16 @@ class ZenodoAPI
         }
         //e.g. array("Aggregate Datasets: Images list", "CSV")
         // -------------------------------------------------------------------
-        $title = trim($p['title'].": ".$r['name']);
+        $title = false;
+        if($this->organization_id == "eol-content-partners") {
+            if(trim($p['title']) == trim($r['name'])) $title = trim($p['title']);
+            else { //print_r($p); print_r($r);
+                if(trim($r['name'])) $title = trim($p['title'].": ".$r['name']);
+                else                 $title = trim($p['title']);
+            }
+        }
+        else $title = trim($p['title'].": ".$r['name']); //orig
+        if(!$title) exit("\nwalang title\n");
         $this->debug['titles'][$title] = '';
         // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $title, //"Images list: image list",
