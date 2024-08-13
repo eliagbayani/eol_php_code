@@ -201,7 +201,8 @@ class ZenodoAPI
                 if(    $m >= 1 && $m <= 5)  continue; //done
                 elseif($m > 5  && $m <= 20) continue; //done
                 elseif($m > 20 && $m <= 25) continue; //done
-                elseif($m > 25 && $m <= 60) {}
+                elseif($m > 25 && $m <= 60) continue; //done
+                elseif($m > 60 && $m <= 100) {}
                 else continue;
                 // ===== */
 
