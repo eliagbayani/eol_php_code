@@ -173,7 +173,7 @@ class ZenodoAPI
                 // if(in_array($title, array("EOL Hierarchy Entries April 2017: Hierarchy Entries April 2017"))) continue; //done -- migrated completely* Legacy datasets
                 if(in_array($title, array("FishBase: FishBase"))) continue; //migrated already
                 if(in_array($title, array("Paleobiology Database (PBDB): PBDB (368) in DwCA"))) continue; //migrated already
-
+                if(in_array($title, array("DiscoverLife: Discoverlife Maps"))) continue; //migrated already
 
                 // ============ dev only
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
@@ -185,7 +185,7 @@ class ZenodoAPI
                 // if(!in_array($title, array("Test data sets: COLTest"))) continue;
                 // if(!in_array($title, array("EOL v3 data model Ontologies: measurement_extension.xml"))) continue;                    
                 // if(!in_array($title, array("EOL Dynamic Hierarchy: DH223test.zip"))) continue;    
-                if(!in_array($title, array("DiscoverLife: Discoverlife Maps"))) continue;
+                // if(!in_array($title, array("xxx"))) continue;
 
                 // $arr = array("growth habit: growth-habit.txt.gz", "eMammal: eMammal.zip", "Old world fruit bat body mass: bat-body-masses.txt.gz");
                 // if(!in_array($title, $arr)) continue;
@@ -395,9 +395,12 @@ class ZenodoAPI
     }
     function start_Zenodo_process($input)
     {
+        $title_x = $input['metadata']['title'];
+        $notes_x = $input['metadata']['notes'];
+
         sleep(7); echo "\nPause 7 seconds...\n";
         $create_obj = self::create_Zenodo_dataset($input);
-        if(self::if_error($create_obj, 'create', $input['metadata']['title'])) {}
+        if(self::if_error($create_obj, 'create', $title_x)) {}
         else {
             if($id = $create_obj['id']) {
                 $obj = self::retrieve_dataset($id); //works OK
@@ -407,9 +410,9 @@ class ZenodoAPI
                     // /*
                     if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {}
                     else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
-                    if($actual_file = self::is_ckan_uploaded_file($url))        $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
-                    elseif($actual_file = self::is_editors_other_files($url))   $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
-                    elseif($actual_file = self::is_editors_eol_resources($url)) $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
+                    if($actual_file = self::is_ckan_uploaded_file($url, $title_x))        $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
+                    elseif($actual_file = self::is_editors_other_files($url, $title_x))   $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
+                    elseif($actual_file = self::is_editors_eol_resources($url, $title_x)) $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
                     else                                                        $upload_obj = self::upload_Zenodo_dataset($obj);                //uploads .dat file
                     // */
 
@@ -422,8 +425,8 @@ class ZenodoAPI
                             if(self::if_error($publish_obj, 'publish', $obj['id'])) {}
                             else {
                                 echo "\nSuccessfully migrated to Zenodo\n";
-                                echo $input['metadata']['title']."\n";
-                                echo $input['metadata']['notes']."\n----------\n";
+                                echo $title_x."\n";
+                                echo $notes_x."\n----------\n";
                                 @$this->debug['total resources migrated']++;
                                 self::log_error(array('migrated', @$obj['id'], @$obj['metadata']['title'], @$obj['metadata']['related_identifiers'][0]['identifier']));
                             }    
@@ -433,7 +436,7 @@ class ZenodoAPI
             }
         }        
     }
-    private function is_ckan_uploaded_file($url) /* symlink: uploaded_resources -> /extra/ckan_resources/ */
+    private function is_ckan_uploaded_file($url, $title = "") /* symlink: uploaded_resources -> /extra/ckan_resources/ */
     {   $info = pathinfo($url); //print_r($info);
         /*Array(
             [dirname] => https://editors.eol.org/uploaded_resources/bf6/3dc
@@ -451,11 +454,11 @@ class ZenodoAPI
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
             }
-            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "uploaded_resources"));
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", $title, "uploaded_resources"));
         }
         return false;
     }
-    private function is_editors_other_files($url) /* symlink: other_files -> /extra/other_files/ */
+    private function is_editors_other_files($url, $title = "") /* symlink: other_files -> /extra/other_files/ */
     {   // [https://editors.eol.org/other_files/SDR/traits-20191111/traits_all_201911.zip] => 
         $info = pathinfo($url); //print_r($info);
         /*Array(
@@ -474,11 +477,11 @@ class ZenodoAPI
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
             }
-            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "other_files"));
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", $title, "other_files"));
         }
         return false;
     }
-    private function is_editors_eol_resources($url) /* symlink: resources -> /extra/eol_php_resources/ */
+    private function is_editors_eol_resources($url, $title = "") /* symlink: resources -> /extra/eol_php_resources/ */
     {   // https://editors.eol.org/eol_php_code/applications/content_server/resources/eol_traits/bat-body-masses.txt.gz
         // https://editors.eol.org/eol_php_code/applications/content_server/resources/173.tar.gz
         $info = pathinfo($url); //print_r($info);
@@ -500,7 +503,7 @@ class ZenodoAPI
                 echo "\nsource: [$actual_file]\n";
                 return $actual_file;    
             }
-            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", "EOL resources"));
+            else self::log_error(array("MISSING: actual_file not found. [$actual_file]", $title, "EOL resources"));
             // MISSING: actual_file not found. [/extra/eol_php_resourceshttps://editors.eol.org/eol_php_code/applications/content_server/resources/368_delta.tar.gz]
         }
         return false;
