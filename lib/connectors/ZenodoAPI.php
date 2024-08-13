@@ -197,8 +197,8 @@ class ZenodoAPI
                 // /* ===== divide and conquer
                 @$this->divide_and_conquer++;
                 $m = $this->divide_and_conquer;
-                if(    $m >= 1 && $m <= 10) {}
-                elseif($m > 10 && $m <= 20) continue;
+                if(    $m >= 1 && $m <= 5) {}
+                elseif($m > 5  && $m <= 20) continue;
                 elseif($m > 20 && $m <= 30) continue;
                 else continue;
                 // ===== */
