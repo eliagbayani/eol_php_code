@@ -198,17 +198,17 @@ class ZenodoAPI
                 @$this->divide_and_conquer++;
                 $m = $this->divide_and_conquer;
                 if(    $m >= 1 && $m <= 5)  continue; //done
-                elseif($m > 5  && $m <= 20) {} //done
-                elseif($m > 20 && $m <= 25) continue;
+                elseif($m > 5  && $m <= 20) continue; //done
+                elseif($m > 20 && $m <= 25) {}
                 else continue;
                 // ===== */
 
                 print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                /*
+                // /*
                 self::start_Zenodo_process($input); //main operation
-                */
+                // */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
