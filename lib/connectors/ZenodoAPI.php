@@ -197,9 +197,9 @@ class ZenodoAPI
                 // /* ===== divide and conquer
                 @$this->divide_and_conquer++;
                 $m = $this->divide_and_conquer;
-                if(    $m >= 1 && $m <= 5)  continue;
-                elseif($m > 5  && $m <= 20) {}
-                elseif($m > 20 && $m <= 30) continue;
+                if(    $m >= 1 && $m <= 5)  continue; //done
+                elseif($m > 5  && $m <= 20) continue; //done
+                elseif($m > 20 && $m <= 60) continue;
                 else continue;
                 // ===== */
 
@@ -259,7 +259,7 @@ class ZenodoAPI
     }
     private function start_Zenodo_upload_only($title) //upload of actual file to a published Zenodo record
     {
-        sleep(5); echo "\nPause 5 seconds...\n"; echo "\n[$title]\n";
+        echo "\n[$title]\n"; echo "\nPause 5 seconds...\n"; sleep(5);
         $obj = self::get_deposition_by_title($title); // print_r($obj); exit;
         if(!$obj) {
             self::log_error(array("Title not found", "needle:[$title]"));
@@ -400,8 +400,8 @@ class ZenodoAPI
     {
         $title_x = $input['metadata']['title'];
         $notes_x = $input['metadata']['notes'];
-
-        sleep(7); echo "\nPause 7 seconds...\n";
+ 
+        echo "\nPause 7 seconds...\n"; sleep(7);
         $create_obj = self::create_Zenodo_dataset($input);
         if(self::if_error($create_obj, 'create', $title_x)) {}
         else {
@@ -999,7 +999,7 @@ class ZenodoAPI
         $cmd .= ' -H "Authorization: b9187eeb-0819-4ca5-a1f7-2ed97641bbd4"';
         // */
 
-        sleep(2); //may need to delay since there are many records involved
+        sleep(5); //may need to delay since there are many records involved
         $output1 = shell_exec($cmd);            echo "\n$output1\n";
         $output2 = json_decode($output1, true); print_r($output2);
         if($output2['success'] == 1) echo "\nOpenData resource UPDATE OK.\n";
