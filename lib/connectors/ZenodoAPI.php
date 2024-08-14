@@ -96,6 +96,7 @@ class ZenodoAPI
         echo "\ntotal resources: [".$this->debug['total resources']."]\n";
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
+        print_r($this->report);
     }
     private function process_organization($organization_id)
     {
@@ -114,10 +115,11 @@ class ZenodoAPI
         $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json"; //main operation
 
         if($json = Functions::lookup_with_cache($url, $this->download_options)) {
-            $o = json_decode($json, true); //print_r($o);
+            $o = json_decode($json, true); //print_r($o); exit("\n111\n");
+            $this->organization_name = $o['result']['display_name'];
             echo "\npackage_count: ".$o['result']['package_count']."\n";
-            foreach($o['result']['packages'] as $p) {
-
+            foreach($o['result']['packages'] as $p) { //print_r($p); exit("\n111\n");
+                $this->dataset_title = $p['title'];
                 // if(in_array($p['title'], array("Images list", "Vernacular names", "FishBase", "EOL Stats for species level pages"))) continue; //main operation
 
                 // /* dev only --- force limit the loop
@@ -169,6 +171,7 @@ class ZenodoAPI
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
+                $this->report[$this->organization_name][$this->dataset_title][$title] = '';
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
@@ -219,12 +222,12 @@ class ZenodoAPI
                 // error starts with: ERROR	create	Ori Fragman-Sapir's TrekNature Gallery	{"status":400,"message":"Unable to decode JSON data in request body."}	2024-08-13 11:45:03 AM
                 // ===== */
 
-                print_r($input); //exit("\nfirst occurrence\n");
+                // print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                // /*
+                /*
                 self::start_Zenodo_process($input); //main operation
-                // */
+                */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
@@ -241,12 +244,11 @@ class ZenodoAPI
     private function just_stats($input)
     {
         if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
-            echo "\n[$url]\n"; print_r(pathinfo($url));
+            echo "\n[$url]\n"; //print_r(pathinfo($url));
             $needle1 = "https://editors.eol.org/";
             $needle2 = "http://editors.eol.org/";
             if(stripos($url, $needle1) !== false || stripos($url, $needle2) !== false) { //string is found
-                $arr = explode("/", $url);
-                // print_r($arr);
+                $arr = explode("/", $url); // print_r($arr);
                 if(stripos($url, "editors.eol.org/eol_php_code/applications/content_server/resources/") !== false) $this->debug['editors path']['eol resources'] = '';  //string is found
                 else $this->debug['editors path'][$arr[3]] = '';
             }
