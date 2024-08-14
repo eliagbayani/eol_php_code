@@ -74,17 +74,17 @@ class ZenodoAPI
                     [4] => wikidata-trait-reports
                 )*/
                 
-                // /* main operation
+                /* main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //migrated public datasets already //main operation
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
-                // */
+                */
 
                 // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+                // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
                 echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
@@ -146,7 +146,7 @@ class ZenodoAPI
     }
     private function process_a_package($p) //process a dataset
     {   // print_r($p);
-        echo "\nnum_resources: ".$p['num_resources']."\n";
+        // echo "\nnum_resources: ".$p['num_resources']."\n";
         // loop to each of the resources of a package
         $package_obj = self::lookup_package_using_id($p['id']);
         if($resources = @$package_obj['result']['resources']) {
@@ -171,16 +171,16 @@ class ZenodoAPI
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
-                $this->report[$this->organization_name][$this->dataset_title][$title] = '';
+                $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = '';
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
                 // if(in_array($title, array("EOL Hierarchy Entries April 2017: Hierarchy Entries April 2017"))) continue; //done -- migrated completely* Legacy datasets
-                if(in_array($title, array("FishBase: FishBase"))) continue; //migrated already
-                if(in_array($title, array("FishBase"))) continue; //migrated already
-                if(in_array($title, array("Paleobiology Database (PBDB): PBDB (368) in DwCA"))) continue; //migrated already
-                if(in_array($title, array("DiscoverLife: Discoverlife Maps"))) continue; //migrated already
-                if(in_array($title, array("van Tienhoven, 2003: van Tienhoven, A. 2003"))) continue; //migrated already
+                // if(in_array($title, array("FishBase: FishBase"))) continue; //migrated already
+                // if(in_array($title, array("FishBase"))) continue; //migrated already
+                // if(in_array($title, array("Paleobiology Database (PBDB): PBDB (368) in DwCA"))) continue; //migrated already
+                // if(in_array($title, array("DiscoverLife: Discoverlife Maps"))) continue; //migrated already
+                // if(in_array($title, array("van Tienhoven, 2003: van Tienhoven, A. 2003"))) continue; //migrated already
 
                 // ============ dev only
                 // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
@@ -199,7 +199,7 @@ class ZenodoAPI
                 else continue;
                 ---------- */
 
-                // /* ===== divide and conquer
+                /* ===== divide and conquer
                 @$this->divide_and_conquer++;
                 $m = $this->divide_and_conquer;
                 if(    $m >= 1 && $m <= 5)  continue; //done
@@ -220,7 +220,7 @@ class ZenodoAPI
                 if($m == 2200) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
                 if($m == 2300) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
                 // error starts with: ERROR	create	Ori Fragman-Sapir's TrekNature Gallery	{"status":400,"message":"Unable to decode JSON data in request body."}	2024-08-13 11:45:03 AM
-                // ===== */
+                ===== */
 
                 // print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
