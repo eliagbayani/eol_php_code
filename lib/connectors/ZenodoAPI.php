@@ -209,11 +209,12 @@ class ZenodoAPI
                 elseif($m > 400 && $m <= 600) continue; //done
                 elseif($m > 600 && $m <= 800) continue; //done
                 elseif($m > 800 && $m <= 1200) continue; //done
-                elseif($m > 1200 && $m <= 1600) {}
+                elseif($m > 1200 && $m <= 1600) continue; //done
+                elseif($m > 1600 && $m <= 2000) {}
                 else continue;
-                if($m == 1300) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
-                if($m == 1400) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
-                if($m == 1500) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
+                if($m == 1700) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
+                if($m == 1800) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
+                if($m == 1900) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
                 // error starts with: ERROR	create	Ori Fragman-Sapir's TrekNature Gallery	{"status":400,"message":"Unable to decode JSON data in request body."}	2024-08-13 11:45:03 AM
                 // ===== */
 
