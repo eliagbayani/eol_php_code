@@ -25,6 +25,21 @@ class ZenodoAPI
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
         $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
 
+
+        // /* main report
+        // [0] => dynamic-hierarchy
+        // [1] => encyclopedia_of_life
+        // [2] => eol-content-partners
+        // [3] => legacy-datasets
+        // [4] => wikidata-trait-reports
+        $this->report['EOL Dynamic Hierarchy Data Sets']    = $this->path_2_file_dat . "dynamic-hierarchy.json";
+        $this->report['Aggregate Datasets']                 = $this->path_2_file_dat . "encyclopedia_of_life.json";
+        $this->report['EOL Content Partners']               = $this->path_2_file_dat . "eol-content-partners.json";
+        $this->report['Legacy datasets']                    = $this->path_2_file_dat . "legacy-datasets.json";
+        $this->report['WikiData Trait Reports']             = $this->path_2_file_dat . "wikidata-trait-reports.json";
+        $this->organization = array("EOL Dynamic Hierarchy Data Sets", "Aggregate Datasets", "EOL Content Partners", "Legacy datasets", "WikiData Trait Reports");
+        // */
+        
         /*
         https://opendata.eol.org/api/3/action/package_list
         */
@@ -79,8 +94,8 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 */
 
-                // if(!in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy'))) continue; //dev only
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
@@ -96,7 +111,14 @@ class ZenodoAPI
         echo "\ntotal resources: [".$this->debug['total resources']."]\n";
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
-        print_r($this->report);
+
+        // /* main report
+        // print_r($this->report);
+        $json = json_encode($this->report);
+        $file = $this->report[$this->organization_name];
+        $WRITE = Functions::file_open($file, "w");
+        fwrite($WRITE, $json); fclose($WRITE);
+        // */
     }
     private function process_organization($organization_id)
     {
@@ -171,7 +193,18 @@ class ZenodoAPI
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
-                $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = '';
+
+                // /* ----- start main report -----
+                $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
+                if(!$obj) {
+                    self::log_error(array("MainRep: Title not found", "[$title]"));
+                    echo "\nMainRep: Title not found [$title]\n";
+                    continue;
+                }
+                if(self::if_error($obj, 'get_deposition_by_title', $title)) return;                
+                $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $obj['id'];
+                continue;
+                // ----- end main report ----- */
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets

@@ -33,8 +33,8 @@ $title = "active: World Odonata List";
 $title = "World Odonata List (ODO) - active: World Odonata List";
 $title = "identifier map: current version";
 $title = "EOL Dynamic Hierarchy: Dynamic Hierarchy Version 2.2";
-$title = "World Odonata List";
-$func->list_deposition_per_title($title);
+$title = "User Generated Content (EOL v2): user image ratings";
+$func->get_deposition_by_title($title);
 */
 
 /* utility
