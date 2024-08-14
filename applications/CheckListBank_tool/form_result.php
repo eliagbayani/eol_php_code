@@ -66,8 +66,9 @@ if($form_url) { //URL is pasted.
     */
 }
 elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
+    echo "<br>File type is: [$file_type]<br>";
     debug("<br>orig_file: [".$_FILES["file_upload2"]["name"]."]<br>"); debug("<br>file type: [".$file_type."]<br>");
-    $allowed_file_types = array("application/x-gzip", "application/zip"); //.tar.gz and .zip
+    $allowed_file_types = array("application/x-gzip", "application/zip", "application/x-zip-compressed"); //.tar.gz and .zip
     if(in_array($file_type, $allowed_file_types)) {
         if($_FILES["file_upload2"]["error"] > 0) {}
         else {
