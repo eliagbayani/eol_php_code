@@ -96,10 +96,10 @@ class ZenodoAPI
 
                 
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
-                if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
+                // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
                 echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
@@ -201,6 +201,7 @@ class ZenodoAPI
                 $title = $input['metadata']['title'];
 
                 // /* ----- start main report -----
+                sleep(2);
                 $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
                 if(!$obj) {
                     self::log_error(array("MainRep: Title not found", "[$title]"));
@@ -769,6 +770,7 @@ class ZenodoAPI
                 }
             }
             // */
+            if($page_num >= 3) return;
         } //end while()
     }
     function list_depositions()
