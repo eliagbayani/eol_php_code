@@ -3,6 +3,7 @@ namespace php_active_record;
 /* 1st client: zenodo.php
 docs:   https://developers.zenodo.org/?shell#representation
         https://help.zenodo.org/docs/deposit/manage-files/
+        https://help.zenodo.org/guides/search/
 
 Use this when searching a title in Zenodo. Paste this in the search textbox:
 title:("EOL Dynamic Hierarchy: DH223test.zip")
@@ -205,9 +206,11 @@ class ZenodoAPI
                 elseif($m > 60 && $m <= 100) continue; //done
                 elseif($m > 100 && $m <= 200) continue; //done
                 elseif($m > 200 && $m <= 400) continue; //done
-                elseif($m > 400 && $m <= 600) {}
+                elseif($m > 400 && $m <= 600) continue; //done
+                elseif($m > 600 && $m <= 800) {}
                 else continue;
-                if($m == 500) { echo "\nPause 3 minutes ($m counter)\n"; sleep(60*3); }
+                if($m == 700) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
+                // error starts with: ERROR	create	Ori Fragman-Sapir's TrekNature Gallery	{"status":400,"message":"Unable to decode JSON data in request body."}	2024-08-13 11:45:03 AM
                 // ===== */
 
                 print_r($input); //exit("\nfirst occurrence\n");
