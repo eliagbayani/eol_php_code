@@ -95,8 +95,8 @@ class ZenodoAPI
                 */
 
                 
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
-                // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
                 // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
@@ -119,6 +119,12 @@ class ZenodoAPI
         $WRITE = Functions::file_open($file, "w");
         fwrite($WRITE, $json); fclose($WRITE);
         // */
+    }
+    function access_json_reports()
+    {
+        $json = file_get_contents($this->report['Aggregate Datasets']);
+        $arr = json_decode($json, true);
+        print_r($arr);
     }
     private function process_organization($organization_id)
     {
