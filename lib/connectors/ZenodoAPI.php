@@ -200,7 +200,7 @@ class ZenodoAPI
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
 
-                // /* ----- start main report -----
+                /* ----- start main report -----
                 sleep(2);
                 $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
                 if(!$obj) {
@@ -211,7 +211,7 @@ class ZenodoAPI
                 if(self::if_error($obj, 'get_deposition_by_title', $title)) return;                
                 $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $obj['id'];
                 continue;
-                // ----- end main report ----- */
+                ----- end main report ----- */
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
