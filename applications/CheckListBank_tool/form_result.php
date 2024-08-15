@@ -107,7 +107,7 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
         else exit("<hr>ERROR: Cannot proceed. File is lost [$dwca_full_path]. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
         // ---------- */
     }
-    else exit("<hr><i>$file_type</i><hr>Invalid file type. Please report this file type to eagbayani@eol.org<br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");    
+    else exit("<hr><i>$file_type</i><hr>Invalid file type. Please email this file type to eagbayani@eol.org<br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");    
 }
 
 
