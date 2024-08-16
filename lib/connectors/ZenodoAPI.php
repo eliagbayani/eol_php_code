@@ -226,7 +226,13 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
-                if(!in_array($title, array(addslashes("GBIF data summaries: GBIF nat'l node classification resource: Germany")))) continue;
+
+
+                $new_title = "GBIF data summaries: GBIF nat'l node classification resource: Germany";
+                $new_title = "GBIF data summaries: GBIF nat'l node type records: Netherlands";
+                $new_title = "O'Brien et al, 2013";
+                $new_title = str_replace("'", "__", $new_title);
+                if(!in_array($title, array($new_title))) continue;
                 
                 /* ---------- block of code --- only accept "http:" not "https:"
                 if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
@@ -458,7 +464,7 @@ class ZenodoAPI
         $title_x = $input['metadata']['title'];
         $notes_x = $input['metadata']['notes'];
  
-        echo "\nPause 10 seconds...\n"; sleep(10);
+        echo "\nPause 10 seconds...\n"; sleep(1);
         $create_obj = self::create_Zenodo_dataset($input);
         if(self::if_error($create_obj, 'create', $title_x)) {}
         else {
@@ -467,14 +473,17 @@ class ZenodoAPI
                 if(self::if_error($obj, 'retrieve', $id)) {}
                 else {
 
-                    // /*
+                    // /* main operation
                     if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {}
                     else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
                     if($actual_file = self::is_ckan_uploaded_file($url, $title_x))        $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
                     elseif($actual_file = self::is_editors_other_files($url, $title_x))   $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
                     elseif($actual_file = self::is_editors_eol_resources($url, $title_x)) $upload_obj = self::upload_Zenodo_dataset($obj, $actual_file);  //uploads actual file
-                    else                                                        $upload_obj = self::upload_Zenodo_dataset($obj);                //uploads .dat file
+                    else                                                                  $upload_obj = self::upload_Zenodo_dataset($obj);                //uploads .dat file
                     // */
+                    /* dev only debug only
+                    $upload_obj = self::upload_Zenodo_dataset($obj);
+                    */
 
                     if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
                     else {
@@ -663,10 +672,13 @@ class ZenodoAPI
             }
         }
         else $title = trim($p['title'].": ".$r['name']); //orig
+        // /* new
+        $title = str_replace("'", "__", $title);
+        // */
         if(!$title) exit("\nwalang title\n");
         $this->debug['titles'][$title] = '';
         // -------------------------------------------------------------------
-        $input['metadata'] = array( "title" => addslashes($title), //"Images list: image list",
+        $input['metadata'] = array( "title" => $title, //"Images list: image list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "publication_date" => date("Y-m-d"),
                                     "description" => $p['notes'],
