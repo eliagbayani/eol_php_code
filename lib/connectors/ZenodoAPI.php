@@ -94,7 +94,6 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 */
 
-                
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
@@ -105,20 +104,20 @@ class ZenodoAPI
                 self::process_organization($organization_id);
             }
         }
-        print_r($this->debug);
+        // print_r($this->debug);
         self::check_license_values();
         $sum = 0; foreach($this->debug['license_id'] as $n) $sum += $n; echo "\nlicense_id: [$sum]\n";
         echo "\ntotal resources: [".$this->debug['total resources']."]\n";
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
 
-        // /* main report
+        /* main report
         // print_r($this->report);
         $json = json_encode($this->report);
         $file = $this->report[$this->organization_name];
         $WRITE = Functions::file_open($file, "w");
         fwrite($WRITE, $json); fclose($WRITE);
-        // */
+        */
     }
     function access_json_reports()
     {
@@ -227,7 +226,7 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
-                // if(!in_array($title, array("xxx"))) continue;
+                if(!in_array($title, array("GBIF data summaries: GBIF nat'l node classification resource: Germany"))) continue;
                 
                 /* ---------- block of code --- only accept "http:" not "https:"
                 if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
@@ -262,12 +261,12 @@ class ZenodoAPI
                 // error starts with: ERROR	create	Ori Fragman-Sapir's TrekNature Gallery	{"status":400,"message":"Unable to decode JSON data in request body."}	2024-08-13 11:45:03 AM
                 ===== */
 
-                // print_r($input); //exit("\nfirst occurrence\n");
+                print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                /*
+                // /*
                 self::start_Zenodo_process($input); //main operation
-                */
+                // */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
@@ -745,6 +744,7 @@ class ZenodoAPI
         //   }
         // }
         // '
+
         $arr["query"]["query_string"] = array("query" => $title, "default_field" => "title");
         $q = json_encode($arr);        
         // */
@@ -770,7 +770,7 @@ class ZenodoAPI
                 }
             }
             // */
-            if($page_num >= 3) return;
+            // if($page_num >= 3) return;
         } //end while()
     }
     function list_depositions()
@@ -818,7 +818,14 @@ class ZenodoAPI
         $cmd .= " 2>&1";
         // echo "\nretrieve cmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  //echo "\n=====retrieve=====\n"; print_r($obj); echo "\n=====retrieve=====\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====retrieve=====\n"; print_r($obj); echo "\n=====retrieve=====\n";
+
+        /* debug only dev only
+        $file = $this->path_2_file_dat . "z_13323232.dat";
+        $WRITE = Functions::file_open($file, "w");
+        fwrite($WRITE, $json); fclose($WRITE);
+        */
+
         return $obj;
     }
     private function upload_Zenodo_dataset($obj, $actual_file = false)

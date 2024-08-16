@@ -24,19 +24,27 @@ $func->start(); //main - this reads OpenData using its API and creates Zenodo re
 
 // $title = "EOL Dynamic Hierarchy: DH223test.zip"; $func->get_deposition_by_title($title);
 
-// $func->retrieve_dataset(13271534);
+// $func->retrieve_dataset(13323232);
 
 // $func->update_Zenodo_record(13273185);
 
 // $func->list_depositions(); //worked OK
 
 /*
-$title = "active: World Odonata List";
-$title = "World Odonata List (ODO) - active: World Odonata List";
-$title = "identifier map: current version";
-$title = "EOL Dynamic Hierarchy: Dynamic Hierarchy Version 2.2";
-$title = "User Generated Content (EOL v2): user image ratings";
-$func->get_deposition_by_title($title);
+$title = "National Checklists 2019: Réunion Species List";
+$title = "National Checklists 2019: São Tomé and Príncipe Species List";
+$title = "National Checklists: São Tomé and Príncipe Species List";
+// $title = "Moth Photographer's Group";
+// $title = "Trait Spreadsheet to DwCA: Fungi ecomorphological trait data";
+
+// not needed
+// $title = html_entity_decode($title);
+// $title = htmlentities($title);
+// $title = htmlspecialchars($title);
+// $title = htmlspecialchars_decode($title);
+
+$obj = $func->get_deposition_by_title($title);
+print_r($obj); echo "\n[".$obj['id']."]\n";
 */
 
 /* utility
