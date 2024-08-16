@@ -228,6 +228,7 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
 
 
+                $title = str_replace("'", "__", $title); //ditoxAug17
                 $new_title = "GBIF data summaries: GBIF nat'l node classification resource: Germany";
                 $new_title = "GBIF data summaries: GBIF nat'l node type records: Netherlands";
                 $new_title = "O'Brien et al, 2013";
@@ -270,9 +271,9 @@ class ZenodoAPI
                 print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                // /*
+                /*
                 self::start_Zenodo_process($input); //main operation
-                // */
+                */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
@@ -582,9 +583,6 @@ class ZenodoAPI
         if($val = @$p['license_id']) {
             if($val2 = @$this->license_map[$val]) $p['license_id'] = $val2;
         }
-        // /* new
-        $p['title'] = str_replace("'", "__", $p['title']); //ditoxAug17
-        // */
 
 
         $input = array();        
@@ -659,8 +657,8 @@ class ZenodoAPI
         $p['notes'] = str_replace("'", "__", $p['notes']);
         // -------------------------------------------------------------------
         $keywords = array();
-        if(count($resources) == 1)  $keywords[] = $p['organization']['title'];
-        else                        $keywords[] = $p['organization']['title'].": ".$p['title'];
+        if(count($resources) == 1)  $keywords[] = str_replace("'", "__", $p['organization']['title']); //ditoxAug17;
+        else                        $keywords[] = str_replace("'", "__", $p['organization']['title'].": ".$p['title']); //ditoxAug17;
         if($val = @$r['format']) {
             $keywords[] = "format: $val";
             @$this->debug['format'][$val]++;
@@ -677,6 +675,11 @@ class ZenodoAPI
         }
         else $title = trim($p['title'].": ".$r['name']); //orig
         if(!$title) exit("\nwalang title\n");
+
+        // /* new
+        $title = str_replace("'", "__", $title); //ditoxAug17
+        // */
+
         $this->debug['titles'][$title] = '';
         // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $title, //"Images list: image list",
