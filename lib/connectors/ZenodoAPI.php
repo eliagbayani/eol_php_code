@@ -7,6 +7,7 @@ docs:   https://developers.zenodo.org/?shell#representation
 
 Use this when searching a title in Zenodo. Paste this in the search textbox:
 title:("EOL Dynamic Hierarchy: DH223test.zip")
+Zenodo total count: 2,230 as of Aug 17, 2024
 */
 class ZenodoAPI
 {
