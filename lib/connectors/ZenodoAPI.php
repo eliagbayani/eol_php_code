@@ -666,7 +666,7 @@ class ZenodoAPI
         if(!$title) exit("\nwalang title\n");
         $this->debug['titles'][$title] = '';
         // -------------------------------------------------------------------
-        $input['metadata'] = array( "title" => $title, //"Images list: image list",
+        $input['metadata'] = array( "title" => addslashes($title), //"Images list: image list",
                                     "upload_type" => "dataset", //controlled vocab.
                                     "publication_date" => date("Y-m-d"),
                                     "description" => $p['notes'],
