@@ -232,6 +232,7 @@ class ZenodoAPI
                 $new_title = "GBIF data summaries: GBIF nat'l node classification resource: Germany";
                 $new_title = "GBIF data summaries: GBIF nat'l node type records: Netherlands";
                 $new_title = "O'Brien et al, 2013";
+                $new_title = "O'Brien et al, 2013: O'Brien et al";
                 $new_title = str_replace("'", "__", $new_title); //ditoxAug17
                 if(!in_array($title, array($new_title))) continue;
                 
