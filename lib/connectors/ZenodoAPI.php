@@ -231,7 +231,7 @@ class ZenodoAPI
                 $new_title = "GBIF data summaries: GBIF nat'l node classification resource: Germany";
                 $new_title = "GBIF data summaries: GBIF nat'l node type records: Netherlands";
                 $new_title = "O'Brien et al, 2013";
-                $new_title = str_replace("'", "__", $new_title);
+                $new_title = str_replace("'", "__", $new_title); //ditoxAug17
                 if(!in_array($title, array($new_title))) continue;
                 
                 /* ---------- block of code --- only accept "http:" not "https:"
@@ -582,8 +582,12 @@ class ZenodoAPI
         if($val = @$p['license_id']) {
             if($val2 = @$this->license_map[$val]) $p['license_id'] = $val2;
         }
+        // /* new
+        $p['title'] = str_replace("'", "__", $p['title']); //ditoxAug17
+        // */
 
-        $input = array();
+
+        $input = array();        
         // -------------------------------------------------------------------
         $dates = array();
         // if($val = $p['metadata_created'])   $dates[] = array("start" => $val, "end" => $val, "type" => "Created");
@@ -672,9 +676,6 @@ class ZenodoAPI
             }
         }
         else $title = trim($p['title'].": ".$r['name']); //orig
-        // /* new
-        $title = str_replace("'", "__", $title);
-        // */
         if(!$title) exit("\nwalang title\n");
         $this->debug['titles'][$title] = '';
         // -------------------------------------------------------------------
