@@ -226,7 +226,7 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
-                if(!in_array($title, array("GBIF data summaries: GBIF nat'l node classification resource: Germany"))) continue;
+                if(!in_array($title, array(addslashes("GBIF data summaries: GBIF nat'l node classification resource: Germany")))) continue;
                 
                 /* ---------- block of code --- only accept "http:" not "https:"
                 if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
