@@ -26,6 +26,8 @@ class ZenodoAPI
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
         $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
 
+        $this->html_report = $this->path_2_file_dat . "opendata_zenodo.html";
+
 
         // /* main report
         // [0] => dynamic-hierarchy
@@ -38,7 +40,7 @@ class ZenodoAPI
         $this->report['EOL Content Partners']               = $this->path_2_file_dat . "eol-content-partners.json";
         $this->report['Legacy datasets']                    = $this->path_2_file_dat . "legacy-datasets.json";
         $this->report['WikiData Trait Reports']             = $this->path_2_file_dat . "wikidata-trait-reports.json";
-        $this->organization = array("EOL Dynamic Hierarchy Data Sets", "Aggregate Datasets", "EOL Content Partners", "Legacy datasets", "WikiData Trait Reports");
+        // $this->organization = array("EOL Dynamic Hierarchy Data Sets", "Aggregate Datasets", "EOL Content Partners", "Legacy datasets", "WikiData Trait Reports");
         // */
         
         /*
@@ -120,11 +122,41 @@ class ZenodoAPI
         fwrite($WRITE, $json); fclose($WRITE);
         */
     }
-    function access_json_reports()
+    private function sort_key_val_array($multi_array, $key_orientation = SORT_ASC, $value_orientation = SORT_ASC)
     {
-        $json = file_get_contents($this->report['Aggregate Datasets']);
-        $arr = json_decode($json, true);
-        print_r($arr);
+        $data = array();
+        foreach($multi_array as $key => $value) $data[] = array('language' => $key, 'count' => $value);
+        // Obtain a list of columns
+        /* before PHP 5.5.0
+        foreach ($data as $key => $row) {
+            $language[$key]  = $row['language'];
+            $count[$key] = $row['count'];
+        }
+        */
+        
+        // as of PHP 5.5.0 you can use array_column() instead of the above code
+        $language  = array_column($data, 'language');
+        $count = array_column($data, 'count');
+
+        // Sort the data with language descending, count ascending
+        // Add $data as the last parameter, to sort by the common key
+        // array_multisort($count, SORT_ASC, $language, SORT_ASC, $data); // an example run
+        array_multisort($count, $value_orientation, $language, $key_orientation, $data);
+
+        // echo "<pre>"; print_r($data); echo "</pre>"; exit;
+        /* Array(
+            [0] => Array(
+                    [language] => infraspecies (inferred)
+                    [count] => 42
+                )
+            [1] => Array(
+                    [language] => family (inferred)
+                    [count] => 240
+                )
+        */
+        $final = array();
+        foreach($data as $d) $final[$d['language']] = $d['count'];
+        return $final;
     }
     private function process_organization($organization_id)
     {
@@ -1228,6 +1260,45 @@ class ZenodoAPI
         $arr[] = date("Y-m-d h:i:s A");
         if(!($file = Functions::file_open($this->log_file, "a"))) return;
         fwrite($file, implode("\t", $arr)."\n");
+        fclose($file);
+    }
+    function access_json_reports()
+    {   /*
+        $this->report['EOL Dynamic Hierarchy Data Sets']    = $this->path_2_file_dat . "dynamic-hierarchy.json";
+        $this->report['Aggregate Datasets']                 = $this->path_2_file_dat . "encyclopedia_of_life.json";
+        $this->report['EOL Content Partners']               = $this->path_2_file_dat . "eol-content-partners.json";
+        $this->report['Legacy datasets']                    = $this->path_2_file_dat . "legacy-datasets.json";
+        $this->report['WikiData Trait Reports']             = $this->path_2_file_dat . "wikidata-trait-reports.json";
+        */
+
+        if(!($file = Functions::file_open($this->html_report, "w"))) return;
+
+        $organizations = array_keys($this->report); 
+        foreach($organizations as $org_name) {
+            $json = file_get_contents($this->report[$org_name]);
+            $arr = json_decode($json, true); //print_r($arr); exit;
+            if($arr = @$arr['main_report']) {}
+            else continue;
+            $orgs = array_keys($arr);
+            $org_name = $orgs[0];
+
+            fwrite($file, "<br>---------------------------------------------\n");
+            fwrite($file, "<br>Organization: $org_name\n");
+            fwrite($file, "<br>--------------------------------------------<br>\n");
+
+            
+            $tmp = $arr[$org_name]; 
+            $datasets = array_keys($tmp); asort($datasets); //print_r($datasets);
+            foreach($datasets as $dataset) { echo "\nDataset: $dataset\n";
+                $tmp2 = $tmp[$dataset];
+                $resources = array_keys($tmp2); asort($resources);
+                // print_r($tmp2); exit;
+                foreach($resources as $resource) {
+                    echo "\n ----- $resource == $tmp2[$resource]\n";
+                }
+            }
+            // exit;
+        }
         fclose($file);
     }
     /*
