@@ -25,9 +25,7 @@ class ZenodoAPI
         else                           $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
         $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
-
         $this->html_report = $this->path_2_file_dat . "opendata_zenodo.html";
-
 
         // /* main report
         // [0] => dynamic-hierarchy
@@ -1283,19 +1281,25 @@ class ZenodoAPI
             $org_name = $orgs[0];
 
             fwrite($file, "<br>---------------------------------------------\n");
-            fwrite($file, "<br>Organization: $org_name\n");
+            fwrite($file, "<br>Organization: <b>$org_name</b>\n");
             fwrite($file, "<br>--------------------------------------------<br>\n");
 
             
             $tmp = $arr[$org_name]; 
             $datasets = array_keys($tmp); asort($datasets); //print_r($datasets);
-            foreach($datasets as $dataset) { echo "\nDataset: $dataset\n";
+            foreach($datasets as $dataset) { 
+                fwrite($file, "<br>Dataset: <b>$dataset</b>\n");                
                 $tmp2 = $tmp[$dataset];
                 $resources = array_keys($tmp2); asort($resources);
                 // print_r($tmp2); exit;
+
+                fwrite($file, "<ul>");
                 foreach($resources as $resource) {
-                    echo "\n ----- $resource == $tmp2[$resource]\n";
+                    fwrite($file, "<li><a href='https://zenodo.org/records/$tmp2[$resource]'>$resource</a></li>\n");
                 }
+                // fwrite($file, "<br>");
+                fwrite($file, "</ul>");
+
             }
             // exit;
         }
