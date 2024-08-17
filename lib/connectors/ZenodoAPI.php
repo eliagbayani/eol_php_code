@@ -1271,7 +1271,10 @@ class ZenodoAPI
 
         if(!($file = Functions::file_open($this->html_report, "w"))) return;
 
-        $organizations = array_keys($this->report); 
+        $organizations = array_keys($this->report); asort($organizations);
+
+        // put here a Table of contents, showing organizations that will jump below...
+
         foreach($organizations as $org_name) {
             $json = file_get_contents($this->report[$org_name]);
             $arr = json_decode($json, true); //print_r($arr); exit;
@@ -1280,9 +1283,9 @@ class ZenodoAPI
             $orgs = array_keys($arr);
             $org_name = $orgs[0];
 
-            fwrite($file, "<br>---------------------------------------------\n");
-            fwrite($file, "<br>Organization: <b>$org_name</b>\n");
-            fwrite($file, "<br>--------------------------------------------<br>\n");
+            fwrite($file, "<hr>\n");
+            fwrite($file, "Organization: <b>$org_name</b>\n");
+            fwrite($file, "<hr>\n");
 
             
             $tmp = $arr[$org_name]; 
