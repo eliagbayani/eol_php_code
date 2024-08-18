@@ -229,6 +229,7 @@ class ZenodoAPI
                 $new_title = "Moth Photographer's Group";
                 $new_title = "Ori Fragman-Sapir's TrekNature Gallery";
                 $new_title = "Ori Fragman-Sapir's TrekNature Gallery: Ori Fragman's TrekNature gallery";
+                $new_title = "Royal Botanic Garden Edinburgh: Rhododendrons from Curtis' Botanical Magazine";
                 $new_title = str_replace("'", "__", $new_title); //ditoxAug17
                 if(!in_array($title, array($new_title))) continue;
                 // */
