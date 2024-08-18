@@ -1273,7 +1273,14 @@ class ZenodoAPI
 
         $organizations = array_keys($this->report); asort($organizations);
 
-        // put here a Table of contents, showing organizations that will jump below...
+        // /* put here a Table of contents, showing organizations that will jump below...
+        fwrite($file, "<a name='TOC'><br>Organizations:");
+        fwrite($file, "<ul>");
+        foreach($organizations as $org_name) {
+            fwrite($file, "<li><a href='#$org_name'>$org_name</a></li>");
+        }
+        fwrite($file, "</ul>");
+        // */
 
         foreach($organizations as $org_name) {
             $json = file_get_contents($this->report[$org_name]);
@@ -1283,22 +1290,25 @@ class ZenodoAPI
             $orgs = array_keys($arr);
             $org_name = $orgs[0];
 
-            fwrite($file, "<hr>\n");
-            fwrite($file, "Organization: <b>$org_name</b>\n");
-            fwrite($file, "<hr>\n");
-
-            
             $tmp = $arr[$org_name]; 
             $datasets = array_keys($tmp); asort($datasets); //print_r($datasets);
-            foreach($datasets as $dataset) { 
-                fwrite($file, "<br>Dataset: <b>$dataset</b>\n");                
+
+            fwrite($file, "<a name='$org_name'>");
+            fwrite($file, "<hr>\n");
+            fwrite($file, "Organization: <b>$org_name</b> 
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>Datasets: ".count($datasets)."</small>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small><a href='#TOC'>Back to top</a></small>\n");
+            fwrite($file, "<hr>\n");
+            $i = 0;
+            foreach($datasets as $dataset) { $i++;
+                fwrite($file, "<br>Dataset $i: <b>$dataset</b>\n");                
                 $tmp2 = $tmp[$dataset];
                 $resources = array_keys($tmp2); asort($resources);
                 // print_r($tmp2); exit;
 
                 fwrite($file, "<ul>");
                 foreach($resources as $resource) {
-                    fwrite($file, "<li><a href='https://zenodo.org/records/$tmp2[$resource]'>$resource</a></li>\n");
+                    fwrite($file, "<li><a target='".$resource."' href='https://zenodo.org/records/$tmp2[$resource]'>$resource</a></li>\n");
                 }
                 // fwrite($file, "<br>");
                 fwrite($file, "</ul>");
