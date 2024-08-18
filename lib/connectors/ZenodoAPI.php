@@ -230,6 +230,7 @@ class ZenodoAPI
                 $new_title = "Ori Fragman-Sapir's TrekNature Gallery";
                 $new_title = "Ori Fragman-Sapir's TrekNature Gallery: Ori Fragman's TrekNature gallery";
                 $new_title = "Royal Botanic Garden Edinburgh: Rhododendrons from Curtis' Botanical Magazine";
+                $new_title = "Thomas J. Walker Sound Recordings from Macaulay Library of Natural Sounds: Thomas J. Walker's insect recordings";
                 $new_title = str_replace("'", "__", $new_title); //ditoxAug17
                 if(!in_array($title, array($new_title))) continue;
                 // */
