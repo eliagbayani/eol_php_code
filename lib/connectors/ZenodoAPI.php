@@ -8,6 +8,7 @@ docs:   https://developers.zenodo.org/?shell#representation
 Use this when searching a title in Zenodo. Paste this in the search textbox:
 title:("EOL Dynamic Hierarchy: DH223test.zip")
 Zenodo total count: 2,230 as of Aug 17, 2024
+                    2,236 as of Aug 19, 2024
 */
 class ZenodoAPI
 {
@@ -112,13 +113,13 @@ class ZenodoAPI
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
 
-        /* main report
+        // /* main report
         // print_r($this->report);
         $json = json_encode($this->report);
         $file = $this->report[$this->organization_name];
         $WRITE = Functions::file_open($file, "w");
         fwrite($WRITE, $json); fclose($WRITE);
-        */
+        // */
     }
     private function process_organization($organization_id)
     {
@@ -194,18 +195,18 @@ class ZenodoAPI
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
 
-                /* ----- start main report -----
+                // /* ----- start main report -----
                 sleep(2);
                 $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
                 if(!$obj) {
-                    self::log_error(array("MainRep: Title not found", "[$title]"));
-                    echo "\nMainRep: Title not found [$title]\n";
+                    self::log_error(array("MainRep2: Title not found", "[$title]"));
+                    echo "\nMainRep2: Title not found [$title]\n";
                     continue;
                 }
                 if(self::if_error($obj, 'get_deposition_by_title', $title)) return;                
                 $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $obj['id'];
                 continue;
-                ----- end main report ----- */
+                // ----- end main report ----- */
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
@@ -222,9 +223,8 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
 
+                /* add resources one by one:
                 $title = str_replace("'", "__", $title); //ditoxAug17
-
-                // /*
                 $new_title = "EduLifeDesks Archive: The Field Museum Member's Night EOL Photo Scavenger Hunt 2010 (137) DwCA";
                 $new_title = "Moth Photographer's Group";
                 $new_title = "Ori Fragman-Sapir's TrekNature Gallery";
@@ -233,7 +233,7 @@ class ZenodoAPI
                 $new_title = "Thomas J. Walker Sound Recordings from Macaulay Library of Natural Sounds: Thomas J. Walker's insect recordings";
                 $new_title = str_replace("'", "__", $new_title); //ditoxAug17
                 if(!in_array($title, array($new_title))) continue;
-                // */
+                */
                 
                 /* ---------- block of code --- only accept "http:" not "https:"
                 if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
