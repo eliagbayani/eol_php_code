@@ -226,7 +226,7 @@ class ZenodoAPI
 
                 // /*
                 $new_title = "EduLifeDesks Archive: The Field Museum Member's Night EOL Photo Scavenger Hunt 2010 (137) DwCA";
-                // $new_title = "O'Brien et al, 2013: O'Brien et al";
+                $new_title = "Moth Photographer's Group";
                 $new_title = str_replace("'", "__", $new_title); //ditoxAug17
                 if(!in_array($title, array($new_title))) continue;
                 // */
