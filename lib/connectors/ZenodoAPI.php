@@ -120,42 +120,6 @@ class ZenodoAPI
         fwrite($WRITE, $json); fclose($WRITE);
         */
     }
-    private function sort_key_val_array($multi_array, $key_orientation = SORT_ASC, $value_orientation = SORT_ASC)
-    {
-        $data = array();
-        foreach($multi_array as $key => $value) $data[] = array('language' => $key, 'count' => $value);
-        // Obtain a list of columns
-        /* before PHP 5.5.0
-        foreach ($data as $key => $row) {
-            $language[$key]  = $row['language'];
-            $count[$key] = $row['count'];
-        }
-        */
-        
-        // as of PHP 5.5.0 you can use array_column() instead of the above code
-        $language  = array_column($data, 'language');
-        $count = array_column($data, 'count');
-
-        // Sort the data with language descending, count ascending
-        // Add $data as the last parameter, to sort by the common key
-        // array_multisort($count, SORT_ASC, $language, SORT_ASC, $data); // an example run
-        array_multisort($count, $value_orientation, $language, $key_orientation, $data);
-
-        // echo "<pre>"; print_r($data); echo "</pre>"; exit;
-        /* Array(
-            [0] => Array(
-                    [language] => infraspecies (inferred)
-                    [count] => 42
-                )
-            [1] => Array(
-                    [language] => family (inferred)
-                    [count] => 240
-                )
-        */
-        $final = array();
-        foreach($data as $d) $final[$d['language']] = $d['count'];
-        return $final;
-    }
     private function process_organization($organization_id)
     {
         $url = str_replace('ORGANIZATION_ID', $organization_id, $this->ckan['organization_show']); //not getting correct total of packages
@@ -258,14 +222,14 @@ class ZenodoAPI
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
 
-
                 $title = str_replace("'", "__", $title); //ditoxAug17
-                $new_title = "GBIF data summaries: GBIF nat'l node classification resource: Germany";
-                $new_title = "GBIF data summaries: GBIF nat'l node type records: Netherlands";
-                $new_title = "O'Brien et al, 2013";
-                $new_title = "O'Brien et al, 2013: O'Brien et al";
+
+                // /*
+                $new_title = "EduLifeDesks Archive: The Field Museum Member's Night EOL Photo Scavenger Hunt 2010 (137) DwCA";
+                // $new_title = "O'Brien et al, 2013: O'Brien et al";
                 $new_title = str_replace("'", "__", $new_title); //ditoxAug17
                 if(!in_array($title, array($new_title))) continue;
+                // */
                 
                 /* ---------- block of code --- only accept "http:" not "https:"
                 if($url = @$input['metadata']['related_identifiers'][0]['identifier']) {
@@ -277,7 +241,7 @@ class ZenodoAPI
                 else continue;
                 ---------- */
 
-                /* ===== divide and conquer
+                /* ======================================= divide and conquer
                 @$this->divide_and_conquer++;
                 $m = $this->divide_and_conquer;
                 if(    $m >= 1 && $m <= 5)  continue; //done
@@ -298,14 +262,14 @@ class ZenodoAPI
                 if($m == 2200) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
                 if($m == 2300) { echo "\nPause 4 minutes ($m counter)\n"; sleep(60*4); }
                 // error starts with: ERROR	create	Ori Fragman-Sapir's TrekNature Gallery	{"status":400,"message":"Unable to decode JSON data in request body."}	2024-08-13 11:45:03 AM
-                ===== */
+                ======================================= */
 
                 print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                /*
+                // /*
                 self::start_Zenodo_process($input); //main operation
-                */
+                // */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
@@ -1268,9 +1232,7 @@ class ZenodoAPI
         $this->report['Legacy datasets']                    = $this->path_2_file_dat . "legacy-datasets.json";
         $this->report['WikiData Trait Reports']             = $this->path_2_file_dat . "wikidata-trait-reports.json";
         */
-
         if(!($file = Functions::file_open($this->html_report, "w"))) return;
-
         $organizations = array_keys($this->report); asort($organizations);
 
         // /* put here a Table of contents, showing organizations that will jump below...
@@ -1309,6 +1271,7 @@ class ZenodoAPI
                 fwrite($file, "<ul>");
                 foreach($resources as $resource) {
                     fwrite($file, "<li><a target='".$resource."' href='https://zenodo.org/records/$tmp2[$resource]'>$resource</a></li>\n");
+                    @$final[$org_name]++;
                 }
                 // fwrite($file, "<br>");
                 fwrite($file, "</ul>");
@@ -1316,6 +1279,11 @@ class ZenodoAPI
             }
             // exit;
         }
+        $json = json_encode($final);
+        fwrite($file, "<hr>");
+        fwrite($file, $json);
+        fwrite($file, "<hr>");
+
         fclose($file);
     }
     /*
