@@ -196,15 +196,19 @@ class ZenodoAPI
                 $title = $input['metadata']['title'];
 
                 // /* ----- start main report -----
-                sleep(2);
-                $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
-                if(!$obj) {
-                    self::log_error(array("MainRep2: Title not found", "[$title]"));
-                    echo "\nMainRep2: Title not found [$title]\n";
-                    continue;
+                if($id_sought = self::get_id_from_json($title)) {}
+                else {
+                    sleep(2);
+                    $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
+                    if(!$obj) {
+                        self::log_error(array("MainRep2: Title not found", "[$title]"));
+                        echo "\nMainRep2: Title not found [$title]\n";
+                        continue;
+                    }
+                    if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
+                    $id_sought = $obj['id'];
                 }
-                if(self::if_error($obj, 'get_deposition_by_title', $title)) return;                
-                $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $obj['id'];
+                $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $id_sought;
                 continue;
                 // ----- end main report ----- */
 
