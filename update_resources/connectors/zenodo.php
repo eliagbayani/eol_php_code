@@ -18,9 +18,9 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
 $func = new ZenodoAPI();
-$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+// $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
-// $func->access_json_reports();
+$func->access_json_reports();
 
 // $title = "EOL Dynamic Hierarchy: DH223test.zip"; $func->get_deposition_by_title($title);
 
@@ -37,11 +37,16 @@ $title = "National Checklists: São Tomé and Príncipe Species List";
 // $title = "Moth Photographer's Group";
 // $title = "Trait Spreadsheet to DwCA: Fungi ecomorphological trait data";
 
-// not needed
-// $title = html_entity_decode($title);
-// $title = htmlentities($title);
-// $title = htmlspecialchars($title);
-// $title = htmlspecialchars_decode($title);
+// MainRep2: Title not found	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-19 09:05:05 AM
+// MainRep2: Title not found	[National Checklists: São Tomé and Príncipe Species List]	2024-08-19 09:53:26 AM
+// MainRep2: Title not found	[National Checklists 2019: São Tomé and Príncipe Species List]	2024-08-19 09:55:46 AM
+// MainRep2: Title not found	[National Checklists 2019: Réunion Species List]	2024-08-19 09:56:26 AM
+// MainRep2: Title not found	[National Checklists 2019: São Tomé and Príncipe Species List]	2024-08-19 09:57:00 AM
+// MainRep2: Title not found	[National Checklists 2019: Réunion Species List]	2024-08-19 09:58:05 AM
+// MainRep2: Title not found	[GBIF data summaries: GBIF nat'l node classification resource: Germany]	2024-08-19 09:58:38 AM
+// MainRep2: Title not found	[Thomas J. Walker Sound Recordings from Macaulay Library of Natural Sounds: Thomas J. Walker's insect recordings]	2024-08-19 09:59:47 AM
+
+$title = "National Checklists 2019: Réunion Species List";
 
 $obj = $func->get_deposition_by_title($title);
 print_r($obj); echo "\n[".$obj['id']."]\n";

@@ -9,6 +9,8 @@ Use this when searching a title in Zenodo. Paste this in the search textbox:
 title:("EOL Dynamic Hierarchy: DH223test.zip")
 Zenodo total count: 2,230 as of Aug 17, 2024
                     2,236 as of Aug 19, 2024
+{"Aggregate Datasets":38,"EOL Content Partners":1774,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
+{"Aggregate Datasets":38,"EOL Content Partners":1794,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 */
 class ZenodoAPI
 {
@@ -39,6 +41,14 @@ class ZenodoAPI
         $this->report['EOL Content Partners']               = $this->path_2_file_dat . "eol-content-partners.json";
         $this->report['Legacy datasets']                    = $this->path_2_file_dat . "legacy-datasets.json";
         $this->report['WikiData Trait Reports']             = $this->path_2_file_dat . "wikidata-trait-reports.json";
+
+        $this->org_name['dynamic-hierarchy']        = 'EOL Dynamic Hierarchy Data Sets';
+        $this->org_name['encyclopedia_of_life']     = 'Aggregate Datasets';
+        $this->org_name['eol-content-partners']     = 'EOL Content Partners';
+        $this->org_name['legacy-datasets']          = 'Legacy datasets';
+        $this->org_name['wikidata-trait-reports']   = 'WikiData Trait Reports'; 
+
+
         // $this->organization = array("EOL Dynamic Hierarchy Data Sets", "Aggregate Datasets", "EOL Content Partners", "Legacy datasets", "WikiData Trait Reports");
         // */
         
@@ -96,11 +106,15 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 */
 
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+                // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+
+                // /* main report: generate info list for title lookup
+                $this->title_id_info = self::generate_title_id_info($organization_id);
+                // */
 
                 echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
@@ -114,7 +128,7 @@ class ZenodoAPI
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
 
         // /* main report
-        // print_r($this->report);
+        // print_r($this->report); exit;
         $json = json_encode($this->report);
         $file = $this->report[$this->organization_name];
         $WRITE = Functions::file_open($file, "w");
@@ -196,17 +210,26 @@ class ZenodoAPI
                 $title = $input['metadata']['title'];
 
                 // /* ----- start main report -----
-                if($id_sought = self::get_id_from_json($title)) {}
+                // x MainRep: Title not found    13322823	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-14 12:50:54 PM
+                // x MainRep: Title not found    13333044 	[GBIF data summaries: GBIF nat'l node classification resource: Germany]	2024-08-14 03:59:45 PM
+                // x MainRep: Title not found    13340241	[Thomas J. Walker Sound Recordings from Macaulay Library of Natural Sounds: Thomas J. Walker's insect recordings]	2024-08-14 06:41:48 PM
+
+                if($title == "National Checklists: São Tomé and Príncipe Species List") $id_sought = 13313212;
+                elseif($title == "National Checklists 2019: São Tomé and Príncipe Species List") $id_sought = 13317655;
+                elseif($title == "National Checklists 2019: Réunion Species List") $id_sought = 13317938;
                 else {
-                    sleep(2);
-                    $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
-                    if(!$obj) {
-                        self::log_error(array("MainRep2: Title not found", "[$title]"));
-                        echo "\nMainRep2: Title not found [$title]\n";
-                        continue;
-                    }
-                    if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
-                    $id_sought = $obj['id'];
+                    if($id_sought = @$this->title_id_info[$title]) { echo "\nTitle found: [$title]"; }
+                    else {
+                        sleep(2);
+                        $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
+                        if(!$obj) {
+                            self::log_error(array("MainRep2: Title not found", "[$title]"));
+                            echo "\nMainRep2: Title not found [$title]\n";
+                            continue;
+                        }
+                        if(self::if_error($obj, 'get_deposition_by_title', $title)) return;
+                        $id_sought = $obj['id'];
+                    }    
                 }
                 $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $id_sought;
                 continue;
@@ -680,9 +703,9 @@ class ZenodoAPI
         else $title = trim($p['title'].": ".$r['name']); //orig
         if(!$title) exit("\nwalang title\n");
 
-        // /* new
+        /* new
         $title = str_replace("'", "__", $title); //ditoxAug17
-        // */
+        */
 
         $this->debug['titles'][$title] = '';
         // -------------------------------------------------------------------
@@ -784,7 +807,7 @@ class ZenodoAPI
             $i = 0;
             foreach($obj as $o) { $i++;
                 $result_title = $o['metadata']['title'];
-                echo "\n- [$page_num] $i. testing title results: [$result_title]...";
+                echo "\n- [$page_num] $i. Checking... [$result_title]...";
                 if($title == $result_title) {
                     echo "\nFound match: [$result_title]\n"; return $o;
                 }
@@ -1232,7 +1255,7 @@ class ZenodoAPI
         fwrite($file, implode("\t", $arr)."\n");
         fclose($file);
     }
-    function access_json_reports()
+    function access_json_reports() //generates the HTML page
     {   /*
         $this->report['EOL Dynamic Hierarchy Data Sets']    = $this->path_2_file_dat . "dynamic-hierarchy.json";
         $this->report['Aggregate Datasets']                 = $this->path_2_file_dat . "encyclopedia_of_life.json";
@@ -1288,11 +1311,23 @@ class ZenodoAPI
             // exit;
         }
         $json = json_encode($final);
-        fwrite($file, "<hr>");
-        fwrite($file, $json);
-        fwrite($file, "<hr>");
-
+        fwrite($file, "<hr>"); fwrite($file, $json); fwrite($file, "<hr>");
         fclose($file);
+    }
+    private function generate_title_id_info($organization_id)
+    {
+        $json = file_get_contents($this->report[$this->org_name[$organization_id]]);
+        $arr = json_decode($json, true); //print_r($arr); exit;
+        if($arr = @$arr['main_report']) {}
+        else exit("\njson file not found [$organization_id]\n");
+        // print_r($arr); exit("\nelix 2\n");
+        foreach($arr as $org_name => $arr_datasets) {
+            foreach($arr_datasets as $dataset_name => $arr_resources) {
+                foreach($arr_resources as $resource_name => $obj_id) $final[$resource_name] = $obj_id;
+            }
+        }
+        // print_r($final); exit;
+        return $final;
     }
     /*
     $arr = array("EOL Dynamic Hierarchy: Dynamic Hierarchy Version 1.1",  
