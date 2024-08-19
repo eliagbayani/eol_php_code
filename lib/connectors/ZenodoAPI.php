@@ -112,9 +112,9 @@ class ZenodoAPI
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
                 // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
-                // /* main report: generate info list for title lookup
+                /* main report: generate info list for title lookup
                 $this->title_id_info = self::generate_title_id_info($organization_id);
-                // */
+                */
 
                 echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
@@ -127,13 +127,13 @@ class ZenodoAPI
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
 
-        // /* main report
+        /* main report
         // print_r($this->report); exit;
         $json = json_encode($this->report);
         $file = $this->report[$this->organization_name];
         $WRITE = Functions::file_open($file, "w");
         fwrite($WRITE, $json); fclose($WRITE);
-        // */
+        */
     }
     private function process_organization($organization_id)
     {
@@ -209,11 +209,10 @@ class ZenodoAPI
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
 
-                // /* ----- start main report -----
+                /* ----- start main report -----
                 // x MainRep: Title not found    13322823	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-14 12:50:54 PM
                 // x MainRep: Title not found    13333044 	[GBIF data summaries: GBIF nat'l node classification resource: Germany]	2024-08-14 03:59:45 PM
                 // x MainRep: Title not found    13340241	[Thomas J. Walker Sound Recordings from Macaulay Library of Natural Sounds: Thomas J. Walker's insect recordings]	2024-08-14 06:41:48 PM
-
                 if($title == "National Checklists: São Tomé and Príncipe Species List") $id_sought = 13313212;
                 elseif($title == "National Checklists 2019: São Tomé and Príncipe Species List") $id_sought = 13317655;
                 elseif($title == "National Checklists 2019: Réunion Species List") $id_sought = 13317938;
@@ -233,7 +232,7 @@ class ZenodoAPI
                 }
                 $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $id_sought;
                 continue;
-                // ----- end main report ----- */
+                ----- end main report ----- */
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
