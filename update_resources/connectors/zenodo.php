@@ -20,9 +20,8 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 $func = new ZenodoAPI();
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
-$func->access_json_reports();
+$func->access_json_reports(); //this generates the HTML report
 
-// $title = "EOL Dynamic Hierarchy: DH223test.zip"; $func->get_deposition_by_title($title);
 
 // $func->retrieve_dataset(13323232);
 
@@ -31,12 +30,6 @@ $func->access_json_reports();
 // $func->list_depositions(); //worked OK
 
 /*
-$title = "National Checklists 2019: Réunion Species List";
-$title = "National Checklists 2019: São Tomé and Príncipe Species List";
-$title = "National Checklists: São Tomé and Príncipe Species List";
-// $title = "Moth Photographer's Group";
-// $title = "Trait Spreadsheet to DwCA: Fungi ecomorphological trait data";
-
 // MainRep2: Title not found	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-19 09:05:05 AM
 // MainRep2: Title not found	[National Checklists: São Tomé and Príncipe Species List]	2024-08-19 09:53:26 AM
 // MainRep2: Title not found	[National Checklists 2019: São Tomé and Príncipe Species List]	2024-08-19 09:55:46 AM
@@ -46,6 +39,11 @@ $title = "National Checklists: São Tomé and Príncipe Species List";
 // MainRep2: Title not found	[GBIF data summaries: GBIF nat'l node classification resource: Germany]	2024-08-19 09:58:38 AM
 // MainRep2: Title not found	[Thomas J. Walker Sound Recordings from Macaulay Library of Natural Sounds: Thomas J. Walker's insect recordings]	2024-08-19 09:59:47 AM
 
+$title = "National Checklists 2019: Réunion Species List";
+$title = "National Checklists 2019: São Tomé and Príncipe Species List";
+$title = "National Checklists: São Tomé and Príncipe Species List";
+$title = "Moth Photographer's Group";
+$title = "Trait Spreadsheet to DwCA: Fungi ecomorphological trait data";
 $title = "National Checklists 2019: Réunion Species List";
 
 $obj = $func->get_deposition_by_title($title);
