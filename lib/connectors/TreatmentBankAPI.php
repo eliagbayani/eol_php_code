@@ -21,6 +21,11 @@ http://tb.plazi.org/GgServer/xml.rss.xml
 
 Thanks.
 PS: I find the GBIF path incomplete and I assume not updated.
+=============================================================================
+when going back to TreatmentBank trait task: run in terminal:
+php update_resources/connectors/treatment_bank.php _ '{"task": "generate_single_dwca"}'
+php update_resources/connectors/environments_2_eol.php _ '{"task": "generate_eol_tags_pensoft", "resource":"all_BHL", "resource_id":"TreatmentBank", "subjects":"Uses"}'
+php update_resources/connectors/run_pensoft_test.php
 */
 class TreatmentBankAPI
 {

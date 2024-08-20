@@ -174,7 +174,7 @@ $tmp_arr = array_shift($needles);
 $title = array(array_shift($tmp_arr)); //get the first element of array using array_shift()
 $title = str_ireplace("dela", "de la", $title); //undo what was done above
 $final['title'] = $title;
-print_r($final); exit("\n[$citation]\nstop\n");
+print_r($final); exit("\n[$citation]\nstop 173\n");
 // */
 
 
