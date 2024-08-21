@@ -132,7 +132,7 @@ require_library('connectors/TreatmentBankAPI');
 $GLOBALS["ENV_DEBUG"] = true; //false;
 $timestart = time_elapsed();
 
-// /* test only
+/* test only
 // $citation = "Beirne BP. The male genitalia of the British Stigmellidae (Nepticulidae) (Lep.). Proceedings of the Royal Irish Academy Section B 50: 191-218. doi: http://www.jstor.org/pss/20490833. (1945).";
 // $citation = "Borkowski A. Studien an Nepticuliden (Lepidoptera). Teil VI. Die Verbreitung der Nepticuliden in Polen. Polskie Pismo Entomologiczne 45: 487-535, 410 pls. (1975).";
 // $citation = "Borkowski A. Studien an Stigmelliden (Lepidoptera). Teil II. Fedalmia thymi sp. n.: eine neue Art aus Mitteleuropa. Polskie Pismo Entomologiczne 40: 69-78. (1970).";
@@ -175,7 +175,7 @@ $title = array(array_shift($tmp_arr)); //get the first element of array using ar
 $title = str_ireplace("dela", "de la", $title); //undo what was done above
 $final['title'] = $title;
 print_r($final); exit("\n[$citation]\nstop 173\n");
-// */
+*/
 
 
 

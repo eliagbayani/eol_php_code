@@ -98,6 +98,10 @@ $descs[] = "(1836: 83) and on disturbed ground such as roadsides. 0 – 620 m el
 $descs[] = "A very cold place is Antarctica in the North Pole";
 $descs[] = "It is found in Ukraine in western marsh harrier Circus aeruginosus 1";
 
+$descs[] = "This is just the tip of the iceberg.";
+$descs[] = "This is just the tip x of the Iceberg.";
+$descs[] = "This is just the tip x of the iceberg.";
+
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
@@ -218,6 +222,10 @@ foreach($IDs as $resource_id) {
         if($i == 36) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 37) {$s = "antarctica-6255152";                    if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 38) {$s = "ukraine-690791";                        if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
+        if($i == 39) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 40) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 41) {$s = "iceberg-ENVO_00000298";                 if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";

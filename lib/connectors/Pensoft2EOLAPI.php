@@ -24,6 +24,9 @@ http://api.pensoft.net/annotator?text=I like playing in the shrub&ontologies=gro
 -> no anotations from Pensoft
 
 http://api.pensoft.net/annotator?text=OZARK-OUACHITA PLECOPTERA SPECIES LIST. Ozark Mountain forests.&ontologies=envo,eol-geonames
+
+https://github.com/EOL/textmine_rules
+-> Textmining rules: Filters, remapped lists, subset labels, etc. used in textmining connector using the Pensoft Annotator.
 */
 class Pensoft2EOLAPI extends Functions_Pensoft
 {
@@ -414,6 +417,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $i = 0; $saved = 0;
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
             $i++; if(($i % $this->modulo) == 0) echo "\nxyz".number_format($i);
+            if($GLOBALS['ENV_DEBUG']) echo " -[$i]- ";
             if($meta->ignore_header_lines && $i == 1) continue;
             if(!$row) continue;
             $row = Functions::conv_to_utf8($row); //possibly to fix special chars
@@ -1007,9 +1011,22 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 */
                 if($rek['id'] == 'http://purl.obolibrary.org/obo/ENVO_00000447') continue;                
                 if(in_array($rek['lbl'], array('mesa', 'laguna', 'rapids', 'ocean', 'sea', 'organ', 'field', 'well', 'adhesive', 'quarry', 'reservoir', 'umbrella', 'plantation', 'bar', 'planktonic material'))) continue;
-                if($rek['lbl'] == 'marsh') { //marsh harrier is a vernacular for a kind of bird
+                if($rek['lbl'] == 'marsh') { //"marsh harrier" is a vernacular for a kind of bird
                     if(stripos($rek['context'], 'harrier') !== false) continue; //string is found
                 }
+
+                // /* source text: "iceberg" -> marine iceberg
+                // None of the taxa mapped to this term occur on marine icebergs. Most mismappings are due to place name matches or use of the "tip of the iceberg" metaphor.                
+                if($rek['lbl'] == 'iceberg') { //
+                    if(stripos(strip_tags($rek['context']), 'tip of the') !== false) continue; //string is found
+                }
+                if(in_array($rek['lbl'], array('iceberg'))) { //accepts these terms, and maybe more...
+                    if(strpos($rek['context'], "<b>$rek[lbl]</b>") !== false) {} //but it has to be in lowercase. $rek['lbl'] is always in lowercase, from Pensoft.
+                    else continue;
+                }
+                // */
+
+
             } // ============================ end "envo"
             // */
             

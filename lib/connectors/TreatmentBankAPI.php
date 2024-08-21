@@ -16,6 +16,7 @@ http://tb.plazi.org/GgServer/xml.rss.xml
     Now you can get the DwCA using the masterDocId.
     e.g.
     tb.plazi.org/GgServer/dwca/FFC3FFBD0912FFB9FF8BFFEAFFFDD364.zip
+    tb.plazi.org/GgServer/dwca/FFCAD0163E4A3C619E02FF95F242FFEF.zip
     - from the DwCA, the eml.xml is a good source for attribution
     - Jen at this point, my concern is the taxa.txt (for names) and the media.txt to do textmining? Is that correct?
 
