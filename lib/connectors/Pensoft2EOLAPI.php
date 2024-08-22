@@ -1054,6 +1054,16 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 }
                 // ---------- */
 
+                // /* ---------- source text: "bay" -> bay
+                // Most of these trait records seem come from matches in place names, quite a few of them are for terrestrial taxa 
+                // that don't actually occur in a bay or immediately next to a bay, e.g. Asphalidesmus golovatchi, Paracondeellum paradisum, Gossia vieillardii
+                if(in_array($rek['lbl'], array('bay', 'bays'))) {
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
+                    else continue;
+                }
+                // ---------- */
+
+
 
             } // ============================ end "envo"
             // */

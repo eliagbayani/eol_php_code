@@ -114,10 +114,15 @@ $descs[] = "transferred from USNM, used for SEM), Magic mountains";
 $descs[] = "They went to the Port Orchard.";
 $descs[] = "They went to the Port orchard."; //orchard-ENVO_00000115
 
-/*
+$descs[] = "They went to the Ida Bay karst.";
+$descs[] = "They went to the Ida bay karst.";
+
+// /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-*/
+
+
+// */
 
 $final = array();
 $IDs = array('24', '617_ENV', 'TreatmentBank_ENV', '26_ENV'); //normal operation --- 617_ENV -> Wikipedia EN //24 -> AntWeb resource ID
@@ -250,6 +255,9 @@ foreach($IDs as $resource_id) {
 
         if($i == 49) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 50) {$s = "orchard-ENVO_00000115";                 if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
+        if($i == 51) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 52) {$s = "bay-ENVO_00000032";                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";
