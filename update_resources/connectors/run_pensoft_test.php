@@ -102,6 +102,10 @@ $descs[] = "This is just the tip of the iceberg.";
 $descs[] = "This is just the tip x of the Iceberg.";
 $descs[] = "This is just the tip x of the iceberg.";
 
+$descs[] = "around the wall of the alimentary canal in segment chambers of the head region";
+$descs[] = "that Canal stretches a mile long.";
+$descs[] = "that canal stretches a mile long."; //canal-ENVO_00000014
+
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
@@ -109,9 +113,9 @@ $descs = array();
 
 $final = array();
 $IDs = array('24', '617_ENV', 'TreatmentBank_ENV', '26_ENV'); //normal operation --- 617_ENV -> Wikipedia EN //24 -> AntWeb resource ID
-// $IDs = array('24');
-// $IDs = array('TreatmentBank_ENV'); //or TreatmentBank
-// $IDs = array('617_ENV'); //or Wikipedia EN
+// $IDs = array('24');                                      //dev only
+// $IDs = array('TreatmentBank_ENV'); //or TreatmentBank    //dev only
+// $IDs = array('617_ENV'); //or Wikipedia EN               //dev only
 
 foreach($IDs as $resource_id) {
     $param['resource_id'] = $resource_id;
@@ -226,6 +230,12 @@ foreach($IDs as $resource_id) {
         if($i == 39) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 40) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 41) {$s = "iceberg-ENVO_00000298";                 if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
+        if($i == 42) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 43) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 44) {$s = "canal-ENVO_00000014";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        
+
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";
