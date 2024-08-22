@@ -1038,13 +1038,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 }
                 // ---------- */
 
-                /* ---------- source text: "mountain" -> mountain
+                // /* ---------- source text: "mountain" -> mountain
                 // There are a quite a few invalid mappings of marine taxa due to place name matches, e.g., Galapagomystides verenae, Sericosura dentatus, Allocareproctus unangas
                 if($rek['lbl'] == 'mountain') {
                     if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
                     else continue;
                 }
-                ---------- */
+                // ---------- */
 
 
             } // ============================ end "envo"

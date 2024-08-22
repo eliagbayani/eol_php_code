@@ -106,6 +106,9 @@ $descs[] = "around the wall of the alimentary canal in segment chambers of the h
 $descs[] = "that Canal stretches a mile long.";
 $descs[] = "that canal stretches a mile long."; //canal-ENVO_00000014
 
+$descs[] = "transferred from USNM, used for SEM), Magic Mountain";
+$descs[] = "transferred from USNM, used for SEM), Magic mountain";
+
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
@@ -235,7 +238,8 @@ foreach($IDs as $resource_id) {
         if($i == 43) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 44) {$s = "canal-ENVO_00000014";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         
-
+        if($i == 45) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 46) {$s = "mountain-ENVO_00000081";                if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";
