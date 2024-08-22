@@ -111,6 +111,9 @@ $descs[] = "transferred from USNM, used for SEM), Magic Mountains";
 $descs[] = "transferred from USNM, used for SEM), Magic mountain";
 $descs[] = "transferred from USNM, used for SEM), Magic mountains";
 
+$descs[] = "They went to the Port Orchard.";
+$descs[] = "They went to the Port orchard."; //orchard-ENVO_00000115
+
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
@@ -244,6 +247,9 @@ foreach($IDs as $resource_id) {
         if($i == 46) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 47) {$s = "mountain-ENVO_00000081";                if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 48) {$s = "mountains-ENVO_00000081";               if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
+        if($i == 49) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 50) {$s = "orchard-ENVO_00000115";                 if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";

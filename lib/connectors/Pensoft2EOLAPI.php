@@ -1046,6 +1046,14 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 }
                 // ---------- */
 
+                // /* ---------- source text: "orchard" -> orchard
+                // Some invalid mappings of marine taxa due to place name matches, e.g., Chone aurantiaca, Zelentia nepunicea
+                if(in_array($rek['lbl'], array('orchard', 'orchards'))) {
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
+                    else continue;
+                }
+                // ---------- */
+
 
             } // ============================ end "envo"
             // */
