@@ -1015,7 +1015,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                     if(stripos($rek['context'], 'harrier') !== false) continue; //string is found
                 }
 
-                // /* ---------- source text: "iceberg" -> marine iceberg
+                // /* ---------- source text: "iceberg" -> marine iceberg (22Aug2024)
                 // None of the taxa mapped to this term occur on marine icebergs. Most mismappings are due to place name matches or use of the "tip of the iceberg" metaphor.                
                 if($rek['lbl'] == 'iceberg') { //
                     if(stripos(strip_tags($rek['context']), 'tip of the') !== false) continue; //string is found
@@ -1028,7 +1028,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 // ---------- */
 
                 // print_r($rek);
-                // /* ---------- source text: "canal" -> canal
+                // /* ---------- source text: "canal" -> canal (22Aug2024)
                 // - Lots of spiders, insects and other terrestrial taxa are mapped due to string matches in place names.
                 // - There are also quite a few invalid matches due to descriptions of alimentary canals, e.g., Metaphire taiwanensis and many other earthworms & millipedes.
                 if($rek['lbl'] == 'canal') { //"alimentary canal" is part of the body
