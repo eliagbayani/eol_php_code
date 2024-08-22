@@ -246,7 +246,6 @@ class Functions_Pensoft
         echo "\n $filename: [".count($final)."] dump count\n";
         if($what == "key_value") return $final;        
     }
-
     function is_context_valid($context)
     {
         $parts = explode(" ", $context); //print_r($parts); exit;
