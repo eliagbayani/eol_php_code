@@ -1021,7 +1021,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                     if(stripos(strip_tags($rek['context']), 'tip of the') !== false) continue; //string is found
                 }
                 if(in_array($rek['lbl'], array('iceberg'))) { //accepts these terms, and maybe more...
-                    if(strpos($rek['context'], "<b>$rek[lbl]</b>") !== false) {} //but it has to be in lowercase. $rek['lbl'] is always in lowercase, from Pensoft.
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
                     else continue;
                 }
                 // OR we totally blacklist 'iceberg'. We will only know after we generate the latest DwCA. I sense we will eventually blacklist 'iceberg'.
@@ -1033,10 +1033,18 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 // - There are also quite a few invalid matches due to descriptions of alimentary canals, e.g., Metaphire taiwanensis and many other earthworms & millipedes.
                 if($rek['lbl'] == 'canal') { //"alimentary canal" is part of the body
                     if(stripos($rek['context'], 'alimentary') !== false) continue; //string is found
-                    if(strpos($rek['context'], "<b>$rek[lbl]</b>") !== false) {} //but it has to be in lowercase. $rek['lbl'] is always in lowercase, from Pensoft.
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
                     else continue;
                 }
                 // ---------- */
+
+                /* ---------- source text: "mountain" -> mountain
+                // There are a quite a few invalid mappings of marine taxa due to place name matches, e.g., Galapagomystides verenae, Sericosura dentatus, Allocareproctus unangas
+                if($rek['lbl'] == 'mountain') {
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
+                    else continue;
+                }
+                ---------- */
 
 
             } // ============================ end "envo"

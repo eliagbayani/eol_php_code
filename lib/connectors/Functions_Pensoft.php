@@ -277,5 +277,10 @@ class Functions_Pensoft
         }
         return true;
     }
+    function lbl_is_lowercase($rek)
+    {
+        if(strpos($rek['context'], "<b>$rek[lbl]</b>") !== false) return true; //but it has to be in lowercase. $rek['lbl'] is always in lowercase, from Pensoft.
+        else return false;
+    }
 }
 ?>
