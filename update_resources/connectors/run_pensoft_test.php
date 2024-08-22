@@ -107,7 +107,9 @@ $descs[] = "that Canal stretches a mile long.";
 $descs[] = "that canal stretches a mile long."; //canal-ENVO_00000014
 
 $descs[] = "transferred from USNM, used for SEM), Magic Mountain";
+$descs[] = "transferred from USNM, used for SEM), Magic Mountains";
 $descs[] = "transferred from USNM, used for SEM), Magic mountain";
+$descs[] = "transferred from USNM, used for SEM), Magic mountains";
 
 /*
 $descs = array();
@@ -239,7 +241,9 @@ foreach($IDs as $resource_id) {
         if($i == 44) {$s = "canal-ENVO_00000014";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         
         if($i == 45) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
-        if($i == 46) {$s = "mountain-ENVO_00000081";                if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 46) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 47) {$s = "mountain-ENVO_00000081";                if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 48) {$s = "mountains-ENVO_00000081";               if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";
