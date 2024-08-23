@@ -925,7 +925,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             // */
 
             // /* NEW: Jul 10, 2024 - Eli's initiative --- never use line with " A. " --- abbreviation of names
-            if(!$this->is_context_valid($rek['context'])) continue;
+            if(!$this->is_context_valid($rek['context'])) { debug("\nExcluded: Context not valid.\n"); continue;}
             // */
 
             // /* should not get 'fen' --- [context] => Almost all of these are incorrect e.g. 1 ‘‘<b>fen</b>. ov.’’ fenestra ovalis
@@ -933,12 +933,12 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             $needle = "<b>".$rek['lbl']."</b>.";
             if(stripos($rek['context'], $needle) !== false) { //string is found
                 $needle = $rek['lbl'];
-                if($this->substri_count($rek['context'], $needle) > 1) continue; //meaning an abbreviation and the whole word was also found inside the context.
+                if($this->substri_count($rek['context'], $needle) > 1) {debug("\nExcluded: huli_2\n"); continue;} //meaning an abbreviation and the whole word was also found inside the context.
             }
             // */
 
             // /* new: Nov 22, 2023 - Eli's initiative. Until a better sol'n is found. e.g. "Cueva de Altamira"
-            if(stripos($rek['lbl'], " de ") !== false) continue; //string is found
+            if(stripos($rek['lbl'], " de ") !== false) {debug("\nExcluded: huli_3\n"); continue;} //string is found
             // */
 
             // print_r($this->param); //exit;
@@ -947,7 +947,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 if(isset($this->labels_to_remove[$rek['lbl']])) continue;
             }
             */
-            if(isset($this->labels_to_remove[$rek['lbl']])) continue; //this started exclusive to Wikipedia and TreatmentBank. Now it is across the board 20Jun2024
+            if(isset($this->labels_to_remove[$rek['lbl']])) {debug("\nExcluded: huli_4\n"); continue;} //this started exclusive to Wikipedia and TreatmentBank. Now it is across the board 20Jun2024
 
             $rek['id'] = self::WoRMS_URL_format($rek['id']); # can be general, for all resources
             // echo "\nGoes- 80\n"; print_r($rek);
@@ -959,7 +959,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 $labels = array('malabar', 'antarctica'); //A. malabar OR C. antarctica - exclude | Off to Malabar - include
                 $lbl = $rek['lbl'];
                 if(in_array($lbl, $labels)) {
-                    if(strpos($rek['context'], "<b>$lbl</b>") !== false) continue;
+                    if(strpos($rek['context'], "<b>$lbl</b>") !== false) {debug("\nExcluded: huli_5\n"); continue;}
                 }
                 // */
 
@@ -983,12 +983,12 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 
                 // /* exclude if context has certain strings that denote a literature reference - FOR ALL RESOURCES
                 // vol. 8, p. 67. 1904.Tylobolus uncigerus, Brolemann, Ann. Soc. Ent. <b>France</b>, vol. 83, pp. 9, 22, fig.
-                $parts_of_lit_ref = array(' vol.', ' p.', ' pp.', ' fig.', ' figs.', 'legit ', 'coll. ', 'ed. ', 'eds. '); 
+                $parts_of_lit_ref = array(' vol.', ' p.', ' pp.', ' fig.', ' figs.', 'legit ', 'coll. ', ' ed. ', 'eds. '); 
                 //, 'legit', 'coll.' from Katja
-                //, 'ed. ', 'eds. ' from Eli 
+                //, ' ed. ', 'eds. ' from Eli 
                 $cont = true;
                 foreach($parts_of_lit_ref as $part) {
-                    if(stripos($rek['context'], $part) !== false) $cont = false; //string is found
+                    if(stripos($rek['context'], $part) !== false) { $cont = false; debug("\nExcluded: part: [$part]\n"); } //string is found
                 }
                 if(!$cont) continue;
                 // */
