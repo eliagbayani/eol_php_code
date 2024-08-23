@@ -114,21 +114,22 @@ $descs[] = "transferred from USNM, used for SEM), Magic mountains";
 $descs[] = "They went to the Port Orchard.";
 $descs[] = "They went to the Port orchard."; //orchard-ENVO_00000115
 
-$descs[] = "They went to the Ida Bay karst.";
-$descs[] = "They went to the Ida bay karst.";
+$descs[] = "They went to the Ida Bay";
+$descs[] = "They went to the Ida bay";
 
-// /*
+/*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-
-
-// */
+$descs[] = "LHI GC L 18 10 metres G. Cassis 16 December 2000 lowland mixed forest litter at night 1 Ƥ AM <b>Malabar</b> Hill on path to Kim’s Lookout 31.515 o S 159.056 o E 24 November 2000 CBCR LHIS 004 L leaf";
+// $descs[] = "Distribution. Endemic to Lord Howe Island. Specimens examined. Australia New South Wales";
+*/
 
 $final = array();
 $IDs = array('24', '617_ENV', 'TreatmentBank_ENV', '26_ENV'); //normal operation --- 617_ENV -> Wikipedia EN //24 -> AntWeb resource ID
 // $IDs = array('24');                                      //dev only
 // $IDs = array('TreatmentBank_ENV'); //or TreatmentBank    //dev only
 // $IDs = array('617_ENV'); //or Wikipedia EN               //dev only
+// $IDs = array('26_ENV');                                  //dev only
 
 foreach($IDs as $resource_id) {
     $param['resource_id'] = $resource_id;
