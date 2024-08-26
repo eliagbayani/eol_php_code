@@ -1069,6 +1069,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 }
                 // ---------- */
 
+                // /*
+                if($rek['lbl'] == 'marsh') { //is good if there is no 'salt marsh' in context
+                    if(stripos($rek['context'], "salt <b>$rek[lbl]</b>") !== false) continue; //string is found
+                }
+                // */
+                
+
             } // ======================================================================= end "envo" habitat ontology
             // */
             

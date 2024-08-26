@@ -120,11 +120,15 @@ $descs[] = "They went to the Ida bay";
 $descs[] = "Habitat was with abundant bryozoan sponge and anthozoan cover adjacent to year-round kelp forest.";  //[kelp forest-ENVO_01000058]
 $descs[] = "Habitat was with abundant bryozoan sponge and anthozoan cover adjacent to year-round kelpx forest."; //forest-ENVO_01000174
 
+$descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noire, and from salt marsh creeks at Río San Pedro."; //salt marsh-ENVO_00000054
+$descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noire, and from saltx marsh creeks at Río San Pedro."; //marsh-ENVO_00000035
+// does not include 'salt marshes' or 'saltmarshes'.
+
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-// $descs[] = "LHI GC L 18 10 metres G. Cassis 16 December 2000 lowland mixed forest litter at night 1 Ƥ AM Malabar Hill on path to Kim’s Lookout 31.515 o S 159.056 o E 24 November 2000 CBCR LHIS 004 L leaf";
-$descs[] = "Habitat was with abundant bryozoan sponge and anthozoan cover adjacent to year-round kelp forest.";
+$descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noire, and from saltmarshes creeks at Río San Pedro.";
+$descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noire, and from salt marshes creeks at Río San Pedro.";
 */
 
 $final = array();
@@ -266,6 +270,8 @@ foreach($IDs as $resource_id) {
         if($i == 53) {$s = "kelp forest-ENVO_01000058";             if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 54) {$s = "forest-ENVO_01000174";                  if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
+        if($i == 55) {$s = "salt marsh-ENVO_00000054";             if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 56) {$s = "marsh-ENVO_00000035";                  if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
     }
     echo "\nerrors: [$resource_id][$errors errors]";
     $final[] =     "[$resource_id][$errors errors]";
