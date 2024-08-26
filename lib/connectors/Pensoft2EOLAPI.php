@@ -967,8 +967,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 if(stripos($rek['id'], "ENVO_") !== false) { //string is found
                     if(in_array($rek['lbl'], array('forest', 'woodland', 'grassland', 'savanna'))) { //accepts these terms, and maybe more once allowed by Jen.
                         // /* NEW Jul 9: but they have to be in lower case not "Forest" but just "forest"
-                        if(strpos($rek['context'], "<b>$rek[lbl]</b>") !== false) {}
+                        if(strpos($rek['context'], "<b>".strtolower($rek['lbl'])."</b>") !== false) {}
                         else continue;
+                        // */
+                        // /*
+                        if($rek['lbl'] == 'forest') { //is good if there is no 'kelp forest' in context
+                            if(stripos($rek['context'], "kelp <b>$rek[lbl]</b>") !== false) continue; //string is found
+                        }
                         // */
                     }
                     else continue;

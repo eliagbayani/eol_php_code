@@ -117,11 +117,14 @@ $descs[] = "They went to the Port orchard."; //orchard-ENVO_00000115
 $descs[] = "They went to the Ida Bay";
 $descs[] = "They went to the Ida bay";
 
+$descs[] = "Habitat was with abundant bryozoan sponge and anthozoan cover adjacent to year-round kelp forest.";  //[kelp forest-ENVO_01000058]
+$descs[] = "Habitat was with abundant bryozoan sponge and anthozoan cover adjacent to year-round kelpx forest."; //forest-ENVO_01000174
+
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-$descs[] = "LHI GC L 18 10 metres G. Cassis 16 December 2000 lowland mixed forest litter at night 1 Ƥ AM <b>Malabar</b> Hill on path to Kim’s Lookout 31.515 o S 159.056 o E 24 November 2000 CBCR LHIS 004 L leaf";
-// $descs[] = "Distribution. Endemic to Lord Howe Island. Specimens examined. Australia New South Wales";
+// $descs[] = "LHI GC L 18 10 metres G. Cassis 16 December 2000 lowland mixed forest litter at night 1 Ƥ AM Malabar Hill on path to Kim’s Lookout 31.515 o S 159.056 o E 24 November 2000 CBCR LHIS 004 L leaf";
+$descs[] = "Habitat was with abundant bryozoan sponge and anthozoan cover adjacent to year-round kelp forest.";
 */
 
 $final = array();
@@ -259,6 +262,9 @@ foreach($IDs as $resource_id) {
 
         if($i == 51) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 52) {$s = "bay-ENVO_00000032";                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
+        if($i == 53) {$s = "kelp forest-ENVO_01000058";             if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 54) {$s = "forest-ENVO_01000174";                  if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";
