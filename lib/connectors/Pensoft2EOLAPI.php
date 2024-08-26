@@ -952,6 +952,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             $rek['id'] = self::WoRMS_URL_format($rek['id']); # can be general, for all resources
             // echo "\nGoes- 80\n"; print_r($rek);
 
+            // =======================================================================
             if($rek['ontology'] == "eol-geonames") { //per https://eol-jira.bibalex.org/browse/DATA-1877?focusedCommentId=65861&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65861
                 // echo "\nGoes- 81\n";
 
@@ -997,11 +998,11 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 }
                 if(!$cont) continue;
                 // */
-            } // ============================ end "eol-geonames"            
+            } // ======================================================================= end "eol-geonames"            
             // */
 
             // echo "\nGoes- 100\n";
-            // /*
+            // /* =======================================================================
             if($rek['ontology'] == "envo") { //ontology habitat
                 /* all legit combined below
                 if(in_array($rek['lbl'], array('mesa', 'laguna'))) continue; //https://eol-jira.bibalex.org/browse/DATA-1877?focusedCommentId=65899&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65899
@@ -1068,16 +1069,14 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 }
                 // ---------- */
 
-
-
-            } // ============================ end "envo"
+            } // ======================================================================= end "envo" habitat ontology
             // */
             
-            // /*
+            // /* =======================================================================
             if($rek['ontology'] == "growth") {
                 if(in_array($rek['id'], array('https://www.wikidata.org/entity/Q16868813'))) continue; //https://eol-jira.bibalex.org/browse/DATA-1877?focusedCommentId=66125&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66125
             } // ============================ end "growth"
-            // */
+            // ======================================================================= end growth ontology */
             
             // /* customize
             // exit("\n".$this->param['resource_id']."\n");
