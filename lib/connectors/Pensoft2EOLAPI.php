@@ -971,7 +971,8 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                         if(strpos($rek['context'], "<b>".strtolower($rek['lbl'])."</b>") !== false) {}
                         else continue;
                         // */
-                        // /*
+                        
+                        // /* Scopalina kuyamu (a marine sponge): forest - Ideally, this would have been matched to "kelp forest" not just forest, because kelp forests aren't really forests.
                         if($rek['lbl'] == 'forest') { //is good if there is no 'kelp forest' in context
                             if(stripos($rek['context'], "kelp <b>$rek[lbl]</b>") !== false) continue; //string is found
                         }
@@ -1069,12 +1070,11 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 }
                 // ---------- */
 
-                // /*
+                // /* Oxydromus humesi (a marine polychaete): marsh - Ideally, this would have been matched to "salt marsh" not just marsh, because both mentions of marsh in the treatment actually refer to salt marsh.
                 if($rek['lbl'] == 'marsh') { //is good if there is no 'salt marsh' in context
                     if(stripos($rek['context'], "salt <b>$rek[lbl]</b>") !== false) continue; //string is found
                 }
                 // */
-                
 
             } // ======================================================================= end "envo" habitat ontology
             // */
