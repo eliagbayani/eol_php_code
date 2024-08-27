@@ -106,11 +106,11 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 */
 
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
                 /* main report: generate info list for title lookup
                 $this->title_id_info = self::generate_title_id_info($organization_id);
@@ -142,16 +142,19 @@ class ZenodoAPI
         // the 5 organizations - are saved as json files:
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=dynamic-hierarchy&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
-        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
+        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=legacy-datasets&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=wikidata-trait-reports&include_datasets=true';
 
         // $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json'; //an organization: Aggregate Datasets
         // $url = "http://localhost/other_files2/Zenodo_files/json/".$organization_id.".json";
 
-        $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json"; //main operation
+        // $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json"; //main operation
 
-        if($json = Functions::lookup_with_cache($url, $this->download_options)) {
+        $options = $this->download_options;
+        // $options['expire_seconds'] = 0;
+
+        if($json = Functions::lookup_with_cache($url, $options)) {
             $o = json_decode($json, true); //print_r($o); exit("\n111\n");
             $this->organization_name = $o['result']['display_name'];
             echo "\npackage_count: ".$o['result']['package_count']."\n";
@@ -163,7 +166,7 @@ class ZenodoAPI
                 // if($p['title'] != 'Images list') continue; //debug only dev only
                 // if($p['title'] != 'Vernacular names') continue; //debug only dev only
                 // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
-                // if($p['title'] != 'EOL Stats for species level pages') continue; //debug only dev only
+                if($p['title'] != 'WoRMS internal') continue; //debug only dev only
                 // */
 
                 // /* UN-COMMENT for PUBLIC datasets.
@@ -176,7 +179,7 @@ class ZenodoAPI
                 else continue;                           //public    
                 */
 
-                // print_r($p); //exit;
+                // print_r($p); exit("\nditox1\n");
                 self::process_a_package($p); //main operation
             }
         }
@@ -201,6 +204,9 @@ class ZenodoAPI
                 // if($r['name'] != 'EOL Dynamic Hierarchy Erebidae Patch') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Trunk Active Version') continue;
                 // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
+                
+                if($r['name'] != 'World Register of Marine Species') continue;
+
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
                 // if($r['name'] == 'Hierarchy Entries April 2017') continue;                      //done -- migrated completely*
@@ -244,8 +250,13 @@ class ZenodoAPI
                 // if(in_array($title, array("van Tienhoven, 2003: van Tienhoven, A. 2003"))) continue; //migrated already
 
                 // ============ dev only
-                // if(!in_array($title, array("Publications using EOL structured data: 2015-2017"))) continue;
-                // if(!in_array($title, array("Publications using EOL structured data: 2020"))) continue;
+                /* only private datasets for migration:
+                [Aggregate Datasets: encyclopedia_of_life]      => Dataset test 2019: dataset-test-2019
+                [EOL Content Partners: eol-content-partners]    => WoRMS internal: worms-internal -> "WoRMS internal: World Register of Marine Species"
+                */
+
+                // if(!in_array($title, array("Dataset test 2019: dataset-test-2019"))) continue;
+                if(!in_array($title, array("WoRMS internal: World Register of Marine Species"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
                 // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
 
@@ -515,6 +526,8 @@ class ZenodoAPI
                     if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
                     else {
                         $obj = self::retrieve_dataset($id); //works OK
+                        print_r($obj);
+                        /* main operation - publish
                         if(self::if_error($obj, 'retrieve', $id)) {}
                         else {
                             $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
@@ -526,7 +539,8 @@ class ZenodoAPI
                                 @$this->debug['total resources migrated']++;
                                 self::log_error(array('migrated', @$obj['id'], @$obj['metadata']['title'], @$obj['metadata']['related_identifiers'][0]['identifier']));
                             }    
-                        }   
+                        }
+                        */   
                     }    
                 }    
             }
@@ -992,7 +1006,7 @@ class ZenodoAPI
             // $cmd .= " -d '".$json."'";
             $cmd .= ' -H "Authorization: '.CKAN_AUTHORIZATION_KEY.'"';
             $json = shell_exec($cmd);
-            $o = json_decode($json, true); //print_r($o); exit;
+            $o = json_decode($json, true); echo "\n[$cmd]\n"; //print_r($o); //exit;
             return $o;
             // */
         }

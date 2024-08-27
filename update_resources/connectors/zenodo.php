@@ -18,12 +18,12 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
 $func = new ZenodoAPI();
-// $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
-$func->access_json_reports(); //this generates the HTML report
+// $func->access_json_reports(); //this generates the HTML report
 
 
-// $func->retrieve_dataset(13323232);
+// $func->retrieve_dataset(13240083);
 
 // $func->update_Zenodo_record(13273185);
 
