@@ -106,11 +106,11 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 */
 
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
                 // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+                // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
                 /* main report: generate info list for title lookup
                 $this->title_id_info = self::generate_title_id_info($organization_id);
@@ -121,8 +121,16 @@ class ZenodoAPI
             }
         }
         // print_r($this->debug);
+
+        // /*
         self::check_license_values();
-        $sum = 0; foreach($this->debug['license_id'] as $n) $sum += $n; echo "\nlicense_id: [$sum]\n";
+        $sum = 0; 
+        if($val = @$this->debug['license_id']) {
+            foreach($val as $n) $sum += $n;
+        }
+        echo "\nlicense_id: [$sum]\n";
+        // */
+
         echo "\ntotal resources: [".$this->debug['total resources']."]\n";
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
@@ -141,8 +149,8 @@ class ZenodoAPI
 
         // the 5 organizations - are saved as json files:
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=dynamic-hierarchy&include_datasets=true';
-        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
-        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
+        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=legacy-datasets&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=wikidata-trait-reports&include_datasets=true';
 
@@ -165,8 +173,8 @@ class ZenodoAPI
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
                 // if($p['title'] != 'Vernacular names') continue; //debug only dev only
-                // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
-                if($p['title'] != 'WoRMS internal') continue; //debug only dev only
+                if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
+                // if($p['title'] != 'WoRMS internal') continue; //debug only dev only
                 // */
 
                 // /* UN-COMMENT for PUBLIC datasets.
@@ -183,6 +191,7 @@ class ZenodoAPI
                 self::process_a_package($p); //main operation
             }
         }
+        else echo "\nInvestigate: Cannot lookup: [$url]\n";
     }
     private function process_a_package($p) //process a dataset
     {   // print_r($p);
@@ -203,14 +212,12 @@ class ZenodoAPI
                 // if($r['name'] != 'All trait data') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Erebidae Patch') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Trunk Active Version') continue;
-                // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;
-                
-                if($r['name'] != 'World Register of Marine Species') continue;
-
+                // if($r['name'] != 'EOL Fossil Fishes Patch ') continue;                
                 // if($r['name'] != 'vernacular names, May 2020') continue;
                 // if($r['name'] != 'User Added Text, curated') continue; //"User Generated Content (EOL v2): User Added Text, curated"
                 // if($r['name'] == 'Hierarchy Entries April 2017') continue;                      //done -- migrated completely*
                 // if($r['name'] == '2019, August 22') continue; //early exports: 2019, August 22  //done -- migrated completely*
+                // if($r['name'] != 'World Register of Marine Species') continue;
 
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
@@ -251,14 +258,22 @@ class ZenodoAPI
 
                 // ============ dev only
                 /* only private datasets for migration:
-                [Aggregate Datasets: encyclopedia_of_life]      => Dataset test 2019: dataset-test-2019
                 [EOL Content Partners: eol-content-partners]    => WoRMS internal: worms-internal -> "WoRMS internal: World Register of Marine Species"
+                [Aggregate Datasets: encyclopedia_of_life]      => Dataset test 2019: dataset-test-2019 DONE
+                [Aggregate Datasets: encyclopedia_of_life]      => EOL computer vision pipelines: eol-computer-vision-pipelines
+                    [EOL computer vision pipelines: Object Detection for Image Cropping: Lepidoptera]
+                    [EOL computer vision pipelines: Object Detection for Image Cropping: Chiroptera]
+                    [EOL computer vision pipelines: Object Detection for Image Cropping: Aves]
+                    [EOL computer vision pipelines: Object Detection for Image Cropping: Multi-taxa]
+                    [EOL computer vision pipelines: Classification for Image Tagging: Flower Fruit]
+                    [EOL computer vision pipelines: Classification for Image Tagging: Anura]
+                    [EOL computer vision pipelines: Image Rating: Chiroptera]
                 */
 
+                // echo "\n[$title]\n"; //good debug
                 // if(!in_array($title, array("Dataset test 2019: dataset-test-2019"))) continue;
-                if(!in_array($title, array("WoRMS internal: World Register of Marine Species"))) continue;
-                // if(!in_array($title, array("Publications using EOL structured data: 2019"))) continue;
-                // if(!in_array($title, array("Publications using EOL structured data: 2018"))) continue;
+                // if(!in_array($title, array("WoRMS internal: World Register of Marine Species"))) continue;
+                if(!in_array($title, array("EOL computer vision pipelines: Object Detection for Image Cropping: Lepidoptera"))) continue;
 
                 /* add resources one by one:
                 $title = str_replace("'", "__", $title); //ditoxAug17
@@ -527,7 +542,7 @@ class ZenodoAPI
                     else {
                         $obj = self::retrieve_dataset($id); //works OK
                         print_r($obj);
-                        /* main operation - publish
+                        /* main operation - publish -> commented for private "restricted" records migration
                         if(self::if_error($obj, 'retrieve', $id)) {}
                         else {
                             $publish_obj = self::publish_Zenodo_dataset($obj); //worked OK
@@ -1179,6 +1194,7 @@ class ZenodoAPI
             exit;
             return $o;
         }
+        else echo "\nInvestigate: Cannot lookup: [$url]\n";
     }
     private function check_license_values()
     {
