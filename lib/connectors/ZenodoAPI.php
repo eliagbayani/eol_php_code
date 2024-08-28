@@ -160,7 +160,7 @@ class ZenodoAPI
         // $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json"; //main operation
 
         $options = $this->download_options;
-        $options['expire_seconds'] = 0;
+        // $options['expire_seconds'] = 0;
 
         if($json = Functions::lookup_with_cache($url, $options)) {
             $o = json_decode($json, true); //print_r($o); exit("\n111\n");
@@ -273,7 +273,7 @@ class ZenodoAPI
                 // echo "\n[$title]\n"; //good debug
                 // if(!in_array($title, array("Dataset test 2019: dataset-test-2019"))) continue;
                 // if(!in_array($title, array("WoRMS internal: World Register of Marine Species"))) continue;
-                if(!in_array($title, array("EOL computer vision pipelines: Object Detection for Image Cropping: Lepidoptera"))) continue;
+                if(in_array($title, array("EOL computer vision pipelines: Object Detection for Image Cropping: Lepidoptera"))) continue;
 
                 /* add resources one by one:
                 $title = str_replace("'", "__", $title); //ditoxAug17
