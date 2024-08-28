@@ -7,8 +7,8 @@ docs:   https://developers.zenodo.org/?shell#representation
 
 Use this when searching a title in Zenodo. Paste this in the search textbox:
 title:("EOL Dynamic Hierarchy: DH223test.zip")
-Zenodo total count: 2,230 as of Aug 17, 2024
-                    2,236 as of Aug 19, 2024
+Zenodo total count: 2,236 (open)        as of Aug 28, 2024
+                        9 (restricted)  as of Aug 28, 2024
 {"Aggregate Datasets":38,"EOL Content Partners":1774,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 {"Aggregate Datasets":38,"EOL Content Partners":1794,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 */
@@ -323,9 +323,9 @@ class ZenodoAPI
                 print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                // /*
+                /*
                 self::start_Zenodo_process($input); //main operation
-                // */
+                */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
@@ -517,7 +517,7 @@ class ZenodoAPI
         $title_x = $input['metadata']['title'];
         $notes_x = $input['metadata']['notes'];
  
-        echo "\nPause 10 seconds...\n"; sleep(1);
+        echo "\nPause 10 seconds...\n"; sleep(10);
         $create_obj = self::create_Zenodo_dataset($input);
         if(self::if_error($create_obj, 'create', $title_x)) {}
         else {
