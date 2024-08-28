@@ -106,9 +106,9 @@ class ZenodoAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 */
 
-                if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
+                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
+                if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
                 // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
@@ -149,9 +149,9 @@ class ZenodoAPI
 
         // the 5 organizations - are saved as json files:
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=dynamic-hierarchy&include_datasets=true';
-        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
-        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=legacy-datasets&include_datasets=true';
+        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=legacy-datasets&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=wikidata-trait-reports&include_datasets=true';
 
         // $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json'; //an organization: Aggregate Datasets
@@ -160,7 +160,7 @@ class ZenodoAPI
         // $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json"; //main operation
 
         $options = $this->download_options;
-        // $options['expire_seconds'] = 0;
+        $options['expire_seconds'] = 0;
 
         if($json = Functions::lookup_with_cache($url, $options)) {
             $o = json_decode($json, true); //print_r($o); exit("\n111\n");
@@ -173,7 +173,7 @@ class ZenodoAPI
                 // /* dev only --- force limit the loop
                 // if($p['title'] != 'Images list') continue; //debug only dev only
                 // if($p['title'] != 'Vernacular names') continue; //debug only dev only
-                if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
+                // if($p['title'] != 'EOL computer vision pipelines') continue; //debug only dev only
                 // if($p['title'] != 'WoRMS internal') continue; //debug only dev only
                 // */
 
@@ -273,7 +273,8 @@ class ZenodoAPI
                 // echo "\n[$title]\n"; //good debug
                 // if(!in_array($title, array("Dataset test 2019: dataset-test-2019"))) continue;
                 // if(!in_array($title, array("WoRMS internal: World Register of Marine Species"))) continue;
-                if(in_array($title, array("EOL computer vision pipelines: Object Detection for Image Cropping: Lepidoptera"))) continue;
+                // if(in_array($title, array("EOL computer vision pipelines: Object Detection for Image Cropping: Lepidoptera"))) continue;
+                if(!in_array($title, array("Eli temporary files: page_ids_ancestry.txt.zip"))) continue;
 
                 /* add resources one by one:
                 $title = str_replace("'", "__", $title); //ditoxAug17
@@ -323,9 +324,9 @@ class ZenodoAPI
                 print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                /*
+                // /*
                 self::start_Zenodo_process($input); //main operation
-                */
+                // */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
