@@ -952,25 +952,138 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             $rek['id'] = self::WoRMS_URL_format($rek['id']); # can be general, for all resources
             // echo "\nGoes- 80\n"; print_r($rek);
 
-            // =========================================================================
+            // =======================================================================
             if($rek['ontology'] == "eol-geonames") { //per https://eol-jira.bibalex.org/browse/DATA-1877?focusedCommentId=65861&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65861
                 // echo "\nGoes- 81\n";
-                if($rek = self::ontology_geonames_process($rek)) {}
-                else continue;
-            } // ======================================================================= end "eol-geonames" ontology
+
+                // /* words accepted if uppercase but excluded if lowercase
+                $labels = array('malabar', 'antarctica'); //A. malabar OR C. antarctica - exclude | Off to Malabar - include
+                $lbl = $rek['lbl'];
+                if(in_array($lbl, $labels)) {
+                    if(strpos($rek['context'], "<b>$lbl</b>") !== false) {debug("\nExcluded: huli_5\n"); continue;}
+                }
+                // */
+
+                // /* un-comment to allow just 4 terms. Comment to allow all terms under geonames with 'ENVO' uri. It was in the past totally disallowing terms in geonames that have ENVO uri.
+                if(stripos($rek['id'], "ENVO_") !== false) { //string is found
+                    if(in_array($rek['lbl'], array('forest', 'woodland', 'grassland', 'savanna'))) { //accepts these terms, and maybe more once allowed by Jen.
+                        // /* NEW Jul 9: but they have to be in lower case not "Forest" but just "forest"
+                        if(strpos($rek['context'], "<b>".strtolower($rek['lbl'])."</b>") !== false) {}
+                        else continue;
+                        // */
+
+                        // /* Scopalina kuyamu (a marine sponge): forest - Ideally, this would have been matched to "kelp forest" not just forest, because kelp forests aren't really forests.
+                        if($rek['lbl'] == 'forest') { //is good if there is no 'kelp forest' in context
+                            if(stripos($rek['context'], "kelp <b>$rek[lbl]</b>") !== false) continue; //string is found
+                        }
+                        // */
+                    }
+                    else continue;
+                }
+                // */
+                // if commented there is error in tests for  "marine"
+
+                // echo "\nGoes- 82\n";
+                if(in_array($rek['lbl'], array('jordan', 'guinea', 'washington'))) continue; //always remove
+                if(in_array($rek['id'], array('http://www.geonames.org/1327132',                //https://eol-jira.bibalex.org/browse/DATA-1887?focusedCommentId=66190&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66190
+                                              'https://www.geonames.org/3463504'))) continue;   //https://eol-jira.bibalex.org/browse/DATA-1887?focusedCommentId=66197&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66197
+                
+                // /* exclude if context has certain strings that denote a literature reference - FOR ALL RESOURCES
+                // vol. 8, p. 67. 1904.Tylobolus uncigerus, Brolemann, Ann. Soc. Ent. <b>France</b>, vol. 83, pp. 9, 22, fig.
+                $parts_of_lit_ref = array(' vol.', ' p.', ' pp.', ' fig.', ' figs.', 'legit ', 'coll. ', ' ed. ', 'eds. '); 
+                //, 'legit', 'coll.' from Katja
+                //, ' ed. ', 'eds. ' from Eli 
+                $cont = true;
+                foreach($parts_of_lit_ref as $part) {
+                    if(stripos($rek['context'], $part) !== false) { $cont = false; debug("\nExcluded: part: [$part]\n"); } //string is found
+                }
+                if(!$cont) continue;
+                // */
+            } // ======================================================================= end "eol-geonames"            
+            // */
 
             // echo "\nGoes- 100\n";
             // /* =======================================================================
             if($rek['ontology'] == "envo") { //ontology habitat
-                if($rek = self::ontology_habitat_process($rek)) {}
-                else continue;
-            } // ======================================================================== end "envo" habitat ontology
+                /* all legit combined below
+                if(in_array($rek['lbl'], array('mesa', 'laguna'))) continue; //https://eol-jira.bibalex.org/browse/DATA-1877?focusedCommentId=65899&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65899
+                if(in_array($rek['lbl'], array('rapids'))) continue; //118950_ENV https://eol-jira.bibalex.org/browse/DATA-1887?focusedCommentId=66259&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66259
+                // remove 'ocean' (measurementValue = http://purl.obolibrary.org/obo/ENVO_00000447) for all resources. Per Jen: https://eol-jira.bibalex.org/browse/DATA-1897?focusedCommentId=66613&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66613
+                if(in_array($rek['lbl'], array('ocean', 'sea'))) continue;
+                if($rek['id'] == 'http://purl.obolibrary.org/obo/ENVO_00000447') continue;                
+                // per: https://eol-jira.bibalex.org/browse/DATA-1914 - as of Sep 20, 2022
+                if(in_array($rek['lbl'], array('organ', 'field', 'well', 'adhesive', 'quarry', 'reservoir', 'umbrella', 'plantation', 'bar', 'planktonic material'))) continue;
+                // exclude per: https://eol-jira.bibalex.org/browse/DATA-1896?focusedCommentId=67731&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-67731
+                // planktonic material
+                */
+                if($rek['id'] == 'http://purl.obolibrary.org/obo/ENVO_00000447') continue;                
+                if(in_array($rek['lbl'], array('mesa', 'laguna', 'rapids', 'ocean', 'sea', 'organ', 'field', 'well', 'adhesive', 'quarry', 'reservoir', 'umbrella', 'plantation', 'bar', 'planktonic material'))) continue;
+                if($rek['lbl'] == 'marsh') { //"marsh harrier" is a vernacular for a kind of bird
+                    if(stripos($rek['context'], 'harrier') !== false) continue; //string is found
+                }
+
+                // /* ---------- source text: "iceberg" -> marine iceberg (22Aug2024)
+                // None of the taxa mapped to this term occur on marine icebergs. Most mismappings are due to place name matches or use of the "tip of the iceberg" metaphor.                
+                if($rek['lbl'] == 'iceberg') { //
+                    if(stripos(strip_tags($rek['context']), 'tip of the') !== false) continue; //string is found
+                }
+                if(in_array($rek['lbl'], array('iceberg'))) { //accepts these terms, and maybe more...
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
+                    else continue;
+                }
+                // OR we totally blacklist 'iceberg'. We will only know after we generate the latest DwCA. I sense we will eventually blacklist 'iceberg'.
+                // ---------- */
+
+                // print_r($rek);
+                // /* ---------- source text: "canal" -> canal (22Aug2024)
+                // - Lots of spiders, insects and other terrestrial taxa are mapped due to string matches in place names.
+                // - There are also quite a few invalid matches due to descriptions of alimentary canals, e.g., Metaphire taiwanensis and many other earthworms & millipedes.
+                if($rek['lbl'] == 'canal') { //"alimentary canal" is part of the body
+                    if(stripos($rek['context'], 'alimentary') !== false) continue; //string is found
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
+                    else continue;
+                }
+                // ---------- */
+
+                // /* ---------- source text: "mountain" -> mountain
+                // There are a quite a few invalid mappings of marine taxa due to place name matches, e.g., Galapagomystides verenae, Sericosura dentatus, Allocareproctus unangas
+                if(in_array($rek['lbl'], array('mountain', 'mountains'))) {
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
+                    else continue;
+                }
+                // ---------- */
+
+                // /* ---------- source text: "orchard" -> orchard
+                // Some invalid mappings of marine taxa due to place name matches, e.g., Chone aurantiaca, Zelentia nepunicea
+                if(in_array($rek['lbl'], array('orchard', 'orchards'))) {
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
+                    else continue;
+                }
+                // ---------- */
+
+                // /* ---------- source text: "bay" -> bay
+                // Most of these trait records seem come from matches in place names, quite a few of them are for terrestrial taxa 
+                // that don't actually occur in a bay or immediately next to a bay, e.g. Asphalidesmus golovatchi, Paracondeellum paradisum, Gossia vieillardii
+                if(in_array($rek['lbl'], array('bay', 'bays'))) {
+                    if(self::lbl_is_lowercase($rek)) {} //but lbl has to be in lowercase.
+                    else continue;
+                }
+                // ---------- */
+
+                // /* Oxydromus humesi (a marine polychaete): marsh - Ideally, this would have been matched to "salt marsh" not just marsh, because both mentions of marsh in the treatment actually refer to salt marsh.
+                if($rek['lbl'] == 'marsh') { //is good if there is no 'salt marsh' in context
+                    if(stripos($rek['context'], "salt <b>$rek[lbl]</b>") !== false) continue; //string is found
+                }
+                // */
+
+            } // ======================================================================= end "envo" habitat ontology
             // */
             
             // /* =======================================================================
             if($rek['ontology'] == "growth") {
                 if(in_array($rek['id'], array('https://www.wikidata.org/entity/Q16868813'))) continue; //https://eol-jira.bibalex.org/browse/DATA-1877?focusedCommentId=66125&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-66125
-            } // ======================================================================== end growth ontology */
+            } // ============================ end "growth"
+            // ======================================================================= end growth ontology */
             
             // /* customize
             // exit("\n".$this->param['resource_id']."\n");
