@@ -81,6 +81,29 @@ class ResourceUtility
         self::carry_over_extension($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon');
     }
     /*============================================================= ENDS remove_unused_occurrences ==================================================*/
+    
+    /*============================================================ STARTS remove_unused_media =================================================*/
+    function remove_unused_media($info, $resource_name) //Func #8
+    {
+        $tables = $info['harvester']->tables; // print_r($tables); exit;
+        $needle = "Zeiss Universal with Olympus C7070 CCD camera";
+        // step 1: write Media without the needle. Generate $this->taxonIDs_included and $this->agentIDs_included.
+        self::process_generic_table($tables['http://eol.org/schema/media/document'][0], 'delete_where_desc_has', $needle);
+        // step 2; write agents
+        self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'write_taxa_if_used_in_Media');
+        self::process_generic_table($tables['http://eol.org/schema/agent/agent'][0], 'write_agents_if_used_in_Media');
+
+        /* copied template
+        // step 2: remaining carry over extensions:
+        self::carry_over_extension($tables['http://eol.org/schema/reference/reference'][0], 'reference');
+        self::carry_over_extension($tables['http://eol.org/schema/association'][0], 'association');
+        self::carry_over_extension($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon');
+        */
+    }
+    /*============================================================= ENDS remove_unused_media ==================================================*/
+
+    
+
     /*============================================================ STARTS remove_unused_references =================================================*/
     function remove_unused_references($info, $resource_name) //Func #5
     {
@@ -95,7 +118,7 @@ class ResourceUtility
         self::carry_over_extension($tables['http://eol.org/schema/association'][0], 'association');
         self::carry_over_extension($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon');
     }
-    private function process_generic_table($meta, $what)
+    private function process_generic_table($meta, $what, $needle = false)
     {   //print_r($meta);
         echo "\nResourceUtility...process_generic_table ($what) $meta->row_type ...\n"; $i = 0;
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
@@ -225,6 +248,25 @@ class ResourceUtility
                     self::loop_write($o, $rec);
                 }
             }
+            elseif($what == 'delete_where_desc_has') { //for remove_unused_media()
+                // print_r($rec); exit;
+                $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+                $description = @$rec['http://purl.org/dc/terms/description'];
+                
+                if(stripos($description, $needle) !== false) continue; //excluded or deleted  //string is found
+                else {
+                    // step 1: write media object
+                    $this->taxonIDs_included[$taxonID] = '';
+                    $o = new \eol_schema\MediaResource();
+                    self::loop_write($o, $rec);
+                    // step 2: save agent IDs
+                    if($val = @$rec['http://eol.org/schema/agent/agentID']) {
+                        $arr = explode(";", $val);
+                        $arr = array_map('trim', $arr);
+                        foreach($arr as $agentID) $this->agentIDs_included[$agentID] = '';
+                    }
+                }
+            }    
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
