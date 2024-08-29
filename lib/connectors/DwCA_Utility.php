@@ -239,7 +239,7 @@ class DwCA_Utility
             $func = new Move_col_inMoF_2child_inMoF_API($this->archive_builder, $this->resource_id);
             $func->start($info, $this->params['resource_name']);
         }
-        if(@$this->params['resource'] == 'remove_unused_media') { //1st client Microscope
+        if(@$this->params['resource'] == 'remove_unused_media') { //1st client micro*scope
             require_library('connectors/ResourceUtility');
             $func = new ResourceUtility($this->archive_builder, $this->resource_id);
             $func->remove_unused_media($info, $this->params['resource_name']);

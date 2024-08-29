@@ -1,7 +1,7 @@
 <?php
 namespace php_active_record;
 /* This is generic way of removing unused media records.
-first client: Microscope
+first client: Micro*scope
     php update_resources/connectors/remove_unused_media.php _ '{"resource_id": "microscope_2024_06_05", "resource": "remove_unused_media", "resource_name": "micro*scope"}'
 */
 
@@ -18,7 +18,7 @@ print_r($param);
 $dwca_file = tar_gz_OR_zip($resource_id);
 
 // /* ---------- customize here ----------
-    if($resource_id == 'microscope_2024_06_05')     $resource_id = "microscope_2024_08_29";
+    if($resource_id == 'microscope_2024_06_05')     $resource_id = "microscope_2024_08_29"; //destination resource_id
 elseif($resource_id == 'the source')                $resource_id = "final dwca"; //add other resources here...
 else exit("\nERROR: resource_id [$resource_id] not yet initialized. Will terminate.\n");
 // ----------------------------------------*/
