@@ -8,7 +8,7 @@ docs:   https://developers.zenodo.org/?shell#representation
 Use this when searching a title in Zenodo. Paste this in the search textbox:
 title:("EOL Dynamic Hierarchy: DH223test.zip")
 Zenodo total count: 2,236 (open)        as of Aug 28, 2024
-                        9 (restricted)  as of Aug 28, 2024
+                       10 (restricted)  as of Aug 28, 2024
 {"Aggregate Datasets":38,"EOL Content Partners":1774,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 {"Aggregate Datasets":38,"EOL Content Partners":1794,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 */
