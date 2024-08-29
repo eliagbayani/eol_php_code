@@ -88,7 +88,7 @@ class ResourceUtility
         $tables = $info['harvester']->tables; // print_r($tables); exit;
         $needle = "Zeiss Universal with Olympus C7070 CCD camera";
         // step 1: write Media without the needle. Generate $this->taxonIDs_included and $this->agentIDs_included.
-        self::process_generic_table($tables['http://eol.org/schema/media/document'][0], 'delete_where_desc_has', $needle);
+        self::process_generic_table($tables['http://eol.org/schema/media/document'][0], 'delete_if_desc_has_needle', $needle);
         // step 2; write agents
         self::process_generic_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'write_taxa_if_used_in_Media');
         self::process_generic_table($tables['http://eol.org/schema/agent/agent'][0], 'write_agents_if_used_in_Media');
@@ -248,11 +248,11 @@ class ResourceUtility
                     self::loop_write($o, $rec);
                 }
             }
-            elseif($what == 'delete_where_desc_has') { //for remove_unused_media()
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            if($what == 'delete_if_desc_has_needle') { //for remove_unused_media()
                 // print_r($rec); exit;
                 $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
-                $description = @$rec['http://purl.org/dc/terms/description'];
-                
+                $description = @$rec['http://purl.org/dc/terms/description'];    
                 if(stripos($description, $needle) !== false) continue; //excluded or deleted  //string is found
                 else {
                     // step 1: write media object
@@ -266,9 +266,22 @@ class ResourceUtility
                         foreach($arr as $agentID) $this->agentIDs_included[$agentID] = '';
                     }
                 }
-            }    
+            }
+            elseif($what == 'write_taxa_if_used_in_Media') { //for remove_unused_media()
+                $taxonID = @$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+                if(isset($this->taxonIDs_included[$taxonID])) {
+                    $o = new \eol_schema\Taxon();
+                    self::loop_write($o, $rec);
+                }
+            }
+            elseif($what == 'write_agents_if_used_in_Media') { //for remove_unused_media()
+                $agentID = $rec['http://purl.org/dc/terms/identifier'];
+                if(isset($this->agentIDs_included[$agentID])) {
+                    $o = new \eol_schema\Agent();
+                    self::loop_write($o, $rec);
+                }                    
+            }
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 
             if($what == 'build-up ref info') { //for remove_unused_references()

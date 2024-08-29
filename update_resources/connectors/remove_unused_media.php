@@ -38,9 +38,9 @@ function process_resource_url($dwca_file, $resource_id, $param)
 
     // /* main operation. If you can't run an extension in DwCA_Utility bec it has too many records (memory leak) then add it here. And just carry_over_extension() it.
     // Only the [media] will be updated.
-    $excluded_rowtypes = array("http://eol.org/schema/media/document");
+    $excluded_rowtypes = array("http://eol.org/schema/media/document", "http://eol.org/schema/agent/agent", "http://rs.tdwg.org/dwc/terms/taxon");
     // These below will be processed in ResourceUtility.php which will be called from DwCA_Utility.php
-    // http://eol.org/schema/media/document
+    // http://eol.org/schema/media/document http://eol.org/schema/agent/agent http://rs.tdwg.org/dwc/terms/taxon
     // */
 
     $func->convert_archive($preferred_rowtypes, $excluded_rowtypes);
