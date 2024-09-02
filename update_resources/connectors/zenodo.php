@@ -2,6 +2,7 @@
 namespace php_active_record;
 /* */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
+require_library('connectors/ZenodoConnectorAPI');
 require_library('connectors/ZenodoAPI');
 $timestart = time_elapsed();
 
@@ -22,13 +23,22 @@ $func = new ZenodoAPI();
 
 // $func->access_json_reports(); //this generates the HTML report
 
-// $func->retrieve_dataset(13240083);
+// $func->retrieve_dataset(13240083); exit;
 
 // $func->update_Zenodo_record(13273185);
 
 // $func->list_depositions(); //worked OK
 
 // /*
+$id = 13240083;
+$path = '/Volumes/OWC_Express/other_files/test_upload2.txt'; 
+$func->update_zenodo_record_of_eol_resource($id, $path); //https://zenodo.org/records/13240083 test record
+
+// $func->update_Zenodo_record_v2($id);
+
+// */
+
+/*
 // MainRep2: Title not found	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-19 09:05:05 AM
 // MainRep2: Title not found	[National Checklists: São Tomé and Príncipe Species List]	2024-08-19 09:53:26 AM
 // MainRep2: Title not found	[National Checklists 2019: São Tomé and Príncipe Species List]	2024-08-19 09:55:46 AM
@@ -46,10 +56,9 @@ $title = "National Checklists: São Tomé and Príncipe Species List";
 // $title = "National Checklists 2019: Réunion Species List";
 $title = "FishBase";
 
-
 $obj = $func->get_deposition_by_title($title);
 print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
-// */
+*/
 
 /* utility
 $id = 13240089;
