@@ -12,7 +12,7 @@ Zenodo total count: 2,236 (open)        as of Aug 28, 2024
 {"Aggregate Datasets":38,"EOL Content Partners":1774,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 {"Aggregate Datasets":38,"EOL Content Partners":1794,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 */
-class ZenodoAPI
+class ZenodoAPI extends ZenodoConnectorAPI
 {
     function __construct($folder = null, $query = null)
     {
@@ -772,7 +772,7 @@ class ZenodoAPI
         // $output = shell_exec($cmd);
         // echo "\nRequest output:\n[$output]\n";
     }
-    private function publish_Zenodo_dataset($obj, $data = false)
+    function publish_Zenodo_dataset($obj, $data = false)
     {
         if($publish = @$obj['links']['publish']) { //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
             // $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
@@ -891,7 +891,7 @@ class ZenodoAPI
 
         return $obj;
     }
-    private function upload_Zenodo_dataset($obj, $actual_file = false)
+    function upload_Zenodo_dataset($obj, $actual_file = false)
     {
         echo "\nUploading ".$obj['id']."...\n";
         if(!$actual_file) {
@@ -913,7 +913,7 @@ class ZenodoAPI
             }    
         }
     }
-    private function request_newversion($obj)
+    function request_newversion($obj)
     {   echo "\nRequesting newversion ".$obj['id']."...\n";
         if($newversion = @$obj['links']['newversion']) { //e.g. https://zenodo.org/api/deposit/depositions/13268261/actions/newversion
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/newversion?access_token=ACCESS_TOKEN
@@ -924,7 +924,7 @@ class ZenodoAPI
         }
         else exit("\nERROR: Cannot get newversion URL! [".$obj['id']."]\n");
     }
-    private function request_discard($obj)
+    function request_discard($obj)
     {   echo "\nRequesting discard ".$obj['id']."...\n";
         if($discard = @$obj['links']['discard']) { //e.g. https://zenodo.org/api/deposit/depositions/13306865/actions/discard
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/13306865/actions/discard?access_token=ACCESS_TOKEN
@@ -1256,7 +1256,7 @@ class ZenodoAPI
         echo "\n\n"; print_r($final); //stats report
         print_r($this->debug);
     }
-    private function if_error($o, $what, $what2)
+    function if_error($o, $what, $what2)
     {
         if(@$o['status'] > 204) {
             $json_error = json_encode($o);
@@ -1268,7 +1268,7 @@ class ZenodoAPI
         }
         else return false;
     }
-    private function log_error($arr)
+    function log_error($arr)
     {
         if($this->divide_and_conquer) $arr[] = "[".$this->divide_and_conquer."]";
         $arr[] = date("Y-m-d h:i:s A");
