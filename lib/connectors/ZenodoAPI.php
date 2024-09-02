@@ -48,7 +48,6 @@ class ZenodoAPI
         $this->org_name['legacy-datasets']          = 'Legacy datasets';
         $this->org_name['wikidata-trait-reports']   = 'WikiData Trait Reports'; 
 
-
         // $this->organization = array("EOL Dynamic Hierarchy Data Sets", "Aggregate Datasets", "EOL Content Partners", "Legacy datasets", "WikiData Trait Reports");
         // */
         
@@ -64,7 +63,6 @@ class ZenodoAPI
 
         $this->ckan['package_show'] = 'https://opendata.eol.org/api/3/action/package_show?id='; //e.g. images-list
         // https://opendata.eol.org/api/3/action/package_show?id=images-list
-
 
         $this->ckan['user_show'] = 'https://opendata.eol.org/api/3/action/user_show?id='; //e.g. 47d700d6-0f4c-43e8-a0c5-a5e739bc390c
 
@@ -324,9 +322,9 @@ class ZenodoAPI
                 print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
-                // /*
+                /*
                 self::start_Zenodo_process($input); //main operation
-                // */
+                */
 
                 /*
                 self::start_Zenodo_upload_only($title); //main operation --- upload of actual file to a published Zenodo record
@@ -493,9 +491,7 @@ class ZenodoAPI
                 $subfolders = str_replace($needle, "", $info['dirname']);                   // e.g. /bf6/3dc
                 $actual_file = "/extra/ckan_resources".$subfolders."/".$info['basename'];   // e.g. /extra/ckan_resources/bf6/3dc/vernacularnames.csv
                 echo "\nsource: [$actual_file]\n";
-
                 exit("\ncha2\n");
-
                 if(file_exists($actual_file)) {
                 // if(true) {
                     echo "\nfilesize: ".filesize($actual_file)."\n";
@@ -509,8 +505,7 @@ class ZenodoAPI
                 else echo "\nNo file uploaded. File does not exist. [$actual_file]\n";
             }
             else echo "\nNot a CKAN URL [$url].\n";
-        }
-        */
+        }*/
         // exit("\n--stop muna ditox--\n");
     }
     function start_Zenodo_process($input)
@@ -526,7 +521,6 @@ class ZenodoAPI
                 $obj = self::retrieve_dataset($id); //works OK
                 if(self::if_error($obj, 'retrieve', $id)) {}
                 else {
-
                     // /* main operation
                     if($url = @$obj['metadata']['related_identifiers'][0]['identifier']) {}
                     else { self::log_error(array("ERROR", "No URL, should not go here.", $obj['id'])); return; }
@@ -538,7 +532,6 @@ class ZenodoAPI
                     /* dev only debug only
                     $upload_obj = self::upload_Zenodo_dataset($obj);
                     */
-
                     if(self::if_error($upload_obj, 'upload', $obj['id'])) {}
                     else {
                         $obj = self::retrieve_dataset($id); //works OK
@@ -640,7 +633,6 @@ class ZenodoAPI
             if($val2 = @$this->license_map[$val]) $p['license_id'] = $val2;
         }
 
-
         $input = array();        
         // -------------------------------------------------------------------
         $dates = array();
@@ -696,9 +688,7 @@ class ZenodoAPI
             $access_right = 'restricted';
             $access_conditions = 'This is not available publicly. Only community members can see this record.';
         }
-        else { //public
-            $access_right = 'open';
-        }
+        else $access_right = 'open'; //public
         // -------------------------------------------------------------------
         $notes = "";
         if($val = @$r['description']) $notes = $val;
@@ -817,7 +807,8 @@ class ZenodoAPI
         // }
         // '
 
-        $arr["query"]["query_string"] = array("query" => $title, "default_field" => "title");
+        $arr["query"]["query_string"] = array("query" => "$title", "default_field" => "title"); //orig
+        $arr["query"]["query_string"] = array("query" => 'title:("'.$title.'")', "default_field" => "title"); //test
         $q = json_encode($arr);        
         // */
 

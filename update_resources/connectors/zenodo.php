@@ -18,10 +18,9 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
 $func = new ZenodoAPI();
-$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+// $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
 // $func->access_json_reports(); //this generates the HTML report
-
 
 // $func->retrieve_dataset(13240083);
 
@@ -29,7 +28,7 @@ $func->start(); //main - this reads OpenData using its API and creates Zenodo re
 
 // $func->list_depositions(); //worked OK
 
-/*
+// /*
 // MainRep2: Title not found	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-19 09:05:05 AM
 // MainRep2: Title not found	[National Checklists: São Tomé and Príncipe Species List]	2024-08-19 09:53:26 AM
 // MainRep2: Title not found	[National Checklists 2019: São Tomé and Príncipe Species List]	2024-08-19 09:55:46 AM
@@ -42,13 +41,15 @@ $func->start(); //main - this reads OpenData using its API and creates Zenodo re
 $title = "National Checklists 2019: Réunion Species List";
 $title = "National Checklists 2019: São Tomé and Príncipe Species List";
 $title = "National Checklists: São Tomé and Príncipe Species List";
-$title = "Moth Photographer's Group";
-$title = "Trait Spreadsheet to DwCA: Fungi ecomorphological trait data";
-$title = "National Checklists 2019: Réunion Species List";
+// $title = "Moth Photographer's Group";
+// $title = "Trait Spreadsheet to DwCA: Fungi ecomorphological trait data";
+// $title = "National Checklists 2019: Réunion Species List";
+$title = "FishBase";
+
 
 $obj = $func->get_deposition_by_title($title);
-print_r($obj); echo "\n[".$obj['id']."]\n";
-*/
+print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
+// */
 
 /* utility
 $id = 13240089;
