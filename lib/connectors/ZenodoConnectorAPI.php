@@ -76,9 +76,8 @@ class ZenodoConnectorAPI
 
     }
 
-    function update_Zenodo_record_v2($id, $obj_1st) //maybe should use PATCH instead of PUT
+    function update_Zenodo_record_v2($id, $obj_1st) //this updates the newversion object
     {
-        
         $ret_obj = $this->retrieve_dataset($id);
         $links_edit = $ret_obj['links']['edit'];
         $links_publish = $ret_obj['links']['publish'];
@@ -110,7 +109,7 @@ class ZenodoConnectorAPI
                                     // "description" => "my desc",
                                     "publication_date" => date("Y-m-d"),
                                     "creators" => $obj_1st['metadata']['creators'],
-                                    // "resource_type" => 'dataset',
+                                    // "resource_type" => 'dataset', //ignored by all concerns anyway
                                     "upload_type" => 'dataset'
                                     // "related_identifiers" => $related_identifiers
         ); //this is needed for publishing a newly uploaded file.
