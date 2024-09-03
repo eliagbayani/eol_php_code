@@ -54,13 +54,15 @@ class ZenodoConnectorAPI
                     $obj = $this->retrieve_dataset($id); //works OK
                     if($this->if_error($obj, 'retrieve', $id)) {}    
                     else {
-                        // $input['metadata'] = array("publication_date" => date("Y-m-d")); //2010-12-30 --- this is needed for publishing a newly uploaded file.
-                        $publish_obj = $this->publish_Zenodo_dataset($obj); //worked OK
-                        if($this->if_error($publish_obj, 'publish', $obj['id'])) {}
+                        /* publishing block
+                        // $publish_obj = $this->publish_Zenodo_dataset($obj); //worked OK but with cumulative files carry-over
+                        $publish_obj = $this->publish_Zenodo_dataset($new_obj); //worked OK but with cumulative files carry-over
+                        if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
                         else {
                             echo "\nSuccessfully uploaded then published to Zenodo\n-----u & p-----\n";
-                            $this->log_error(array('uploaded then published', @$obj['id'], @$obj['metadata']['title'], @$obj['metadata']['related_identifiers'][0]['identifier']));
+                            $this->log_error(array('uploaded then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
                         }
+                        */
                     }
                 }
                 // */
@@ -105,14 +107,16 @@ class ZenodoConnectorAPI
         Title: Missing data for required field.        
         */
 
+        array_shift($obj_1st['files']);
         $input['metadata'] = array(
                                     "title" => $obj_1st['metadata']['title'],
                                     // "description" => "my desc",
-                                    "publication_date" => date("Y-m-d"),
+                                    "publication_date" => "2024-07-13", //date("Y-m-d"),
                                     "creators" => $obj_1st['metadata']['creators'],
                                     // "resource_type" => 'dataset', //ignored by all concerns anyway
-                                    "upload_type" => 'dataset'
+                                    "upload_type" => 'dataset',
                                     // "related_identifiers" => $related_identifiers
+                                    "files" => array() //$obj_1st['files']
         ); //this is needed for publishing a newly uploaded file.
 
 

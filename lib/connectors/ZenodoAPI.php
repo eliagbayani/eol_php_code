@@ -480,7 +480,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 // */
             }            
         }
-        else echo "\nERROR: newversion object not created!\n";
+        else echo "\nERRORx: newversion object not created!\n";
         // */
 
         /* this block was eventually refactored:
@@ -500,7 +500,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                         // exit("\nexit muna after new version request\n");
                         $upload_obj = self::upload_Zenodo_dataset($new_obj, $actual_file);
                     }
-                    else echo "\nERROR: newversion object not created!\n";
+                    else echo "\nERRORx: newversion object not created!\n";
                 }
                 else echo "\nNo file uploaded. File does not exist. [$actual_file]\n";
             }
@@ -776,15 +776,23 @@ class ZenodoAPI extends ZenodoConnectorAPI
     {
         if($publish = @$obj['links']['publish']) { //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
             // $cmd = 'curl -i -H "Content-Type: application/json" -X POST https://zenodo.org/api/deposit/depositions/13136202/actions/publish?access_token='.ZENODO_TOKEN;
+                    //    curl -i -X POST https://zenodo.org/api/deposit/depositions/13635445/actions/publish?access_token=ACCESS_TOKEN
+                                    //    https://zenodo.org/api/deposit/depositions/13635445/actions/publish
             // $cmd = 'curl -i -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
-            if(!$data) $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
+
+            if(!$data) {
+                // $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN; //files carry-over
+                $cmd = 'curl -i -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
+            }
             else {
+                exit("\nDoes not go here.\n");
                 $json = json_encode($data); // echo "\n$json\n";
                 $cmd = 'curl -s -H "Content-Type: application/json" -X POST  --data '."'$json'".' '.$publish.'?access_token='.ZENODO_TOKEN; //didn't work, param wasn't submitted.
             }
             // $cmd .= " 2>&1";
-            // echo "\npublish cmd: [$cmd]\n";
-            $json = shell_exec($cmd);               //echo "\n$json\n";
+
+            echo "\npublish cmd: [$cmd]\n";
+            $json = shell_exec($cmd);               echo "\n$json\n";
             $obj = json_decode(trim($json), true);  echo "\n=====published=====\n"; print_r($obj); echo "\n=====published end=====\n";
             return $obj;    
         }
@@ -929,9 +937,11 @@ class ZenodoAPI extends ZenodoConnectorAPI
             $cmd = 'curl -s -X POST '.$newversion.'?access_token='.ZENODO_TOKEN; // echo "\ncmd: [$cmd]\n";
             $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
             $obj = json_decode(trim($json), true);  echo "\n=======newversion=======\n"; print_r($obj); echo "\n=======newversion end=======\n"; //exit("\nstop: newversion\n");
+
+            if(self::if_error($obj, 'newversion', $obj['id'])) return false;
             return $obj;    
         }
-        else exit("\nERROR: Cannot get newversion URL! [".$obj['id']."]\n");
+        else exit("\nERRORx: Cannot get newversion URL! [".$obj['id']."]\n");
     }
     function retrieve_latest($obj)
     {   echo "\nRequesting latest ".$obj['id']."...\n";
@@ -949,9 +959,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
             print_r(pathinfo($obj['location']));
             return pathinfo($obj['location'], PATHINFO_BASENAME); //return the id e.g. 13629642
         }
-        else exit("\nERROR: Cannot get latest URL! [".$obj['id']."]\n");
+        // else exit("\nERRORx: Cannot get latest URL! [".$obj['id']."]\n");
+        echo "\nThis is already the latest ID: [".$obj['id']."]\n";
+        return $obj['id'];
     }
-
     function request_discard($obj)
     {   echo "\nRequesting discard ".$obj['id']."...\n";
         if($discard = @$obj['links']['discard']) { //e.g. https://zenodo.org/api/deposit/depositions/13306865/actions/discard
@@ -961,7 +972,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
             $obj = json_decode(trim($json), true);  echo "\n=======discard=======\n"; print_r($obj); echo "\n=======discard end=======\n"; //exit("\nstop: newversion\n");
             return $obj;    
         }
-        else exit("\nERROR: Cannot discard draft! [".$obj['id']."]\n");
+        else exit("\nERRORx: Cannot discard draft! [".$obj['id']."]\n");
     }
     function update_Zenodo_record($id, $input) //maybe should use PATCH instead of PUT
     {   /*
@@ -1163,7 +1174,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         else{
             echo "\n-----------\n"; echo($output1); echo "\n-----------\n";        
             echo "\n-----------\n"; print_r($output2); echo "\n-----------\n";        
-            echo "\nERROR: OpenData resource UPDATE failed xxx.\n";
+            echo "\nERRORx: OpenData resource UPDATE failed xxx.\n";
         }
         /*Array(
             [help] => https://opendata.eol.org/api/3/action/help_show?name=resource_update
@@ -1288,7 +1299,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
     {
         if(@$o['status'] > 204) {
             $json_error = json_encode($o);
-            $err_msg = "ERROR: ($what) ($what2) [".$json_error."]";
+            $err_msg = "ERRORx: ($what) ($what2) [".$json_error."]";
             echo "\n--- $err_msg ---\n"; print_r($o);
             $this->debug['zenodo errors'][$err_msg] = '';
             self::log_error(array("ERROR", $what, $what2, $json_error));
