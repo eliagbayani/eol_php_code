@@ -32,7 +32,7 @@ $func = new ZenodoAPI();
 // /*
 // $id = 13323218; //1 version only
 $id = 13240083; //multiple versions
-$path = '/Volumes/OWC_Express/other_files/test_upload13.txt'; 
+$path = '/Volumes/OWC_Express/other_files/test_upload12.txt'; 
 $func->update_zenodo_record_of_eol_resource($id, $path); //https://zenodo.org/records/13240083 test record
 
 // $func->update_Zenodo_record_v2($id);

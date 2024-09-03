@@ -781,8 +781,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
             // $cmd = 'curl -i -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
 
             if(!$data) {
-                // $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN; //files carry-over
-                $cmd = 'curl -i -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
+                $cmd = 'curl -s -H "Content-Type: application/json" -X POST '.$publish.'?access_token='.ZENODO_TOKEN; //files carry-over
+                // $cmd = 'curl -i -X POST '.$publish.'?access_token='.ZENODO_TOKEN;
+                // $cmd = 'curl -s -H POST '.$publish.'?access_token='.ZENODO_TOKEN;
+
             }
             else {
                 exit("\nDoes not go here.\n");
@@ -938,7 +940,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
             $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
             $obj = json_decode(trim($json), true);  echo "\n=======newversion=======\n"; print_r($obj); echo "\n=======newversion end=======\n"; //exit("\nstop: newversion\n");
 
-            if(self::if_error($obj, 'newversion', $obj['id'])) return false;
+            if(self::if_error($obj, 'newversion', @$obj['id'])) return false;
             return $obj;    
         }
         else exit("\nERRORx: Cannot get newversion URL! [".$obj['id']."]\n");
