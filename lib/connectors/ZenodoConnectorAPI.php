@@ -129,7 +129,7 @@ class ZenodoConnectorAPI
         // $cmd .= " 2>&1";
         echo "\n$cmd\n";
         $json = shell_exec($cmd);           echo "\n$json\n";
-        $obj = json_decode(trim($json), true);    echo "\n----------update pubdate----------\n"; print_r($obj); echo "\n----------update pubdate----------\n";
+        $obj = json_decode(trim($json), true);    echo "\n----------update pubdate----------\n"; print_r($obj); echo "\n----------update pubdate end----------\n";
         return $obj;
     }
 

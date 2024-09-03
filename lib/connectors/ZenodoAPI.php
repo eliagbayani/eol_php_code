@@ -764,7 +764,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         // $cmd .= " 2>&1";
         // echo "\ncreate cmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====c=====\n"; print_r($obj); echo "\n=====c=====\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====created=====\n"; print_r($obj); echo "\n=====created end=====\n";
         return $obj;
         // copied template:
         // $cmd = 'curl -s "'.$url.'" -H "X-Authentication-Token:'.$this->service['token'].'"';
@@ -785,7 +785,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
             // $cmd .= " 2>&1";
             // echo "\npublish cmd: [$cmd]\n";
             $json = shell_exec($cmd);               //echo "\n$json\n";
-            $obj = json_decode(trim($json), true);  print_r($obj);
+            $obj = json_decode(trim($json), true);  echo "\n=====published=====\n"; print_r($obj); echo "\n=====published end=====\n";
             return $obj;    
         }
     }
@@ -870,7 +870,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $cmd = 'curl -s https://zenodo.org/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN.' -X DELETE';
         echo "\ndelete cmd: [$cmd]\n";
         $json = shell_exec($cmd);               echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====delete=====\n"; print_r($obj); echo "\n=====delete=====\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====delete=====\n"; print_r($obj); echo "\n=====delete end=====\n";
         return $obj;
     }
     function retrieve_dataset($id)
@@ -881,7 +881,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $cmd .= " 2>&1";
         // echo "\nretrieve cmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====retrieve=====\n"; print_r($obj); echo "\n=====retrieve=====\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====retrieve=====\n"; print_r($obj); echo "\n=====retrieve end=====\n";
 
         /* debug only dev only
         $file = $this->path_2_file_dat . "z_13323232.dat";
@@ -908,7 +908,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 $cmd = 'curl --upload-file '.$actual_file.' '.$bucket.'/'.$basename.'?access_token='.ZENODO_TOKEN;
                 // echo "\nupload cmd: [$cmd]\n";
                 $json = shell_exec($cmd);               //echo "\n$json\n";
-                $obj = json_decode(trim($json), true);  //echo "\n=====upload=====\n"; print_r($obj); echo "\n=====upload=====\n";
+                $obj = json_decode(trim($json), true);  echo "\n=====upload=====\n"; print_r($obj); echo "\n=====upload end=====\n";
                 return $obj;    
             }    
         }
@@ -919,7 +919,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/newversion?access_token=ACCESS_TOKEN
             $cmd = 'curl -s -X POST '.$newversion.'?access_token='.ZENODO_TOKEN; // echo "\ncmd: [$cmd]\n";
             $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
-            $obj = json_decode(trim($json), true);  echo "\n=======newversion=======\n"; print_r($obj); echo "\n=======newversion=======\n"; //exit("\nstop: newversion\n");
+            $obj = json_decode(trim($json), true);  echo "\n=======newversion=======\n"; print_r($obj); echo "\n=======newversion end=======\n"; //exit("\nstop: newversion\n");
             return $obj;    
         }
         else exit("\nERROR: Cannot get newversion URL! [".$obj['id']."]\n");
@@ -930,7 +930,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/13306865/actions/discard?access_token=ACCESS_TOKEN
             $cmd = 'curl -s -X POST '.$discard.'?access_token='.ZENODO_TOKEN; // echo "\ncmd: [$cmd]\n";
             $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
-            $obj = json_decode(trim($json), true);  echo "\n=======discard=======\n"; print_r($obj); echo "\n=======discard=======\n"; //exit("\nstop: newversion\n");
+            $obj = json_decode(trim($json), true);  echo "\n=======discard=======\n"; print_r($obj); echo "\n=======discard end=======\n"; //exit("\nstop: newversion\n");
             return $obj;    
         }
         else exit("\nERROR: Cannot discard draft! [".$obj['id']."]\n");
@@ -951,7 +951,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         // $cmd .= " 2>&1";
         // echo "\n$cmd\n";
         $json = shell_exec($cmd);           //echo "\n$json\n";
-        $obj = json_decode(trim($json), true);    echo "\n----------update----------\n"; print_r($obj); echo "\n----------update----------\n";
+        $obj = json_decode(trim($json), true);    echo "\n----------update----------\n"; print_r($obj); echo "\n----------update end----------\n";
         return $obj;
     }
     private function initialize_file_dat($obj)
