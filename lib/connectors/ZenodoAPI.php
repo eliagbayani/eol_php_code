@@ -924,6 +924,18 @@ class ZenodoAPI extends ZenodoConnectorAPI
         }
         else exit("\nERROR: Cannot get newversion URL! [".$obj['id']."]\n");
     }
+    function retrieve_latest_draft($obj)
+    {   echo "\nRequesting latest_draft ".$obj['id']."...\n";
+        if($latest_draft = @$obj['links']['latest_draft']) { //e.g. https://zenodo.org/api/deposit/depositions/13240083
+            // curl -i -X POST https://zenodo.org/api/deposit/depositions/13240083?access_token=ACCESS_TOKEN
+            $cmd = 'curl -s -X POST '.$latest_draft.'?access_token='.ZENODO_TOKEN; // echo "\ncmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
+            $obj = json_decode(trim($json), true);  echo "\n=======latest_draft=======\n"; print_r($obj); echo "\n=======latest_draft end=======\n"; //exit("\nstop: newversion\n");
+            return $obj;    
+        }
+        else exit("\nERROR: Cannot get latest_draft URL! [".$obj['id']."]\n");
+    }
+
     function request_discard($obj)
     {   echo "\nRequesting discard ".$obj['id']."...\n";
         if($discard = @$obj['links']['discard']) { //e.g. https://zenodo.org/api/deposit/depositions/13306865/actions/discard

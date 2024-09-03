@@ -10,11 +10,7 @@ class ZenodoConnectorAPI
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
     {
         $obj_1st = $this->retrieve_dataset($zenodo_id); //exit;
-        /* generate input first:
-        Resource type: Missing data for required field.
-        Creators: Missing data for required field.
-        Title: Missing data for required field.        
-        */
+        $obj_1st = $this->retrieve_latest_draft($obj_1st); exit;
 
         // /*
         if($new_obj = $this->request_newversion($obj_1st)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
@@ -103,6 +99,12 @@ class ZenodoConnectorAPI
         //         )
         // )
 
+
+        /* generate input first: 3 required fields
+        Resource type: Missing data for required field.
+        Creators: Missing data for required field.
+        Title: Missing data for required field.        
+        */
 
         $input['metadata'] = array(
                                     "title" => $obj_1st['metadata']['title'],
