@@ -30,8 +30,8 @@ $func = new ZenodoAPI();
 // $func->list_depositions(); //worked OK
 
 // /*
+// $id = 13323218; //1 version only
 $id = 13240083; //multiple versions
-$id = 13323218; //1 version only
 $path = '/Volumes/OWC_Express/other_files/test_upload3.txt'; 
 $func->update_zenodo_record_of_eol_resource($id, $path); //https://zenodo.org/records/13240083 test record
 

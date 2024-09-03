@@ -9,9 +9,7 @@ class ZenodoConnectorAPI
 
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
     {
-        // /* complete block for retrieving a dataset
-        $obj_1st = $this->retrieve_dataset($zenodo_id); exit;
-        // */
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //exit;
 
         // /*
         if($new_obj = $this->request_newversion($obj_1st)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
