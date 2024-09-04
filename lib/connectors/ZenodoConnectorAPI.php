@@ -138,7 +138,8 @@ class ZenodoConnectorAPI
     {
         $name = ($r['name']) ? ($r['name']) : ("Unnamed resource");
         $opendata_url = "https://opendata.eol.org/dataset/".$r['package_id']."/resource/".$r['id'];
-        $save = array('Zenodo_id' => $id_sought, 'name' => $name, 'Resource_URL' => $r['url'], 'OpenData_URL' => $opendata_url, 'id' => $r['id'], 'package_id' => $r['package_id']);
+        $save = array('Zenodo_id' => $id_sought, 'name' => $name, 'Resource_URL' => $r['url'], 'OpenData_URL' => $opendata_url);
+        // , 'id' => $r['id'], 'package_id' => $r['package_id']
         // print_r($save);
         $fields = array_keys($save); //print_r($fields); exit;
         $filename = $this->EOL_resource_id_and_Zenodo_id_file;
