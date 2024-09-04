@@ -135,6 +135,21 @@ class ZenodoConnectorAPI
         return $obj;
     }
 
-
+    function gen_EOL_resource_ID_and_Zenodo_ID_list($r, $id_sought)
+    {
+        $name = ($r['name']) ? ($r['name']) : ("Unnamed resource");
+        $opendata_url = "https://opendata.eol.org/dataset/".$r['package_id']."/resource/".$r['id'];
+        $save = array('Zenodo_id' => $id_sought, 'name' => $name, 'Resource_URL' => $r['url'], 'OpenData_URL' => $opendata_url, 'id' => $r['id'], 'package_id' => $r['package_id']);
+        print_r($save);
+        $fields = array_keys($save); //print_r($fields); exit;
+        $filename = $this->EOL_resource_id_and_Zenodo_id_file;
+        $WRITE = Functions::file_open($filename, "a");
+        clearstatcache(); //important for filesize()
+        if(filesize($filename) == 0) fwrite($WRITE, implode("\t", $fields) . "\n");
+        $arr = array();
+        foreach($fields as $f) $arr[] = $save[$f];
+        fwrite($WRITE, implode("\t", $arr) . "\n");
+        fclose($WRITE);
+    }
 }
 ?>
