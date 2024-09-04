@@ -30,6 +30,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
         $this->html_report = $this->path_2_file_dat . "opendata_zenodo.html";
 
+        $this->EOL_resource_id_and_Zenodo_id_file = $this->path_2_file_dat . "EOL_resource_id_VS_Zenodo_id.tsv";
+        $WRITE = Functions::file_open($this->EOL_resource_id_and_Zenodo_id_file, "c");
+        fclose($WRITE);
+
         // /* main report
         // [0] => dynamic-hierarchy
         // [1] => encyclopedia_of_life
@@ -106,13 +110,13 @@ class ZenodoAPI extends ZenodoConnectorAPI
 
                 // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
                 // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-                if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
+                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
                 // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                // if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
 
-                /* main report: generate info list for title lookup
+                // /* main report: generate info list for title lookup
                 $this->title_id_info = self::generate_title_id_info($organization_id);
-                */
+                // */
 
                 echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
@@ -133,13 +137,13 @@ class ZenodoAPI extends ZenodoConnectorAPI
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
 
-        /* main report
+        // /* main report
         // print_r($this->report); exit;
         $json = json_encode($this->report);
         $file = $this->report[$this->organization_name];
         $WRITE = Functions::file_open($file, "w");
         fwrite($WRITE, $json); fclose($WRITE);
-        */
+        // */
     }
     private function process_organization($organization_id)
     {
@@ -148,8 +152,8 @@ class ZenodoAPI extends ZenodoConnectorAPI
         // the 5 organizations - are saved as json files:
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=dynamic-hierarchy&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
-        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
-        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=legacy-datasets&include_datasets=true';
+        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=legacy-datasets&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=wikidata-trait-reports&include_datasets=true';
 
         // $url = 'http://localhost/other_files2/Zenodo_files/json/encyclopedia_of_life.json'; //an organization: Aggregate Datasets
@@ -158,7 +162,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         // $url = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/master/Zenodo/json/".$organization_id.".json"; //main operation
 
         $options = $this->download_options;
-        $options['expire_seconds'] = 0;
+        // $options['expire_seconds'] = 0;
 
         if($json = Functions::lookup_with_cache($url, $options)) {
             $o = json_decode($json, true); //print_r($o); exit("\n111\n");
@@ -198,7 +202,8 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $package_obj = self::lookup_package_using_id($p['id']);
         if($resources = @$package_obj['result']['resources']) {
             $this->debug['total resources'] += count($resources);
-            foreach($resources as $r) { // print_r($r);
+            foreach($resources as $r) { //print_r($r);
+
                 //name here is CKAN resource name 
                 // if($r['name'] != 'EOL stats for species-level pages') continue;
                 // if($r['name'] != 'EOL Dynamic Hierarchy Active Version') continue; //e.g. https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/00adb47b-57ed-4f6b-8f66-83bfdb5120e8    
@@ -220,7 +225,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
 
-                /* ----- start main report -----
+                // /* ----- start main report -----
                 // x MainRep: Title not found    13322823	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-14 12:50:54 PM
                 // x MainRep: Title not found    13333044 	[GBIF data summaries: GBIF nat'l node classification resource: Germany]	2024-08-14 03:59:45 PM
                 // x MainRep: Title not found    13340241	[Thomas J. Walker Sound Recordings from Macaulay Library of Natural Sounds: Thomas J. Walker's insect recordings]	2024-08-14 06:41:48 PM
@@ -242,8 +247,28 @@ class ZenodoAPI extends ZenodoConnectorAPI
                     }    
                 }
                 $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $id_sought;
+
+                // /* start EOL resource ID and Zenodo ID list
+                $save = array('Zenodo_id' => $id_sought, 'name' => $r['name'], 'url' => $r['url'], 'id' => $r['id'], 'package_id' => $r['package_id']);
+                print_r($save);
+                $fields = array_keys($save);
+
+                $filename = $this->EOL_resource_id_and_Zenodo_id_file;
+                $WRITE = Functions::file_open($filename, "a");
+                clearstatcache(); //important for filesize()
+                if(filesize($filename) == 0) fwrite($WRITE, implode("\t", $fields) . "\n");
+                $arr = array();
+                foreach($fields as $f) $arr[] = $save[$f];
+                fwrite($WRITE, implode("\t", $arr) . "\n");
+                fclose($WRITE);
+    
+                // exit("\nelix\n");
+                // */
+
+
+
                 continue;
-                ----- end main report ----- */
+                // ----- end main report ----- */
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
