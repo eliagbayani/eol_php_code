@@ -134,13 +134,12 @@ class ZenodoConnectorAPI
         $obj = json_decode(trim($json), true);    echo "\n----------update pubdate----------\n"; print_r($obj); echo "\n----------update pubdate end----------\n";
         return $obj;
     }
-
     function gen_EOL_resource_ID_and_Zenodo_ID_list($r, $id_sought)
     {
         $name = ($r['name']) ? ($r['name']) : ("Unnamed resource");
         $opendata_url = "https://opendata.eol.org/dataset/".$r['package_id']."/resource/".$r['id'];
         $save = array('Zenodo_id' => $id_sought, 'name' => $name, 'Resource_URL' => $r['url'], 'OpenData_URL' => $opendata_url, 'id' => $r['id'], 'package_id' => $r['package_id']);
-        print_r($save);
+        // print_r($save);
         $fields = array_keys($save); //print_r($fields); exit;
         $filename = $this->EOL_resource_id_and_Zenodo_id_file;
         $WRITE = Functions::file_open($filename, "a");
