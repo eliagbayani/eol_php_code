@@ -435,6 +435,14 @@ class Functions
         $func = new CKAN_API_AccessAPI('EOL resource', $forced_date); //other values: "EOL dump" or "EOL file"
         $func->update_CKAN_resource_using_EOL_resourceID($resource_id);
         // */
+
+        // /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
+        require_library('connectors/ZenodoConnectorAPI');
+        require_library('connectors/ZenodoAPI');
+        $func = new ZenodoAPI();
+        $func->update_Zenodo_record_using_EOL_resourceID($resource_id);
+        // */
+
     }
     public static function get_time_elapsed($timestart)
     {

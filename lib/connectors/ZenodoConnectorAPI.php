@@ -156,5 +156,18 @@ class ZenodoConnectorAPI
         fwrite($WRITE, implode("\t", $arr) . "\n");
         fclose($WRITE);
     }
+    function update_Zenodo_record_using_EOL_resourceID($resource_id)
+    {
+        $path = CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz";
+        if(file_exists($file)) {
+            if($zenodo_id = get_zenodo_id_using_eol_resource_id($resource_id)) {
+                $func->update_zenodo_record_of_eol_resource($zenodo_id, $path); //https://zenodo.org/records/13240083 test record
+            }
+        }
+    }
+    private function get_zenodo_id_using_eol_resource_id($resource_id)
+    {
+        
+    }
 }
 ?>
