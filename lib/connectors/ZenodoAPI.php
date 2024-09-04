@@ -248,11 +248,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 }
                 $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $id_sought;
 
-                // /* start EOL resource ID and Zenodo ID list
+                // /* -------------------------------------- start EOL resource ID and Zenodo ID list
                 $save = array('Zenodo_id' => $id_sought, 'name' => $r['name'], 'url' => $r['url'], 'id' => $r['id'], 'package_id' => $r['package_id']);
                 print_r($save);
                 $fields = array_keys($save);
-
                 $filename = $this->EOL_resource_id_and_Zenodo_id_file;
                 $WRITE = Functions::file_open($filename, "a");
                 clearstatcache(); //important for filesize()
@@ -261,11 +260,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 foreach($fields as $f) $arr[] = $save[$f];
                 fwrite($WRITE, implode("\t", $arr) . "\n");
                 fclose($WRITE);
-    
-                // exit("\nelix\n");
-                // */
-
-
+                // -------------------------------------- end */
 
                 continue;
                 // ----- end main report ----- */
