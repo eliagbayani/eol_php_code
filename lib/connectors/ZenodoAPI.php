@@ -30,7 +30,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
         $this->html_report = $this->path_2_file_dat . "opendata_zenodo.html";
 
-        $this->EOL_resource_id_and_Zenodo_id_file = $this->path_2_file_dat . "EOL_resource_id_VS_Zenodo_id.tsv";
+        $this->EOL_resource_id_and_Zenodo_id_file = $this->path_2_file_dat . "EOL_resource_id_and_Zenodo_id_file.tsv";
         $WRITE = Functions::file_open($this->EOL_resource_id_and_Zenodo_id_file, "c");
         fclose($WRITE);
 
