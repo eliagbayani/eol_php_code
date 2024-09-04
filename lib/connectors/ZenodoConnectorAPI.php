@@ -116,11 +116,9 @@ class ZenodoConnectorAPI
                                     // "files" => array() //$obj_1st['files']
         ); //this is needed for publishing a newly uploaded file.
 
-
         // Resource type: Missing data for required field.
         // Creators: Missing data for required field.
         // Title: Missing data for required field.
-
 
         $json = json_encode($input); echo "\n$json\n";
         print_r($input); //exit;
@@ -197,8 +195,7 @@ class ZenodoConnectorAPI
                 )*/
                 $basename = pathinfo($rec['Resource_URL'], PATHINFO_BASENAME); //exit;
                 $needle = $resource_id.".tar.gz";
-                if($resource_id == $rec['Resource_id'] && $needle == $basename ) {
-                    // print_r($rec); exit("\nstopx\n");
+                if($resource_id == $rec['Resource_id'] && $needle == $basename ) { // print_r($rec); exit("\nstopx\n");
                     return $rec['Zenodo_id'];
                 }
             }                
