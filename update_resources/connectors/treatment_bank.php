@@ -1,6 +1,14 @@
 <?php
 namespace php_active_record; 
-/* DATA-1896: TreatmentBank - http://content.eol.org/resources/562
+/* 
+as of Sep 2024: when working on Katja's [TreatmentBank trait data adjustment] https://github.com/EOL/ContentImport/issues/13
+php update_resources/connectors/treatment_bank.php _ '{"task": "generate_single_dwca"}'
+php update_resources/connectors/environments_2_eol.php _ '{"task": "generate_eol_tags_pensoft", "resource":"all_BHL", "resource_id":"TreatmentBank", "subjects":"Uses"}'
+php update_resources/connectors/run_pensoft_test.php 
+
+-----------------------------------------------
+
+DATA-1896: TreatmentBank - http://content.eol.org/resources/562
 as of Sep 1, 2021 = 611,618 items
 STEP 1:
 php update_resources/connectors/treatment_bank.php _ '{"range_from": "1", "range_to":"100000"}'

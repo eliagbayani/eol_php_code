@@ -1,6 +1,11 @@
 <?php
 namespace php_active_record;
 /*  datahub_NCBI.php
+These 4 URLs I just saved:
+https://ftp.ncbi.nih.gov/pub/taxonomy/taxdump_readme.txt
+https://www.ncbi.nlm.nih.gov/books/NBK25500/
+https://www.ncbi.nlm.nih.gov/books/NBK25497/#chapter2.Usage_Guidelines_and_Requiremen
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=Animalia
 */
 class DataHub_NCBI_API
 {
