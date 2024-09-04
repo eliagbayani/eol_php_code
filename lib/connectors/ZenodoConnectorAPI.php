@@ -141,8 +141,7 @@ class ZenodoConnectorAPI
         
         $filename = pathinfo($r['url'], PATHINFO_FILENAME); //exit;
         $arr = explode('.', $filename);
-        $resource_id = $arr[0];
-        print_r($r['url']); echo "\n[$resource_id]\n";
+        $resource_id = $arr[0]; // print_r($r); echo "\n[$resource_id]\n";
 
         $save = array('Zenodo_id' => $id_sought, 'Resource_id' => $resource_id, 'Resource_name' => $name, 'Resource_URL' => $r['url'], 'OpenData_URL' => $opendata_url);
         // , 'id' => $r['id'], 'package_id' => $r['package_id']
