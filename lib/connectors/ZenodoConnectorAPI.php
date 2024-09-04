@@ -109,14 +109,11 @@ class ZenodoConnectorAPI
 
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
-                                    "title" => $obj_1st['metadata']['title'],
-                                    // "description" => "my desc",
+                                    "title" => str_replace("'", "__", $obj_1st['metadata']['title']),
                                     "publication_date" => "2024-07-13", //date("Y-m-d"),
                                     "creators" => $obj_1st['metadata']['creators'],
-                                    // "resource_type" => 'dataset', //ignored by all concerns anyway
                                     "upload_type" => 'dataset',
-                                    // "related_identifiers" => $related_identifiers
-                                    "files" => array() //$obj_1st['files']
+                                    // "files" => array() //$obj_1st['files']
         ); //this is needed for publishing a newly uploaded file.
 
 

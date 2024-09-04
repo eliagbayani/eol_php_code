@@ -29,14 +29,12 @@ $func = new ZenodoAPI();
 
 // $func->list_depositions(); //worked OK
 
-// /*
-// $id = 13323218; //1 version only
+// /* works OK
+// $id = 13340241; //1 version only
 $id = 13240083; //multiple versions
-$path = '/Volumes/OWC_Express/other_files/test_upload12.txt'; 
+$path = '/Volumes/OWC_Express/other_files/test_upload12.txt'; exit;
 $func->update_zenodo_record_of_eol_resource($id, $path); //https://zenodo.org/records/13240083 test record
-
 // $func->update_Zenodo_record_v2($id);
-
 // */
 
 /*
