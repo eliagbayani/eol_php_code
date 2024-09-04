@@ -19,7 +19,7 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
 $func = new ZenodoAPI();
-$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+// $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
 // $func->access_json_reports(); //this generates the HTML report
 
@@ -36,6 +36,12 @@ $path = '/Volumes/OWC_Express/other_files/test_upload12.txt'; exit;
 $func->update_zenodo_record_of_eol_resource($id, $path); //https://zenodo.org/records/13240083 test record
 // $func->update_Zenodo_record_v2($id);
 */
+
+// /*
+$eol_resource_id = 80;
+$eol_resource_id = 24;
+$func->update_Zenodo_record_using_EOL_resourceID($eol_resource_id);
+// */
 
 /*
 // MainRep2: Title not found	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-19 09:05:05 AM

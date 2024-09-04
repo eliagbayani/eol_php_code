@@ -110,7 +110,7 @@ class ZenodoConnectorAPI
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
                                     "title" => str_replace("'", "__", $obj_1st['metadata']['title']),
-                                    "publication_date" => "2024-07-13", //date("Y-m-d"),
+                                    "publication_date" => date("Y-m-d"),
                                     "creators" => $obj_1st['metadata']['creators'],
                                     "upload_type" => 'dataset',
                                     // "files" => array() //$obj_1st['files']
@@ -158,16 +158,52 @@ class ZenodoConnectorAPI
     }
     function update_Zenodo_record_using_EOL_resourceID($resource_id)
     {
-        $path = CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz";
+        $file = CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz";
         if(file_exists($file)) {
-            if($zenodo_id = get_zenodo_id_using_eol_resource_id($resource_id)) {
-                $func->update_zenodo_record_of_eol_resource($zenodo_id, $path); //https://zenodo.org/records/13240083 test record
+            if($zenodo_id = self::get_zenodo_id_using_eol_resource_id($resource_id)) {
+                self::update_zenodo_record_of_eol_resource($zenodo_id, $file); //https://zenodo.org/records/13240083 test record
             }
         }
+        else echo "\nFile does not exist [$file]. No Zenodo record.\n";
     }
     private function get_zenodo_id_using_eol_resource_id($resource_id)
     {
-        
+        $file = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv";
+        $options = $this->download_options; 
+        $options['expire_seconds'] = 60*60*24; //1 day cache
+        $options['cache'] = 1;
+        if($local_file = Functions::save_remote_file_to_local($file, $options)) {
+            $i = 0;
+            foreach(new FileIterator($local_file) as $line_number => $line) {
+                $i++;
+                $row = explode("\t", $line); // print_r($row);
+                if($i == 1) {
+                    $fields = $row;
+                    $fields = array_filter($fields); //print_r($fields);
+                    continue;
+                }
+                else {
+                    $k = 0; $rec = array();
+                    foreach($fields as $fld) { $rec[$fld] = @$row[$k]; $k++; }
+                }
+                $rec = array_map('trim', $rec);
+                // print_r($rec); exit("\nstopx\n");
+                /*Array(
+                    [Zenodo_id] => 13318002
+                    [Resource_id] => microscope
+                    [Resource_name] => micro*scope
+                    [Resource_URL] => https://editors.eol.org/uploaded_resources/55a/d62/microscope.xml.gz
+                    [OpenData_URL] => https://opendata.eol.org/dataset/4a668cee-f1da-4e95-9ed1-cb755a9aca4f/resource/55ad629d-dd89-4bac-8fff-96f219f4b323
+                )*/
+                $basename = pathinfo($rec['Resource_URL'], PATHINFO_BASENAME); //exit;
+                $needle = $resource_id.".tar.gz";
+                if($resource_id == $rec['Resource_id'] && $needle == $basename ) {
+                    // print_r($rec); exit("\nstopx\n");
+                    return $rec['Zenodo_id'];
+                }
+            }                
+        }
+        unlink($local_file);
     }
 }
 ?>
