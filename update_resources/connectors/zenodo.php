@@ -40,6 +40,7 @@ $func->update_zenodo_record_of_eol_resource($id, $path); //https://zenodo.org/re
 // /*
 $eol_resource_id = 80;
 $eol_resource_id = 24;
+$eol_resource_id = "42_meta_recoded";
 $func->update_Zenodo_record_using_EOL_resourceID($eol_resource_id);
 // */
 

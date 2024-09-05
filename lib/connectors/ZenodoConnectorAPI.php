@@ -7,7 +7,7 @@ class ZenodoConnectorAPI
     {}
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
     {
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //exit;
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //exit("\nstop muna\n");
         // /*
         if($new_obj = $this->request_newversion($obj_1st)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
         // if(true) { //debug only dev only
@@ -99,27 +99,34 @@ class ZenodoConnectorAPI
         */
 
         $dates_final = self::get_dates_entries_from_html($obj_1st);
+        if($val = @$obj_1st['metadata']['license']) $license_final = $val;
+        else                                        $license_final = "notspecified";
+
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
                                     "title" => str_replace("'", "__", $obj_1st['metadata']['title']),
                                     "publication_date" => date("Y-m-d"),
-                                    "creators" => $obj_1st['metadata']['creators'],
-                                    "upload_type" => $obj_1st['metadata']['upload_type'], //'dataset',
+                                    "creators" => @$obj_1st['metadata']['creators'],
+                                    "upload_type" => @$obj_1st['metadata']['upload_type'], //'dataset',
                                     // "files" => array() //$obj_1st['files']
-                                    "access_right" => $obj_1st['metadata']['access_right'],
-                                    "contributors" => $obj_1st['metadata']['contributors'],
-                                    "keywords" => $obj_1st['metadata']['keywords'],
-                                    "related_identifiers" => $obj_1st['metadata']['related_identifiers'],
-                                    "license" => $obj_1st['metadata']['license'],
-                                    "imprint_publisher" => $obj_1st['metadata']['imprint_publisher'],
-                                    "communities" => $obj_1st['metadata']['communities'],
-                                    "notes" => $obj_1st['metadata']['notes'],
-                                    "prereserve_doi" => $obj_1st['metadata']['prereserve_doi'],
-                                    "dates" => $dates_final, //orig
+                                    "access_right" => @$obj_1st['metadata']['access_right'],
+                                    "contributors" => @$obj_1st['metadata']['contributors'],
+                                    "keywords" => @$obj_1st['metadata']['keywords'],
+                                    "related_identifiers" => @$obj_1st['metadata']['related_identifiers'],
+                                    "imprint_publisher" => @$obj_1st['metadata']['imprint_publisher'],
+                                    "communities" => @$obj_1st['metadata']['communities'],
+                                    "notes" => @$obj_1st['metadata']['notes'],
+                                    "prereserve_doi" => @$obj_1st['metadata']['prereserve_doi'],
+                                    "license" => $license_final,
+                                    "dates" => $dates_final,
                                     // "dates" => $dates, // manual force assignment
                                     // "dates" => array(),
 
         ); //this is needed for publishing a newly uploaded file.
+        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = $val;
+
+
+
 
         // Resource type: Missing data for required field.
         // Creators: Missing data for required field.
@@ -236,11 +243,12 @@ class ZenodoConnectorAPI
         */
         $date_type = array(); $date_actual = array(); $date_desc = array();
         $url = $obj['links']['html'];
+        $url = str_replace("deposit", "records", $url);
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24;
-        if($html = Functions::lookup_with_cache($url, $options)) {
-            if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) {
-                if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) {
+        if($html = Functions::lookup_with_cache($url, $options)) { echo "\ngoes date 1 [$url]\n";
+            if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) { echo "\ngoes date 2\n";
+                if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) { echo "\ngoes date 3\n";
                     print_r($arr2[1]);
                     /*Array(
                         [0] =>  class="ui tiny header">Created
@@ -254,7 +262,7 @@ class ZenodoConnectorAPI
                         $date_type[] = $tmp;
                     }
                 }
-                if(preg_match_all("/<dd>(.*?)<\/dd>/ims", $arr[1], $arr3)) {
+                if(preg_match_all("/<dd>(.*?)<\/dd>/ims", $arr[1], $arr3)) { echo "\ngoes date 4\n";
                     print_r($arr3[1]);
                     /*Array(
                         [0] => 
@@ -269,25 +277,21 @@ class ZenodoConnectorAPI
                     )*/
                     foreach($arr3[1] as $tmp) {
                         $tmp = trim($tmp);
-                        if(preg_match("/<div>(.*?)<\/div>/ims", $tmp, $arr4)) {
-                            $date_actual[] = $arr4[1];
-                        }
-                        if(preg_match("/\">(.*?)<\/div>/ims", $tmp, $arr4)) {
-                            $date_desc[] = $arr4[1];
-                        }
+                        if(preg_match("/<div>(.*?)<\/div>/ims", $tmp, $arr4)) $date_actual[] = $arr4[1];
+                        if(preg_match("/\">(.*?)<\/div>/ims", $tmp, $arr4))   $date_desc[]   = $arr4[1];
                     }
                 }
             }
         }
         $final = array();
-        if($date_type && $date_actual && $date_desc) {
+        if($date_type && $date_actual && $date_desc) { echo "\ngoes date 5\n";
             $i = -1;
             foreach($date_type as $type) { $i++;
                 $final[] = array("start" => @$date_actual[$i], "end" => @$date_actual[$i], "type" => @$date_type[$i], "description" => $date_desc[$i]);
             }
         }
+        // print_r($final); exit("\n-end date process-\n");
         return $final;
-        // print_r($obj); exit("\nelix3\n");
     }
 }
 ?>
