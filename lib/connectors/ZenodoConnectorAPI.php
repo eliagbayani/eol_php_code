@@ -1,16 +1,13 @@
 <?php
 namespace php_active_record;
-/* 
-*/
+/* */
 class ZenodoConnectorAPI
 {
     function __construct($folder = null, $query = null)
     {}
-
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
     {
-        $obj_1st = $this->retrieve_dataset($zenodo_id); exit;
-
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //exit;
         // /*
         if($new_obj = $this->request_newversion($obj_1st)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
         // if(true) { //debug only dev only
@@ -47,6 +44,7 @@ class ZenodoConnectorAPI
                             [uploads] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?uploads
                         )
                 )*/
+
                 // /* ========== retrieve and publish
 
                 /* ----- special case: comment in real operation - works OK if used -> This did not get the latest ver. but the first ver. from the TSV file.
@@ -60,15 +58,14 @@ class ZenodoConnectorAPI
                     $obj = $this->retrieve_dataset($id); //works OK
                     if($this->if_error($obj, 'retrieve', $id)) {}    
                     else {
-                        /* publishing block
-                        // $publish_obj = $this->publish_Zenodo_dataset($obj); //worked OK but with cumulative files carry-over
+                        // /* publishing block
                         $publish_obj = $this->publish_Zenodo_dataset($new_obj); //worked OK but with cumulative files carry-over
                         if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
                         else {
                             echo "\nSuccessfully uploaded then published to Zenodo\n-----u & p-----\n";
                             $this->log_error(array('uploaded then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
                         }
-                        */
+                        // */
                     }
                 }
                 // ========== end */
@@ -76,9 +73,7 @@ class ZenodoConnectorAPI
         }
         else echo "\nERROR: newversion object not created!\n";
         // */
-
     }
-
     function update_Zenodo_record_v2($id, $obj_1st) //this updates the newversion object
     {
         $ret_obj = $this->retrieve_dataset($id);
@@ -91,21 +86,6 @@ class ZenodoConnectorAPI
                               "description": "This is my first upload", 
                               "creators": [{"name": "Doe, John", "affiliation": "Zenodo"}]}}' https://zenodo.org/api/deposit/depositions/1234?access_token=ACCESS_TOKEN
         */
-        // $creators = array();
-        // $creators[] = array("name" => "script", "affiliation" => "Zenodo API 1");
-        // $related_identifiers = array();
-        // $related_identifiers[] = array("relation" => "isSupplementTo", "identifier" => 'http://eol.org', "resource_type" => "dataset");
-        // $related_identifiers[] = array("resource_type" => 'dataset');
-
-        // [related_identifiers] => Array(
-        //     [0] => Array(
-        //             [identifier] => https://editors.eol.org/eol_php_code/applications/content_server/resources/microscope_2024_08_29.tar.gz
-        //             [relation] => isSupplementTo
-        //             [resource_type] => dataset
-        //             [scheme] => url
-        //         )
-        // )
-
 
         /* generate input first: 3 required fields
         Resource type: Missing data for required field.
@@ -118,14 +98,7 @@ class ZenodoConnectorAPI
         $dates[] = array("start" => "2017-10-02", "end" => "2017-10-02", "type" => "Created");
         */
 
-        // /* format dates: remove type 'created'
-        $dates = $obj_1st['metadata']['dates'];
-        $dates_final = array();
-        foreach($dates as $date) {
-            if($date['type'] != "created") $dates_final[] = $date;
-        }
-        // */
-
+        $dates_final = self::get_dates_entries_from_html($obj_1st);
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
                                     "title" => str_replace("'", "__", $obj_1st['metadata']['title']),
@@ -233,6 +206,88 @@ class ZenodoConnectorAPI
             }                
         }
         unlink($local_file);
+    }
+    function get_dates_entries_from_html($obj)
+    {   /*
+        <div class="ui grid">
+            <div class="sixteen wide mobile four wide tablet three wide computer column">
+                <h3 class="ui header">Dates</h3>
+            </div>
+            <div class="sixteen wide mobile twelve wide tablet thirteen wide computer column">
+                <dl class="details-list">
+                    <dt class="ui tiny header">Created</dt>
+                    <dd>
+                        <div>2017-10-02</div>
+                        <div class="text-muted">1st</div>
+                    </dd>
+                    <dt class="ui tiny header">Updated</dt>
+                    <dd>
+                        <div>2017-10-03</div>
+                        <div class="text-muted">2nd</div>
+                    </dd>
+                    <dt class="ui tiny header">Collected</dt>
+                    <dd>
+                        <div>2017-10-04</div>
+                        <div class="text-muted">3rd</div>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        */
+        $date_type = array(); $date_actual = array(); $date_desc = array();
+        $url = $obj['links']['html'];
+        $options = $this->download_options;
+        $options['expire_seconds'] = 60*60*24;
+        if($html = Functions::lookup_with_cache($url, $options)) {
+            if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) {
+                if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) {
+                    print_r($arr2[1]);
+                    /*Array(
+                        [0] =>  class="ui tiny header">Created
+                        [1] =>  class="ui tiny header">Updated
+                        [2] =>  class="ui tiny header">Collected
+                    )*/
+                    foreach($arr2[1] as $tmp) {
+                        $tmp = trim($tmp);
+                        $tmp = "<".$tmp;
+                        $tmp = trim(strip_tags($tmp));
+                        $date_type[] = $tmp;
+                    }
+                }
+                if(preg_match_all("/<dd>(.*?)<\/dd>/ims", $arr[1], $arr3)) {
+                    print_r($arr3[1]);
+                    /*Array(
+                        [0] => 
+                        <div>2017-10-02</div>
+                        <div class="text-muted">1st</div>
+                        [1] => 
+                        <div>2017-10-03</div>
+                        <div class="text-muted">2nd</div>
+                        [2] => 
+                        <div>2017-10-04</div>
+                        <div class="text-muted">3rd</div>    
+                    )*/
+                    foreach($arr3[1] as $tmp) {
+                        $tmp = trim($tmp);
+                        if(preg_match("/<div>(.*?)<\/div>/ims", $tmp, $arr4)) {
+                            $date_actual[] = $arr4[1];
+                        }
+                        if(preg_match("/\">(.*?)<\/div>/ims", $tmp, $arr4)) {
+                            $date_desc[] = $arr4[1];
+                        }
+                    }
+                }
+            }
+        }
+        $final = array();
+        if($date_type && $date_actual && $date_desc) {
+            $i = -1;
+            foreach($date_type as $type) { $i++;
+                $final[] = array("start" => @$date_actual[$i], "end" => @$date_actual[$i], "type" => @$date_type[$i], "description" => $date_desc[$i]);
+            }
+        }
+        return $final;
+        // print_r($obj); exit("\nelix3\n");
     }
 }
 ?>
