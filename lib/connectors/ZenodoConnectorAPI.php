@@ -9,7 +9,7 @@ class ZenodoConnectorAPI
 
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
     {
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //exit;
+        $obj_1st = $this->retrieve_dataset($zenodo_id); exit;
 
         // /*
         if($new_obj = $this->request_newversion($obj_1st)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
@@ -47,14 +47,20 @@ class ZenodoConnectorAPI
                             [uploads] => https://zenodo.org/api/files/cb841b0c-e915-4655-9c15-88a078529d03/vernacularnames.csv?uploads
                         )
                 )*/
-                // /* retrieve and publish
-                $update_obj = $this->update_Zenodo_record_v2($id, $obj_1st); //to fill-in the publication_date, title creators resource_type
+                // /* ========== retrieve and publish
+
+                /* ----- special case: comment in real operation - works OK if used -> This did not get the latest ver. but the first ver. from the TSV file.
+                $obj_orig = $this->retrieve_dataset($zenodo_id, false); //2nd param false means doesn't need the latest version.
+                $update_obj = $this->update_Zenodo_record_v2($id, $obj_orig); //to fill-in the publication_date, title creators upload_type et al.
+                ----- end */
+
+                $update_obj = $this->update_Zenodo_record_v2($id, $obj_1st); //to fill-in the publication_date, title creators upload_type et al.
                 if($this->if_error($update_obj, 'update1', $id)) {}
                 else {
                     $obj = $this->retrieve_dataset($id); //works OK
                     if($this->if_error($obj, 'retrieve', $id)) {}    
                     else {
-                        // /* publishing block
+                        /* publishing block
                         // $publish_obj = $this->publish_Zenodo_dataset($obj); //worked OK but with cumulative files carry-over
                         $publish_obj = $this->publish_Zenodo_dataset($new_obj); //worked OK but with cumulative files carry-over
                         if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
@@ -62,10 +68,10 @@ class ZenodoConnectorAPI
                             echo "\nSuccessfully uploaded then published to Zenodo\n-----u & p-----\n";
                             $this->log_error(array('uploaded then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
                         }
-                        // */
+                        */
                     }
                 }
-                // */
+                // ========== end */
             }            
         }
         else echo "\nERROR: newversion object not created!\n";
@@ -107,13 +113,39 @@ class ZenodoConnectorAPI
         Title: Missing data for required field.        
         */
 
+        /* manual force assignment
+        $dates = array();
+        $dates[] = array("start" => "2017-10-02", "end" => "2017-10-02", "type" => "Created");
+        */
+
+        // /* format dates: remove type 'created'
+        $dates = $obj_1st['metadata']['dates'];
+        $dates_final = array();
+        foreach($dates as $date) {
+            if($date['type'] != "created") $dates_final[] = $date;
+        }
+        // */
+
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
                                     "title" => str_replace("'", "__", $obj_1st['metadata']['title']),
                                     "publication_date" => date("Y-m-d"),
                                     "creators" => $obj_1st['metadata']['creators'],
-                                    "upload_type" => 'dataset',
+                                    "upload_type" => $obj_1st['metadata']['upload_type'], //'dataset',
                                     // "files" => array() //$obj_1st['files']
+                                    "access_right" => $obj_1st['metadata']['access_right'],
+                                    "contributors" => $obj_1st['metadata']['contributors'],
+                                    "keywords" => $obj_1st['metadata']['keywords'],
+                                    "related_identifiers" => $obj_1st['metadata']['related_identifiers'],
+                                    "license" => $obj_1st['metadata']['license'],
+                                    "imprint_publisher" => $obj_1st['metadata']['imprint_publisher'],
+                                    "communities" => $obj_1st['metadata']['communities'],
+                                    "notes" => $obj_1st['metadata']['notes'],
+                                    "prereserve_doi" => $obj_1st['metadata']['prereserve_doi'],
+                                    "dates" => $dates_final, //orig
+                                    // "dates" => $dates, // manual force assignment
+                                    // "dates" => array(),
+
         ); //this is needed for publishing a newly uploaded file.
 
         // Resource type: Missing data for required field.

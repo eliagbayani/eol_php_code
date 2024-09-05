@@ -888,7 +888,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $obj = json_decode(trim($json), true);  echo "\n=====delete=====\n"; print_r($obj); echo "\n=====delete end=====\n";
         return $obj;
     }
-    function retrieve_dataset($id)
+    function retrieve_dataset($id, $versionLatestYN = true)
     {
         echo "\nRetrieving ".$id."...\n";
         // $cmd = 'curl -i '.$this->api['domain'].'/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN; //orig from Zenodo, -i more complete output. Not used.
@@ -896,7 +896,12 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $cmd .= " 2>&1";
         // echo "\nretrieve cmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====retrieve=====\n"; print_r($obj); echo "\n=====retrieve end=====\n";
+        $obj = json_decode(trim($json), true);  echo "\n=====retrieve=====\n"; print_r($obj); echo "\n=====retrieve end=====\n"; 
+
+        // /* ----- new block - works OK if used
+        if($versionLatestYN) {} //just proceed below, get the latest version
+        else return $obj;
+        // ----- */
 
         /* debug only dev only
         $file = $this->path_2_file_dat . "z_13323232.dat";
