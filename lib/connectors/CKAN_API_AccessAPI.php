@@ -38,6 +38,7 @@ class CKAN_API_AccessAPI
     {   $final = array();
         $options = $this->download_options;
         $options['expire_seconds'] = 0; //60*60*24*1; //orig 1 day expires
+        // $options['expire_seconds'] = 60*60*24*1; //debug only dev only
         if($json = Functions::lookup_with_cache($this->api_package_list, $options)) {
             $packages = json_decode($json);
             // print_r($packages); exit;
@@ -91,7 +92,9 @@ class CKAN_API_AccessAPI
     function update_CKAN_resource_using_EOL_resourceID($EOL_resource_id)
     {
         if($rek = self::get_ckan_record_using_EOL_resource_id($EOL_resource_id)) {
-            self::UPDATE_ckan_resource($ckan_resource_id, "Last updated"); //actual CKAN field is "last_modified"
+            if($ckan_resource_id = @$rek[1]) {
+                self::UPDATE_ckan_resource($ckan_resource_id, "Last updated"); //actual CKAN field is "last_modified"
+            }
         }
     }
     function UPDATE_ckan_resource($ckan_resource_id, $field2update) //https://docs.ckan.org/en/ckan-2.7.3/api/
