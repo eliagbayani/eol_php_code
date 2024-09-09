@@ -58,14 +58,14 @@ class ZenodoConnectorAPI
                     $obj = $this->retrieve_dataset($id); //works OK
                     if($this->if_error($obj, 'retrieve', $id)) {}    
                     else {
-                        // /* publishing block
+                        /* publishing block
                         $publish_obj = $this->publish_Zenodo_dataset($new_obj); //worked OK but with cumulative files carry-over
                         if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
                         else {
                             echo "\nSuccessfully uploaded then published to Zenodo\n-----u & p-----\n";
                             $this->log_error(array('uploaded then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
                         }
-                        // */
+                        */
                     }
                 }
                 // ========== end */
@@ -98,9 +98,15 @@ class ZenodoConnectorAPI
         $dates[] = array("start" => "2017-10-02", "end" => "2017-10-02", "type" => "Created");
         */
 
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $dates_final = self::get_dates_entries_from_html($obj_1st);
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if($val = @$obj_1st['metadata']['license']) $license_final = $val;
         else                                        $license_final = "notspecified";
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        $notes = @$obj_1st['metadata']['notes'];
+        if($val = $this->new_description_for_zenodo) $notes = $val; //notes will be replaced
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
@@ -115,7 +121,7 @@ class ZenodoConnectorAPI
                                     "related_identifiers" => @$obj_1st['metadata']['related_identifiers'],
                                     "imprint_publisher" => @$obj_1st['metadata']['imprint_publisher'],
                                     "communities" => @$obj_1st['metadata']['communities'],
-                                    "notes" => @$obj_1st['metadata']['notes'],
+                                    "notes" => $notes,
                                     "prereserve_doi" => @$obj_1st['metadata']['prereserve_doi'],
                                     "license" => $license_final,
                                     "dates" => $dates_final,
@@ -123,10 +129,8 @@ class ZenodoConnectorAPI
                                     // "dates" => array(),
 
         ); //this is needed for publishing a newly uploaded file.
-        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = $val;
 
-
-
+        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = $val; //impt. bec. metadata description must not be blank.
 
         // Resource type: Missing data for required field.
         // Creators: Missing data for required field.
@@ -168,6 +172,7 @@ class ZenodoConnectorAPI
     }
     function update_Zenodo_record_using_EOL_resourceID($resource_id)
     {
+        echo "\npassed:   [".$this->new_description_for_zenodo."]\n";
         $file = CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz";
         if(file_exists($file)) {
             if($zenodo_id = self::get_zenodo_id_using_eol_resource_id($resource_id)) {
