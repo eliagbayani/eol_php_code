@@ -202,10 +202,9 @@ class CKAN_API_AccessAPI
     {
         // ####--- __EOL DwCA resource last updated: Jul 17, 2023 07:41 AM__ ---####
         // "####--- __"."EOL DwCA resource last updated: ".$this->date_format."__ ---####";
-
         $left  = "####--- __";
         $right = "__ ---####";
-        $desc = self::remove_all_in_between_inclusive($left, $right, $desc, $includeRight = true);
+        $desc = self::remove_all_in_between_inclusive($left, $right, $desc, true); //4th param is $includeRight
 
         $arr = explode("\n", $desc); //print_r($arr);
         // echo "\nlast element is: [".end($arr)."]\n";
