@@ -328,7 +328,10 @@ class ZenodoConnectorAPI
         if(end($arr) == "") {} //echo "\nlast element is nothing\n";
         else $desc .= chr(13); //add a next line
 
+        $forced_date = date("m/d/Y H:i:s"); //date today
+        $date = strtotime($forced_date);
         $date_format = date("M d, Y h:i A", $date);  //July 13, 2023 08:30 AM
+
         // $this->iso_date_str = self::iso_date_format()
         $add_str = "####--- __"."EOL DwCA resource last updated: ".$date_format."__ ---####";
         $desc .= $add_str;

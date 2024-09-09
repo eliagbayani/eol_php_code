@@ -37,15 +37,15 @@ $func->update_zenodo_record_of_eol_resource($id, $path); //https://zenodo.org/re
 // $func->update_Zenodo_record_v2($id);
 */
 
-/*
-$eol_resource_id = 80;
-$eol_resource_id = 24;
-$eol_resource_id = "42_meta_recoded";
-$func->update_Zenodo_record_using_EOL_resourceID($eol_resource_id);
-*/
-
-
 // /*
+$eol_resource_id = "200_meta_recoded";
+// $eol_resource_id = 24;
+// $eol_resource_id = "42_meta_recoded"; //FishBase
+$func->update_Zenodo_record_using_EOL_resourceID($eol_resource_id);
+// */
+
+
+/*
 exit("\nwala lang...\n");
 $func->new_description_for_zenodo = false; //important to initialize to false
 require_library('connectors/CKAN_API_AccessAPI');
@@ -62,7 +62,7 @@ if($ckan_resource_id = @$ckan_record[1]) {
 }
 $func->update_Zenodo_record_using_EOL_resourceID($EOL_resource_id);
 $func->new_description_for_zenodo = ""; //initialize again
-// */
+*/
 
 
 /*
