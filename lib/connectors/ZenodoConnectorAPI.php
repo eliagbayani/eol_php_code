@@ -105,7 +105,8 @@ class ZenodoConnectorAPI
         else                                        $license_final = "notspecified";
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $notes = @$obj_1st['metadata']['notes'];
-        if($val = $this->new_description_for_zenodo) $notes = $val; //notes will be replaced
+        $notes = self::format_description($notes);
+        // if($val = $this->new_description_for_zenodo) $notes = $val; // this wasn't implemented
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         array_shift($obj_1st['files']);
@@ -297,6 +298,41 @@ class ZenodoConnectorAPI
         }
         // print_r($final); exit("\n-end date process-\n");
         return $final;
+    }
+    private function remove_all_in_between_inclusive($left, $right, $html, $includeRight = true)
+    {
+        if(preg_match_all("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
+            foreach($arr[1] as $str) {
+                if($includeRight) { //original
+                    $substr = $left.$str.$right;
+                    $html = str_ireplace($substr, '', $html);
+                }
+                else { //meaning exclude right
+                    $substr = $left.$str.$right;
+                    $html = str_ireplace($substr, $right, $html);
+                }
+            }
+        }
+        return $html;
+    }
+    function format_description($desc)
+    {
+        // ####--- __EOL DwCA resource last updated: Jul 17, 2023 07:41 AM__ ---####
+        // "####--- __"."EOL DwCA resource last updated: ".$this->date_format."__ ---####";
+        $left  = "####--- __";
+        $right = "__ ---####";
+        $desc = self::remove_all_in_between_inclusive($left, $right, $desc, true);
+
+        $arr = explode("\n", $desc); //print_r($arr);
+        // echo "\nlast element is: [".end($arr)."]\n";
+        if(end($arr) == "") {} //echo "\nlast element is nothing\n";
+        else $desc .= chr(13); //add a next line
+
+        $date_format = date("M d, Y h:i A", $date);  //July 13, 2023 08:30 AM
+        // $this->iso_date_str = self::iso_date_format()
+        $add_str = "####--- __"."EOL DwCA resource last updated: ".$date_format."__ ---####";
+        $desc .= $add_str;
+        return $desc;
     }
 }
 ?>
