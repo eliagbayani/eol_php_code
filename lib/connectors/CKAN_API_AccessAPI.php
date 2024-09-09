@@ -61,7 +61,8 @@ class CKAN_API_AccessAPI
         // print_r($final); echo "\n".count($final)."\n"; //good debug
         return $final;
     }
-    function update_CKAN_resource_using_EOL_resourceID($EOL_resource_id)
+    // =================================================== start for Zenodo =====================================
+    function get_ckan_record_using_EOL_resource_id($EOL_resource_id)
     {
         $id_name_list = self::generate_ckan_id_name_list();
         if($reks = @$id_name_list[$EOL_resource_id]) { // print_r($reks);
@@ -78,14 +79,20 @@ class CKAN_API_AccessAPI
                     [1] => 84c7f07a-8b39-467b-923e-b9e9ef5fa45a
                     [2] => https://editors.eol.org/eol_php_code/applications/content_server/resources/protisten.tar.gz
                 )*/
-                if($ckan_resource_id = @$rek[1]) {
-                    print_r($rek);
-                    self::UPDATE_ckan_resource($ckan_resource_id, "Last updated"); //actual CKAN field is "last_modified"
+                if($ckan_resource_id = @$rek[1]) { print_r($rek);
+                    return $rek;
                 }
             }
         }
         else echo "\nResource ID [$EOL_resource_id] is not hosted in opendata.eol.org.\n";
-        // exit("\n--01\n");
+        return array();
+    }
+    // =================================================== end for Zenodo =====================================
+    function update_CKAN_resource_using_EOL_resourceID($EOL_resource_id)
+    {
+        if($rek = self::get_ckan_record_using_EOL_resource_id($EOL_resource_id)) {
+            self::UPDATE_ckan_resource($ckan_resource_id, "Last updated"); //actual CKAN field is "last_modified"
+        }
     }
     function UPDATE_ckan_resource($ckan_resource_id, $field2update) //https://docs.ckan.org/en/ckan-2.7.3/api/
     {
