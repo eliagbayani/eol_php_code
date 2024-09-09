@@ -88,7 +88,8 @@ class ZenodoAPI extends ZenodoConnectorAPI
 
         /* not helpful since Authorization is required regardless of user-agent
         https://www.whatismybrowser.com/detect/what-is-my-user-agent/
-        */        
+        */
+        $this->new_description_for_zenodo = "";
     }
     function start()
     {   self::log_error(array("==================== Log starts here ===================="));
