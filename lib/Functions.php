@@ -442,19 +442,19 @@ class Functions
         require_library('connectors/ZenodoConnectorAPI');
         require_library('connectors/ZenodoAPI');
         $func = new ZenodoAPI();
-        $func->new_description_for_zenodo = false; //important to initialize to false
-        require_library('connectors/CKAN_API_AccessAPI');
-        $ckan_func = new CKAN_API_AccessAPI('EOL resource', ""); //other values: "EOL dump" or "EOL file"
-        $ckan_record = $ckan_func->get_ckan_record_using_EOL_resource_id($EOL_resource_id);
-        if($ckan_resource_id = @$ckan_record[1]) {
-            $rec = $ckan_func->retrieve_ckan_resource_using_id($ckan_resource_id); // print_r($rec);
-            $new_description = $ckan_func->format_description($rec['result']['description']);
-            echo "\nold desc: [".$rec['result']['description']."]";
-            echo "\nnew desc: [$new_description]\n";
-            $func->new_description_for_zenodo = $new_description; //a global field in ZenodoAPI.php
-        }
+        // $func->new_description_for_zenodo = false; //important to initialize to false
+        // require_library('connectors/CKAN_API_AccessAPI');
+        // $ckan_func = new CKAN_API_AccessAPI('EOL resource', ""); //other values: "EOL dump" or "EOL file"
+        // $ckan_record = $ckan_func->get_ckan_record_using_EOL_resource_id($EOL_resource_id);
+        // if($ckan_resource_id = @$ckan_record[1]) {
+        //     $rec = $ckan_func->retrieve_ckan_resource_using_id($ckan_resource_id); // print_r($rec);
+        //     $new_description = $ckan_func->format_description($rec['result']['description']);
+        //     echo "\nold desc: [".$rec['result']['description']."]";
+        //     echo "\nnew desc: [$new_description]\n";
+        //     $func->new_description_for_zenodo = $new_description; //a global field in ZenodoAPI.php
+        // }
         $func->update_Zenodo_record_using_EOL_resourceID($EOL_resource_id);
-        $func->new_description_for_zenodo = ""; //initialize again
+        // $func->new_description_for_zenodo = ""; //initialize again
         // */
     }
     public static function get_time_elapsed($timestart)
