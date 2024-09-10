@@ -2,6 +2,19 @@
 namespace php_active_record;
 /*  datahub_gbif.php
 https://content.eol.org/resources/1220
+
+------------------------------ GBIF download info
+DOI: https://doi.org/10.15468/dl.y5bevt (may take some hours before being active) Creation Date: 18:25:02 6 May 2024
+Records included: 3994133 records from 73245 published datasets
+Compressed data size: 297.2 MB
+Download format: SPECIES_LIST Filter used:
+{
+  "OccurrenceStatus" : [
+    "is Present"
+    ] 
+}
+------------------------------ end
+
 */
 class DataHub_GBIF_API
 {
@@ -22,7 +35,7 @@ class DataHub_GBIF_API
         $this->reports_path = $save_path;
         $this->debug = array();
 
-        $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0000495-240506114902167.zip";
+        $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0000495-240506114902167.zip"; //should make this a recurring download
         // $this->local_csv = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0000495-240506114902167.csv"; //dev only
         $this->taxon_page = 'https://www.gbif.org/species/'; //e.g. 8084280
     }
