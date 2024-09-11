@@ -29,6 +29,17 @@ $func = new ZenodoAPI();
 
 // $func->list_depositions(); //worked OK
 
+// /*
+$json = '{
+  "type": "equals",
+  "key": "OCCURRENCE_STATUS",
+  "value": "present",
+  "matchCase": false
+}';
+$arr = json_decode($json, true); print_r($arr); exit;
+// */
+
+
 /* works OK
 // $id = 13340241; //1 version only
 $id = 13240083; //multiple versions

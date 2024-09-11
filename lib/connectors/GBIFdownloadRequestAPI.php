@@ -4,6 +4,7 @@ namespace php_active_record;
               2nd client: [gbif_download_request_for_NMNH.php]
               3rd client: the 6 GBIF country type records -> e.g. Germany, Sweden, etc.
               4th client: [gbif_download_request_for_iNat.php] 
+              5th client: [gbif_download_request_for_DataCoverage.php]
 
 THERE IS A CURL ISSUE: and the "--insecure" param as a sol'n actually works OK!
 curl: (60) SSL certificate problem: certificate has expired
@@ -48,6 +49,7 @@ class GBIFdownloadRequestAPI
         if($this->resource_id == 'GBIF_map_harvest') $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF';
         elseif($this->resource_id == 'NMNH_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/NMNH_images';
         elseif($this->resource_id == 'iNat_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/iNat_images';
+        elseif($this->resource_id == 'Data_coverage')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Data_coverage';
         elseif($this->resource_id == 'GBIF_Netherlands')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_Netherlands';
         elseif($this->resource_id == 'GBIF_France')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_France';
         elseif($this->resource_id == 'GBIF_Germany')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_Germany';
@@ -116,7 +118,7 @@ class GBIFdownloadRequestAPI
             if(!self::generate_sh_file($taxon_group)) return false;
         }
         */
-        else { //for NMNH_images and the 6 GBIF countries and iNat_images
+        else { //for NMNH_images and the 6 GBIF countries and iNat_images and Data_coverage
             $taxon_group = $this->resource_id;
             if(!self::generate_sh_file($taxon_group)) return false;
         }
@@ -301,7 +303,20 @@ class GBIFdownloadRequestAPI
         } //end iNat
         /* from download page: https://doi.org/10.15468/dl.xr247r (API) */
         //==================================================================================================================================
-        
+        if($this->resource_id == 'Data_coverage') {
+            $predicate = Array(
+                'type' => 'equals',
+                'key' => 'OCCURRENCE_STATUS',
+                'value' => 'present',
+                'matchCase' => ''
+            );
+        } //end NMNH_images
+        /* from its download DOI: https://doi.org/10.15468/dl.y5bevt
+        From the 2nd box. Click 'API' to get the json format of the request. Then in php run below, to get the array value.
+        $arr = json_decode($json, true);
+        */
+        //==================================================================================================================================
+
         /* For all except $this->resource_id == 'GBIF_map_harvest' */
         $param = Array( 'creator' => $this->gbif_username,
                         'notificationAddresses' => Array(0 => $this->gbif_email),
