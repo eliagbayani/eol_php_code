@@ -339,7 +339,7 @@ class GBIFdownloadRequestAPI
         fwrite($fhandle, $key);
         fclose($fhandle);
     }
-    private function retrieve_key_for_taxon($taxon_group)
+    function retrieve_key_for_taxon($taxon_group)
     {
         $file = $this->destination_path.'/download_key_'.$taxon_group.'.txt';
         if(file_exists($file)) {

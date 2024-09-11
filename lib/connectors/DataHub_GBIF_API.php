@@ -35,12 +35,20 @@ class DataHub_GBIF_API
         $this->reports_path = $save_path;
         $this->debug = array();
 
-        $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0000495-240506114902167.zip"; //should make this a recurring download
+        // $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0000495-240506114902167.zip"; //should make this a recurring download
         // $this->local_csv = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0000495-240506114902167.csv"; //dev only
         $this->taxon_page = 'https://www.gbif.org/species/'; //e.g. 8084280
     }
     function start()
-    {   //step 1
+    {   
+        //step 0: get download key
+        require_library('connectors/GBIFdownloadRequestAPI');
+        $what = "Data_coverage";
+        $func = new GBIFdownloadRequestAPI($what);
+        $download_key = $func->retrieve_key_for_taxon($what);
+        $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/".$download_key.".zip"; //this is now a recurring download
+        
+        //step 1
         $temp_dir = self::download_extract_gbif_zip_file();
 
         //step 2: initialize calling of external functions
