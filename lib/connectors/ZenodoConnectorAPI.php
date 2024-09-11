@@ -293,7 +293,6 @@ class ZenodoConnectorAPI
         if($date_type && $date_actual && $date_desc) { echo "\ngoes date 5\n";
             $i = -1;
             foreach($date_type as $type) { $i++;
-                $type = @$date_type[$i];
                 if($type == 'Updated') {
                     $start = date("Y-m-d");
                     $end   = date("Y-m-d");
