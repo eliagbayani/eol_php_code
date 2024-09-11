@@ -58,14 +58,14 @@ class ZenodoConnectorAPI
                     $obj = $this->retrieve_dataset($id); //works OK
                     if($this->if_error($obj, 'retrieve', $id)) {}    
                     else {
-                        /* publishing block
+                        // /* publishing block
                         $publish_obj = $this->publish_Zenodo_dataset($new_obj); //worked OK but with cumulative files carry-over
                         if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
                         else {
                             echo "\nSuccessfully uploaded then published to Zenodo\n-----u & p-----\n";
                             $this->log_error(array('uploaded then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
                         }
-                        */
+                        // */
                     }
                 }
                 // ========== end */
