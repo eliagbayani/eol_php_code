@@ -47,6 +47,7 @@ class DataHub_GBIF_API
         $func = new GBIFdownloadRequestAPI($what);
         $download_key = $func->retrieve_key_for_taxon($what);
         $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/".$download_key.".zip"; //this is now a recurring download
+        $this->remote_csv = "/extra/other_files/Data_coverage_DwCA/GBIF_service/Data_coverage_DwCA.zip"; //this was downloaded in Jenkins
         
         //step 1
         $temp_dir = self::download_extract_gbif_zip_file();
