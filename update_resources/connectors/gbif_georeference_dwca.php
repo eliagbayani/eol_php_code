@@ -10,6 +10,29 @@ Preparation of the GBIF DwCA downloads: [Animalia, Plantae, Other 7 groups]
 2. Then click RERUN QUERY. Follow next steps. Then you will receive an email when your download is ready.
 3. Once you get the email, update the curl links in Jenkins: [01 Initialize and download dumps]
 4. -end-
+{
+  "type": "and",
+  "predicates": [
+    {
+      "type": "equals",
+      "key": "HAS_COORDINATE",
+      "value": "true",
+      "matchCase": false
+    },
+    {
+      "type": "equals",
+      "key": "TAXON_KEY",
+      "value": "1",
+      "matchCase": false
+    },
+    {
+      "type": "equals",
+      "key": "HAS_GEOSPATIAL_ISSUE",
+      "value": "false",
+      "matchCase": false
+    }
+  ]
+}
 =================================================================================================================== Start running Jenkins:
 01 Initialize and download dumps
     will open 6 jobs
