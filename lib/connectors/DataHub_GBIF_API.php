@@ -346,12 +346,7 @@ class DataHub_GBIF_API
 
         $temp_dir = $paths['temp_dir'];
         $this->local_csv = $paths['extracted_file'].".csv";     //orig
-        // $this->local_csv = $paths['temp_dir']."occurrence.txt"; //new, when the dump suddenly became a big file
         return $temp_dir;
-        /* un-comment in real operation -- remove temp dir
-        recursive_rmdir($temp_dir);
-        echo ("\n temporary directory removed: " . $temp_dir);
-        */
     }
 
     // =========================================================================== copied template below
