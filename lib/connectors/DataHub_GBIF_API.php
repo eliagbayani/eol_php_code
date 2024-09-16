@@ -324,7 +324,7 @@ class DataHub_GBIF_API
         $options = $this->download_options_GBIF;
         $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
         $paths = $func->extract_zip_file($this->remote_csv, $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        // print_r($paths); exit; //debug only
+        print_r($paths); //exit; //good debug
         // */
 
         /* sample output:
@@ -351,101 +351,101 @@ class DataHub_GBIF_API
     }
 
     // =========================================================================== copied template below
-    function parse_tsv_then_generate_dwca()
-    {
-        $this->debug = array();
-        require_library('connectors/TraitGeneric'); 
-        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
+    // function parse_tsv_then_generate_dwca()
+    // {
+    //     $this->debug = array();
+    //     require_library('connectors/TraitGeneric'); 
+    //     $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
 
-        foreach($this->quality_grades as $grade) $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt"; //file variable assignment
+    //     foreach($this->quality_grades as $grade) $this->dump_file[$grade] = $this->save_path . "/datahub_inat_grade_".$grade.".txt"; //file variable assignment
 
-        // step 1: reads iNat taxonomy and gen. info taxa list
-        self::gen_iNat_info_taxa_using_DwCA(); //generates $this->inat_taxa_info
+    //     // step 1: reads iNat taxonomy and gen. info taxa list
+    //     self::gen_iNat_info_taxa_using_DwCA(); //generates $this->inat_taxa_info
 
-        // step 2: loop each tsv file ('research', 'needs_id', 'casual'), and create info_list for DwCA writing
-        self::assemble_data_from_3TSVs();
-        // print_r($this->assembled); exit;
+    //     // step 2: loop each tsv file ('research', 'needs_id', 'casual'), and create info_list for DwCA writing
+    //     self::assemble_data_from_3TSVs();
+    //     // print_r($this->assembled); exit;
 
-        // step 3: write DwCA from the big assembled array $this->assembled
-        self::write_dwca_from_assembled_array();
+    //     // step 3: write DwCA from the big assembled array $this->assembled
+    //     self::write_dwca_from_assembled_array();
 
-        /*
-        // step ?: loop a tsv dump and write taxon and MoF archive --- if u want to gen. a DwCA from one dump
-        self::parse_tsv_file($this->dump_file['research'], "process research grade tsv"); 
-        */
+    //     /*
+    //     // step ?: loop a tsv dump and write taxon and MoF archive --- if u want to gen. a DwCA from one dump
+    //     self::parse_tsv_file($this->dump_file['research'], "process research grade tsv"); 
+    //     */
         
-        $this->archive_builder->finalize(TRUE);
-        print_r($this->debug);
-    }
-    private function gen_iNat_info_taxa_using_DwCA()
-    {
-        echo "\nGenerate taxon info list...\n";
-        // /* un-comment in real operation
-        require_library('connectors/INBioAPI');
-        $func = new INBioAPI();
-        $options = $this->download_options_GBIF;
-        $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
-        $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        // print_r($paths); exit; //debug only
-        // */
+    //     $this->archive_builder->finalize(TRUE);
+    //     print_r($this->debug);
+    // }
+    // private function gen_iNat_info_taxa_using_DwCA()
+    // {
+    //     echo "\nGenerate taxon info list...\n";
+    //     // /* un-comment in real operation
+    //     require_library('connectors/INBioAPI');
+    //     $func = new INBioAPI();
+    //     $options = $this->download_options_GBIF;
+    //     $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
+    //     $paths = $func->extract_archive_file($this->dwca['inaturalist-taxonomy'], "meta.xml", $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+    //     // print_r($paths); exit; //debug only
+    //     // */
 
-        /* development only
-        $paths = Array(
-            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/',
-            'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/'
-        );
-        */
+    //     /* development only
+    //     $paths = Array(
+    //         'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/',
+    //         'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_54504/'
+    //     );
+    //     */
 
-        $archive_path = $paths['archive_path'];
-        $temp_dir = $paths['temp_dir'];
-        $harvester = new ContentArchiveReader(NULL, $archive_path);
-        $tables = $harvester->tables;
+    //     $archive_path = $paths['archive_path'];
+    //     $temp_dir = $paths['temp_dir'];
+    //     $harvester = new ContentArchiveReader(NULL, $archive_path);
+    //     $tables = $harvester->tables;
 
-        self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxa info');
+    //     self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'gen taxa info');
 
-        /* un-comment in real operation -- remove temp dir
-        recursive_rmdir($temp_dir);
-        echo ("\n temporary directory removed: " . $temp_dir);
-        */
-    }
-    private function assemble_data_from_3TSVs()
-    {
-        $grades = array('research', 'needs_id', 'casual');
-        foreach($grades as $grade) {
-            self::parse_tsv_file($this->dump_file[$grade], "assemble data from 3 TSVs", $grade);
-        }
-    }
-    private function parse_csv_file($csv_file, $what)
-    {
-        $i = 0; $meron = 0;
-        $file = Functions::file_open($csv_file, "r");
-        while(!feof($file)) {
-            $row = fgetcsv($file); //print_r($row);
-            if(!$row) continue; 
-            $str = implode("\t", $row);
-            // if(stripos($str, "Callisaurus	genus") !== false) { echo("\n$str\n"); }  //string found --- good debug
-            if(!$row) break;
-            $i++; if(($i % 100000) == 0) echo "\n $i ";
-            if($i == 1) {
-                $fields = $row;
-                $count = count($fields); // print_r($fields);
-            }
-            else { //main records
-                $values = $row;
-                if($count != count($values)) { //row validation - correct no. of columns
-                    echo("\nWrong CSV format for this row.\n");
-                    continue;
-                }
-                $k = 0; $rec = array();
-                foreach($fields as $field) {
-                    $rec[$field] = $values[$k];
-                    $k++;
-                }
-                print_r($rec); exit;
-                // if($what == "xxx") {}
-                // elseif($what == "xxx") {}
-            }
-        }
-    }
+    //     /* un-comment in real operation -- remove temp dir
+    //     recursive_rmdir($temp_dir);
+    //     echo ("\n temporary directory removed: " . $temp_dir);
+    //     */
+    // }
+    // private function assemble_data_from_3TSVs()
+    // {
+    //     $grades = array('research', 'needs_id', 'casual');
+    //     foreach($grades as $grade) {
+    //         self::parse_tsv_file($this->dump_file[$grade], "assemble data from 3 TSVs", $grade);
+    //     }
+    // }
+    // private function parse_csv_file($csv_file, $what)
+    // {
+    //     $i = 0; $meron = 0;
+    //     $file = Functions::file_open($csv_file, "r");
+    //     while(!feof($file)) {
+    //         $row = fgetcsv($file); //print_r($row);
+    //         if(!$row) continue; 
+    //         $str = implode("\t", $row);
+    //         // if(stripos($str, "Callisaurus	genus") !== false) { echo("\n$str\n"); }  //string found --- good debug
+    //         if(!$row) break;
+    //         $i++; if(($i % 100000) == 0) echo "\n $i ";
+    //         if($i == 1) {
+    //             $fields = $row;
+    //             $count = count($fields); // print_r($fields);
+    //         }
+    //         else { //main records
+    //             $values = $row;
+    //             if($count != count($values)) { //row validation - correct no. of columns
+    //                 echo("\nWrong CSV format for this row.\n");
+    //                 continue;
+    //             }
+    //             $k = 0; $rec = array();
+    //             foreach($fields as $field) {
+    //                 $rec[$field] = $values[$k];
+    //                 $k++;
+    //             }
+    //             print_r($rec); exit;
+    //             // if($what == "xxx") {}
+    //             // elseif($what == "xxx") {}
+    //         }
+    //     }
+    // }
 }
 ?>
