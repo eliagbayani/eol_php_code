@@ -47,8 +47,9 @@ class DataHub_GBIF_API
         $what = "Data_coverage";
         $func = new GBIFdownloadRequestAPI($what);
         $download_key = $func->retrieve_key_for_taxon($what);
-        $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/".$download_key.".zip"; //this is now a recurring download //obsolete
+        // $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/".$download_key.".zip"; //this is now a recurring download //obsolete
         $this->remote_csv = "/extra/other_files/Data_coverage_DwCA/GBIF_service/Data_coverage_DwCA.zip"; //this was downloaded in Jenkins
+        // $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0017632-240906103802322.zip";
         
         //step 1
         $temp_dir = self::download_extract_gbif_zip_file();
@@ -343,8 +344,8 @@ class DataHub_GBIF_API
         */
 
         $temp_dir = $paths['temp_dir'];
-        $this->local_csv = $paths['extracted_file'].".csv";     //old, maybe obsolete
-        $this->local_csv = $paths['temp_dir']."occurrence.txt"; //new, when the dump suddenly became a big file
+        $this->local_csv = $paths['extracted_file'].".csv";     //orig
+        // $this->local_csv = $paths['temp_dir']."occurrence.txt"; //new, when the dump suddenly became a big file
         return $temp_dir;
         /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
