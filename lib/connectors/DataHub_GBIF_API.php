@@ -35,6 +35,7 @@ class DataHub_GBIF_API
         $this->reports_path = $save_path;
         $this->debug = array();
 
+        // 1st dump: https://doi.org/10.15468/dl.y5bevt --- 0000495-240506114902167
         // $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/0000495-240506114902167.zip"; //should make this a recurring download
         // $this->local_csv = "/Volumes/Crucial_2TB/eol_php_code_tmp2/0000495-240506114902167.csv"; //dev only
         $this->taxon_page = 'https://www.gbif.org/species/'; //e.g. 8084280
@@ -46,7 +47,7 @@ class DataHub_GBIF_API
         $what = "Data_coverage";
         $func = new GBIFdownloadRequestAPI($what);
         $download_key = $func->retrieve_key_for_taxon($what);
-        $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/".$download_key.".zip"; //this is now a recurring download
+        $this->remote_csv = "https://api.gbif.org/v1/occurrence/download/request/".$download_key.".zip"; //this is now a recurring download //obsolete
         $this->remote_csv = "/extra/other_files/Data_coverage_DwCA/GBIF_service/Data_coverage_DwCA.zip"; //this was downloaded in Jenkins
         
         //step 1
@@ -342,7 +343,8 @@ class DataHub_GBIF_API
         */
 
         $temp_dir = $paths['temp_dir'];
-        $this->local_csv = $paths['extracted_file'].".csv";
+        $this->local_csv = $paths['extracted_file'].".csv";     //old, maybe obsolete
+        $this->local_csv = $paths['temp_dir']."occurrence.txt"; //new, when the dump suddenly became a big file
         return $temp_dir;
         /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
