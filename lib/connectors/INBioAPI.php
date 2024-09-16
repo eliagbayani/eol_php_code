@@ -55,8 +55,14 @@ class INBioAPI
     }
     private function get_contents($file, $download_options)
     {
-        if(substr($file,0,4) == 'http') return Functions::lookup_with_cache($file, $download_options);
-        elseif(substr($file,0,1) == '/') return file_get_contents($file);
+        if(substr($file,0,4) == 'http')  {
+            $contents = Functions::lookup_with_cache($file, $download_options);
+            return array("contents" => $contents);
+        }
+        elseif(substr($file,0,1) == '/') {
+            return array("path" => $file); //means you return the path and not the contents of the file //new
+                                           //return file_get_contents($file);                           //orig
+        }
         else exit("\nInvestigate get_contents() in INBioAPI.php\n");
     }
     function extract_zip_file($dwca_file, $download_options = array('timeout' => 172800, 'expire_seconds' => 0))
@@ -102,7 +108,15 @@ class INBioAPI
         if($force_extension) $filename = "elix.".$force_extension; //you can just make-up a filename (elix) here and add the forced extension.
         $temp_dir = create_temp_dir() . "/";
         debug($temp_dir);
-        if($file_contents = self::get_contents($dwca_file, $download_options)) {
+
+        $ret = self::get_contents($dwca_file, $download_options);
+        if(@$ret['contents'] || @$ret['path']) {}
+        else {
+            debug("Connector terminated. Remote files are not ready.");
+            return;
+        }
+        $temp_file_path = @$ret['path'];
+        if($file_contents = @$ret['contents']) {
             $temp_file_path = $temp_dir . "" . $filename;
             debug("temp_dir: $temp_dir");
             debug("Extracting... $temp_file_path");
@@ -110,40 +124,38 @@ class INBioAPI
             fwrite($TMP, $file_contents);
             fclose($TMP);
             sleep(1); //orig 5 secs.
+        }
 
-            if($force_extension == 'zip') {
-                shell_exec("unzip -ad $temp_dir $temp_file_path");
-                $archive_path = str_ireplace(".zip", "", $temp_file_path);
-            }
-            else {
-                if(preg_match("/^(.*)\.(tar.gz|tgz)$/", $dwca_file, $arr)) {
-                    $cur_dir = getcwd();
-                    chdir($temp_dir);
-                    shell_exec("tar -zxvf $temp_file_path");
-                    chdir($cur_dir);
-                    $archive_path = str_ireplace(".tar.gz", "", $temp_file_path);
-                    $archive_path = str_ireplace(".tgz", "", $temp_file_path);
-                }
-                elseif(preg_match("/^(.*)\.(gz|gzip)$/", $dwca_file, $arr)) {
-                    shell_exec("gunzip -f $temp_file_path");
-                    $archive_path = str_ireplace(".gz", "", $temp_file_path);
-                }
-                elseif(preg_match("/^(.*)\.(zip)$/", $dwca_file, $arr) || preg_match("/mcz_for_eol(.*?)/ims", $dwca_file, $arr)) {
-                    shell_exec("unzip -ad $temp_dir $temp_file_path");
-                    $archive_path = str_ireplace(".zip", "", $temp_file_path);
-                } 
-                else {
-                    debug("-- archive not gzip or zip. [$dwca_file]");
-                    return;
-                }
-            }
-
-            debug("archive path: [" . $archive_path . "]");
+        if($force_extension == 'zip') {
+            shell_exec("unzip -ad $temp_dir $temp_file_path");
+            $archive_path = str_ireplace(".zip", "", $temp_file_path);
         }
         else {
-            debug("Connector terminated. Remote files are not ready.");
-            return;
+            if(preg_match("/^(.*)\.(tar.gz|tgz)$/", $dwca_file, $arr)) {
+                $cur_dir = getcwd();
+                chdir($temp_dir);
+                shell_exec("tar -zxvf $temp_file_path");
+                chdir($cur_dir);
+                $archive_path = str_ireplace(".tar.gz", "", $temp_file_path);
+                $archive_path = str_ireplace(".tgz", "", $temp_file_path);
+            }
+            elseif(preg_match("/^(.*)\.(gz|gzip)$/", $dwca_file, $arr)) {
+                shell_exec("gunzip -f $temp_file_path");
+                $archive_path = str_ireplace(".gz", "", $temp_file_path);
+            }
+            elseif(preg_match("/^(.*)\.(zip)$/", $dwca_file, $arr) || preg_match("/mcz_for_eol(.*?)/ims", $dwca_file, $arr)) {
+                shell_exec("unzip -ad $temp_dir $temp_file_path");
+                $archive_path = str_ireplace(".zip", "", $temp_file_path);
+            } 
+            else {
+                debug("-- archive not gzip or zip. [$dwca_file]");
+                return;
+            }
         }
+        debug("archive path: [" . $archive_path . "]");
+
+
+
         //TODO: make it automatic to detect .... the likes of dwca/ and EOL_dynamic_hierarchy/
         if    (file_exists($temp_dir . $check_file_or_folder_name))           return array('archive_path' => $temp_dir,     'temp_dir' => $temp_dir);
         elseif(file_exists($archive_path . "/" . $check_file_or_folder_name)) return array('archive_path' => $archive_path, 'temp_dir' => $temp_dir);
