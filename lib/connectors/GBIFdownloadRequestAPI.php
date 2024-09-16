@@ -319,7 +319,7 @@ class GBIFdownloadRequestAPI
 
         /* For all except $this->resource_id == 'GBIF_map_harvest' */
         $format = 'DWCA';
-        if($this->resource_id == 'Data_coverage') $format = 'SPECIESLIST';
+        if($this->resource_id == 'Data_coverage') $format = 'SPECIES_LIST'; //'SPECIESLIST';
 
         $param = Array( 'creator' => $this->gbif_username,
                         'notificationAddresses' => Array(0 => $this->gbif_email),
