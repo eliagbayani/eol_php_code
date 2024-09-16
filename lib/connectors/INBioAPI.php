@@ -77,7 +77,15 @@ class INBioAPI
         $filename = $path_parts['basename'];
         $temp_dir = create_temp_dir() . "/";
         debug($temp_dir);
-        if($file_contents = self::get_contents($dwca_file, $download_options)) {
+
+        $ret = self::get_contents($dwca_file, $download_options);
+        if(@$ret['contents'] || @$ret['path']) {}
+        else {
+            debug("Connector terminated. Remote/local file is not ready.");
+            return;
+        }
+        if($temp_file_path = @$ret['path']) {}
+        if($file_contents = @$ret['contents']) {
             $temp_file_path = $temp_dir . "" . $filename;
             debug("temp_dir: $temp_dir");
             debug("Extracting... $temp_file_path");
@@ -85,15 +93,15 @@ class INBioAPI
             fwrite($TMP, $file_contents);
             fclose($TMP);
             sleep(5);
-            shell_exec("unzip -ad $temp_dir $temp_file_path");
-            $extracted_file = str_ireplace(".zip", "", $temp_file_path);
-            return array('extracted_file' => $extracted_file, 'temp_dir' => $temp_dir, 'temp_file_path' => $temp_file_path);
-            /*Array(
-                [extracted_file] => /Volumes/AKiTiO4/eol_php_code_tmp/dir_68666/parent_basal_values_resource.txt
-                [temp_dir] => /Volumes/AKiTiO4/eol_php_code_tmp/dir_68666/
-                [temp_file_path] => /Volumes/AKiTiO4/eol_php_code_tmp/dir_68666/parent_basal_values_resource.txt.zip
-            )*/
         }
+        shell_exec("unzip -ad $temp_dir $temp_file_path");
+        $extracted_file = str_ireplace(".zip", "", $temp_file_path);
+        return array('extracted_file' => $extracted_file, 'temp_dir' => $temp_dir, 'temp_file_path' => $temp_file_path);
+        /*Array(
+            [extracted_file] => /Volumes/AKiTiO4/eol_php_code_tmp/dir_68666/parent_basal_values_resource.txt
+            [temp_dir] => /Volumes/AKiTiO4/eol_php_code_tmp/dir_68666/
+            [temp_file_path] => /Volumes/AKiTiO4/eol_php_code_tmp/dir_68666/parent_basal_values_resource.txt.zip
+        )*/
     }
     function extract_archive_file($dwca_file, $check_file_or_folder_name, $download_options = array('timeout' => 172800, 'expire_seconds' => 0), $force_extension = false) //e.g. with force_extension is NMNHTypeRecordAPI_v2.php
     {
@@ -103,20 +111,20 @@ class INBioAPI
         // */
         
         debug("Please wait, downloading resource document...");
+        $temp_dir = create_temp_dir() . "/";
+        debug($temp_dir);
         $path_parts = pathinfo($dwca_file);
         $filename = $path_parts['basename'];
         if($force_extension) $filename = "elix.".$force_extension; //you can just make-up a filename (elix) here and add the forced extension.
-        $temp_dir = create_temp_dir() . "/";
-        debug($temp_dir);
 
         $ret = self::get_contents($dwca_file, $download_options);
         if(@$ret['contents'] || @$ret['path']) {}
         else {
-            debug("Connector terminated. Remote files are not ready.");
+            debug("Connector terminated. Remote/local file is not ready.");
             return;
         }
-        $temp_file_path = @$ret['path'];
-        if($file_contents = @$ret['contents']) {
+        if($temp_file_path = @$ret['path']) {}
+        if($file_contents = @$ret['contents']) {    
             $temp_file_path = $temp_dir . "" . $filename;
             debug("temp_dir: $temp_dir");
             debug("Extracting... $temp_file_path");
@@ -153,7 +161,6 @@ class INBioAPI
             }
         }
         debug("archive path: [" . $archive_path . "]");
-
 
 
         //TODO: make it automatic to detect .... the likes of dwca/ and EOL_dynamic_hierarchy/
@@ -515,7 +522,7 @@ class INBioAPI
             debug("archive path: [" . $archive_path . "]");
         }
         else {
-            debug("Connector terminated. Remote files are not ready.");
+            debug("Connector terminated. Files is not ready.");
             return;
         }
         //TODO: make it automatic to detect .... the likes of dwca/ and Data/
