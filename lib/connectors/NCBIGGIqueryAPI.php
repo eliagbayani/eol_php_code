@@ -805,6 +805,9 @@ however, journal publishers or authors may. NLM provides no legal advice concern
         $options = $this->download_options_GBIF;
         if($this->gbif_calls % 2 == 0) $options['expire_seconds'] = false; //print "It's even";
         else {} //it's odd no. 
+        // /* ---------- force assign, dev only debug only
+        $options['expire_seconds'] = false;
+        // ---------- */
         $ret = Functions::lookup_with_cache($this->gbif_record_count . $usageKey, $options);
         if(($this->gbif_calls % 1000) == 0) echo "\n GBIF calls made: [$this->gbif_calls] | Latest: [$ret]\n";
         return $ret;
