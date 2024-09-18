@@ -109,21 +109,32 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 if(in_array($organization_id, array('encyclopedia_of_life', 'dynamic-hierarchy', 'legacy-datasets'))) continue; //uploaded actual files already
                 */
 
-                // if($organization_id != 'encyclopedia_of_life') continue; //Aggregate Datasets //debug only dev only
-                // if($organization_id != 'dynamic-hierarchy') continue; //xxx //debug only dev only
-                // if($organization_id != 'legacy-datasets') continue; //xxx //debug only dev only
-                // if($organization_id != 'wikidata-trait-reports') continue; //xxx //debug only dev only
-                if($organization_id != 'eol-content-partners') continue; //xxx //debug only dev only
+                // if($organization_id != 'encyclopedia_of_life') continue;         //Aggregate Datasets    //debug only dev only
+                // if($organization_id != 'dynamic-hierarchy') continue;            //xxx                   //debug only dev only
+                // if($organization_id != 'legacy-datasets') continue;              //xxx                   //debug only dev only
+                // if($organization_id != 'wikidata-trait-reports') continue;       //xxx                   //debug only dev only
+                // if($organization_id != 'eol-content-partners') continue;            //xxx                   //debug only dev only
 
-                // /* main report: generate info list for title lookup
+                /* main report: generate info list for title lookup
                 $this->title_id_info = self::generate_title_id_info($organization_id);
-                // */
+                */
 
                 echo "\norganization ID: [$organization_id]\n";
                 self::process_organization($organization_id);
             }
         }
-        // print_r($this->debug);
+        print_r($this->debug); //very good debug
+
+        $arr = array_keys($this->debug['urls pathinfo']);
+        asort($arr); print_r($arr);
+
+
+        print_r(array_keys($this->debug));
+        echo "\ntotal resources: ".$this->debug['total resources'];
+        echo "\nurls: ".count($this->debug['urls']);
+        echo "\nurls pathinfo: ".count($this->debug['urls pathinfo']);
+        echo "\ntitles: ".count($this->debug['titles'])."\n\n";
+        print_r($this->debug2);
 
         // /*
         self::check_license_values();
@@ -138,13 +149,13 @@ class ZenodoAPI extends ZenodoConnectorAPI
         echo "\ntotal resources migrated: [".@$this->debug['total resources migrated']."]\n";
         // self::list_depositions(); //utility -- check if there are records in CKAN that are not in Zenodo yet.
 
-        // /* main report
+        /* main report
         // print_r($this->report); exit;
         $json = json_encode($this->report);
         $file = $this->report[$this->organization_name];
         $WRITE = Functions::file_open($file, "w");
         fwrite($WRITE, $json); fclose($WRITE);
-        // */
+        */
     }
     private function process_organization($organization_id)
     {
@@ -153,7 +164,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         // the 5 organizations - are saved as json files:
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=dynamic-hierarchy&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=encyclopedia_of_life&include_datasets=true';
-        $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
+        // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=eol-content-partners&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=legacy-datasets&include_datasets=true';
         // $url = 'https://opendata.eol.org/api/3/action/organization_show?id=wikidata-trait-reports&include_datasets=true';
 
@@ -226,7 +237,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 $input = self::generate_input_field($p, $r, $resources); //main operation
                 $title = $input['metadata']['title'];
 
-                // /* ----- start main report -----
+                /* ----- start main report -----
                 // x MainRep: Title not found    13322823	[EduLifeDesks Archive: From so simple a beginning: 2010 (357) DwCA]	2024-08-14 12:50:54 PM
                 // x MainRep: Title not found    13333044 	[GBIF data summaries: GBIF nat'l node classification resource: Germany]	2024-08-14 03:59:45 PM
                 // x MainRep: Title not found    13340241	[Thomas J. Walker Sound Recordings from Macaulay Library of Natural Sounds: Thomas J. Walker's insect recordings]	2024-08-14 06:41:48 PM
@@ -249,12 +260,12 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 }
                 $this->report['main_report'][$this->organization_name][$this->dataset_title][$title] = $id_sought;
 
-                // /* -------------------------------------- start EOL resource ID and Zenodo ID list
+                // -------------------------------------- start EOL resource ID and Zenodo ID list
                 $this->gen_EOL_resource_ID_and_Zenodo_ID_list($r, $id_sought);
-                // -------------------------------------- end */
+                // -------------------------------------- end
 
                 continue;
-                // ----- end main report ----- */
+                ----- end main report ----- */
 
                 // if(in_array($title, array("Vernacular names: vernacular names, May 2020", "Identifiers with Images (EOL v2): identifiers_with_images.csv.gz", "User Generated Content (EOL v2): User Added Text, curated"))) continue; //ckan file already uploaded
                 // if(in_array($title, array("early exports: 2019, August 22"))) continue;                                 //done -- migrated completely* Legacy datasets
@@ -283,7 +294,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 // if(!in_array($title, array("Dataset test 2019: dataset-test-2019"))) continue;
                 // if(!in_array($title, array("WoRMS internal: World Register of Marine Species"))) continue;
                 // if(in_array($title, array("EOL computer vision pipelines: Object Detection for Image Cropping: Lepidoptera"))) continue;
-                if(!in_array($title, array("Eli temporary files: page_ids_ancestry.txt.zip"))) continue;
+                // if(!in_array($title, array("Eli temporary files: page_ids_ancestry.txt.zip"))) continue;
 
                 /* add resources one by one:
                 $title = str_replace("'", "__", $title); //ditoxAug17
@@ -330,7 +341,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 // error starts with: ERROR	create	Ori Fragman-Sapir's TrekNature Gallery	{"status":400,"message":"Unable to decode JSON data in request body."}	2024-08-13 11:45:03 AM
                 ======================================= */
 
-                print_r($input); //exit("\nfirst occurrence\n");
+                // print_r($input); //exit("\nfirst occurrence\n");
                 $this->input = $input;
 
                 /*
@@ -738,6 +749,14 @@ class ZenodoAPI extends ZenodoConnectorAPI
         */
 
         $this->debug['titles'][$title] = '';
+
+        if($parse['host'] != 'editors.eol.org') {
+            @$this->debug2['count']++;
+            $obj = self::get_deposition_by_title($title); //print_r($obj); exit;
+            $zenodo_url = '';
+            if($id = @$obj['id']) $zenodo_url = "https://zenodo.org/records/".$id;
+            $this->debug2[$parse['host']][] = array('title' => $title, 'URL' => @$r['url'], 'Zenodo' => $zenodo_url);
+        }
         // -------------------------------------------------------------------
         $input['metadata'] = array( "title" => $title, //"Images list: image list",
                                     "upload_type" => "dataset", //controlled vocab.
@@ -805,8 +824,12 @@ class ZenodoAPI extends ZenodoConnectorAPI
             return $obj;    
         }
     }
-    function get_deposition_by_title($title)
+    function get_deposition_by_title_allversions($title)
     {
+
+    }
+    function get_deposition_by_title($title, $allVersions = false)
+    {   echo "\nallVersions: [$allVersions]\n";
         /* 1st option: not quite good        
         $q = "title:($title)";
         */
@@ -831,12 +854,25 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $page_num = 0;
         while(true) { $page_num++;
             // $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=1&page=1&q="'.urlencode($q).' -H "Content-Type: application/json"';
-            $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page='.$page_num.'&q="'.urlencode($q).' -H "Content-Type: application/json"';
+
+            if($allVersions) $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&allversions=true&sort=bestmatch&size=25&page='.$page_num.'&q="'.urlencode($q).' -H "Content-Type: application/json"';
+            else             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page='.$page_num.'&q="'.urlencode($q).' -H "Content-Type: application/json"';
+
             $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
             $obj = json_decode(trim($json), true);  //echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n";
 
-            if(!$obj) return;
-            if(count($obj) == 0) return;
+            if(!$obj) {
+                if($allVersions) return;
+                else {
+                    return self::get_deposition_by_title($title, true);
+                }
+            }
+            if(count($obj) == 0) {
+                if($allVersions) return;
+                else {
+                    return self::get_deposition_by_title($title, true);
+                }
+            }
 
             // /* loop the results and get the exact match
             echo "\nneedle: [$title]\n";
@@ -1046,7 +1082,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
     private function lookup_package_using_id($id)
     {
         $options = $this->download_options;
-        // $options['expire_seconds'] = 0; //doesn't expire
+        $options['expire_seconds'] = false; //0; //doesn't expire
 
         // if($id == "0a023d9a-f8c3-4c80-a8d1-1702475cda18") $options['expire_seconds'] = 0;
 

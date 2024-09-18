@@ -19,7 +19,14 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
 $func = new ZenodoAPI();
-// $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+
+/* -----
+if($obj = $func->get_deposition_by_title("identifier map: current version")) {
+  print_r($obj); exit("\n-found-\n");
+}
+exit("\n-not found-\n");
+----- */
 
 // $func->access_json_reports(); //this generates the HTML report
 
@@ -29,7 +36,7 @@ $func = new ZenodoAPI();
 
 // $func->list_depositions(); //worked OK
 
-// /*
+/*
 $json = '{
   "type": "equals",
   "key": "OCCURRENCE_STATUS",
@@ -37,7 +44,7 @@ $json = '{
   "matchCase": false
 }';
 $arr = json_decode($json, true); print_r($arr); exit;
-// */
+*/
 
 
 /* works OK
@@ -48,12 +55,12 @@ $func->update_zenodo_record_of_eol_resource($id, $path); //https://zenodo.org/re
 // $func->update_Zenodo_record_v2($id);
 */
 
-// /*
+/* ok --- last routine to run
 $eol_resource_id = "200_meta_recoded";
 // $eol_resource_id = 24;
 // $eol_resource_id = "42_meta_recoded"; //FishBase
 $func->update_Zenodo_record_using_EOL_resourceID($eol_resource_id);
-// */
+*/
 
 
 /*
