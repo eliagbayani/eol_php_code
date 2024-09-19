@@ -258,7 +258,7 @@ class ZenodoConnectorAPI
         if($html = Functions::lookup_with_cache($url, $options)) { echo "\ngoes date 1 [$url]\n";
             if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) { echo "\ngoes date 2\n";
                 if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) { echo "\ngoes date 3\n";
-                    print_r($arr2[1]);
+                    // print_r($arr2[1]);
                     /*Array(
                         [0] =>  class="ui tiny header">Created
                         [1] =>  class="ui tiny header">Updated
@@ -272,7 +272,7 @@ class ZenodoConnectorAPI
                     }
                 }
                 if(preg_match_all("/<dd>(.*?)<\/dd>/ims", $arr[1], $arr3)) { echo "\ngoes date 4\n";
-                    print_r($arr3[1]);
+                    // print_r($arr3[1]);
                     /*Array(
                         [0] => 
                         <div>2017-10-02</div>
