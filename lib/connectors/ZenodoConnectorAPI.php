@@ -4,12 +4,9 @@ namespace php_active_record;
 class ZenodoConnectorAPI
 {
     function __construct($folder = null, $query = null)
-    {
-        $this->show_print_r = false; //not sure if good
-    }
+    {}
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
     {
-        $this->show_print_r = false;
         $obj_1st = $this->retrieve_dataset($zenodo_id); //exit("\nstop muna\n");
         // /*
         if($new_obj = $this->request_newversion($obj_1st)) { $id = $new_obj['id']; //13271534 --- this ID will be needed for the next retrieve-publish tasks below. //main operation
@@ -149,7 +146,10 @@ class ZenodoConnectorAPI
         // $cmd .= " 2>&1";
         echo "\n$cmd\n";
         $json = shell_exec($cmd);           echo "\n$json\n";
-        $obj = json_decode(trim($json), true);    echo "\n----------update pubdate----------\n"; print_r($obj); echo "\n----------update pubdate end----------\n";
+        $obj = json_decode(trim($json), true);    
+        echo "\n----------update pubdate----------\n"; 
+        if($this->show_print_r) print_r($obj); 
+        echo "\n----------update pubdate end----------\n";
         return $obj;
     }
     function gen_EOL_resource_ID_and_Zenodo_ID_list($r, $id_sought)

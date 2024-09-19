@@ -90,6 +90,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         https://www.whatismybrowser.com/detect/what-is-my-user-agent/
         */
         $this->new_description_for_zenodo = "";
+        $this->show_print_r = false;
     }
     function start()
     {   self::log_error(array("==================== Log starts here ===================="));
@@ -820,7 +821,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
             // $cmd .= " 2>&1";
             echo "\npublish cmd: [$cmd]\n";
             $json = shell_exec($cmd);               echo "\n$json\n";
-            $obj = json_decode(trim($json), true);  echo "\n=====published=====\n"; print_r($obj); echo "\n=====published end=====\n";
+            $obj = json_decode(trim($json), true);  
+            echo "\n=====published=====\n"; 
+            if($this->show_print_r) print_r($obj); 
+            echo "\n=====published end=====\n";
             return $obj;    
         }
     }
@@ -933,7 +937,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $cmd .= " 2>&1";
         // echo "\nretrieve cmd: [$cmd]\n";
         $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-        $obj = json_decode(trim($json), true);  echo "\n=====retrieve=====\n"; print_r($obj); echo "\n=====retrieve end=====\n"; 
+        $obj = json_decode(trim($json), true);  
+        echo "\n=====retrieve=====\n"; 
+        if($this->show_print_r) print_r($obj); 
+        echo "\n=====retrieve end=====\n"; 
 
         // /* ----- new block - works OK if used
         if($versionLatestYN) {} //just proceed below, get the latest version
@@ -974,7 +981,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 $cmd = 'curl --upload-file '.$actual_file.' '.$bucket.'/'.$basename.'?access_token='.ZENODO_TOKEN;
                 // echo "\nupload cmd: [$cmd]\n";
                 $json = shell_exec($cmd);               //echo "\n$json\n";
-                $obj = json_decode(trim($json), true);  echo "\n=====upload=====\n"; print_r($obj); echo "\n=====upload end=====\n";
+                $obj = json_decode(trim($json), true);  
+                echo "\n=====upload=====\n"; 
+                if($this->show_print_r) print_r($obj); 
+                echo "\n=====upload end=====\n";
                 return $obj;    
             }    
         }
@@ -985,7 +995,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/newversion?access_token=ACCESS_TOKEN
             $cmd = 'curl -s -X POST '.$newversion.'?access_token='.ZENODO_TOKEN; // echo "\ncmd: [$cmd]\n";
             $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
-            $obj = json_decode(trim($json), true);  echo "\n=======newversion=======\n"; print_r($obj); echo "\n=======newversion end=======\n"; //exit("\nstop: newversion\n");
+            $obj = json_decode(trim($json), true);  
+            echo "\n=======newversion=======\n"; 
+            if($this->show_print_r) print_r($obj); 
+            echo "\n=======newversion end=======\n"; //exit("\nstop: newversion\n");
 
             if(self::if_error($obj, 'newversion', @$obj['id'])) return false;
             return $obj;    
@@ -998,7 +1011,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/13240083?access_token=ACCESS_TOKEN
             $cmd = 'curl -s -X GET '.$latest.'?access_token='.ZENODO_TOKEN; // echo "\ncmd: [$cmd]\n";
             $json = shell_exec($cmd);               //echo "\n----x-----\n$json\n-----x----\n";
-            $obj = json_decode(trim($json), true);  echo "\n=======latest=======\n"; print_r($obj); echo "\n=======latest end=======\n"; //exit("\nstop: newversion\n");
+            $obj = json_decode(trim($json), true);  
+            echo "\n=======latest=======\n"; 
+            if($this->show_print_r) print_r($obj); 
+            echo "\n=======latest end=======\n"; //exit("\nstop: newversion\n");
             // return $obj;
             /*Array( $obj
                 [status] => 301
@@ -1039,7 +1055,10 @@ class ZenodoAPI extends ZenodoConnectorAPI
         // $cmd .= " 2>&1";
         // echo "\n$cmd\n";
         $json = shell_exec($cmd);           //echo "\n$json\n";
-        $obj = json_decode(trim($json), true);    echo "\n----------update----------\n"; print_r($obj); echo "\n----------update end----------\n";
+        $obj = json_decode(trim($json), true);    
+        echo "\n----------update----------\n"; 
+        if($this->show_print_r) print_r($obj); 
+        echo "\n----------update end----------\n";
         return $obj;
     }
     private function initialize_file_dat($obj)
