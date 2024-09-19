@@ -2511,7 +2511,7 @@ class Functions
         
         /* START DATA-1841 terms remapping */
         echo "\n'Cura ao' OLD: ".$mappings['Cura ao']."\n"; //old value is: http://www.wikidata.org/entity/Q25279
-        $url = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Terms_remapped/DATA_1841_terms_remapped.tsv";
+        $url = "https://github.com/EOL/textmine_rules/raw/refs/heads/main/Terms_remapped/DATA_1841_terms_remapped.tsv";
         $func = new TropicosArchiveAPI(NULL); //to initialize variable $this->uri_values in TropicosArchiveAPI
         $remapped_terms = $func->add_additional_mappings(true, $url, $expire_seconds); //*this is not add_additional_mappings() like how was used above.
         echo "\nremapped_terms: ".count($remapped_terms)."\n";
