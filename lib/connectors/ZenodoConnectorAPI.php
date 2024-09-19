@@ -122,7 +122,7 @@ class ZenodoConnectorAPI
                                     "related_identifiers" => @$obj_1st['metadata']['related_identifiers'],
                                     "imprint_publisher" => @$obj_1st['metadata']['imprint_publisher'],
                                     "communities" => @$obj_1st['metadata']['communities'],
-                                    "notes" => $notes,
+                                    "notes" => str_replace("'", "__", $notes),
                                     "prereserve_doi" => @$obj_1st['metadata']['prereserve_doi'],
                                     "license" => $license_final,
                                     "dates" => $dates_final,
