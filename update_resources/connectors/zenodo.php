@@ -19,7 +19,10 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
 $func = new ZenodoAPI();
-$func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+
+$func->latest_katja_changes(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
+
+// $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
 /* -----
 if($obj = $func->get_deposition_by_title("identifier map: current version")) {
@@ -34,7 +37,7 @@ exit("\n-not found-\n");
 
 // $func->update_Zenodo_record(13273185);
 
-// $func->list_depositions(); //worked OK
+// $func->list_depositions(); //worked OK //utility -- check if there are records in CKAN that are not in Zenodo yet.
 
 /*
 $json = '{
