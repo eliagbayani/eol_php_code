@@ -90,7 +90,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         https://www.whatismybrowser.com/detect/what-is-my-user-agent/
         */
         $this->new_description_for_zenodo = "";
-        $this->show_print_r = false;
+        $this->show_print_r = true; //false;
     }
     function start()
     {   self::log_error(array("==================== Log starts here ===================="));
@@ -902,7 +902,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
             $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
             $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
             if(!$obj) break;
-            echo "\n".count($obj)."\n";
+            echo "\nNo. of records: ".count($obj)."\n";
             foreach($obj as $o)  {
                 $final[trim($o['title'])] = '';
                 @$stats[$o['title']]++;
