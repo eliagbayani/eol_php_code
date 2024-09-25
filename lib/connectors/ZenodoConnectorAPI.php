@@ -24,16 +24,16 @@ class ZenodoConnectorAPI
             }
         }
         */
-        $id = "13795618";
+        // $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
-        // $id = "13794884"; //Flickr: Flickr BHL (544) --- nothing happened
+        $id = "13794884"; //Flickr: Flickr BHL (544) --- nothing happened
         // $id = "13789577"; //Flickr: Flickr Group (15) --- nothing happened
 
         self::update_zenodo_record_of_latest_requested_changes($id);
     }
     function update_zenodo_record_of_latest_requested_changes($zenodo_id)
     {
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
         $id = $obj_1st['id'];
         if($zenodo_id != $id) exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
 
@@ -50,7 +50,6 @@ class ZenodoConnectorAPI
     private function update_then_publish($id, $obj_latest)
     {
         $update_obj = $this->update_Zenodo_record_latest($id, $obj_latest); //to fill-in the publication_date, title creators upload_type et al.
-        // exit("\nstop muna 2\n");
         if($this->if_error($update_obj, 'update_0924', $id)) {}
         else {
             $new_obj = $update_obj;
@@ -66,30 +65,44 @@ class ZenodoConnectorAPI
         }
     }
     private function fill_in_katja_changes($o)
-    {
-        // print_r($o); exit("\nstop muna 1\n");
-        $o['metadata']['creators'][0]['affiliation'] = "Eli was here 5.";
-
-        /* ------------------ creators
-        // For all other records that have "script (Zenodo API)" as the Creator, remove this Creator and add the following as the new Creator:
-        //     Organization
-        //     Name: Encyclopedia of Life
-        //     Role: Hosting Institution
-        $final = array();
-        $final = $o['metadata']['creators'];
-        // foreach($o['metadata']['contributors'] as $r) {
-        //     if($r['type'] == 'HostingInstitution') {
-        //     }
-        //     else $final[] = $r;
-        // }
-        $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => '');
-        $o['metadata']['creators'] = $final;
+    {   // print_r($o); exit("\nstop muna 1\n");
+        // $o['metadata']['creators'][0]['affiliation'] = "Eli was here 5."; //dev only
+        /*
+        Agents
+        - For records that have Hosting institution: Anne Thessen under Contributors, remove the Contributors record, 
+            remove the "script (Zenodo API)" Creator 
+            and add the following as the new Creator:            
+                Person
+                Name: Anne Thessen [important: do not link to any identifiers]
+                Affiliations: Encyclopedia of Life
+                Role: Data Manager
+        - For all other records that have "script (Zenodo API)" as the Creator, remove this Creator and add the following as the new Creator:
+                Organization
+                Name: Encyclopedia of Life
+                Role: Hosting Institution
+        - Remove all remaining Contributors with Role: Hosting Institution.        
         */
 
-        // $o['metadata']['creators'] = array();
+        // /* ------------------ creators
+        $final = array();
+        foreach($o['metadata']['creators'] as $r) {
+            if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => '');
+        }
+        if(!$final) $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => '');
+        $o['metadata']['creators'] = $final;
+        // */
+        // /* ------------------ contributors
+        $final = array();
+        foreach($o['metadata']['contributors'] as $r) {
+            if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen') $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
+            elseif($r['type'] == 'HostingInstitution' && $r['name'] == 'Eli Agbayani') $final[] = array('name' => $r['name'], 'type' => 'DataCollector', 'affiliation' => 'Encyclopedia of Life');
+            elseif($r['type'] == 'HostingInstitution')                                 $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
+            else $final[] = $r;
+        }
+        $o['metadata']['contributors'] = $final;
+        // */
 
         // print_r($o); exit("\nstop muna 1\n");
-
         return $o;
     }
     private function cut_down_object($obj)
@@ -162,7 +175,7 @@ class ZenodoConnectorAPI
         
         // $cmd .= " 2>&1";
         echo "\n$cmd\n";
-        $json = shell_exec($cmd);           echo "\n$json\n";
+        $json = shell_exec($cmd);           //echo "\n$json\n";
         $obj = json_decode(trim($json), true);    
         echo "\n----------update pubdate latest----------\n"; 
         if($this->show_print_r) print_r($obj); 
@@ -316,8 +329,8 @@ class ZenodoConnectorAPI
         // $cmd = 'curl -s -H "Content-Type: application/json" -X PUT --data '."'$json'".' '.$links_edit.'?access_token='.ZENODO_TOKEN;
         
         // $cmd .= " 2>&1";
-        echo "\n$cmd\n";
-        $json = shell_exec($cmd);           echo "\n$json\n";
+        // echo "\n$cmd\n";
+        $json = shell_exec($cmd);           //echo "\n$json\n";
         $obj = json_decode(trim($json), true);    
         echo "\n----------update pubdate----------\n"; 
         if($this->show_print_r) print_r($obj); 

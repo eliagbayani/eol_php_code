@@ -90,7 +90,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         https://www.whatismybrowser.com/detect/what-is-my-user-agent/
         */
         $this->new_description_for_zenodo = "";
-        $this->show_print_r = true; //false;
+        $this->show_print_r = false;
     }
     function start()
     {   self::log_error(array("==================== Log starts here ===================="));
@@ -845,8 +845,8 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 $cmd = 'curl -s -H "Content-Type: application/json" -X POST  --data '."'$json'".' '.$publish.'?access_token='.ZENODO_TOKEN; //didn't work, param wasn't submitted.
             }
             // $cmd .= " 2>&1";
-            echo "\npublish cmd: [$cmd]\n";
-            $json = shell_exec($cmd);               echo "\n$json\n";
+            // echo "\npublish cmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n$json\n";
             $obj = json_decode(trim($json), true);  
             echo "\n=====published=====\n"; 
             if($this->show_print_r) print_r($obj); 
