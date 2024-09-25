@@ -167,14 +167,14 @@ class ZenodoConnectorAPI
         // Creators: Missing data for required field.
         // Title: Missing data for required field.
 
-        $json = json_encode($input); echo "\n$json\n";
+        $json = json_encode($input); //echo "\n$json\n";
         if($this->show_print_r) print_r($input); //exit;
 
         $cmd = 'curl -s -H "Content-Type: application/json" -X PUT --data '."'$json'".' https://zenodo.org/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN;
         // $cmd = 'curl -s -H "Content-Type: application/json" -X PUT --data '."'$json'".' '.$links_edit.'?access_token='.ZENODO_TOKEN;
         
         // $cmd .= " 2>&1";
-        echo "\n$cmd\n";
+        // echo "\n$cmd\n";
         $json = shell_exec($cmd);           //echo "\n$json\n";
         $obj = json_decode(trim($json), true);    
         echo "\n----------update pubdate latest----------\n"; 

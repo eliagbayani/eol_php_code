@@ -127,7 +127,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         print_r($this->debug); //very good debug
 
         $arr = array_keys($this->debug['urls pathinfo']);
-        asort($arr); print_r($arr);
+        asort($arr); //print_r($arr);
 
 
         print_r(array_keys($this->debug));
@@ -1047,7 +1047,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 [message] => Redirecting...
                 [location] => https://zenodo.org/api/records/13629642
             )*/
-            print_r(pathinfo($obj['location']));
+            // print_r(pathinfo($obj['location']));
             return pathinfo($obj['location'], PATHINFO_BASENAME); //return the id e.g. 13629642
         }
         // else exit("\nERRORx: Cannot get latest URL! [".$obj['id']."]\n");
