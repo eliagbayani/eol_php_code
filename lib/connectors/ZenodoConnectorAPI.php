@@ -24,10 +24,11 @@ class ZenodoConnectorAPI
             }
         }
         */
-        // $id = "13795618"; //Metrics: GBIF data coverage
+        $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
-        $id = "13794884"; //Flickr: Flickr BHL (544) --- nothing happened
+        // $id = "13794884"; //Flickr: Flickr BHL (544) --- nothing happened
         // $id = "13789577"; //Flickr: Flickr Group (15) --- nothing happened
+        $id = 13317938; //National Checklists 2019: Réunion Species List
 
         self::update_zenodo_record_of_latest_requested_changes($id);
     }
@@ -101,6 +102,28 @@ class ZenodoConnectorAPI
         }
         $o['metadata']['contributors'] = $final;
         // */
+
+        /*
+        Keywords & subjects
+        1. For all data sets with keyword "EOL Content Partners: National Checklists 2019" or "EOL Content Partners: Water Body Checklists 2019" add keyword "deprecated"
+        2. Remove all keywords with the prefix "format:", e.g., "format: ZIP", "format: TAR", "format: XML", etc.        
+        
+        [keywords] => Array(
+                    [0] => EOL Content Partners: National Checklists 2019
+                    [1] => format: Darwin Core Archive
+                )        
+        */
+        // #1
+        $keywords = $o['metadata']['keywords'];
+        if(in_array('EOL Content Partners: National Checklists 2019', $keywords) || in_array('EOL Content Partners: National Checklists 2019', $keywords)) {
+            if(!in_array('deprecated', $keywords)) $keywords[] = 'deprecated';
+        }
+        // #2
+        $final = array();
+        foreach($keywords as $kw) {
+            if(substr($kw,0,8) != 'format: ') $final[] = $kw;
+        }
+        $o['metadata']['keywords'] = $final;
 
         // print_r($o); exit("\nstop muna 1\n");
         return $o;
