@@ -5,6 +5,185 @@ class ZenodoConnectorAPI
 {
     function __construct($folder = null, $query = null)
     {}
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    function latest_katja_changes()
+    {   // step 1: loop into all Zenodo records
+        /*
+        $final = array(); $page = 0;
+        while(true) { $page++;
+            $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
+            $cmd = str_replace('PAGENUM', $page, $cmd);
+            // echo "\nlist depostions cmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
+            $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
+            if(!$obj) break;
+            echo "\nBatch: $page | No. of records: ".count($obj)."\n";
+            foreach($obj as $o)  { print_r($o); exit;
+                $final[trim($o['id'])] = '';
+                @$stats[$o['title']]++;
+            }
+        }
+        */
+        $id = "13795618";
+        // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
+        // $id = "13794884"; //Flickr: Flickr BHL (544) --- nothing happened
+        // $id = "13789577"; //Flickr: Flickr Group (15) --- nothing happened
+
+        self::update_zenodo_record_of_latest_requested_changes($id);
+    }
+    function update_zenodo_record_of_latest_requested_changes($zenodo_id)
+    {
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
+        $id = $obj_1st['id'];
+        if($zenodo_id != $id) exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
+
+        $edit_obj = $this->edit_Zenodo_dataset($obj_1st); //exit("\nstop muna 1\n");
+
+        if($this->if_error($edit_obj, 'edit_0924', $id)) {}
+        else {
+            $obj_latest = self::fill_in_katja_changes($edit_obj); //$obj_1st
+            // $obj_temp = self::cut_down_object($obj_latest);
+            // self::update_then_publish($id, $obj_temp);
+            self::update_then_publish($id, $obj_latest);    
+        }
+    }
+    private function update_then_publish($id, $obj_latest)
+    {
+        $update_obj = $this->update_Zenodo_record_latest($id, $obj_latest); //to fill-in the publication_date, title creators upload_type et al.
+        // exit("\nstop muna 2\n");
+        if($this->if_error($update_obj, 'update_0924', $id)) {}
+        else {
+            /*
+            $obj = $this->retrieve_dataset($id); //works OK
+            $new_obj = $obj; //new
+            */
+            $new_obj = $update_obj;
+            // if($this->if_error($obj, 'retrieve', $id)) {}    
+            // else {
+                // /* publishing block
+                $publish_obj = $this->publish_Zenodo_dataset($new_obj); //worked OK but with cumulative files carry-over
+                if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
+                else {
+                    echo "\nSuccessfully UPDATED then PUBLISHED to Zenodo\n-----u & p-----\n";
+                    // $this->log_error(array('updated then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
+                    $this->log_error(array('updated then published', @$new_obj['id'], @$new_obj['metadata']['title']));
+                }
+                // */
+            // }
+        }
+    }
+    private function fill_in_katja_changes($o)
+    {
+        // print_r($o); exit("\nstop muna 1\n");
+        $o['metadata']['creators'][0]['affiliation'] = "Eli was here 5.";
+
+        /* ------------------ creators
+        // For all other records that have "script (Zenodo API)" as the Creator, remove this Creator and add the following as the new Creator:
+        //     Organization
+        //     Name: Encyclopedia of Life
+        //     Role: Hosting Institution
+        $final = array();
+        $final = $o['metadata']['creators'];
+        // foreach($o['metadata']['contributors'] as $r) {
+        //     if($r['type'] == 'HostingInstitution') {
+        //     }
+        //     else $final[] = $r;
+        // }
+        $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => '');
+        $o['metadata']['creators'] = $final;
+        */
+
+        // $o['metadata']['creators'] = array();
+
+        // print_r($o); exit("\nstop muna 1\n");
+
+        return $o;
+    }
+    private function cut_down_object($obj)
+    {
+        // print_r($obj); exit("\nelix 4\n");
+
+        if($val = @$o['metadata']['creators'][0]['affiliation']) {
+            $o['metadata']['creators'][0]['affiliation'] = "";
+        }
+
+        $obj['metadata']['notes'] = "";
+        $obj['metadata']['contributors'] = array();
+        return $obj;
+    }
+    function update_Zenodo_record_latest($id, $obj_1st) //this updates the newversion object
+    {
+        $ret_obj = $this->retrieve_dataset($id);
+        // $links_edit = $ret_obj['links']['edit']; //not used
+        $links_publish = $ret_obj['links']['publish'];
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        $dates_final = self::get_dates_entries_from_html($obj_1st, false); //2nd param false is $updateDate_set2Current_YN
+        // if(!self::has_type_equal2_Other($dates_final)) {
+            // $dates_final[] = array("start" => date("Y-m-d"), "end" => date("Y-m-d"), "type" => 'Other', "description" => "metadata updated");
+        // }
+        // print_r($dates_final); exit;
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if($val = @$obj_1st['metadata']['license']) $license_final = $val;
+        else                                        $license_final = "notspecified";
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        $notes = @$obj_1st['metadata']['notes'];
+        $notes = self::format_description($notes);
+        // if($val = $this->new_description_for_zenodo) $notes = $val; // this wasn't implemented
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        array_shift($obj_1st['files']);
+        $input['metadata'] = array(
+                                    "title" => str_replace("'", "__", $obj_1st['metadata']['title']),
+                                    "publication_date" => $obj_1st['metadata']['publication_date'], //date("Y-m-d"),
+                                    "creators" => @$obj_1st['metadata']['creators'],
+                                    "upload_type" => @$obj_1st['metadata']['upload_type'], //'dataset',
+                                    // "files" => array() //$obj_1st['files']
+                                    "access_right" => @$obj_1st['metadata']['access_right'],
+                                    "contributors" => @$obj_1st['metadata']['contributors'],
+                                    "keywords" => @$obj_1st['metadata']['keywords'],
+                                    "related_identifiers" => @$obj_1st['metadata']['related_identifiers'],
+                                    "imprint_publisher" => @$obj_1st['metadata']['imprint_publisher'],
+                                    "communities" => @$obj_1st['metadata']['communities'],
+                                    "notes" => str_replace("'", "__", $notes),
+                                    "prereserve_doi" => @$obj_1st['metadata']['prereserve_doi'],
+                                    "license" => $license_final,
+                                    "dates" => $dates_final,
+                                    // "dates" => $dates, // manual force assignment
+                                    // "dates" => array(),
+
+        ); //this is needed for publishing a newly uploaded file.
+
+        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = $val; //impt. bec. metadata description must not be blank.
+
+        // Resource type: Missing data for required field.
+        // Creators: Missing data for required field.
+        // Title: Missing data for required field.
+
+        $json = json_encode($input); echo "\n$json\n";
+        if($this->show_print_r) print_r($input); //exit;
+
+        $cmd = 'curl -s -H "Content-Type: application/json" -X PUT --data '."'$json'".' https://zenodo.org/api/deposit/depositions/'.$id.'?access_token='.ZENODO_TOKEN;
+        // $cmd = 'curl -s -H "Content-Type: application/json" -X PUT --data '."'$json'".' '.$links_edit.'?access_token='.ZENODO_TOKEN;
+        
+        // $cmd .= " 2>&1";
+        echo "\n$cmd\n";
+        $json = shell_exec($cmd);           echo "\n$json\n";
+        $obj = json_decode(trim($json), true);    
+        echo "\n----------update pubdate latest----------\n"; 
+        if($this->show_print_r) print_r($obj); 
+        echo "\n----------update pubdate latest end----------\n";
+        return $obj;
+    }
+    private function has_type_equal2_Other($dates)
+    {   // print_r($dates); exit("\nelix 1\n");
+        foreach($dates as $date) {
+            if($date['type'] == 'Other' && $date['description'] == 'metadata updated') return true;
+        }
+        return false;
+    }
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ end @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
     {
         $obj_1st = $this->retrieve_dataset($zenodo_id); //exit("\nstop muna\n");
@@ -223,7 +402,7 @@ class ZenodoConnectorAPI
         }
         unlink($local_file);
     }
-    function get_dates_entries_from_html($obj)
+    function get_dates_entries_from_html($obj, $updateDate_set2Current_YN = true)
     {   /*
         <div class="ui grid">
             <div class="sixteen wide mobile four wide tablet three wide computer column">
@@ -254,7 +433,7 @@ class ZenodoConnectorAPI
         $url = $obj['links']['html'];
         $url = str_replace("deposit", "records", $url);
         $options = $this->download_options;
-        $options['expire_seconds'] = 60*60*24;
+        $options['expire_seconds'] = 0; //60*60*24;
         if($html = Functions::lookup_with_cache($url, $options)) { echo "\ngoes date 1 [$url]\n";
             if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) { echo "\ngoes date 2\n";
                 if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) { echo "\ngoes date 3\n";
@@ -296,15 +475,26 @@ class ZenodoConnectorAPI
         if($date_type && $date_actual && $date_desc) { echo "\ngoes date 5\n";
             $i = -1;
             foreach($date_type as $type) { $i++;
+                $desc = @$date_desc[$i] ? $date_desc[$i] : "";
                 if($type == 'Updated') {
+                    if($updateDate_set2Current_YN) { //orig
+                        $start = date("Y-m-d");
+                        $end   = date("Y-m-d");
+                    }
+                    else { //for katja's latest changes
+                        $start = @$date_actual[$i];
+                        $end   = @$date_actual[$i];    
+                    }
+                }
+                elseif($type == 'Other' && $desc == "metadata updated") {
                     $start = date("Y-m-d");
-                    $end   = date("Y-m-d");
+                    $end   = date("Y-m-d");                
                 }
                 else {
                     $start = @$date_actual[$i];
                     $end   = @$date_actual[$i];
                 }
-                $final[] = array("start" => $start, "end" => $end, "type" => $type, "description" => $date_desc[$i]);
+                $final[] = array("start" => $start, "end" => $end, "type" => $type, "description" => $desc);
             }
         }
         // print_r($final); exit("\n-end date process-\n");
@@ -345,6 +535,7 @@ class ZenodoConnectorAPI
 
         // $this->iso_date_str = self::iso_date_format()
         $add_str = "####--- __"."EOL DwCA resource last updated: ".$date_format."__ ---####";
+        $add_str = "####--- __EOL DwCA resource last updated: Sep 24, 2024 12:49 PM__ ---####"; //for dev only debug only
         $desc .= $add_str;
         return $desc;
     }

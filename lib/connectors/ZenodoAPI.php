@@ -803,6 +803,32 @@ class ZenodoAPI extends ZenodoConnectorAPI
         // $output = shell_exec($cmd);
         // echo "\nRequest output:\n[$output]\n";
     }
+
+    function edit_Zenodo_dataset($obj, $data = false)
+    {
+        if($edit = @$obj['links']['edit']) { 
+            // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/edit?access_token=ACCESS_TOKEN
+            if(!$data) {
+                // $cmd = 'curl -s -H -X POST '.$edit.'?access_token='.ZENODO_TOKEN;    //from Eli      - does not work
+                // $cmd = 'curl -i -X POST '.$edit.'?access_token='.ZENODO_TOKEN;       //from Zenodo   - does not work
+                $cmd = 'curl -s -X POST '.$edit.'?access_token='.ZENODO_TOKEN;          //from Zenodo   - works OK
+            }
+            else {
+                exit("\nDoes not go here.\n");
+                $json = json_encode($data); // echo "\n$json\n";
+                $cmd = 'curl -s -H "Content-Type: application/json" -X POST  --data '."'$json'".' '.$publish.'?access_token='.ZENODO_TOKEN; //didn't work, param wasn't submitted.
+            }
+            // $cmd .= " 2>&1";
+            // echo "\nedit cmd: [$cmd]\n";
+            $json = shell_exec($cmd);                   //echo "\n$json\n";
+            $obj = json_decode(trim($json), true);  
+            echo "\n=====edit=====\n"; 
+            if($this->show_print_r) print_r($obj); 
+            echo "\n=====edit end=====\n";
+            return $obj;    
+        }
+        else { print_r($obj); exit("\nNo [edit] link for this object.\n"); }
+    }
     function publish_Zenodo_dataset($obj, $data = false)
     {
         if($publish = @$obj['links']['publish']) { //https://zenodo.org/api/deposit/depositions/13136202/actions/publish
