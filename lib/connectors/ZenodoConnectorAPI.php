@@ -53,23 +53,16 @@ class ZenodoConnectorAPI
         // exit("\nstop muna 2\n");
         if($this->if_error($update_obj, 'update_0924', $id)) {}
         else {
-            /*
-            $obj = $this->retrieve_dataset($id); //works OK
-            $new_obj = $obj; //new
-            */
             $new_obj = $update_obj;
-            // if($this->if_error($obj, 'retrieve', $id)) {}    
-            // else {
-                // /* publishing block
-                $publish_obj = $this->publish_Zenodo_dataset($new_obj); //worked OK but with cumulative files carry-over
-                if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
-                else {
-                    echo "\nSuccessfully UPDATED then PUBLISHED to Zenodo\n-----u & p-----\n";
-                    // $this->log_error(array('updated then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
-                    $this->log_error(array('updated then published', @$new_obj['id'], @$new_obj['metadata']['title']));
-                }
-                // */
-            // }
+            // /* publishing block
+            $publish_obj = $this->publish_Zenodo_dataset($new_obj); //worked OK but with cumulative files carry-over
+            if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
+            else {
+                echo "\nSuccessfully UPDATED then PUBLISHED to Zenodo\n-----u & p-----\n";
+                // $this->log_error(array('updated then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
+                $this->log_error(array('updated then published', @$new_obj['id'], @$new_obj['metadata']['title']));
+            }
+            // */            
         }
     }
     private function fill_in_katja_changes($o)
