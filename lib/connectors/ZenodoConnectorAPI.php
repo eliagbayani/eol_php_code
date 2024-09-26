@@ -25,9 +25,9 @@ class ZenodoConnectorAPI
         }
         */
         // $id = "13795618"; //Metrics: GBIF data coverage
-        $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
-        // $id = "13794884"; //Flickr: Flickr BHL (544) --- nothing happened
-        // $id = "13789577"; //Flickr: Flickr Group (15) --- nothing happened
+        // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
+        $id = "13794884"; //Flickr: Flickr BHL (544)
+        // $id = "13789577"; //Flickr: Flickr Group (15)
         // $id = 13317938; //National Checklists 2019: Réunion Species List
 
         self::update_zenodo_record_of_latest_requested_changes($id);
