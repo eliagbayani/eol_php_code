@@ -28,7 +28,7 @@ class ZenodoConnectorAPI
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
         // $id = "13794884"; //Flickr: Flickr BHL (544) --- nothing happened
         // $id = "13789577"; //Flickr: Flickr Group (15) --- nothing happened
-        $id = 13317938; //National Checklists 2019: Réunion Species List
+        // $id = 13317938; //National Checklists 2019: Réunion Species List
 
         self::update_zenodo_record_of_latest_requested_changes($id);
     }
@@ -68,8 +68,7 @@ class ZenodoConnectorAPI
     private function fill_in_katja_changes($o)
     {   // print_r($o); exit("\nstop muna 1\n");
         // $o['metadata']['creators'][0]['affiliation'] = "Eli was here 5."; //dev only
-        /*
-        Agents
+        /* Agents
         - For records that have Hosting institution: Anne Thessen under Contributors, remove the Contributors record, 
             remove the "script (Zenodo API)" Creator 
             and add the following as the new Creator:            
@@ -103,8 +102,7 @@ class ZenodoConnectorAPI
         $o['metadata']['contributors'] = $final;
         // */
 
-        /*
-        Keywords & subjects
+        /* Keywords & subjects
         1. For all data sets with keyword "EOL Content Partners: National Checklists 2019" or "EOL Content Partners: Water Body Checklists 2019" add keyword "deprecated"
         2. Remove all keywords with the prefix "format:", e.g., "format: ZIP", "format: TAR", "format: XML", etc.        
         
@@ -124,6 +122,18 @@ class ZenodoConnectorAPI
             if(substr($kw,0,8) != 'format: ') $final[] = $kw;
         }
         $o['metadata']['keywords'] = $final;
+
+        /* Notes: It looks like the Notes field in Zenodo currently contains a combination of the OpenData resource and organization description. 
+        We would like to handle this in a different way:
+        #1 Please move the content that's currently in the Zenodo Notes field to the Description field instead. 
+            If there is already content in the Description field, append the content from the Notes field.
+        #2 Please entirely remove this text from all Notes, 
+            i.e., do not include it in the text appended to the Description: 
+                "This is where EOL hosts source datasets (archives, dumps, etc.) from EOL content partners (especially partners without a web presence of their own). 
+                This organization will also include the content partner utility files EOL connectors use to generate a particular content partner__s resource EOL archive or XML. 
+                For questions or suggestions please visit the EOL Services forum at http://discuss.eol.org/c/eol-services ####--- __EOL DwCA resource last updated: .... ---####"        
+        */
+
 
         // print_r($o); exit("\nstop muna 1\n");
         return $o;
