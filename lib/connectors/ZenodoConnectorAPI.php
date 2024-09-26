@@ -24,13 +24,16 @@ class ZenodoConnectorAPI
             }
         }
         */
-        $id = "13795618"; //Metrics: GBIF data coverage
-        // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
+        // $id = "13795618"; //Metrics: GBIF data coverage
+        $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
         // $id = "13794884"; //Flickr: Flickr BHL (544) --- nothing happened
         // $id = "13789577"; //Flickr: Flickr Group (15) --- nothing happened
         // $id = 13317938; //National Checklists 2019: Réunion Species List
 
         self::update_zenodo_record_of_latest_requested_changes($id);
+        /* To do:
+        good example for general formatting of description field: https://zenodo.org/records/13795451
+        */
     }
     function update_zenodo_record_of_latest_requested_changes($zenodo_id)
     {
@@ -43,8 +46,6 @@ class ZenodoConnectorAPI
         if($this->if_error($edit_obj, 'edit_0924', $id)) {}
         else {
             $obj_latest = self::fill_in_katja_changes($edit_obj); //$obj_1st
-            // $obj_temp = self::cut_down_object($obj_latest);
-            // self::update_then_publish($id, $obj_temp);
             self::update_then_publish($id, $obj_latest);    
         }
     }
@@ -129,26 +130,31 @@ class ZenodoConnectorAPI
             If there is already content in the Description field, append the content from the Notes field.
         #2 Please entirely remove this text from all Notes, 
             i.e., do not include it in the text appended to the Description: 
-                "This is where EOL hosts source datasets (archives, dumps, etc.) from EOL content partners (especially partners without a web presence of their own). 
-                This organization will also include the content partner utility files EOL connectors use to generate a particular content partner__s resource EOL archive or XML. 
-                For questions or suggestions please visit the EOL Services forum at http://discuss.eol.org/c/eol-services ####--- __EOL DwCA resource last updated: .... ---####"        
+                "This is where EOL hosts source datasets (archives, dumps, etc.) from EOL content partners (especially partners without a web presence of their own).
+                This organization will also include the content partner utility files EOL connectors use to generate a particular content partner__s resource EOL archive or XML.
+                For questions or suggestions please visit the EOL Services forum at http://discuss.eol.org/c/eol-services ####--- __EOL DwCA resource last updated: .... ---####"
         */
-
+        if($notes = trim(@$o['metadata']['notes'])) {
+            // 1st step: format notes
+            $left  = "This is where EOL hosts source datasets";
+            $right = "__ ---####";
+            $notes = self::remove_all_in_between_inclusive($left, $right, $notes, true);
+            //2nd pass on it:
+            $left  = "####--- __";
+            $right = "__ ---####";
+            $notes = self::remove_all_in_between_inclusive($left, $right, $notes, true);
+            // 2nd step: move notes to description
+            $description = trim(@$o['metadata']['description']);
+            if($description) $description .= "\n" . $notes;
+            else             $description = $notes;
+            // 3rd step: assignment
+            $o['metadata']['notes'] = "";
+            $description = self::eli_formats_description($description);
+            $o['metadata']['description'] = trim($description);    
+        }
 
         // print_r($o); exit("\nstop muna 1\n");
         return $o;
-    }
-    private function cut_down_object($obj)
-    {
-        // print_r($obj); exit("\nelix 4\n");
-
-        if($val = @$o['metadata']['creators'][0]['affiliation']) {
-            $o['metadata']['creators'][0]['affiliation'] = "";
-        }
-
-        $obj['metadata']['notes'] = "";
-        $obj['metadata']['contributors'] = array();
-        return $obj;
     }
     function update_Zenodo_record_latest($id, $obj_1st) //this updates the newversion object
     {
@@ -221,6 +227,20 @@ class ZenodoConnectorAPI
             if($date['type'] == 'Other' && $date['description'] == 'metadata updated') return true;
         }
         return false;
+    }
+    private function eli_formats_description($description)
+    {
+        if($description) { echo "\n----- goes here 1 ".strlen($description)."\n";
+            $description = str_replace("Please contact", "\nPlease contact", $description);
+            $description = str_replace("Follow us on", "\nFollow us on", $description);
+            $description = str_replace("http", "\nhttp", $description);
+            $description = trim($description);
+            if(substr($description,0,2) == "\n") { echo "\n----- goes here 2 ".strlen($description)."\n";
+                $description = trim(substr($description,2,strlen($description)));
+            }    
+        }
+        echo "\n----- goes here 3 ".strlen($description)."\n";
+        return $description;
     }
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ end @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
@@ -473,9 +493,9 @@ class ZenodoConnectorAPI
         $url = str_replace("deposit", "records", $url);
         $options = $this->download_options;
         $options['expire_seconds'] = 0; //60*60*24;
-        if($html = Functions::lookup_with_cache($url, $options)) { echo "\ngoes date 1 [$url]\n";
-            if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) { echo "\ngoes date 2\n";
-                if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) { echo "\ngoes date 3\n";
+        if($html = Functions::lookup_with_cache($url, $options)) { //echo "\ngoes date 1 [$url]\n";
+            if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) { //echo "\ngoes date 2\n";
+                if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) { //echo "\ngoes date 3\n";
                     // print_r($arr2[1]);
                     /*Array(
                         [0] =>  class="ui tiny header">Created
@@ -489,7 +509,7 @@ class ZenodoConnectorAPI
                         $date_type[] = $tmp;
                     }
                 }
-                if(preg_match_all("/<dd>(.*?)<\/dd>/ims", $arr[1], $arr3)) { echo "\ngoes date 4\n";
+                if(preg_match_all("/<dd>(.*?)<\/dd>/ims", $arr[1], $arr3)) { //echo "\ngoes date 4\n";
                     // print_r($arr3[1]);
                     /*Array(
                         [0] => 
@@ -511,7 +531,7 @@ class ZenodoConnectorAPI
             }
         }
         $final = array();
-        if($date_type && $date_actual && $date_desc) { echo "\ngoes date 5\n";
+        if($date_type && $date_actual && $date_desc) { //echo "\ngoes date 5\n";
             $i = -1;
             foreach($date_type as $type) { $i++;
                 $desc = @$date_desc[$i] ? $date_desc[$i] : "";
@@ -572,10 +592,11 @@ class ZenodoConnectorAPI
         $date = strtotime($forced_date);
         $date_format = date("M d, Y h:i A", $date);  //July 13, 2023 08:30 AM
 
+        /* working OK but now obsolete
         // $this->iso_date_str = self::iso_date_format()
         $add_str = "####--- __"."EOL DwCA resource last updated: ".$date_format."__ ---####";
-        $add_str = "####--- __EOL DwCA resource last updated: Sep 24, 2024 12:49 PM__ ---####"; //for dev only debug only
         $desc .= $add_str;
+        */
         return $desc;
     }
 }
