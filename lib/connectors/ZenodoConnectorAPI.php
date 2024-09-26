@@ -158,9 +158,11 @@ class ZenodoConnectorAPI
     }
     function update_Zenodo_record_latest($id, $obj_1st) //this updates the newversion object
     {
+        /* not used anymore...
         $ret_obj = $this->retrieve_dataset($id);
         // $links_edit = $ret_obj['links']['edit']; //not used
         $links_publish = $ret_obj['links']['publish'];
+        */
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $dates_final = self::get_dates_entries_from_html($obj_1st, false); //2nd param false is $updateDate_set2Current_YN
@@ -231,15 +233,19 @@ class ZenodoConnectorAPI
     private function eli_formats_description($description)
     {
         if($description) { echo "\n----- goes here 1 ".strlen($description)."\n";
-            $description = str_replace("Please contact", "\nPlease contact", $description);
-            $description = str_replace("Follow us on", "\nFollow us on", $description);
-            $description = str_replace("http", "\nhttp", $description);
+            $description = str_replace("Please contact", "<p></p>Please contact", $description);
+            $description = str_replace("Follow us on", "<p></p>Follow us on", $description);
+            $description = str_replace("http", "<p></p>http", $description);
+            $description = str_replace("<p><p></p>", "<p>", $description);
             $description = trim($description);
-            if(substr($description,0,2) == "\n") { echo "\n----- goes here 2 ".strlen($description)."\n";
-                $description = trim(substr($description,2,strlen($description)));
-            }    
+
+            // echo "\n111[$description]\n";
+            // if(substr($description,0,7) == "<p></p>") { echo "\n----- goes here 2 ".strlen($description)."\n";
+            //     $description = trim(substr($description,7,strlen($description)));
+            // }
+            // echo "\n222[$description]\n";
         }
-        echo "\n----- goes here 3 ".strlen($description)."\n";
+        // echo "\n----- goes here 3 ".strlen($description)."\n"; echo "\n[$description]\n";
         return $description;
     }
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ end @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
