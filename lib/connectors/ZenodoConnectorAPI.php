@@ -24,9 +24,9 @@ class ZenodoConnectorAPI
             }
         }
         */
-        // $id = "13795618"; //Metrics: GBIF data coverage
+        $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
-        $id = "13794884"; //Flickr: Flickr BHL (544)
+        // $id = "13794884"; //Flickr: Flickr BHL (544)
         // $id = "13789577"; //Flickr: Flickr Group (15)
         // $id = 13317938; //National Checklists 2019: Réunion Species List
 
@@ -87,11 +87,21 @@ class ZenodoConnectorAPI
         // /* ------------------ creators
         $final = array();
         foreach($o['metadata']['creators'] as $r) {
-            if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => '');
+            if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
+            // if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'organizational', 'role' => array('id' => 'hostinginstitution'));
         }
-        if(!$final) $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => '');
+        if(!$final) $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
+        // if(!$final) $final[] = array('organization' => array('name' => 'Encyclopedia of Life', 'type' => 'organizational'), 'role' => array('id' => 'HostingInstitution', 'title' => array('en' => 'Hosting institution')));
+
         $o['metadata']['creators'] = $final;
         // */
+        /*
+        "creators": [{  "person_or_org": {"name": "Encyclopedia of Life", "type": "organizational"}, 
+                        "role": {"id": "hostinginstitution", "title": {"de": "Bereitstellende Institution", "en": "Hosting institution"}}}]        
+        */
+
+
+
         // /* ------------------ contributors
         $final = array();
         foreach($o['metadata']['contributors'] as $r) {
