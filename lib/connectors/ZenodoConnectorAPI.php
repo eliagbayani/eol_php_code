@@ -8,7 +8,7 @@ class ZenodoConnectorAPI
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function latest_katja_changes()
     {   // step 1: loop into all Zenodo records
-        /*
+        // /*
         $final = array(); $page = 0;
         while(true) { $page++;
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
@@ -18,12 +18,16 @@ class ZenodoConnectorAPI
             $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
             if(!$obj) break;
             echo "\nBatch: $page | No. of records: ".count($obj)."\n";
-            foreach($obj as $o)  { print_r($o); exit;
+            foreach($obj as $o)  { //print_r($o); exit;
                 $final[trim($o['id'])] = '';
                 @$stats[$o['title']]++;
             }
+            break; //debug only
         }
-        */
+        print_r($stats); print_r($final);
+        // */
+        exit;
+
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
         // $id = "13794884"; //Flickr: Flickr BHL (544)
@@ -99,8 +103,6 @@ class ZenodoConnectorAPI
         "creators": [{  "person_or_org": {"name": "Encyclopedia of Life", "type": "organizational"}, 
                         "role": {"id": "hostinginstitution", "title": {"de": "Bereitstellende Institution", "en": "Hosting institution"}}}]        
         */
-
-
 
         // /* ------------------ contributors
         $final = array();
