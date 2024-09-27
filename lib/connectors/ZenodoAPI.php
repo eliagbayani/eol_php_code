@@ -91,6 +91,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         */
         $this->new_description_for_zenodo = "";
         $this->show_print_r = false;
+        $this->html_contributors = array();
     }
     function start()
     {   self::log_error(array("==================== Log starts here ===================="));

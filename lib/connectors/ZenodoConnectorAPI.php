@@ -8,7 +8,7 @@ class ZenodoConnectorAPI
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function latest_katja_changes()
     {   // step 1: loop into all Zenodo records
-        // /*
+        /*
         $final = array(); $page = 0;
         while(true) { $page++;
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
@@ -24,15 +24,16 @@ class ZenodoConnectorAPI
             }
             break; //debug only
         }
-        print_r($stats); print_r($final);
-        // */
-        exit;
+        print_r($stats); print_r($final); exit;
+        */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
         // $id = "13794884"; //Flickr: Flickr BHL (544)
         // $id = "13789577"; //Flickr: Flickr Group (15)
         // $id = 13317938; //National Checklists 2019: Réunion Species List
+        $id = 13515043;
+        $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         /* To do:
@@ -88,10 +89,14 @@ class ZenodoConnectorAPI
         - Remove all remaining Contributors with Role: Hosting Institution.        
         */
 
+        self::get_data_record_from_html($o);
+
+
         // /* ------------------ creators
         $final = array();
         foreach($o['metadata']['creators'] as $r) {
             if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
+            else $final[] = $r;
             // if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'organizational', 'role' => array('id' => 'hostinginstitution'));
         }
         if(!$final) $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
@@ -107,10 +112,28 @@ class ZenodoConnectorAPI
         // /* ------------------ contributors
         $final = array();
         foreach($o['metadata']['contributors'] as $r) {
+            if(!@$r['name']) continue;
+
             if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen') $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
             elseif($r['type'] == 'HostingInstitution' && $r['name'] == 'Eli Agbayani') $final[] = array('name' => $r['name'], 'type' => 'DataCollector', 'affiliation' => 'Encyclopedia of Life');
-            elseif($r['type'] == 'HostingInstitution')                                 $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
-            else $final[] = $r;
+            elseif($r['type'] == 'HostingInstitution') { //orcid: 0000-0002-1694-233X | gnd: 170118215
+                $tmp = $r;
+                $name = $r['name'];
+                /* not saving anything
+                if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = $val;      //with doc example gnd      - html ror 01na82s61
+                if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = $val;    //with doc example orcid    - html isni 0000 0004 0478 6311
+                */
+                if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
+                if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = "$val";    //with doc example orcid    - html isni 0000 0004 0478 6311
+                $final[] = $tmp;
+            }
+            else {
+                $tmp = $r;
+                $name = $r['name'];
+                if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
+                if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = "$val";    //with doc example orcid    - html isni 0000 0004 0478 6311
+                $final[] = $tmp;
+            }
         }
         $o['metadata']['contributors'] = $final;
         // */
@@ -155,15 +178,31 @@ class ZenodoConnectorAPI
             $left  = "####--- __";
             $right = "__ ---####";
             $notes = self::remove_all_in_between_inclusive($left, $right, $notes, true);
+
+            // 3rd pass
+            $left  = "This is where EOL hosts source datasets";
+            $right = "http://discuss.eol.org/c/eol-services";
+            $notes = self::remove_all_in_between_inclusive($left, $right, $notes, true);
+
             // 2nd step: move notes to description
             $description = trim(@$o['metadata']['description']);
-            if($description) $description .= "\n" . $notes;
+            if($description) $description .= "<p></p>" . $notes;
             else             $description = $notes;
             // 3rd step: assignment
             $o['metadata']['notes'] = "";
             $description = self::eli_formats_description($description);
-            $o['metadata']['description'] = trim($description);    
+            $o['metadata']['description'] = trim($description);
         }
+
+        // from separate path
+        if($val = @$this->html_contributors) {
+            $notes = @$o['metadata']['notes'];
+            if($notes) $notes .= "<p></p>" . "Captured data during API bulk updates: ".json_encode($val);
+            else       $notes = "Captured data during API bulk updates: ".json_encode($val);
+            $o['metadata']['notes'] = $notes;
+        }
+
+
 
         // print_r($o); exit("\nstop muna 1\n");
         return $o;
@@ -511,7 +550,8 @@ class ZenodoConnectorAPI
         $url = str_replace("deposit", "records", $url);
         $options = $this->download_options;
         $options['expire_seconds'] = 0; //60*60*24;
-        if($html = Functions::lookup_with_cache($url, $options)) { //echo "\ngoes date 1 [$url]\n";
+        // $options['expire_seconds'] = 60*60*24;
+        if($html = Functions::lookup_with_cache($url, $options)) { echo "\ngoes date 1 [$url]\n";
             if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) { //echo "\ngoes date 2\n";
                 if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) { //echo "\ngoes date 3\n";
                     // print_r($arr2[1]);
@@ -576,6 +616,69 @@ class ZenodoConnectorAPI
         }
         // print_r($final); exit("\n-end date process-\n");
         return $final;
+    }
+    private function get_data_record_from_html($obj)
+    {   /*
+        <div class="column"
+         id="recordManagement"
+         data-record='{"access": {"embargo": {"active": false, "reason": null}, "files": "public", "record": "public", "status": "open"},...
+         data-permissions='{"can_edit": true, "can_manage": true, "can_media_read_files": true, "can_moderate": false, "can_new_version": true, "can_read_files": true, "can_review": true, "can_update_draft": true, "can_view": true}'
+         data-is-draft="false"
+         data-is-preview-submission-request="false"
+         data-current-user-id="1158728"
+         data-record-owner-username='eagbayani'
+         data-groups-enabled='false'
+        >        
+        */
+        /*
+        [{ "person_or_org": {
+                                "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
+                                "name": "United States Department of Agriculture", 
+                                "type": "organizational"
+                            }, 
+           "role": {"id": "hostinginstitution", "title": {"de": "Bereitstellende Institution", "en": "Hosting institution"}}
+        }]
+        */
+        $url = $obj['links']['html'];
+        $url = str_replace("deposit", "records", $url);
+        $options = $this->download_options;
+        $options['expire_seconds'] = 0; //60*60*24;
+        // $options['expire_seconds'] = 60*60*24;
+        if($html = Functions::lookup_with_cache($url, $options)) {
+            $left = '"contributors":'; //'<section id="record-manage-menu"'; //'id="recordManagement"';
+            $right = '"creators":'; //'</section>'; //'data-permissions';
+            echo "\ndito 0\n"; //exit("\n$html\n");
+            if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { echo "\ndito 1\n";
+                $json = substr_replace(trim($arr[1]), '', -1); //remove last char
+                $arr = json_decode($json, true);
+                print_r($arr); 
+                foreach($arr as $r) {
+                    if($name = @$r['person_or_org']['name']) {
+                        if($identifiers = @$r['person_or_org']['identifiers']) {
+                            foreach($identifiers as $i) {
+                                // if($i['scheme'] == 'gnd') $this->html_contributors[$name]['gnd'] = $i['identifier'];
+                                // if($i['scheme'] == 'orcid') $this->html_contributors[$name]['orcid'] = $i['identifier'];
+                                if($i['scheme'] == 'isni') $this->html_contributors[$name]['isni'] = $i['identifier'];  //orcid         isni 0000 0004 0478 6311
+                                if($i['scheme'] == 'ror') $this->html_contributors[$name]['ror'] = $i['identifier'];    //important     ror 01na82s61
+                                // only orcid and gnd are in doc examples
+                            }
+                        }
+                    }
+                }
+                print_r($this->html_contributors);
+                if($val = $this->html_contributors) {
+                    $this->log_error(array($obj['id'], "Captured data" , json_encode($val)));
+                }
+                /*Array(
+                    [United States Department of Agriculture] => Array(
+                            [ror] => 01na82s61
+                            [orcid] => 0000 0004 0478 6311
+                        )
+                )*/
+                // exit("\nelix 1\n");
+            }
+            // exit("\nxxx\n");
+        }
     }
     private function remove_all_in_between_inclusive($left, $right, $html, $includeRight = true)
     {
