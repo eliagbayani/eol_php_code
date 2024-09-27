@@ -8,7 +8,7 @@ class ZenodoConnectorAPI
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function latest_katja_changes()
     {   // step 1: loop into all Zenodo records
-        /*
+        // /*
         $final = array(); $page = 0;
         while(true) { $page++;
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
@@ -20,12 +20,12 @@ class ZenodoConnectorAPI
             echo "\nBatch: $page | No. of records: ".count($obj)."\n";
             foreach($obj as $o)  { //print_r($o); exit;
                 $final[trim($o['id'])] = '';
-                @$stats[$o['title']]++;
+                @$stats[$o['title']] = $o['id'];
             }
             break; //debug only
         }
         print_r($stats); print_r($final); exit;
-        */
+        // */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -34,6 +34,8 @@ class ZenodoConnectorAPI
         // $id = 13317938; //National Checklists 2019: Réunion Species List
         $id = 13515043;
         $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
+        $id = 13763554; //Museum of Comparative Zoology, Harvard] => 
+        $id = 13788325; //GBIF data summaries: GBIF national node type records: UK] => 
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         /* To do:
