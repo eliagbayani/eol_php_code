@@ -24,7 +24,11 @@ class ZenodoConnectorAPI
                 $final[trim($o['id'])] = '';
                 @$stats[$o['title']] = $o['id'];
             }
-            foreach($stats as $title => $id) self::update_zenodo_record_of_latest_requested_changes($id);
+            print_r($stats);
+            foreach($stats as $title => $id)  {
+                sleep(2);
+                self::update_zenodo_record_of_latest_requested_changes($id);
+            }
             break; //debug only
         }
         // print_r($stats); print_r($final); 
@@ -112,7 +116,7 @@ class ZenodoConnectorAPI
         if($val = $this->html_contributors) {
             echo "\nWITH caputred Creators and Contributors with identifiers.\n";
             print_r($this->html_contributors);
-            $this->log_error(array($o['id'], "Captured data" , json_encode($val)));
+            $this->log_error(array($o['id'], $o['title'], "Captured data" , json_encode($val)));
             return false;
         }
         else echo "\nNO caputred Creators and Contributors with identifiers.\n";
@@ -231,7 +235,8 @@ class ZenodoConnectorAPI
         }
 
         // from separate path
-        if($val = @$this->html_contributors) {
+        if($val = @$this->html_contributors) { //doesn't go here anymore sice these records won't be updated by API anymore. But manually.
+            exit("\nShould not go here anymore.\n");
             $notes = @$o['metadata']['notes'];
             if($notes) $notes .= "<p></p>" . "Captured data during API bulk updates: ".json_encode($val);
             else       $notes = "Captured data during API bulk updates: ".json_encode($val);
