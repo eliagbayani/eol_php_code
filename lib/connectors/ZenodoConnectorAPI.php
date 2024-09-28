@@ -10,9 +10,13 @@ class ZenodoConnectorAPI
     {   
         $this->log_error(array("==================== Log starts here ===================="));
         // step 1: loop into all Zenodo records
-        // /*
+        /*
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
+
+            if(in_array($page, array(1, 2, 3, 4))) continue;
+            echo "\nProcessing page: [$page]...\n";
+
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
             $cmd = str_replace('PAGENUM', $page, $cmd);
             // echo "\nlist depostions cmd: [$cmd]\n";
@@ -26,12 +30,13 @@ class ZenodoConnectorAPI
             }
             print_r($stats); //exit;
             foreach($stats as $title => $id)  { sleep(2); self::update_zenodo_record_of_latest_requested_changes($id); }
+            print_r($stats); //exit;
             echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n";
             break; //debug only dev only
         }
         // print_r($stats); print_r($final); 
         exit("\n-end bulk updates-\n");
-        // */
+        */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -43,10 +48,15 @@ class ZenodoConnectorAPI
         // $id = 13788325; //GBIF data summaries: GBIF national node type records: UK] => 
         // $id = 13763279; //Bioimages (Vanderbilt): Bioimages Vanderbilt (200) DwCA] => 
         $id = 13788207; //GBIF data summaries: GBIF national node type records: France
+        $id = 13333250; //O'Brien et al, 2013 --- with quotes
+        $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
+        // $id = 13323180; //FALO Classification
+        $id = 13315911; //Anne Thessen - Water Body Checklists: Alboran Sea Species List
+        $id = 13313138; //Anne Thessen - National Checklists: Namibia Species List
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
-        $id = 13751009; //[EOL full taxon identifier map] => 
+        // $id = 13751009; //[EOL full taxon identifier map] => 
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         /* To do:
@@ -155,7 +165,18 @@ class ZenodoConnectorAPI
 
             if($r['name'] == 'Eli Agbayani') continue;
 
-            if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen') $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
+            if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen')
+            {   /*
+                and add the following as the new Creator:            
+                    Person
+                    Name: Anne Thessen [important: do not link to any identifiers]
+                    Affiliations: Encyclopedia of Life
+                    Role: Data Manager
+                */
+                $o['metadata']['creators'] = array();
+                $o['metadata']['creators'][] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
+                                    $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
+            }
             elseif($r['type'] == 'HostingInstitution' && $r['name'] == 'Eli Agbayani') $final[] = array('name' => $r['name'], 'type' => 'DataCollector', 'affiliation' => 'Encyclopedia of Life');
             elseif($r['type'] == 'HostingInstitution') { //orcid: 0000-0002-1694-233X | gnd: 170118215
                 $r['type'] = 'ContactPerson';
@@ -281,8 +302,8 @@ class ZenodoConnectorAPI
                                     "upload_type" => @$obj_1st['metadata']['upload_type'], //'dataset',
                                     // "files" => array() //$obj_1st['files']
                                     "access_right" => @$obj_1st['metadata']['access_right'],
-                                    "contributors" => @$obj_1st['metadata']['contributors'],
-                                    "keywords" => @$obj_1st['metadata']['keywords'],
+                                    "contributors" => @$obj_1st['metadata']['contributors'],                                    
+                                    "keywords" => str_replace("'", "__", $obj_1st['metadata']['keywords']),
                                     "related_identifiers" => @$obj_1st['metadata']['related_identifiers'],
                                     "imprint_publisher" => @$obj_1st['metadata']['imprint_publisher'],
                                     "communities" => @$obj_1st['metadata']['communities'],
@@ -339,6 +360,7 @@ class ZenodoConnectorAPI
             // echo "\n222[$description]\n";
         }
         // echo "\n----- goes here 3 ".strlen($description)."\n"; echo "\n[$description]\n";
+        $description = str_replace("'", "__", $description);
         return $description;
     }
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ end @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
