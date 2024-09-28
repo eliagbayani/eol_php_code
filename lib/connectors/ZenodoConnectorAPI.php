@@ -14,12 +14,21 @@ class ZenodoConnectorAPI
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
             // /* do batches
-            if(in_array($page, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))) continue;
-            if($page >= 13 && $page <= 15) {} //13 14 15
-            elseif($page > 15) break;
+            // if(in_array($page, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20))) continue;
+
+            // if($page < 21) continue;
+            // elseif($page >= 21 && $page <= 25) {} //
+            // elseif($page > 25) break;
+            // else continue;
+
+            if($page < 26) continue;
+            elseif($page >= 26 && $page <= 56) {} //
+            elseif($page > 56) break;
             else continue;
+
+
             // */
-            
+
             echo "\nProcessing page: [$page]...\n";
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
             $cmd = str_replace('PAGENUM', $page, $cmd);
@@ -33,9 +42,9 @@ class ZenodoConnectorAPI
                 @$stats[$o['title']] = $o['id'];
             }
             print_r($stats); //exit;
-            foreach($stats as $title => $id)  { sleep(2); self::update_zenodo_record_of_latest_requested_changes($id); }
+            foreach($stats as $title => $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
             print_r($stats); //exit;
-            echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n";
+            echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
             // break; //debug only dev only
         }
         // print_r($stats); print_r($final); 
@@ -75,7 +84,7 @@ class ZenodoConnectorAPI
         // $excluded_ids = array(13743941, 13751009);
         // if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
         $id = $obj_1st['id'];
         if($zenodo_id != $id) exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
 
