@@ -19,17 +19,15 @@ class ZenodoConnectorAPI
             $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
             $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n";
             if(!$obj) break;
-            echo "\nBatch: $page | No. of records: ".count($obj)."\n";
+            echo "\nStart Batch: $page | No. of records: ".count($obj)."\n";
             foreach($obj as $o)  { //print_r($o); exit;
                 $final[trim($o['id'])] = '';
                 @$stats[$o['title']] = $o['id'];
             }
-            print_r($stats);
-            foreach($stats as $title => $id)  {
-                sleep(2);
-                self::update_zenodo_record_of_latest_requested_changes($id);
-            }
-            break; //debug only
+            print_r($stats); //exit;
+            foreach($stats as $title => $id)  { sleep(2); self::update_zenodo_record_of_latest_requested_changes($id); }
+            echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n";
+            break; //debug only dev only
         }
         // print_r($stats); print_r($final); 
         exit("\n-end bulk updates-\n");
@@ -44,6 +42,7 @@ class ZenodoConnectorAPI
         // $id = 13763554; //Museum of Comparative Zoology, Harvard] => 
         // $id = 13788325; //GBIF data summaries: GBIF national node type records: UK] => 
         // $id = 13763279; //Bioimages (Vanderbilt): Bioimages Vanderbilt (200) DwCA] => 
+        $id = 13788207; //GBIF data summaries: GBIF national node type records: France
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -74,10 +73,10 @@ class ZenodoConnectorAPI
     }
     private function update_then_publish($id, $obj_latest)
     {   
-        // exit("\nforced stop\n");
+        // /*
         $this->log_error(array('proceed with U and P', @$obj_latest['id'], @$obj_latest['metadata']['title']));
-        return;
-
+        // return; //dev only
+        // */
         $update_obj = $this->update_Zenodo_record_latest($id, $obj_latest); //to fill-in the publication_date, title creators upload_type et al.
         if($this->if_error($update_obj, 'update_0924', $id)) {}
         else {
@@ -154,9 +153,12 @@ class ZenodoConnectorAPI
         foreach($o['metadata']['contributors'] as $r) {
             if(!@$r['name']) continue;
 
+            if($r['name'] == 'Eli Agbayani') continue;
+
             if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen') $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
             elseif($r['type'] == 'HostingInstitution' && $r['name'] == 'Eli Agbayani') $final[] = array('name' => $r['name'], 'type' => 'DataCollector', 'affiliation' => 'Encyclopedia of Life');
             elseif($r['type'] == 'HostingInstitution') { //orcid: 0000-0002-1694-233X | gnd: 170118215
+                $r['type'] = 'ContactPerson';
                 $tmp = $r;
                 $name = $r['name'];
                 /* not saving anything
@@ -168,6 +170,7 @@ class ZenodoConnectorAPI
                 $final[] = $tmp;
             }
             else {
+                $r['type'] = 'ContactPerson';
                 $tmp = $r;
                 $name = $r['name'];
                 if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
