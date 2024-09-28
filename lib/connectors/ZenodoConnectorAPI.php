@@ -13,12 +13,14 @@ class ZenodoConnectorAPI
         // /*
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
-
+            // /* do batches
             if(in_array($page, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))) continue;
             if($page >= 13 && $page <= 15) {} //13 14 15
+            elseif($page > 15) break;
             else continue;
+            // */
+            
             echo "\nProcessing page: [$page]...\n";
-
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
             $cmd = str_replace('PAGENUM', $page, $cmd);
             // echo "\nlist depostions cmd: [$cmd]\n";
