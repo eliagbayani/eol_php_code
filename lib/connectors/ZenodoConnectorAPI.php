@@ -7,10 +7,12 @@ class ZenodoConnectorAPI
     {}
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function latest_katja_changes()
-    {   // step 1: loop into all Zenodo records
-        /*
-        $final = array(); $page = 0;
-        while(true) { $page++;
+    {   
+        $this->log_error(array("==================== Log starts here ===================="));
+        // step 1: loop into all Zenodo records
+        // /*
+        $page = 0;
+        while(true) { $page++; $final = array(); $stats = array();
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
             $cmd = str_replace('PAGENUM', $page, $cmd);
             // echo "\nlist depostions cmd: [$cmd]\n";
@@ -22,10 +24,12 @@ class ZenodoConnectorAPI
                 $final[trim($o['id'])] = '';
                 @$stats[$o['title']] = $o['id'];
             }
+            foreach($stats as $title => $id) self::update_zenodo_record_of_latest_requested_changes($id);
             break; //debug only
         }
-        print_r($stats); print_r($final); exit;
-        */
+        // print_r($stats); print_r($final); 
+        exit("\n-end bulk updates-\n");
+        // */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -38,7 +42,7 @@ class ZenodoConnectorAPI
         // $id = 13763279; //Bioimages (Vanderbilt): Bioimages Vanderbilt (200) DwCA] => 
 
         // excluded:
-        $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
+        // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
         $id = 13751009; //[EOL full taxon identifier map] => 
 
         self::update_zenodo_record_of_latest_requested_changes($id);
@@ -65,7 +69,11 @@ class ZenodoConnectorAPI
         }
     }
     private function update_then_publish($id, $obj_latest)
-    {
+    {   
+        // exit("\nforced stop\n");
+        $this->log_error(array('proceed with U and P', @$obj_latest['id'], @$obj_latest['metadata']['title']));
+        return;
+
         $update_obj = $this->update_Zenodo_record_latest($id, $obj_latest); //to fill-in the publication_date, title creators upload_type et al.
         if($this->if_error($update_obj, 'update_0924', $id)) {}
         else {
