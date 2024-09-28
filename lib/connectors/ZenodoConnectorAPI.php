@@ -14,8 +14,8 @@ class ZenodoConnectorAPI
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
 
-            if(in_array($page, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))) continue;
-            if($page >= 12 && $page <= 12) {} //12
+            if(in_array($page, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))) continue;
+            if($page >= 13 && $page <= 15) {} //13 14 15
             else continue;
             echo "\nProcessing page: [$page]...\n";
 
