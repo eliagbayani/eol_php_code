@@ -10,11 +10,13 @@ class ZenodoConnectorAPI
     {   
         $this->log_error(array("==================== Log starts here ===================="));
         // step 1: loop into all Zenodo records
-        /*
+        // /*
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
 
-            if(in_array($page, array(1, 2, 3, 4))) continue;
+            if(in_array($page, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))) continue;
+            if($page >= 12 && $page <= 12) {} //12
+            else continue;
             echo "\nProcessing page: [$page]...\n";
 
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
@@ -32,11 +34,11 @@ class ZenodoConnectorAPI
             foreach($stats as $title => $id)  { sleep(2); self::update_zenodo_record_of_latest_requested_changes($id); }
             print_r($stats); //exit;
             echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n";
-            break; //debug only dev only
+            // break; //debug only dev only
         }
         // print_r($stats); print_r($final); 
         exit("\n-end bulk updates-\n");
-        */
+        // */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -52,7 +54,8 @@ class ZenodoConnectorAPI
         $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
         // $id = 13323180; //FALO Classification
         $id = 13315911; //Anne Thessen - Water Body Checklists: Alboran Sea Species List
-        $id = 13313138; //Anne Thessen - National Checklists: Namibia Species List
+        // $id = 13313138; //Anne Thessen - National Checklists: Namibia Species List
+        $id = 13321983; //BİLECENOĞLU, et al, 204: BİLECENOĞLU et al, 2014
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -124,7 +127,7 @@ class ZenodoConnectorAPI
         self::get_data_record_from_html($o, 'creators');
         if($val = $this->html_contributors) {
             echo "\nWITH caputred Creators and Contributors with identifiers.\n";
-            print_r($this->html_contributors);
+            print_r($this->html_contributors); //good debug
             $this->log_error(array($o['id'], $o['title'], "Captured data" , json_encode($val)));
             return false;
         }
@@ -722,7 +725,7 @@ class ZenodoConnectorAPI
             echo "\ndito 0\n"; //exit("\n$html\n");
             if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { echo "\ndito 1\n";
                 $json = substr_replace(trim($arr[1]), '', -1); //remove last char
-                $arr = json_decode($json, true); print_r($arr); 
+                $arr = json_decode($json, true); //print_r($arr); //good debug 
                 foreach($arr as $r) {
                     if($name = @$r['person_or_org']['name']) {
                         if($identifiers = @$r['person_or_org']['identifiers']) {
