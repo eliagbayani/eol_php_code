@@ -96,7 +96,7 @@ class ZenodoConnectorAPI
         }
     }
     private function update_then_publish($id, $obj_latest)
-    {   
+    {   sleep(2);
         // /*
         $this->log_error(array('proceed with U and P', @$obj_latest['id'], @$obj_latest['metadata']['title']));
         // return; //dev only
@@ -218,6 +218,9 @@ class ZenodoConnectorAPI
 
         /* Keywords & subjects
         1. For all data sets with keyword "EOL Content Partners: National Checklists 2019" or "EOL Content Partners: Water Body Checklists 2019" add keyword "deprecated"
+            Batch 24 and 25...
+            failed adding "deprecated"...
+
         2. Remove all keywords with the prefix "format:", e.g., "format: ZIP", "format: TAR", "format: XML", etc.        
         
         [keywords] => Array(
