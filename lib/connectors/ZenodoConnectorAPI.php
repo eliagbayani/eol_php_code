@@ -33,10 +33,13 @@ class ZenodoConnectorAPI
         // $id = "13789577"; //Flickr: Flickr Group (15)
         // $id = 13317938; //National Checklists 2019: Réunion Species List
         $id = 13515043;
-        $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
         $id = 13763554; //Museum of Comparative Zoology, Harvard] => 
         $id = 13788325; //GBIF data summaries: GBIF national node type records: UK] => 
         $id = 13763279; //Bioimages (Vanderbilt): Bioimages Vanderbilt (200) DwCA] => 
+
+        // excluded:
+        $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
+        $id = 13751009; //[EOL full taxon identifier map] => 
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         /* To do:
@@ -45,7 +48,13 @@ class ZenodoConnectorAPI
     }
     function update_zenodo_record_of_latest_requested_changes($zenodo_id)
     {
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
+
+        if(!self::can_proceed_with_update($zenodo_id)) return;
+
+        $excluded_ids = array(13743941, 13751009);
+        if(in_array($zenodo_id, $excluded_ids)) return;
+
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna\n");
         $id = $obj_1st['id'];
         if($zenodo_id != $id) exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
 
@@ -103,6 +112,7 @@ class ZenodoConnectorAPI
         }
         if(!$final) $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
 
+        // both didn't work
         // if(!$final) $final[] = array('name' => 'Encyclopedia of Life', 'type' => array('id' => 'HostingInstitution'), 'affiliation' => ''); //didn't work
         // if(!$final) $final[] = array('organization' => array('name' => 'Encyclopedia of Life', 'type' => 'organizational'), 'role' => array('id' => 'HostingInstitution', 'title' => array('en' => 'Hosting institution'))); //didn't work
 
@@ -205,8 +215,6 @@ class ZenodoConnectorAPI
             else       $notes = "Captured data during API bulk updates: ".json_encode($val);
             $o['metadata']['notes'] = $notes;
         }
-
-
 
         // print_r($o); exit("\nstop muna 1\n");
         return $o;
