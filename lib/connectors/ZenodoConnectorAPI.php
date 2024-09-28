@@ -575,8 +575,8 @@ class ZenodoConnectorAPI
         $url = $obj['links']['html'];
         $url = str_replace("deposit", "records", $url);
         $options = $this->download_options;
-        $options['expire_seconds'] = 0; //60*60*24;
-        // $options['expire_seconds'] = 60*60*24;
+        $options['expire_seconds'] = 0;
+        $options['expire_seconds'] = 60*60*24; //can be not 0 bec. same URL was called above with already 0 expiry.
         if($html = Functions::lookup_with_cache($url, $options)) { echo "\ngoes date 1 [$url]\n";
             if(preg_match("/>Dates<\/h3>(.*?)<\/dl>/ims", $html, $arr)) { //echo "\ngoes date 2\n";
                 if(preg_match_all("/<dt(.*?)<\/dt>/ims", $arr[1], $arr2)) { //echo "\ngoes date 3\n";
