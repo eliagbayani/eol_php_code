@@ -32,10 +32,10 @@ class ZenodoConnectorAPI
         // $id = "13794884"; //Flickr: Flickr BHL (544)
         // $id = "13789577"; //Flickr: Flickr Group (15)
         // $id = 13317938; //National Checklists 2019: Réunion Species List
-        $id = 13515043;
-        $id = 13763554; //Museum of Comparative Zoology, Harvard] => 
-        $id = 13788325; //GBIF data summaries: GBIF national node type records: UK] => 
-        $id = 13763279; //Bioimages (Vanderbilt): Bioimages Vanderbilt (200) DwCA] => 
+        // $id = 13515043;
+        // $id = 13763554; //Museum of Comparative Zoology, Harvard] => 
+        // $id = 13788325; //GBIF data summaries: GBIF national node type records: UK] => 
+        // $id = 13763279; //Bioimages (Vanderbilt): Bioimages Vanderbilt (200) DwCA] => 
 
         // excluded:
         $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -48,13 +48,10 @@ class ZenodoConnectorAPI
     }
     function update_zenodo_record_of_latest_requested_changes($zenodo_id)
     {
+        // $excluded_ids = array(13743941, 13751009);
+        // if(in_array($zenodo_id, $excluded_ids)) return;
 
-        if(!self::can_proceed_with_update($zenodo_id)) return;
-
-        $excluded_ids = array(13743941, 13751009);
-        if(in_array($zenodo_id, $excluded_ids)) return;
-
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
         $id = $obj_1st['id'];
         if($zenodo_id != $id) exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
 
@@ -101,7 +98,23 @@ class ZenodoConnectorAPI
         - Remove all remaining Contributors with Role: Hosting Institution.        
         */
 
-        self::get_data_record_from_html($o);
+        // /*
+        self::get_data_record_from_html($o, 'contributors');
+        self::get_data_record_from_html($o, 'creators');
+        if($val = $this->html_contributors) {
+            echo "\nWITH caputred Creators and Contributors with identifiers.\n";
+            print_r($this->html_contributors);
+            $this->log_error(array($o['id'], "Captured data" , json_encode($val)));
+        }
+        else echo "\nNO caputred Creators and Contributors with identifiers.\n";
+        exit("\nelix 1\n");
+        // Array(
+        //     [United States Department of Agriculture] => Array(
+        //             [ror] => 01na82s61
+        //             [orcid] => 0000 0004 0478 6311
+        //         )
+        // )
+        // */
 
 
         // /* ------------------ creators
@@ -629,7 +642,7 @@ class ZenodoConnectorAPI
         // print_r($final); exit("\n-end date process-\n");
         return $final;
     }
-    private function get_data_record_from_html($obj)
+    private function get_data_record_from_html($obj, $what)
     {   /*
         <div class="column"
          id="recordManagement"
@@ -656,37 +669,39 @@ class ZenodoConnectorAPI
         $options = $this->download_options;
         $options['expire_seconds'] = 0; //60*60*24;
         // $options['expire_seconds'] = 60*60*24;
-        if($html = Functions::lookup_with_cache($url, $options)) {
-            $left = '"contributors":'; //'<section id="record-manage-menu"'; //'id="recordManagement"';
-            $right = '"creators":'; //'</section>'; //'data-permissions';
+        if($html = Functions::lookup_with_cache($url, $options)) { //exit("\n$html\n");
+            if($what == 'contributors') {
+                $left = '"contributors":';
+                $right = '"creators":';    
+            }
+            elseif($what == 'creators') {
+                $left = '"creators":';
+                $right = '"dates":';    
+            }
+            else return;
+
             echo "\ndito 0\n"; //exit("\n$html\n");
             if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { echo "\ndito 1\n";
                 $json = substr_replace(trim($arr[1]), '', -1); //remove last char
-                $arr = json_decode($json, true);
-                print_r($arr); 
+                $arr = json_decode($json, true); print_r($arr); 
                 foreach($arr as $r) {
                     if($name = @$r['person_or_org']['name']) {
                         if($identifiers = @$r['person_or_org']['identifiers']) {
                             foreach($identifiers as $i) {
-                                // if($i['scheme'] == 'gnd') $this->html_contributors[$name]['gnd'] = $i['identifier'];
-                                // if($i['scheme'] == 'orcid') $this->html_contributors[$name]['orcid'] = $i['identifier'];
-                                if($i['scheme'] == 'isni') $this->html_contributors[$name]['isni'] = $i['identifier'];  //orcid         isni 0000 0004 0478 6311
-                                if($i['scheme'] == 'ror') $this->html_contributors[$name]['ror'] = $i['identifier'];    //important     ror 01na82s61
-                                // only orcid and gnd are in doc examples
+                                if($scheme = @$i['scheme']) {
+                                    /* can be refactored
+                                    if($scheme == 'isni') $this->html_contributors[$name]['isni'] = $i['identifier'];  //orcid         html isni 0000 0004 0478 6311
+                                    if($scheme == 'ror') $this->html_contributors[$name]['ror'] = $i['identifier'];    //important     html ror 01na82s61
+                                    // only orcid and gnd are in doc examples
+                                    if($scheme == 'gnd') $this->html_contributors[$name]['gnd'] = $i['identifier'];
+                                    if($scheme == 'orcid') $this->html_contributors[$name]['orcid'] = $i['identifier'];
+                                    */
+                                    $this->html_contributors[$name][$scheme] = $i['identifier'];
+                                }
                             }
                         }
                     }
                 }
-                print_r($this->html_contributors);
-                if($val = $this->html_contributors) {
-                    $this->log_error(array($obj['id'], "Captured data" , json_encode($val)));
-                }
-                /*Array(
-                    [United States Department of Agriculture] => Array(
-                            [ror] => 01na82s61
-                            [orcid] => 0000 0004 0478 6311
-                        )
-                )*/
                 // exit("\nelix 1\n");
             }
             // exit("\nxxx\n");
