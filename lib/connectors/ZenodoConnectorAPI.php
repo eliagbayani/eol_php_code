@@ -48,6 +48,8 @@ class ZenodoConnectorAPI
     }
     function update_zenodo_record_of_latest_requested_changes($zenodo_id)
     {
+        $this->html_contributors = array(); //initialize
+
         // $excluded_ids = array(13743941, 13751009);
         // if(in_array($zenodo_id, $excluded_ids)) return;
 
@@ -59,8 +61,7 @@ class ZenodoConnectorAPI
 
         if($this->if_error($edit_obj, 'edit_0924', $id)) {}
         else {
-            $obj_latest = self::fill_in_katja_changes($edit_obj); //$obj_1st
-            self::update_then_publish($id, $obj_latest);    
+            if($obj_latest = self::fill_in_katja_changes($edit_obj)) self::update_then_publish($id, $obj_latest);    
         }
     }
     private function update_then_publish($id, $obj_latest)
@@ -74,7 +75,6 @@ class ZenodoConnectorAPI
             if($this->if_error($publish_obj, 'publish', $new_obj['id'])) {}
             else {
                 echo "\nSuccessfully UPDATED then PUBLISHED to Zenodo\n-----u & p-----\n";
-                // $this->log_error(array('updated then published', @$new_obj['id'], @$new_obj['metadata']['title'], @$new_obj['metadata']['related_identifiers'][0]['identifier']));
                 $this->log_error(array('updated then published', @$new_obj['id'], @$new_obj['metadata']['title']));
             }
             // */            
@@ -98,23 +98,24 @@ class ZenodoConnectorAPI
         - Remove all remaining Contributors with Role: Hosting Institution.        
         */
 
-        // /*
+        // /* ------------------------------------ impt block
         self::get_data_record_from_html($o, 'contributors');
         self::get_data_record_from_html($o, 'creators');
         if($val = $this->html_contributors) {
             echo "\nWITH caputred Creators and Contributors with identifiers.\n";
             print_r($this->html_contributors);
             $this->log_error(array($o['id'], "Captured data" , json_encode($val)));
+            return false;
         }
         else echo "\nNO caputred Creators and Contributors with identifiers.\n";
-        exit("\nelix 1\n");
+        // exit("\nelix 1\n");
         // Array(
         //     [United States Department of Agriculture] => Array(
         //             [ror] => 01na82s61
         //             [orcid] => 0000 0004 0478 6311
         //         )
         // )
-        // */
+        // ------------------------------------ */ 
 
 
         // /* ------------------ creators
