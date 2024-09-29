@@ -16,8 +16,8 @@ class ZenodoConnectorAPI
         while(true) { $page++; $final = array(); $stats = array();
             // do batches
 
-            if($page < 78) continue;
-            elseif($page >= 78 && $page <= 90) {}
+            if($page < 80) continue;
+            elseif($page >= 80 && $page <= 90) {}
             elseif($page > 90) break;
             else continue;
 
@@ -55,14 +55,14 @@ class ZenodoConnectorAPI
         // $id = 13763279; //Bioimages (Vanderbilt): Bioimages Vanderbilt (200) DwCA] => 
         $id = 13788207; //GBIF data summaries: GBIF national node type records: France
         $id = 13333250; //O'Brien et al, 2013 --- with quotes
-        $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
         // $id = 13323180; //FALO Classification
         $id = 13315911; //Anne Thessen - Water Body Checklists: Alboran Sea Species List
         // $id = 13313138; //Anne Thessen - National Checklists: Namibia Species List
         $id = 13321983; //BİLECENOĞLU, et al, 204: BİLECENOĞLU et al, 2014
         $id = 13319945; //Water Body Checklists 2019: North Atlantic Species List
         $id = 13317726; //National Checklists 2019: Tajikistan Species List
-        $id = 13382586;
+        $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
+
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
