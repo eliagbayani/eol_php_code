@@ -10,20 +10,15 @@ class ZenodoConnectorAPI
     {   
         $this->log_error(array("==================== Log starts here ===================="));
         // step 1: loop into all Zenodo records
-        // /*
+
+        // /* ------------------- start block
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
             // do batches
-            // if(in_array($page, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20))) continue;
 
-            // if($page < 21) continue;
-            // elseif($page >= 21 && $page <= 25) {} //
-            // elseif($page > 25) break;
-            // else continue;
-
-            if($page < 43) continue;
-            elseif($page >= 43 && $page <= 66) {} //
-            elseif($page > 66) break;
+            if($page < 69) continue;
+            elseif($page >= 69 && $page <= 90) {}
+            elseif($page > 90) break;
             else continue;
 
             echo "\nProcessing page: [$page]...\n";
@@ -42,11 +37,12 @@ class ZenodoConnectorAPI
             foreach($stats as $title => $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
             print_r($stats); //exit;
             echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
+            if(count($obj) < 25) break; //means it is the last batch.
             // break; //debug only dev only
         }
         // print_r($stats); print_r($final); 
         exit("\n-end bulk updates-\n");
-        // */
+        // ------------------- end block */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -66,6 +62,8 @@ class ZenodoConnectorAPI
         $id = 13321983; //BİLECENOĞLU, et al, 204: BİLECENOĞLU et al, 2014
         $id = 13319945; //Water Body Checklists 2019: North Atlantic Species List
         $id = 13317726; //National Checklists 2019: Tajikistan Species List
+        $id = 13317378;
+        $id = 13315745;
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
