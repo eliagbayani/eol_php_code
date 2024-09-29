@@ -16,8 +16,8 @@ class ZenodoConnectorAPI
         while(true) { $page++; $final = array(); $stats = array();
             // do batches
 
-            if($page < 69) continue;
-            elseif($page >= 69 && $page <= 90) {}
+            if($page < 78) continue;
+            elseif($page >= 78 && $page <= 90) {}
             elseif($page > 90) break;
             else continue;
 
@@ -62,8 +62,7 @@ class ZenodoConnectorAPI
         $id = 13321983; //BİLECENOĞLU, et al, 204: BİLECENOĞLU et al, 2014
         $id = 13319945; //Water Body Checklists 2019: North Atlantic Species List
         $id = 13317726; //National Checklists 2019: Tajikistan Species List
-        $id = 13317378;
-        $id = 13315745;
+        $id = 13382586;
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
