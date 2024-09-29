@@ -13,7 +13,7 @@ class ZenodoConnectorAPI
         // /*
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
-            // /* do batches
+            // do batches
             // if(in_array($page, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20))) continue;
 
             // if($page < 21) continue;
@@ -21,13 +21,10 @@ class ZenodoConnectorAPI
             // elseif($page > 25) break;
             // else continue;
 
-            if($page < 26) continue;
-            elseif($page >= 26 && $page <= 56) {} //
-            elseif($page > 56) break;
+            if($page < 43) continue;
+            elseif($page >= 43 && $page <= 66) {} //
+            elseif($page > 66) break;
             else continue;
-
-
-            // */
 
             echo "\nProcessing page: [$page]...\n";
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
@@ -67,6 +64,8 @@ class ZenodoConnectorAPI
         $id = 13315911; //Anne Thessen - Water Body Checklists: Alboran Sea Species List
         // $id = 13313138; //Anne Thessen - National Checklists: Namibia Species List
         $id = 13321983; //BİLECENOĞLU, et al, 204: BİLECENOĞLU et al, 2014
+        $id = 13319945; //Water Body Checklists 2019: North Atlantic Species List
+        $id = 13317726; //National Checklists 2019: Tajikistan Species List
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -84,7 +83,7 @@ class ZenodoConnectorAPI
         // $excluded_ids = array(13743941, 13751009);
         // if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna\n");
         $id = $obj_1st['id'];
         if($zenodo_id != $id) exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
 
@@ -137,12 +136,12 @@ class ZenodoConnectorAPI
         self::get_data_record_from_html($o, 'contributors');
         self::get_data_record_from_html($o, 'creators');
         if($val = $this->html_contributors) {
-            echo "\nWITH caputred Creators and Contributors with identifiers.\n";
+            echo "\nWITH captured Creators and Contributors with identifiers.\n";
             print_r($this->html_contributors); //good debug
             $this->log_error(array($o['id'], $o['title'], "Captured data" , json_encode($val)));
             return false;
         }
-        else echo "\nNO caputred Creators and Contributors with identifiers.\n";
+        else echo "\nNO captured Creators and Contributors with identifiers.\n";
         // exit("\nelix 1\n");
         // Array(
         //     [United States Department of Agriculture] => Array(
@@ -174,53 +173,52 @@ class ZenodoConnectorAPI
 
         // /* ------------------ contributors
         $final = array();
-        foreach($o['metadata']['contributors'] as $r) {
-            if(!@$r['name']) continue;
-
-            if($r['name'] == 'Eli Agbayani') continue;
-
-            if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen')
-            {   /*
-                and add the following as the new Creator:            
-                    Person
-                    Name: Anne Thessen [important: do not link to any identifiers]
-                    Affiliations: Encyclopedia of Life
-                    Role: Data Manager
-                */
-                $o['metadata']['creators'] = array();
-                $o['metadata']['creators'][] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
-                                    $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
-            }
-            elseif($r['type'] == 'HostingInstitution' && $r['name'] == 'Eli Agbayani') $final[] = array('name' => $r['name'], 'type' => 'DataCollector', 'affiliation' => 'Encyclopedia of Life');
-            elseif($r['type'] == 'HostingInstitution') { //orcid: 0000-0002-1694-233X | gnd: 170118215
-                $r['type'] = 'ContactPerson';
-                $tmp = $r;
-                $name = $r['name'];
-                /* not saving anything
-                if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = $val;      //with doc example gnd      - html ror 01na82s61
-                if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = $val;    //with doc example orcid    - html isni 0000 0004 0478 6311
-                */
-                if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
-                if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = "$val";    //with doc example orcid    - html isni 0000 0004 0478 6311
-                $final[] = $tmp;
-            }
-            else {
-                $r['type'] = 'ContactPerson';
-                $tmp = $r;
-                $name = $r['name'];
-                if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
-                if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = "$val";    //with doc example orcid    - html isni 0000 0004 0478 6311
-                $final[] = $tmp;
-            }
+        if($val = @$o['metadata']['contributors']) {
+            foreach($val as $r) {
+                if(!@$r['name']) continue;
+    
+                if($r['name'] == 'Eli Agbayani') continue;
+    
+                if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen')
+                {   /*
+                    and add the following as the new Creator:            
+                        Person
+                        Name: Anne Thessen [important: do not link to any identifiers]
+                        Affiliations: Encyclopedia of Life
+                        Role: Data Manager
+                    */
+                    $o['metadata']['creators'] = array();
+                    $o['metadata']['creators'][] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
+                                        $final[] = array('name' => $r['name'], 'type' => 'DataManager',   'affiliation' => 'Encyclopedia of Life');
+                }
+                elseif($r['type'] == 'HostingInstitution' && $r['name'] == 'Eli Agbayani') $final[] = array('name' => $r['name'], 'type' => 'DataCollector', 'affiliation' => 'Encyclopedia of Life');
+                elseif($r['type'] == 'HostingInstitution') { //orcid: 0000-0002-1694-233X | gnd: 170118215
+                    $r['type'] = 'ContactPerson';
+                    $tmp = $r;
+                    $name = $r['name'];
+                    /* not saving anything
+                    if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = $val;      //with doc example gnd      - html ror 01na82s61
+                    if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = $val;    //with doc example orcid    - html isni 0000 0004 0478 6311
+                    */
+                    if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
+                    if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = "$val";    //with doc example orcid    - html isni 0000 0004 0478 6311
+                    $final[] = $tmp;
+                }
+                else {
+                    $r['type'] = 'ContactPerson';
+                    $tmp = $r;
+                    $name = $r['name'];
+                    if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
+                    if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = "$val";    //with doc example orcid    - html isni 0000 0004 0478 6311
+                    $final[] = $tmp;
+                }
+            } //end foreach()    
         }
         $o['metadata']['contributors'] = $final;
         // */
 
         /* Keywords & subjects
         1. For all data sets with keyword "EOL Content Partners: National Checklists 2019" or "EOL Content Partners: Water Body Checklists 2019" add keyword "deprecated"
-            Batch 24 and 25...
-            failed adding "deprecated"...
-
         2. Remove all keywords with the prefix "format:", e.g., "format: ZIP", "format: TAR", "format: XML", etc.        
         
         [keywords] => Array(
