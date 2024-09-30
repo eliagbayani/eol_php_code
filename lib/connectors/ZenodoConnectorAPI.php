@@ -11,13 +11,13 @@ class ZenodoConnectorAPI
         $this->log_error(array("==================== Log starts here ===================="));
         // step 1: loop into all Zenodo records
 
-        // /* ------------------- start block
+        /* ------------------- start block
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
             // do batches
 
-            if($page < 80) continue;
-            elseif($page >= 80 && $page <= 90) {}
+            if($page < 84) continue;
+            elseif($page >= 84 && $page <= 90) {}
             elseif($page > 90) break;
             else continue;
 
@@ -42,7 +42,7 @@ class ZenodoConnectorAPI
         }
         // print_r($stats); print_r($final); 
         exit("\n-end bulk updates-\n");
-        // ------------------- end block */
+        ------------------- end block */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -62,7 +62,7 @@ class ZenodoConnectorAPI
         $id = 13319945; //Water Body Checklists 2019: North Atlantic Species List
         $id = 13317726; //National Checklists 2019: Tajikistan Species List
         $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
-
+        $id = 13136202;
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -254,9 +254,12 @@ class ZenodoConnectorAPI
             $left  = "####--- __";
             $right = "__ ---####";
             $notes = self::remove_all_in_between_inclusive($left, $right, $notes, true);
-
             // 3rd pass
             $left  = "This is where EOL hosts source datasets";
+            $right = "http://discuss.eol.org/c/eol-services";
+            $notes = self::remove_all_in_between_inclusive($left, $right, $notes, true);
+            // 4th pass
+            $left  = "For questions or suggestions please visit the EOL Services";
             $right = "http://discuss.eol.org/c/eol-services";
             $notes = self::remove_all_in_between_inclusive($left, $right, $notes, true);
 
