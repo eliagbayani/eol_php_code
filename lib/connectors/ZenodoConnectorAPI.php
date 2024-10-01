@@ -64,7 +64,8 @@ class ZenodoConnectorAPI
         $id = 13317726; //National Checklists 2019: Tajikistan Species List
         $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
         $id = 13647046; //A record for doing tests
-        $id = 13382584;
+        $id = 13761108; //FishBase - new record for testing
+        // $id = 13769682; //EOL taxon identifier map --- Katja's record
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -132,14 +133,14 @@ class ZenodoConnectorAPI
         */
 
         // /* ------------------------------------ impt block
-        self::get_data_record_from_html($o, 'contributors');
-        self::get_data_record_from_html($o, 'creators');
-        self::get_data_record_from_html($o, 'creators2'); //for Zenodo ID = 13647046
+        self::get_data_record_from_html($o, 'contributors', 0); //3rd param expire_seconds
+        self::get_data_record_from_html($o, 'creators', false);
+        self::get_data_record_from_html($o, 'creators2', false); //for Zenodo ID = 13647046
         if($val = $this->html_contributors) {
             echo "\nWITH captured Creators and Contributors with identifiers.\nWill NOT update.\n";
             print_r($this->html_contributors); //good debug
             $this->log_error(array($o['id'], $o['title'], "Captured data" , json_encode($val)));
-            return false;
+            // return false; //un-comment in real operation
         }
         else echo "\nNO captured Creators and Contributors with identifiers.\n";
         // exit("\nelix 1\n");
@@ -156,7 +157,10 @@ class ZenodoConnectorAPI
         $final = array();
         foreach(@$o['metadata']['creators'] as $r) {
             if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
-            else $final[] = $r;
+            else  {
+                if($orcid = @$this->ORCIDs[$r['name']]) $r['orcid'] = $orcid; //implement saved ORCIDs
+                $final[] = $r;
+            }
         }
         if(!$final) $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
 
@@ -177,7 +181,7 @@ class ZenodoConnectorAPI
             foreach($val as $r) {
                 if(!@$r['name']) continue;
     
-                if($r['name'] == 'Eli Agbayani') continue;
+                // if($r['name'] == 'Eli Agbayani') continue;
     
                 if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen')
                 {   /*
@@ -196,20 +200,23 @@ class ZenodoConnectorAPI
                     $r['type'] = 'ContactPerson';
                     $tmp = $r;
                     $name = $r['name'];
-                    /* not saving anything
-                    if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = $val;      //with doc example gnd      - html ror 01na82s61
-                    if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = $val;    //with doc example orcid    - html isni 0000 0004 0478 6311
-                    */
-                    if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
-                    if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = "$val";    //with doc example orcid    - html isni 0000 0004 0478 6311
+                    if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //with doc example gnd      - html ror 01na82s61
+                    if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //with doc example orcid    - html isni 0000 0004 0478 6311
+                    if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //with doc example gnd      
+                    if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //with doc example orcid    
                     $final[] = $tmp;
                 }
                 else {
-                    $r['type'] = 'ContactPerson';
+                    // $r['type'] = 'ContactPerson';
                     $tmp = $r;
                     $name = $r['name'];
-                    if($val = @$this->html_contributors[$name]['ror']) $tmp['ror'] = "$val";      //with doc example gnd      - html ror 01na82s61
-                    if($val = @$this->html_contributors[$name]['isni']) $tmp['isni'] = "$val";    //with doc example orcid    - html isni 0000 0004 0478 6311
+                    if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //with doc example gnd      - html ror 01na82s61
+                    if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //with doc example orcid    - html isni 0000 0004 0478 6311
+                    if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //with doc example gnd      
+                    if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //with doc example orcid    
+
+                    if($orcid = @$this->ORCIDs[$name]) $tmp['orcid'] = $orcid; //implement saved ORCIDs
+
                     $final[] = $tmp;
                 }
             } //end foreach()    
@@ -279,14 +286,15 @@ class ZenodoConnectorAPI
             $o['metadata']['description'] = trim($description);
         }
 
+        /* working but not used anymore
         // from separate path
         if($val = @$this->html_contributors) { //doesn't go here anymore sice these records won't be updated by API anymore. But manually.
-            exit("\nShould not go here anymore.\n");
             $notes = @$o['metadata']['notes'];
             if($notes) $notes .= "<p></p>" . "Captured data during API bulk updates: ".json_encode($val);
             else       $notes = "Captured data during API bulk updates: ".json_encode($val);
             $o['metadata']['notes'] = $notes;
         }
+        */
 
         // print_r($o); exit("\nstop muna 1\n");
         return $o;
@@ -702,7 +710,7 @@ class ZenodoConnectorAPI
         // print_r($final); exit("\n-end date process-\n");
         return $final;
     }
-    private function get_data_record_from_html($obj, $what)
+    private function get_data_record_from_html($obj, $what, $expire_seconds)
     {   /*
         <div class="column"
          id="recordManagement"
@@ -727,8 +735,8 @@ class ZenodoConnectorAPI
         $url = $obj['links']['html'];
         $url = str_replace("deposit", "records", $url);
         $options = $this->download_options;
-        $options['expire_seconds'] = 0; //60*60*24;
-        // $options['expire_seconds'] = 60*60*24;
+        // $options['expire_seconds'] = 0; //60*60*24;
+        $options['expire_seconds'] = $expire_seconds;
         if($html = Functions::lookup_with_cache($url, $options)) { //exit("\n$html\n");
             if($what == 'contributors') {
                 $left = '"contributors":';
@@ -745,26 +753,28 @@ class ZenodoConnectorAPI
             else return;
 
             echo "\ndito 0\n"; //exit("\n$html\n");
-            if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { echo "\ndito 1\n";
+            if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { echo "\ndito 1\n"; 
                 $json = substr_replace(trim($arr[1]), '', -1); //remove last char
-                $arr = json_decode($json, true); print_r($arr); //very good debug 
-                foreach($arr as $r) {
-                    if($name = @$r['person_or_org']['name']) {
-                        if($identifiers = @$r['person_or_org']['identifiers']) {
-                            foreach($identifiers as $i) {
-                                if($scheme = @$i['scheme']) {
-                                    /* can be refactored
-                                    if($scheme == 'isni') $this->html_contributors[$name]['isni'] = $i['identifier'];  //orcid         html isni 0000 0004 0478 6311
-                                    if($scheme == 'ror') $this->html_contributors[$name]['ror'] = $i['identifier'];    //important     html ror 01na82s61
-                                    // only orcid and gnd are in doc examples
-                                    if($scheme == 'gnd') $this->html_contributors[$name]['gnd'] = $i['identifier'];
-                                    if($scheme == 'orcid') $this->html_contributors[$name]['orcid'] = $i['identifier'];
-                                    */
-                                    $this->html_contributors[$name][$scheme] = $i['identifier'];
+                if($arr = json_decode($json, true)) {
+                    print_r($arr); //very good debug 
+                    foreach(@$arr as $r) {
+                        if($name = @$r['person_or_org']['name']) {
+                            if($identifiers = @$r['person_or_org']['identifiers']) {
+                                foreach($identifiers as $i) {
+                                    if($scheme = @$i['scheme']) {
+                                        /* can be refactored
+                                        if($scheme == 'isni') $this->html_contributors[$name]['isni'] = $i['identifier'];  //orcid         html isni 0000 0004 0478 6311
+                                        if($scheme == 'ror') $this->html_contributors[$name]['ror'] = $i['identifier'];    //important     html ror 01na82s61
+                                        // only orcid and gnd are in doc examples
+                                        if($scheme == 'gnd') $this->html_contributors[$name]['gnd'] = $i['identifier'];
+                                        if($scheme == 'orcid') $this->html_contributors[$name]['orcid'] = $i['identifier'];
+                                        */
+                                        $this->html_contributors[$name][$scheme] = $i['identifier'];
+                                    }
                                 }
                             }
                         }
-                    }
+                    } //end foreach()    
                 }
                 // exit("\nelix 1\n");
             }

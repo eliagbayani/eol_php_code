@@ -124,6 +124,12 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->new_description_for_zenodo = "";
         $this->show_print_r = false;
         $this->html_contributors = array();
+        $this->ORCIDs['Eli Agbayani'] = '0009-0007-6825-9034'; //https://orcid.org/0009-0007-6825-9034
+        $this->ORCIDs['Jen Hammock'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
+        $this->ORCIDs['Hammock, Jennifer'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
+        $this->ORCIDs['Jennifer Hammock'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
+        $this->ORCIDs['Schulz, Katja'] = ''; //https://orcid.org/0000-0001-7134-3324
+        $this->ORCIDs['Katja Schulz'] = ''; //https://orcid.org/0000-0001-7134-3324
     }
     function start()
     {   self::log_error(array("==================== Log starts here ===================="));
