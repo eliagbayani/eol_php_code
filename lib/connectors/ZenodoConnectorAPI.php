@@ -65,7 +65,8 @@ class ZenodoConnectorAPI
         $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
         $id = 13647046; //A record for doing tests
         $id = 13761108; //FishBase - new record for testing
-        // $id = 13769682; //EOL taxon identifier map --- Katja's record
+        $id = 13769682; //EOL taxon identifier map --- Katja's record
+        // $id = 13136202; //Images list: image list --- Jen's record
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -169,6 +170,8 @@ class ZenodoConnectorAPI
         // if(!$final) $final[] = array('organization' => array('name' => 'Encyclopedia of Life', 'type' => 'organizational'), 'role' => array('id' => 'HostingInstitution', 'title' => array('en' => 'Hosting institution'))); //didn't work
 
         $o['metadata']['creators'] = $final;
+        echo "\nCreators to save:"; print_r($final);
+
         // */
         /*
         "creators": [{  "person_or_org": {"name": "Encyclopedia of Life", "type": "organizational"}, 
@@ -221,7 +224,8 @@ class ZenodoConnectorAPI
                 }
             } //end foreach()    
         }
-        $o['metadata']['contributors'] = $final;
+        $o['metadata']['contributors'] = $final; 
+        echo "\nContributors to save:"; print_r($final);
         // */
 
         /* Keywords & subjects
