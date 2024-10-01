@@ -15,10 +15,9 @@ class ZenodoConnectorAPI
         $page = 0;
         while(true) { $page++; $final = array(); $stats = array();
             // do batches
-
-            if($page < 84) continue;
-            elseif($page >= 84 && $page <= 90) {}
-            elseif($page > 90) break;
+            if($page < 24) continue;
+            elseif($page >= 24 && $page <= 28) {}
+            elseif($page > 28) break;
             else continue;
 
             echo "\nProcessing page: [$page]...\n";
@@ -34,9 +33,11 @@ class ZenodoConnectorAPI
                 @$stats[$o['title']] = $o['id'];
             }
             print_r($stats); //exit;
+            // ----- main operation
             foreach($stats as $title => $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
             print_r($stats); //exit;
             echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
+            // -----
             if(count($obj) < 25) break; //means it is the last batch.
             // break; //debug only dev only
         }
@@ -62,7 +63,8 @@ class ZenodoConnectorAPI
         $id = 13319945; //Water Body Checklists 2019: North Atlantic Species List
         $id = 13317726; //National Checklists 2019: Tajikistan Species List
         $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
-        $id = 13136202;
+        $id = 13647046; //A record for doing tests
+        $id = 13382584;
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -80,7 +82,7 @@ class ZenodoConnectorAPI
         // $excluded_ids = array(13743941, 13751009);
         // if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
         $id = $obj_1st['id'];
         if($zenodo_id != $id) exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
 
@@ -132,8 +134,9 @@ class ZenodoConnectorAPI
         // /* ------------------------------------ impt block
         self::get_data_record_from_html($o, 'contributors');
         self::get_data_record_from_html($o, 'creators');
+        self::get_data_record_from_html($o, 'creators2'); //for Zenodo ID = 13647046
         if($val = $this->html_contributors) {
-            echo "\nWITH captured Creators and Contributors with identifiers.\n";
+            echo "\nWITH captured Creators and Contributors with identifiers.\nWill NOT update.\n";
             print_r($this->html_contributors); //good debug
             $this->log_error(array($o['id'], $o['title'], "Captured data" , json_encode($val)));
             return false;
@@ -224,14 +227,17 @@ class ZenodoConnectorAPI
                 )        
         */
         // #1
-        $keywords = $o['metadata']['keywords'];
-        if(in_array('EOL Content Partners: National Checklists 2019', $keywords) || in_array('EOL Content Partners: National Checklists 2019', $keywords)) {
-            if(!in_array('deprecated', $keywords)) $keywords[] = 'deprecated';
+        if($keywords = @$o['metadata']['keywords']) {
+            if(in_array('EOL Content Partners: National Checklists 2019', $keywords) || in_array('EOL Content Partners: Water Body Checklists 2019', $keywords)) {
+                if(!in_array('deprecated', $keywords)) $keywords[] = 'deprecated';
+            }    
         }
         // #2
         $final = array();
-        foreach($keywords as $kw) {
-            if(substr($kw,0,8) != 'format: ') $final[] = $kw;
+        if($keywords) {
+            foreach($keywords as $kw) {
+                if(substr($kw,0,8) != 'format: ') $final[] = $kw;
+            }    
         }
         $o['metadata']['keywords'] = $final;
 
@@ -732,12 +738,16 @@ class ZenodoConnectorAPI
                 $left = '"creators":';
                 $right = '"dates":';    
             }
+            elseif($what == 'creators2') {
+                $left = '"creators":';
+                $right = '"publication_date":';    
+            }
             else return;
 
             echo "\ndito 0\n"; //exit("\n$html\n");
             if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { echo "\ndito 1\n";
                 $json = substr_replace(trim($arr[1]), '', -1); //remove last char
-                $arr = json_decode($json, true); //print_r($arr); //good debug 
+                $arr = json_decode($json, true); print_r($arr); //very good debug 
                 foreach($arr as $r) {
                     if($name = @$r['person_or_org']['name']) {
                         if($identifiers = @$r['person_or_org']['identifiers']) {
