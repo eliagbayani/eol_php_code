@@ -136,7 +136,7 @@ class ZenodoConnectorAPI
         // /* ------------------------------------ impt block
         self::get_data_record_from_html($o, 'contributors', 0); //3rd param expire_seconds
         self::get_data_record_from_html($o, 'creators', false);
-        self::get_data_record_from_html($o, 'creators2', false); //for Zenodo ID = 13647046
+        self::get_data_record_from_html($o, 'creators2', false); //e.g. for Zenodo ID = 13647046
         if($val = $this->html_contributors) {
             echo "\nWITH captured Creators and Contributors with identifiers.\nWill NOT update.\n";
             print_r($this->html_contributors); //good debug
@@ -325,6 +325,7 @@ class ZenodoConnectorAPI
         $notes = @$obj_1st['metadata']['notes'];
         $notes = self::format_description($notes);
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
@@ -497,6 +498,39 @@ class ZenodoConnectorAPI
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $notes = @$obj_1st['metadata']['notes'];
         $notes = self::format_description($notes);
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Below is a new block:
+        self::get_data_record_from_html($obj_1st, 'contributors', 0); //3rd param expire_seconds
+        self::get_data_record_from_html($obj_1st, 'creators', false);
+        self::get_data_record_from_html($obj_1st, 'creators2', false); //e.g. for Zenodo ID = 13647046
+        // /* ------------------ creators
+        $final = array();
+        foreach(@$obj_1st['metadata']['creators'] as $r) {
+            if($orcid = @$this->ORCIDs[$r['name']]) $r['orcid'] = $orcid; //implement saved ORCIDs
+            $final[] = $r;
+        }
+        $obj_1st['metadata']['creators'] = $final;
+        echo "\nCreators to save:"; print_r($final);
+        // */
+
+        // /* ------------------ contributors
+        $final = array();
+        if($val = @$obj_1st['metadata']['contributors']) {
+            foreach($val as $r) {
+                if(!@$r['name']) continue;
+                $tmp = $r;
+                $name = $r['name'];
+                if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //worked OK, with doc example gnd      - html ror 01na82s61
+                if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
+                if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //no doc example, never worked    
+                if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //was never proven      
+
+                if($orcid = @$this->ORCIDs[$name]) $tmp['orcid'] = $orcid; //implement saved ORCIDs
+                $final[] = $tmp;    
+            } //end foreach()    
+        }
+        $obj_1st['metadata']['contributors'] = $final; 
+        echo "\nContributors to save:"; print_r($final);
+        // */
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         array_shift($obj_1st['files']);
@@ -780,9 +814,7 @@ class ZenodoConnectorAPI
                         }
                     } //end foreach()    
                 }
-                // exit("\nelix 1\n");
             }
-            // exit("\nxxx\n");
         }
     }
     private function remove_all_in_between_inclusive($left, $right, $html, $includeRight = true)
