@@ -203,20 +203,20 @@ class ZenodoConnectorAPI
                     $r['type'] = 'ContactPerson';
                     $tmp = $r;
                     $name = $r['name'];
-                    if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //with doc example gnd      - html ror 01na82s61
-                    if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //with doc example orcid    - html isni 0000 0004 0478 6311
-                    if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //with doc example gnd      
-                    if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //with doc example orcid    
+                    if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //worked OK, with doc example gnd      - html ror 01na82s61
+                    if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
+                    if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //no doc example, never worked    
+                    if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //was never proven      
                     $final[] = $tmp;
                 }
                 else {
                     // $r['type'] = 'ContactPerson';
                     $tmp = $r;
                     $name = $r['name'];
-                    if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //with doc example gnd      - html ror 01na82s61
-                    if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //with doc example orcid    - html isni 0000 0004 0478 6311
-                    if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //with doc example gnd      
-                    if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //with doc example orcid    
+                    if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //worked OK, with doc example gnd      - html ror 01na82s61
+                    if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
+                    if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //no doc example, never worked    
+                    if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //was never proven      
 
                     if($orcid = @$this->ORCIDs[$name]) $tmp['orcid'] = $orcid; //implement saved ORCIDs
 
@@ -324,7 +324,6 @@ class ZenodoConnectorAPI
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $notes = @$obj_1st['metadata']['notes'];
         $notes = self::format_description($notes);
-        // if($val = $this->new_description_for_zenodo) $notes = $val; // this wasn't implemented
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         array_shift($obj_1st['files']);
@@ -498,7 +497,6 @@ class ZenodoConnectorAPI
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $notes = @$obj_1st['metadata']['notes'];
         $notes = self::format_description($notes);
-        // if($val = $this->new_description_for_zenodo) $notes = $val; // this wasn't implemented
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         array_shift($obj_1st['files']);
@@ -568,7 +566,7 @@ class ZenodoConnectorAPI
     }
     function update_Zenodo_record_using_EOL_resourceID($resource_id)
     {
-        echo "\npassed:   [".$this->new_description_for_zenodo."]\n";
+        // echo "\npassed:   [".$this->new_description_for_zenodo."]\n"; //not implemented anymore
         $file = CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz";
         if(file_exists($file)) {
             if($zenodo_id = self::get_zenodo_id_using_eol_resource_id($resource_id)) {
