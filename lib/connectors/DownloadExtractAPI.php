@@ -101,6 +101,7 @@ class DownloadExtractAPI
         
         // $cmd = 'wget -O "'.$destination.'" '.$params['url'].' -q --show-progress --progress=bar:force:noscroll'; //echo("\n[$cmd]\n");
         $cmd = 'wget -q --show-progress --progress=bar:force:noscroll -O "'.$destination.'" '.$params['url'].''; //echo("\n[$cmd]\n");
+        $cmd = 'wget -q                 --progress=bar:force:noscroll -O "'.$destination.'" '.$params['url'].''; //echo("\n[$cmd]\n");
 
         echo "\nDownloading...cmd: [$cmd]\n";
         // $cmd .= " 2>&1"; //comment if u want to see the long rows of progress indicator.
