@@ -14,7 +14,7 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 $cmdline_params['jenkins_or_cron'] = @$argv[1]; //irrelevant here
 $EOL_resource_id = @$argv[2];                   //useful here
 
-exit("\n$EOL_resource_id\n");
+// exit("\n$EOL_resource_id\n");
 
 /* as of Sep 4, 2024: snippet to update corresponding Zenodo record */
 // $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign
