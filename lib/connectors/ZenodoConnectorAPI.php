@@ -153,12 +153,16 @@ class ZenodoConnectorAPI
         // )
         // ------------------------------------ */ 
 
-
-        // /* ------------------ creators
+        // /* ------------------ creators latest
         $final = array();
         foreach(@$o['metadata']['creators'] as $r) {
             if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
             else  {
+                $name = $r['name'];
+                if($val = @$this->html_contributors[$name]['orcid']) $r['orcid'] = $val;        //worked OK, with doc example gnd      - html ror 01na82s61
+                if($val = @$this->html_contributors[$name]['gnd'])   $r['gnd']   = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
+                if($val = @$this->html_contributors[$name]['isni'])  $r['isni']  = "$val";      //no doc example, never worked    
+                if($val = @$this->html_contributors[$name]['ror'])   $r['ror']   = "$val";      //was never proven      
                 if($orcid = @$this->ORCIDs[$r['name']]) $r['orcid'] = $orcid; //implement saved ORCIDs
                 $final[] = $r;
             }
@@ -178,7 +182,7 @@ class ZenodoConnectorAPI
                         "role": {"id": "hostinginstitution", "title": {"de": "Bereitstellende Institution", "en": "Hosting institution"}}}]        
         */
 
-        // /* ------------------ contributors
+        // /* ------------------ contributors latest
         $final = array();
         if($val = @$o['metadata']['contributors']) {
             foreach($val as $r) {
@@ -210,16 +214,13 @@ class ZenodoConnectorAPI
                     $final[] = $tmp;
                 }
                 else {
-                    // $r['type'] = 'ContactPerson';
                     $tmp = $r;
                     $name = $r['name'];
                     if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //worked OK, with doc example gnd      - html ror 01na82s61
                     if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
                     if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //no doc example, never worked    
                     if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //was never proven      
-
                     if($orcid = @$this->ORCIDs[$name]) $tmp['orcid'] = $orcid; //implement saved ORCIDs
-
                     $final[] = $tmp;
                 }
             } //end foreach()    
@@ -502,17 +503,22 @@ class ZenodoConnectorAPI
         self::get_data_record_from_html($obj_1st, 'contributors', 0); //3rd param expire_seconds
         self::get_data_record_from_html($obj_1st, 'creators', false);
         self::get_data_record_from_html($obj_1st, 'creators2', false); //e.g. for Zenodo ID = 13647046
-        // /* ------------------ creators
+        // /* ------------------ creators v2
         $final = array();
         foreach(@$obj_1st['metadata']['creators'] as $r) {
-            if($orcid = @$this->ORCIDs[$r['name']]) $r['orcid'] = $orcid; //implement saved ORCIDs
+            $name = $r['name'];
+            if($val = @$this->html_contributors[$name]['orcid']) $r['orcid'] = $val;        //worked OK, with doc example gnd      - html ror 01na82s61
+            if($val = @$this->html_contributors[$name]['gnd'])   $r['gnd']   = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
+            if($val = @$this->html_contributors[$name]['isni'])  $r['isni']  = "$val";      //no doc example, never worked    
+            if($val = @$this->html_contributors[$name]['ror'])   $r['ror']   = "$val";      //was never proven      
+            if($orcid = @$this->ORCIDs[$name]) $r['orcid'] = $orcid; //implement saved ORCIDs
             $final[] = $r;
         }
         $obj_1st['metadata']['creators'] = $final;
         echo "\nCreators to save:"; print_r($final);
         // */
 
-        // /* ------------------ contributors
+        // /* ------------------ contributors v2
         $final = array();
         if($val = @$obj_1st['metadata']['contributors']) {
             foreach($val as $r) {
@@ -523,7 +529,6 @@ class ZenodoConnectorAPI
                 if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
                 if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //no doc example, never worked    
                 if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //was never proven      
-
                 if($orcid = @$this->ORCIDs[$name]) $tmp['orcid'] = $orcid; //implement saved ORCIDs
                 $final[] = $tmp;    
             } //end foreach()    
