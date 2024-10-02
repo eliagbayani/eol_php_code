@@ -63,10 +63,10 @@ class ZenodoConnectorAPI
         $id = 13319945; //Water Body Checklists 2019: North Atlantic Species List
         $id = 13317726; //National Checklists 2019: Tajikistan Species List
         $id = 13382586; //EOL computer vision pipelines: Image Rating: Chiroptera;
-        $id = 13647046; //A record for doing tests
-        $id = 13761108; //FishBase - new record for testing
         $id = 13769682; //EOL taxon identifier map --- Katja's record
         // $id = 13136202; //Images list: image list --- Jen's record
+        $id = 13647046; //A record for doing tests
+        $id = 13761108; //FishBase - new record for testing
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
@@ -609,9 +609,11 @@ class ZenodoConnectorAPI
                 $basename = pathinfo($rec['Resource_URL'], PATHINFO_BASENAME); //exit;
                 $needle = $resource_id.".tar.gz";
                 if($resource_id == $rec['Resource_id'] && $needle == $basename ) { // print_r($rec); exit("\nstopx\n");
+                    unlink($local_file);
                     return $rec['Zenodo_id'];
                 }
-            }                
+            }
+            unlink($local_file);
         }
         unlink($local_file);
     }
