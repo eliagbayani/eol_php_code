@@ -790,8 +790,8 @@ class ZenodoConnectorAPI
             }
             else return;
 
-            echo "\ndito 0\n"; //exit("\n$html\n");
-            if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { echo "\ndito 1\n"; 
+            // echo "\ndito 0\n"; //exit("\n$html\n");
+            if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { //echo "\ndito 1\n"; 
                 $json = substr_replace(trim($arr[1]), '', -1); //remove last char
                 if($arr = json_decode($json, true)) {
                     print_r($arr); //very good debug 
