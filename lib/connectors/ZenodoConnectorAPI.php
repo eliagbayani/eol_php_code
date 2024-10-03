@@ -67,6 +67,7 @@ class ZenodoConnectorAPI
         // $id = 13136202; //Images list: image list --- Jen's record
         $id = 13647046; //A record for doing tests
         $id = 13761108; //FishBase - new record for testing
+        $id = 13879556; //BioImages - the Virtual Fieldguide (UK): BioImages, the virtual fieldguide, UK
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
