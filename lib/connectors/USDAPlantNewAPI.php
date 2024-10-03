@@ -36,7 +36,7 @@ class USDAPlantNewAPI
         $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));
         
         $this->max_images_per_taxon = 10;
-        $this->service['URLs'] = "https://plants.usda.gov/assets/config.json";
+        $this->service['URLs'] = "https://plants.usda.gov/assets/config.json"; //a local copy is saved in /resources/USDA/plants_usda_gov_assets_config.json
         $this->service['plant_list'] = "https://plants.usda.gov/assets/docs/CompletePLANTSList/plantlst.txt";
 
         $this->download_options = array('cache' => 1, 'resource_id' => 'usda_plants', 'expire_seconds' => 60*60*24*30*6, 
