@@ -66,11 +66,12 @@ class ZenodoConnectorAPI
         $id = 13769682; //EOL taxon identifier map --- Katja's record
         // $id = 13136202; //Images list: image list --- Jen's record
         $id = 13647046; //A record for doing tests
-        $id = 13761108; //FishBase - new record for testing
-        $id = 13879556; //BioImages - the Virtual Fieldguide (UK): BioImages, the virtual fieldguide, UK
+        // $id = 13761108; //FishBase - new record for testing
+        // $id = 13879556; //BioImages - the Virtual Fieldguide (UK): BioImages, the virtual fieldguide, UK
 
         // excluded:
-        // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA
+        $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
+
         // $id = 13751009; //[EOL full taxon identifier map] => 
 
         self::update_zenodo_record_of_latest_requested_changes($id);
@@ -87,7 +88,10 @@ class ZenodoConnectorAPI
 
         $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
         $id = $obj_1st['id'];
-        if($zenodo_id != $id) exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
+        if($zenodo_id != $id) {
+            if($zenodo_id && $id) {}
+            else exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
+        }
 
         $edit_obj = $this->edit_Zenodo_dataset($obj_1st); //exit("\nstop muna 1\n");
 
@@ -139,7 +143,7 @@ class ZenodoConnectorAPI
         self::get_data_record_from_html($o, 'creators', false);
         self::get_data_record_from_html($o, 'creators2', false); //e.g. for Zenodo ID = 13647046
         if($val = $this->html_contributors) {
-            echo "\nWITH captured Creators and Contributors with identifiers.\nWill NOT update.\n";
+            echo "\nWITH captured Creators and Contributors with identifiers.\n";
             print_r($this->html_contributors); //good debug
             $this->log_error(array($o['id'], $o['title'], "Captured data" , json_encode($val)));
             // return false; //un-comment in real operation
@@ -160,6 +164,7 @@ class ZenodoConnectorAPI
             if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
             else  {
                 $name = $r['name'];
+                if($name == 'Encyclopedia of Life') $r['type'] = 'HostingInstitution';
                 if($val = @$this->html_contributors[$name]['orcid']) $r['orcid'] = $val;        //worked OK, with doc example gnd      - html ror 01na82s61
                 if($val = @$this->html_contributors[$name]['gnd'])   $r['gnd']   = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
                 if($val = @$this->html_contributors[$name]['isni'])  $r['isni']  = "$val";      //no doc example, never worked    
@@ -205,7 +210,7 @@ class ZenodoConnectorAPI
                 }
                 elseif($r['type'] == 'HostingInstitution' && $r['name'] == 'Eli Agbayani') $final[] = array('name' => $r['name'], 'type' => 'DataCollector', 'affiliation' => 'Encyclopedia of Life');
                 elseif($r['type'] == 'HostingInstitution') { //orcid: 0000-0002-1694-233X | gnd: 170118215
-                    $r['type'] = 'ContactPerson';
+                    // $r['type'] = 'ContactPerson';
                     $tmp = $r;
                     $name = $r['name'];
                     if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //worked OK, with doc example gnd      - html ror 01na82s61
