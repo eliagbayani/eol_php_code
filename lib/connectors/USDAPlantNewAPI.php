@@ -39,7 +39,7 @@ class USDAPlantNewAPI
         $this->service['URLs'] = "https://plants.usda.gov/assets/config.json"; //a local copy is saved in /resources/USDA/plants_usda_gov_assets_config.json
         $this->service['plant_list'] = "https://plants.usda.gov/assets/docs/CompletePLANTSList/plantlst.txt";
 
-        $this->download_options = array('cache' => 1, 'resource_id' => 'usda_plants', 'expire_seconds' => 60*60*24*30*6, 
+        $this->download_options = array('cache' => 1, 'resource_id' => 'usda_plants', 'expire_seconds' => 60*60*24*30*6, //6 months
         'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //6 months to expire
         // $this->download_options['expire_seconds'] = false;
         $this->debug = array();
@@ -565,7 +565,7 @@ class USDAPlantNewAPI
         $download_options = $this->download_options;
         $download_options['timeout'] = 172800;
         $download_options['file_extension'] = 'txt.zip';
-        $download_options['expire_seconds'] = 60*60*24*30;
+        $download_options['expire_seconds'] = 60*60*24*30; //1 month
         if($use_cache) $download_options['cache'] = 1;
         // $download_options['cache'] = 0; // 0 only when developing //debug - comment in real operation
         $temp_path = Functions::save_remote_file_to_local($file, $download_options);
