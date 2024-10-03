@@ -169,7 +169,7 @@ class ZenodoConnectorAPI
                 if($val = @$this->html_contributors[$name]['gnd'])   $r['gnd']   = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
                 if($val = @$this->html_contributors[$name]['isni'])  $r['isni']  = "$val";      //no doc example, never worked    
                 if($val = @$this->html_contributors[$name]['ror'])   $r['ror']   = "$val";      //was never proven      
-                if($orcid = @$this->ORCIDs[$r['name']]) $r['orcid'] = $orcid; //implement saved ORCIDs
+                if($orcid = @$this->ORCIDs[$name]) $r['orcid'] = $orcid; //implement saved ORCIDs
                 $final[] = $r;
             }
         }
