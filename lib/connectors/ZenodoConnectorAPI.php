@@ -11,14 +11,14 @@ class ZenodoConnectorAPI
         $this->log_error(array("==================== Log starts here ===================="));
         // step 1: loop into all Zenodo records
 
-        /* ------------------- start block
-        $page = 0;
+        // /* ------------------- start block
+        $page = 0; $stats2 = array();
         while(true) { $page++; $final = array(); $stats = array();
             // do batches
-            if($page < 24) continue;
-            elseif($page >= 24 && $page <= 28) {}
-            elseif($page > 28) break;
-            else continue;
+            // if($page < 67) continue;
+            // elseif($page >= 67 && $page <= 68) {}
+            // elseif($page > 68) break;
+            // else continue;
 
             echo "\nProcessing page: [$page]...\n";
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
@@ -31,19 +31,32 @@ class ZenodoConnectorAPI
             foreach($obj as $o)  { //print_r($o); exit;
                 $final[trim($o['id'])] = '';
                 @$stats[$o['title']] = $o['id'];
+                @$stats2[$o['title']][] = $o['id'];
             }
             print_r($stats); //exit;
-            // ----- main operation
-            foreach($stats as $title => $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
-            print_r($stats); //exit;
-            echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
-            // -----
+            // // ----- main operation
+            // foreach($stats as $title => $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+            // print_r($stats); //exit;
+            // echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
+            // // -----
             if(count($obj) < 25) break; //means it is the last batch.
             // break; //debug only dev only
-        }
+        } //end while()
         // print_r($stats); print_r($final); 
+
+        echo "\nstart report: multiple IDs per title:\n";
+        foreach($stats2 as $title => $ids) {
+            if(count($ids) > 1) {
+                echo "\n$title\n"; print_r($ids);
+                $this->log_error(array('multiple IDs', $title, json_encode($ids)));
+                foreach($ids as $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+                // exit("\nforce exit\n"); //dev only
+            }
+        }
+        echo "\n-end report-\n";
+
         exit("\n-end bulk updates-\n");
-        ------------------- end block */
+        // ------------------- end block */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -68,10 +81,10 @@ class ZenodoConnectorAPI
         $id = 13647046; //A record for doing tests
         // $id = 13761108; //FishBase - new record for testing
         // $id = 13879556; //BioImages - the Virtual Fieldguide (UK): BioImages, the virtual fieldguide, UK
+        $id = 13315783; //alert by Jen: Arctic Biodiversity: Arctic Freshwater Fishes
 
         // excluded:
-        $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
-
+        // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
         // $id = 13751009; //[EOL full taxon identifier map] => 
 
         self::update_zenodo_record_of_latest_requested_changes($id);
@@ -86,7 +99,7 @@ class ZenodoConnectorAPI
         // $excluded_ids = array(13743941, 13751009);
         // if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
         $id = $obj_1st['id'];
         if($zenodo_id != $id) {
             if($zenodo_id && $id) {}
@@ -210,13 +223,14 @@ class ZenodoConnectorAPI
                 }
                 elseif($r['type'] == 'HostingInstitution' && $r['name'] == 'Eli Agbayani') $final[] = array('name' => $r['name'], 'type' => 'DataCollector', 'affiliation' => 'Encyclopedia of Life');
                 elseif($r['type'] == 'HostingInstitution') { //orcid: 0000-0002-1694-233X | gnd: 170118215
-                    // $r['type'] = 'ContactPerson';
+                    $r['type'] = 'ContactPerson';
                     $tmp = $r;
                     $name = $r['name'];
                     if($val = @$this->html_contributors[$name]['orcid']) $tmp['orcid'] = $val;      //worked OK, with doc example gnd      - html ror 01na82s61
                     if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
                     if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //no doc example, never worked    
                     if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //was never proven      
+                    if($orcid = @$this->ORCIDs[$name]) $tmp['orcid'] = $orcid; //implement saved ORCIDs
                     $final[] = $tmp;
                 }
                 else {
