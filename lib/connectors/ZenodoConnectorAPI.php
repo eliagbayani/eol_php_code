@@ -107,16 +107,16 @@ class ZenodoConnectorAPI
 
         $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
 
-        // /* NEW Oct_6: to filter per tag requirement
-        // EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
+        /* NEW Oct_6: to filter per tag requirement */
+        // /* EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
         if(!in_array('EOL Content Partners: Arctic Biodiversity', $obj_1st['metadata']['keywords'])) return;
-
-        // batch 70 - 80
-        if(!in_array('EOL Content Partners: National Checklists', $obj_1st['metadata']['keywords'])) return;
-        
-        // batch 61 - 65
-        if(!in_array('EOL Content Partners: Water Body Checklists', $obj_1st['metadata']['keywords'])) return;
         // */
+        /* batch 70 - 80
+        if(!in_array('EOL Content Partners: National Checklists', $obj_1st['metadata']['keywords'])) return;
+        */
+        /* batch 61 - 65
+        if(!in_array('EOL Content Partners: Water Body Checklists', $obj_1st['metadata']['keywords'])) return;
+        */
 
         $id = $obj_1st['id'];
         if($zenodo_id != $id) {
