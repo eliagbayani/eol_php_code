@@ -110,6 +110,12 @@ class ZenodoConnectorAPI
         // /* NEW Oct_6: to filter per tag requirement
         // EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
         if(!in_array('EOL Content Partners: Arctic Biodiversity', $obj_1st['metadata']['keywords'])) return;
+
+        // batch 70 - 80
+        if(!in_array('EOL Content Partners: National Checklists', $obj_1st['metadata']['keywords'])) return;
+        
+        // batch 61 - 65
+        if(!in_array('EOL Content Partners: Water Body Checklists', $obj_1st['metadata']['keywords'])) return;
         // */
 
         $id = $obj_1st['id'];
@@ -287,17 +293,26 @@ class ZenodoConnectorAPI
         $tags = array('EOL Content Partners: Arctic Biodiversity', 'EOL Content Partners: National Checklists', 'EOL Content Partners: Water Body Checklists');
         foreach($tags as $tag) {
             if(in_array($tag, $final)) { if(!in_array('geography', $final)) $final[] = 'geography'; }
-            if(($key = array_search($tag, $final)) !== false) {
+            if(($key = array_search($tag, $final)) !== false) { //value search in an array
                 if(in_array('geography', $final)) $final[$key] = NULL;
             }
         }
-        $final = array_filter($final); //remove null arrays
-        $final = array_unique($final); //make unique
-        $final = array_values($final); //reindex key
-        echo "\nKeywords to save: "; print_r($final);
-        // Oct_6 'descriptions' Wikipedia
-
+        $final = self::remove_null_make_unique_reindex_key($final);
+        echo "\nKeywords to save (geography): "; print_r($final);
         $o['metadata']['keywords'] = $final;
+        // Oct_6 'descriptions' Wikipedia
+        $tags = array('EOL Content Partners: Wikipedia');
+        foreach($tags as $tag) {
+            if(in_array($tag, $final)) { if(!in_array('descriptions', $final)) $final[] = 'descriptions'; }
+            if(($key = array_search($tag, $final)) !== false) { //value search in an array
+                if(in_array('descriptions', $final)) $final[$key] = NULL;
+            }
+        }
+        $final = self::remove_null_make_unique_reindex_key($final);
+        echo "\nKeywords to save (descriptions): "; print_r($final);
+        $o['metadata']['keywords'] = $final;
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         /* Notes: It looks like the Notes field in Zenodo currently contains a combination of the OpenData resource and organization description. 
         We would like to handle this in a different way:
@@ -907,6 +922,13 @@ class ZenodoConnectorAPI
         $desc .= $add_str;
         */
         return $desc;
+    }
+    private function remove_null_make_unique_reindex_key($arr)
+    {
+        $arr = array_filter($arr); //remove null arrays
+        $arr = array_unique($arr); //make unique
+        $arr = array_values($arr); //reindex key
+        return $arr;
     }
 }
 ?>
