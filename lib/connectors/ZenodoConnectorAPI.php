@@ -89,6 +89,7 @@ class ZenodoConnectorAPI
         $id = 13317769; //fix error
         $id = 13315803; //Arctic Biodiversity: Arctic Algae
         $id = 13321333; //Eli Wikipedia : Wikipedia: wikipedia-kk (Kazakh)        
+        $id = 13317092; // National Checklists 2019: United Arab Emirates Species List
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
