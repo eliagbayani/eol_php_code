@@ -15,9 +15,9 @@ class ZenodoConnectorAPI
         $page = 0; $stats2 = array();
         while(true) { $page++; $final = array(); $stats = array();
             // do batches
-            // if($page < 67) continue;
-            // elseif($page >= 67 && $page <= 68) {}
-            // elseif($page > 68) break;
+            // if($page < 54) continue;
+            // elseif($page >= 54 && $page <= 90) {}
+            // elseif($page > 90) break;
             // else continue;
 
             echo "\nProcessing page: [$page]...\n";
@@ -44,16 +44,20 @@ class ZenodoConnectorAPI
         } //end while()
         // print_r($stats); print_r($final); 
 
+        // worked OK!        
         echo "\nstart report: multiple IDs per title:\n";
         foreach($stats2 as $title => $ids) {
             if(count($ids) > 1) {
                 echo "\n$title\n"; print_r($ids);
-                $this->log_error(array('multiple IDs', $title, json_encode($ids)));
-                foreach($ids as $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+                @$multiple_IDs++;
+                // $this->log_error(array('multiple IDs', $title, json_encode($ids)));                              //main operation
+                // foreach($ids as $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); } //main operation
                 // exit("\nforce exit\n"); //dev only
             }
         }
+        echo "\$multiple_IDs: $multiple_IDs\n";
         echo "\n-end report-\n";
+        
 
         exit("\n-end bulk updates-\n");
         // ------------------- end block */
@@ -82,6 +86,7 @@ class ZenodoConnectorAPI
         // $id = 13761108; //FishBase - new record for testing
         // $id = 13879556; //BioImages - the Virtual Fieldguide (UK): BioImages, the virtual fieldguide, UK
         $id = 13315783; //alert by Jen: Arctic Biodiversity: Arctic Freshwater Fishes
+        $id = 13317769; //fix error
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
