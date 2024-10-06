@@ -263,6 +263,13 @@ class ZenodoConnectorAPI
                 }
             } //end foreach()    
         }
+        // Oct_6
+        if(in_array('EOL Content Partners: Wikipedia', $o['metadata']['keywords'])) {
+            if(!self::is_name_in_Contributors('Eli Agbayani', $final)) {
+                $final[] = array('name' => 'Eli Agbayani', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => @$this->ORCIDs['Eli Agbayani']);
+            }    
+        }
+
         $o['metadata']['contributors'] = $final; 
         echo "\nContributors to save:"; print_r($final);
         // */
@@ -300,6 +307,7 @@ class ZenodoConnectorAPI
         $final = self::remove_null_make_unique_reindex_key($final);
         echo "\nKeywords to save (geography): "; print_r($final);
         $o['metadata']['keywords'] = $final;
+
         // Oct_6 'descriptions' Wikipedia
         $tags = array('EOL Content Partners: Wikipedia');
         foreach($tags as $tag) {
@@ -310,9 +318,19 @@ class ZenodoConnectorAPI
         }
         $final = self::remove_null_make_unique_reindex_key($final);
         echo "\nKeywords to save (descriptions): "; print_r($final);
+
+        // Oct_6 just remove these tags if encountered
+        $tags = array('EOL Content Partners: National Checklists 2019', 'EOL Content Partners: Water Body Checklists 2019', 'EOL Content Partners');
+        foreach($tags as $tag) {
+            if(in_array($tag, $final)) {
+                if(($key = array_search($tag, $final)) !== false) $final[$key] = NULL;
+            }
+        }
+        $final = self::remove_null_make_unique_reindex_key($final);
+        echo "\nKeywords to save (just delete 3 tags): "; print_r($final);
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $o['metadata']['keywords'] = $final;
 
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         /* Notes: It looks like the Notes field in Zenodo currently contains a combination of the OpenData resource and organization description. 
         We would like to handle this in a different way:
@@ -930,5 +948,6 @@ class ZenodoConnectorAPI
         $arr = array_values($arr); //reindex key
         return $arr;
     }
+    private function is_name_in_Contributors($name, $o['metadata']['keywords'])
 }
 ?>
