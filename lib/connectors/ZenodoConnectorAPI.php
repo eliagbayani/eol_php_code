@@ -15,10 +15,10 @@ class ZenodoConnectorAPI
         $page = 0; $stats2 = array();
         while(true) { $page++; $final = array(); $stats = array();
             // do batches
-            // if($page < 54) continue;
-            // elseif($page >= 54 && $page <= 90) {}
-            // elseif($page > 90) break;
-            // else continue;
+            if($page < 54) continue;
+            elseif($page >= 54 && $page <= 90) {}
+            elseif($page > 90) break;
+            else continue;
 
             echo "\nProcessing page: [$page]...\n";
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
@@ -34,29 +34,29 @@ class ZenodoConnectorAPI
                 @$stats2[$o['title']][] = $o['id'];
             }
             print_r($stats); //exit;
-            // // ----- main operation
-            // foreach($stats as $title => $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
-            // print_r($stats); //exit;
-            // echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
-            // // -----
+            // ----- main operation
+            foreach($stats as $title => $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+            print_r($stats); //exit;
+            echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
+            // -----
             if(count($obj) < 25) break; //means it is the last batch.
             // break; //debug only dev only
         } //end while()
         // print_r($stats); print_r($final); 
 
         // worked OK!        
-        echo "\nstart report: multiple IDs per title:\n";
-        foreach($stats2 as $title => $ids) {
-            if(count($ids) > 1) {
-                echo "\n$title\n"; print_r($ids);
-                @$multiple_IDs++;
-                // $this->log_error(array('multiple IDs', $title, json_encode($ids)));                              //main operation
-                // foreach($ids as $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); } //main operation
-                // exit("\nforce exit\n"); //dev only
-            }
-        }
-        echo "\$multiple_IDs: $multiple_IDs\n";
-        echo "\n-end report-\n";
+        // echo "\nstart report: multiple IDs per title:\n";
+        // foreach($stats2 as $title => $ids) {
+        //     if(count($ids) > 1) {
+        //         echo "\n$title\n"; print_r($ids);
+        //         @$multiple_IDs++;
+        //         $this->log_error(array('multiple IDs', $title, json_encode($ids)));                              //main operation
+        //         foreach($ids as $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); } //main operation
+        //         // exit("\nforce exit\n"); //dev only debug only
+        //     }
+        // }
+        // echo "\$multiple_IDs: $multiple_IDs\n";
+        // echo "\n-end report-\n";
         
 
         exit("\n-end bulk updates-\n");
@@ -104,7 +104,11 @@ class ZenodoConnectorAPI
         // $excluded_ids = array(13743941, 13751009);
         // if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna\n");
+
+        // /* NEW: to filter per tag requirement
+        // */
+
         $id = $obj_1st['id'];
         if($zenodo_id != $id) {
             if($zenodo_id && $id) {}
