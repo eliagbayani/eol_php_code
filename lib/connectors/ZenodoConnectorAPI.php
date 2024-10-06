@@ -88,6 +88,7 @@ class ZenodoConnectorAPI
         $id = 13315783; //alert by Jen: Arctic Biodiversity: Arctic Freshwater Fishes
         $id = 13317769; //fix error
         $id = 13315803; //Arctic Biodiversity: Arctic Algae
+        $id = 13321333; //Eli Wikipedia : Wikipedia: wikipedia-kk (Kazakh)        
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
@@ -108,9 +109,9 @@ class ZenodoConnectorAPI
         $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
 
         /* NEW Oct_6: to filter per tag requirement */
-        // /* EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
+        /* EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
         if(!in_array('EOL Content Partners: Arctic Biodiversity', $obj_1st['metadata']['keywords'])) return;
-        // */
+        */
         /* batch 70 - 80
         if(!in_array('EOL Content Partners: National Checklists', $obj_1st['metadata']['keywords'])) return;
         */
