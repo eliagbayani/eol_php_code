@@ -948,6 +948,12 @@ class ZenodoConnectorAPI
         $arr = array_values($arr); //reindex key
         return $arr;
     }
-    private function is_name_in_Contributors($name, $o['metadata']['keywords'])
+    private function is_name_in_Contributors($name, $contributors)
+    {
+        foreach($contributors as $r) {
+            if($r['name'] == 'Eli Agbayani') return true;
+        }
+        return false;
+    }
 }
 ?>
