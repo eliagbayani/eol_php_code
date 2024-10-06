@@ -11,13 +11,13 @@ class ZenodoConnectorAPI
         $this->log_error(array("==================== Log starts here ===================="));
         // step 1: loop into all Zenodo records
 
-        // /* ------------------- start block
+        /* ------------------- start block
         $page = 0; $stats2 = array();
-        while(true) { $page++; $final = array(); $stats = array();
+        while(true) { $page++; $IDs = array(); $stats = array();
             // do batches
-            if($page < 54) continue;
-            elseif($page >= 54 && $page <= 90) {}
-            elseif($page > 90) break;
+            if($page < 8) continue;
+            elseif($page >= 8 && $page <= 9) {}
+            elseif($page > 9) break;
             else continue;
 
             echo "\nProcessing page: [$page]...\n";
@@ -29,20 +29,20 @@ class ZenodoConnectorAPI
             if(!$obj) break;
             echo "\nStart Batch: $page | No. of records: ".count($obj)."\n";
             foreach($obj as $o)  { //print_r($o); exit;
-                $final[trim($o['id'])] = '';
-                @$stats[$o['title']] = $o['id'];
+                $IDs[trim($o['id'])] = '';
+                @$stats[$o['title']] .= $o['id'] . "|";
                 @$stats2[$o['title']][] = $o['id'];
             }
             print_r($stats); //exit;
             // ----- main operation
-            foreach($stats as $title => $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+            $IDs = array_keys($IDs);
+            foreach($IDs as $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
             print_r($stats); //exit;
             echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
             // -----
             if(count($obj) < 25) break; //means it is the last batch.
             // break; //debug only dev only
         } //end while()
-        // print_r($stats); print_r($final); 
 
         // worked OK!        
         // echo "\nstart report: multiple IDs per title:\n";
@@ -60,7 +60,7 @@ class ZenodoConnectorAPI
         
 
         exit("\n-end bulk updates-\n");
-        // ------------------- end block */
+        ------------------- end block */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -87,6 +87,7 @@ class ZenodoConnectorAPI
         // $id = 13879556; //BioImages - the Virtual Fieldguide (UK): BioImages, the virtual fieldguide, UK
         $id = 13315783; //alert by Jen: Arctic Biodiversity: Arctic Freshwater Fishes
         $id = 13317769; //fix error
+        $id = 13315803; //Arctic Biodiversity: Arctic Algae
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
@@ -101,12 +102,14 @@ class ZenodoConnectorAPI
     {
         $this->html_contributors = array(); //initialize
 
-        // $excluded_ids = array(13743941, 13751009);
-        // if(in_array($zenodo_id, $excluded_ids)) return;
+        $excluded_ids = array(13743941, 13751009);
+        if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
 
-        // /* NEW: to filter per tag requirement
+        // /* NEW Oct_6: to filter per tag requirement
+        // EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
+        if(!in_array('EOL Content Partners: Arctic Biodiversity', $obj_1st['metadata']['keywords'])) return;
         // */
 
         $id = $obj_1st['id'];
@@ -280,6 +283,20 @@ class ZenodoConnectorAPI
                 if(substr($kw,0,8) != 'format: ') $final[] = $kw;
             }    
         }
+        // Oct_6 'geography'
+        $tags = array('EOL Content Partners: Arctic Biodiversity', 'EOL Content Partners: National Checklists', 'EOL Content Partners: Water Body Checklists');
+        foreach($tags as $tag) {
+            if(in_array($tag, $final)) { if(!in_array('geography', $final)) $final[] = 'geography'; }
+            if(($key = array_search($tag, $final)) !== false) {
+                if(in_array('geography', $final)) $final[$key] = NULL;
+            }
+        }
+        $final = array_filter($final); //remove null arrays
+        $final = array_unique($final); //make unique
+        $final = array_values($final); //reindex key
+        echo "\nKeywords to save: "; print_r($final);
+        // Oct_6 'descriptions' Wikipedia
+
         $o['metadata']['keywords'] = $final;
 
         /* Notes: It looks like the Notes field in Zenodo currently contains a combination of the OpenData resource and organization description. 

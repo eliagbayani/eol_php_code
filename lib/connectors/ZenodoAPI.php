@@ -12,16 +12,17 @@ Zenodo total count: 2,236 (open)        as of Aug 28, 2024
 {"Aggregate Datasets":38,"EOL Content Partners":1774,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 {"Aggregate Datasets":38,"EOL Content Partners":1794,"EOL Dynamic Hierarchy Data Sets":67,"Legacy datasets":56}
 
-
 Search in interface:
 metadata.subjects.subject:"Aggregate Datasets: EOL computer vision pipelines"
-https://zenodo.org/communities/eol/records?q=metadata.subjects.subject%3A%22Aggregate%20Datasets%3A%20EOL%20computer%20vision%20pipelines%22&l=list&p=1&s=10&sort=bestmatch
-
+    https://zenodo.org/communities/eol/records?q=metadata.subjects.subject%3A%22Aggregate%20Datasets%3A%20EOL%20computer%20vision%20pipelines%22&l=list&p=1&s=10&sort=bestmatch
+metadata.subjects.subject:"EOL Content Partners: Wikipedia"
+    https://zenodo.org/search?q=metadata.subjects.subject%3A%22EOL%20Content%20Partners%3A%20Wikipedia%22&l=list&p=1&s=10&sort=bestmatch
 
 Below are the 9 weird Zenodo errors during bulk updates:
-
 proceed with U and P	13384702	Eli temporary files: page_ids_ancestry.txt.zip	2024-09-28 01:31:50 AM
 ERROR	update_0924	13384702	{"error_id":"0b83d84323ec42499eca87ecfe58809e","message":"The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.","status":500}	2024-09-28 01:31:51 AM
+proceed with U and P	13381012	WoRMS internal: World Register of Marine Species	2024-09-28 01:33:28 AM
+ERROR	update_0924	13381012	{"error_id":"4ce62d2504d646c689bc3fa8c860fa44","message":"The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.","status":500}	2024-09-28 01:33:28 AM
 
 proceed with U and P	13382574	EOL computer vision pipelines: Object Detection for Image Cropping: Chiroptera	2024-09-28 01:32:03 AM
 ERROR	update_0924	13382574	{"error_id":"d56496755f8943908e7c0085ec07fa08","message":"The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.","status":500}	2024-09-28 01:32:04 AM
@@ -37,11 +38,6 @@ proceed with U and P	13382586	EOL computer vision pipelines: Image Rating: Chiro
 ERROR	update_0924	13382586	{"error_id":"a46067fb8cc3443799ff8a0ff03f0f3c","message":"The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.","status":500}	2024-09-28 01:33:04 AM
 proceed with U and P	13382488	EOL computer vision pipelines: Object Detection for Image Cropping: Lepidoptera	2024-09-28 01:33:16 AM
 ERROR	update_0924	13382488	{"error_id":"de4cd960650442a18c9e185ca90326e9","message":"The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.","status":500}	2024-09-28 01:33:17 AM
-
-proceed with U and P	13381012	WoRMS internal: World Register of Marine Species	2024-09-28 01:33:28 AM
-ERROR	update_0924	13381012	{"error_id":"4ce62d2504d646c689bc3fa8c860fa44","message":"The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.","status":500}	2024-09-28 01:33:28 AM
-
-
 */
 
 class ZenodoAPI extends ZenodoConnectorAPI
