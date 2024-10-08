@@ -22,7 +22,6 @@ class ZenodoConnectorAPI
         // $f = 'subject:"EOL Content Partners"';
         // $f = 'subject:taxonomy';
 
-
         $page = 0; $stats2 = array();
         while(true) { $page++; $IDs = array(); $stats = array();
             // do batches
@@ -48,10 +47,10 @@ class ZenodoConnectorAPI
             }
             print_r($stats); //exit;
             // ----- main operation
-            // $IDs = array_keys($IDs); $i = 0;
-            // foreach($IDs as $id)  { $i++; echo "\n [$i]. "; sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
-            // print_r($stats); //exit;
-            // echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
+            $IDs = array_keys($IDs); $i = 0;
+            foreach($IDs as $id)  { $i++; echo "\n [$page][$i]. "; sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+            print_r($stats); //exit;
+            echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
             // -----
             if(count($obj) < 25) break; //means it is the last batch.
             // break; //debug only dev only
@@ -190,6 +189,9 @@ class ZenodoConnectorAPI
         /* batch 24 - 28
         if(!in_array('EOL Content Partners: Water Body Checklists 2019', $obj_1st['metadata']['keywords'])) return;
         */
+        // /* batch 24 - 28
+        if(!in_array('EOL Content Partners', $obj_1st['metadata']['keywords'])) return;
+        // */
 
         $id = $obj_1st['id'];
         if($zenodo_id != $id) {
