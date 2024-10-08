@@ -11,13 +11,13 @@ class ZenodoConnectorAPI
         $this->log_error(array("==================== Log starts here ===================="));
         // step 1: loop into all Zenodo records
 
-        /* ------------------- start block
+        // /* ------------------- start block
         $page = 0; $stats2 = array();
         while(true) { $page++; $IDs = array(); $stats = array();
             // do batches
-            if($page < 8) continue;
-            elseif($page >= 8 && $page <= 9) {}
-            elseif($page > 9) break;
+            if($page < 66) continue;
+            elseif($page >= 66 && $page <= 67) {}
+            elseif($page > 67) break;
             else continue;
 
             echo "\nProcessing page: [$page]...\n";
@@ -35,8 +35,8 @@ class ZenodoConnectorAPI
             }
             print_r($stats); //exit;
             // ----- main operation
-            $IDs = array_keys($IDs);
-            foreach($IDs as $id)  { sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+            $IDs = array_keys($IDs); $i = 0;
+            foreach($IDs as $id)  { $i++; echo "\n [$i]. "; sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
             print_r($stats); //exit;
             echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
             // -----
@@ -58,9 +58,8 @@ class ZenodoConnectorAPI
         // echo "\$multiple_IDs: $multiple_IDs\n";
         // echo "\n-end report-\n";
         
-
         exit("\n-end bulk updates-\n");
-        ------------------- end block */
+        // ------------------- end block */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -107,12 +106,12 @@ class ZenodoConnectorAPI
         $excluded_ids = array(13743941, 13751009);
         if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
 
         /* NEW Oct_6: to filter per tag requirement */
-        /* EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
+        // /* EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
         if(!in_array('EOL Content Partners: Arctic Biodiversity', $obj_1st['metadata']['keywords'])) return;
-        */
+        // */
         /* batch 70 - 80
         if(!in_array('EOL Content Partners: National Checklists', $obj_1st['metadata']['keywords'])) return;
         */
