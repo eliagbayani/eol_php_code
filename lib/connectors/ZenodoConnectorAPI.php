@@ -6,12 +6,65 @@ class ZenodoConnectorAPI
     function __construct($folder = null, $query = null)
     {}
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    function latest_katja_changes_2() //for removing tags "EOL Content Partners"
+    {
+        $this->log_error(array("==================== Log starts here ===================="));
+        // /* ------------------- start block
+
+        // https://zenodo.org/search?q=metadata.subjects.subject:"EOL Content Partners"&f=subject:EOL Content Partners&l=list&p=1&s=10&sort=bestmatch
+        // https://zenodo.org/search?q=metadata.subjects.subject:"EOL Content Partners"&l=list&p=1&s=10&sort=bestmatch
+        // https://zenodo.org/search?q=metadata.subjects.subject:"taxonomy"&f=subject:taxonomy&l=list&p=1&s=10&sort=bestmatch
+
+        $q = 'metadata.subjects.subject:"EOL Content Partners"';        //works OK
+        // $q = 'metadata.subjects.subject:"taxonomy"';                 //works OK
+
+        // didn't work, but no need
+        // $f = 'subject:"EOL Content Partners"';
+        // $f = 'subject:taxonomy';
+
+
+        $page = 0; $stats2 = array();
+        while(true) { $page++; $IDs = array(); $stats = array();
+            // do batches
+            if($page < 1) continue;
+            elseif($page >= 1 && $page <= 40) {}
+            elseif($page > 40) break;
+            else continue;
+
+            echo "\nProcessing page: [$page]...\n";
+            $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.               '&size=25&page=PAGENUM"                     -H "Content-Type: application/json"';
+            $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page=PAGENUM&q="'.urlencode($q).' -H "Content-Type: application/json"';
+
+            $cmd = str_replace('PAGENUM', $page, $cmd);
+            // echo "\nlist depostions cmd: [$cmd]\n";
+            $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
+            $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n"; exit("\n".count($obj)."\n");
+            if(!$obj) break;
+            echo "\nStart Batch: $page | No. of records: ".count($obj)."\n";
+            foreach($obj as $o)  { //print_r($o); exit;
+                $IDs[trim($o['id'])] = '';
+                @$stats[$o['title']] .= $o['id'] . "|";
+                @$stats2[$o['title']][] = $o['id'];
+            }
+            print_r($stats); //exit;
+            // ----- main operation
+            // $IDs = array_keys($IDs); $i = 0;
+            // foreach($IDs as $id)  { $i++; echo "\n [$i]. "; sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+            // print_r($stats); //exit;
+            // echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
+            // -----
+            if(count($obj) < 25) break; //means it is the last batch.
+            // break; //debug only dev only
+        } //end while()        
+        exit("\n-end bulk updates-\n");
+        // ------------------- end block */
+    }
     function latest_katja_changes()
     {   
         $this->log_error(array("==================== Log starts here ===================="));
         // step 1: loop into all Zenodo records
 
-        // /* ------------------- start block
+        /* ------------------- start block
         $page = 0; $stats2 = array();
         while(true) { $page++; $IDs = array(); $stats = array();
             // do batches
@@ -65,7 +118,7 @@ class ZenodoConnectorAPI
         // echo "\n-end report-\n";
         
         exit("\n-end bulk updates-\n");
-        // ------------------- end block */
+        ------------------- end block */
 
         $id = "13795618"; //Metrics: GBIF data coverage
         // $id = "13795451"; //Flickr: USGS Bee Inventory and Monitoring Lab
@@ -96,7 +149,9 @@ class ZenodoConnectorAPI
         $id = 13317092; // National Checklists 2019: United Arab Emirates Species List
         $id = 13321393; //Wikipedia: wikipedia_combined_languages_batch2
         $id = 13317273; //National Checklists 2019: Afghanistan Species List
-        $id = 13323228;
+        $id = 13319457;
+
+        // metadata.subjects.subject:"EOL Content Partners: Water Body Checklists 2019"
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 

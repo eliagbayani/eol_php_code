@@ -18,9 +18,14 @@ ini_set('display_errors', true);
 $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // */
 
+// $str = "https://zenodo.org/search?q=metadata.subjects.subject%3A%22EOL%20Content%20Partners%22&f=subject%3AEOL%20Content%20Partners&l=list&p=1&s=10&sort=bestmatch";
+// $str = "https://zenodo.org/search?q=metadata.subjects.subject%3A%22EOL%20Content%20Partners%3A%20EduLifeDesks%20Archive%22&l=list&p=1&s=10&sort=bestmatch";
+// exit("\n".urldecode($str)."\n");
+
 $func = new ZenodoAPI();
 
-$func->latest_katja_changes(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
+$func->latest_katja_changes_2(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
+// $func->latest_katja_changes(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
 
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
