@@ -15,11 +15,17 @@ class ZenodoConnectorAPI
         $page = 0; $stats2 = array();
         while(true) { $page++; $IDs = array(); $stats = array();
             // do batches
-            if($page < 66) continue;
-            elseif($page >= 66 && $page <= 67) {}
-            elseif($page > 67) break;
+            // if($page < 39) continue;
+            // elseif($page >= 39 && $page <= 59) {}
+            // elseif($page > 59) break;
+            // else continue;
+
+            if($page < 24) continue;
+            elseif($page >= 24 && $page <= 28) {}
+            elseif($page > 28) break;
             else continue;
 
+            
             echo "\nProcessing page: [$page]...\n";
             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&size=25&page=PAGENUM" -H "Content-Type: application/json"';
             $cmd = str_replace('PAGENUM', $page, $cmd);
@@ -85,10 +91,12 @@ class ZenodoConnectorAPI
         // $id = 13761108; //FishBase - new record for testing
         // $id = 13879556; //BioImages - the Virtual Fieldguide (UK): BioImages, the virtual fieldguide, UK
         $id = 13315783; //alert by Jen: Arctic Biodiversity: Arctic Freshwater Fishes
-        $id = 13317769; //fix error
         $id = 13315803; //Arctic Biodiversity: Arctic Algae
         $id = 13321333; //Eli Wikipedia : Wikipedia: wikipedia-kk (Kazakh)        
         $id = 13317092; // National Checklists 2019: United Arab Emirates Species List
+        $id = 13321393; //Wikipedia: wikipedia_combined_languages_batch2
+        $id = 13317273; //National Checklists 2019: Afghanistan Species List
+        $id = 13323228;
 
         // excluded:
         // $id = 13743941; //USDA NRCS PLANTS Database: USDA PLANTS images DwCA | "identifiers": [{"identifier": "01na82s61", "scheme": "ror"}, {"identifier": "0000 0004 0478 6311", "scheme": "isni"}], 
@@ -109,14 +117,23 @@ class ZenodoConnectorAPI
         $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
 
         /* NEW Oct_6: to filter per tag requirement */
-        // /* EOL Content Partners: Arctic Biodiversity --- batch 66 - 67
+        /* batch 66 - 67
         if(!in_array('EOL Content Partners: Arctic Biodiversity', $obj_1st['metadata']['keywords'])) return;
-        // */
+        */
         /* batch 70 - 80
         if(!in_array('EOL Content Partners: National Checklists', $obj_1st['metadata']['keywords'])) return;
         */
         /* batch 61 - 65
         if(!in_array('EOL Content Partners: Water Body Checklists', $obj_1st['metadata']['keywords'])) return;
+        */
+        /* batch 16 - 19
+        if(!in_array('EOL Content Partners: Wikipedia', $obj_1st['metadata']['keywords'])) return;
+        */
+        /* batch 39 - 59
+        if(!in_array('EOL Content Partners: National Checklists 2019', $obj_1st['metadata']['keywords'])) return;
+        */
+        /* batch 24 - 28
+        if(!in_array('EOL Content Partners: Water Body Checklists 2019', $obj_1st['metadata']['keywords'])) return;
         */
 
         $id = $obj_1st['id'];
