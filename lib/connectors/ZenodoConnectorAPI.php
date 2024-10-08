@@ -191,6 +191,7 @@ class ZenodoConnectorAPI
         */
         // /* batch 24 - 28
         if(!in_array('EOL Content Partners', $obj_1st['metadata']['keywords'])) return;
+        // https://zenodo.org/search?q=metadata.subjects.subject%3A%22EOL%20Content%20Partners%22&f=subject%3AEOL%20Content%20Partners&l=list&p=1&s=10&sort=bestmatch
         // */
 
         $id = $obj_1st['id'];
