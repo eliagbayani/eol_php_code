@@ -47,11 +47,76 @@ class Protisten_deAPI_V2
     }
     private function process_one_group($url)
     {
-        $url = 'https://www.protisten.de/home-new/bac-cya-chlorobi/'; //force assign dev only debug only
-        $url = 'https://www.protisten.de/home-new/colorless-flagellates/';
-        $url = 'https://www.protisten.de/home-new/bac-proteo/';
-        if($html = Functions::lookup_with_cache($url, $this->download_options)) {
-            // echo "\n$html\n";
+        $recs = self::get_records_per_group($url);
+        foreach($recs as $rec) { print_r($rec); //exit("\nhuli 2\n");
+            $url2 = $rec['data-href'];
+            // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/acanthocystis-penardi/';
+            // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/glutinoconcha/excentrostoma/centropyxis-aculeata/';
+            // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/achnanthes-armillaris/';
+            // $url2 = 'https://www.protisten.de/home-new/metazoa/hydrozoa/hydra-viridissima/';
+            // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/acanthoceras-zachariasii/';
+            $url2 = 'https://www.protisten.de/home-new/bac-proteo/zoogloea-ramigera/';
+            $url2 = 'https://www.protisten.de/home-new/bac-proteo/macromonas-fusiformis/';
+            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
+                if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
+                    // print_r($arr[1]); //exit("\nhuli 3\n");
+                }
+
+                $images1 = array();
+                // background-image:url(https://www.protisten.de/wp-content/uploads/2024/06/Centropyxis-aculeata-Matrix-063-200-Mipro-P3224293-302-HID_NEW.jpg)
+                if(preg_match_all("/background-image\:url\((.*?)\)/ims", $html, $arr)) {
+                    print_r($arr[1]); //exit("\nhuli 3\n");
+                    $images1 = $arr[1];
+                }
+
+                $images2 = array();
+                if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {
+                    foreach($arr[1] as $h) {
+                        if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) {
+                            print_r($arr2[1]);
+                            $images2 = array_merge($images2, $arr2[1]);
+                        }
+                    }
+                }
+
+                $final = array_merge($images1, $images2);
+                $final = array_filter($final); //remove null arrays
+                $final = array_unique($final); //make unique
+                $final = array_values($final); //reindex key
+                print_r($final);
+
+                $tmp = array();
+                $genus_dash_species = pathinfo($url2, PATHINFO_BASENAME); //e.g. zoogloea-ramigera
+                foreach($final as $f) {
+                    if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
+                }
+                print_r($tmp); echo " return - 111";
+                if(count($tmp) > 0) return $tmp;
+
+                // last chance
+                $final = array();
+                if(count($tmp) == 0) {
+                    if(preg_match_all("/src=\"(.*?)\"/ims", $html, $arr)) {
+                        foreach($arr[1] as $str) {
+                            if(stripos($str, "Asset_") !== false) continue; //string is found
+                            if(stripos($str, $genus_dash_species) !== false) $final[] = $str; //string is found
+                        }
+                    }
+                    print_r($final); echo " return - 222";
+                    return $final;
+                }
+            }
+        }
+        exit("\nhuli 4\n");
+    }
+    private function get_records_per_group($url)
+    {
+        $records = array();
+        // $url = 'https://www.protisten.de/home-new/bac-cya-chlorobi/'; //force assign dev only debug only
+        // $url = 'https://www.protisten.de/home-new/colorless-flagellates/';
+        // $url = 'https://www.protisten.de/home-new/bac-proteo/';
+        // $url = 'https://www.protisten.de/home-new/heliozoic-amoeboids/';
+        if($html = Functions::lookup_with_cache($url, $this->download_options)) { // echo "\n$html\n";
             if(preg_match_all("/<figure class=\"wpmf-gallery-item\"(.*?)<\/figure>/ims", $html, $arr)) { //this gives 2 records, we use the 2nd one
                 print_r($arr[1]);
                 $records = array(); $taken_already = array();
@@ -63,23 +128,20 @@ class Protisten_deAPI_V2
                     if(preg_match("/data-lazy-src=\"(.*?)\"/ims", $str, $arr2)) $save['data-lazy-src'] = $arr2[1];
 
                     if($save['title'] && $save['target'] == '_blank') {
-                        if(!isset($taken_already[$save['title']])) {
-                            $taken_already[$save['title']] = '';
+                        if(!isset($taken_already[$save['title'].$save['data-href']])) {
+                            $taken_already[$save['title'].$save['data-href']] = '';
                             $records[] = $save;
                         }
                     }
-
                     // [66] =>  data-index="0"><div class="wpmf-gallery-icon"><div class="square_thumbnail"><div class="img_centered"><a class=" not_video noLightbox" data-lightbox="0" data-href="https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/"                                       title="Chlorobium luteolum" target="_blank" data-index="0"><img decoding="async" class="wpmf_img" alt="Chlorobium luteolum" src="https://www.protisten.de/wp-content/uploads/2024/07/Asset_Pelodictyon-luteolum-025-100-P6051208-ODB_144.jpg" data-type="wpmfgalleryimg" data-lazy-src="https://www.protisten.de/wp-content/uploads/2024/07/Asset_Pelodictyon-luteolum-025-100-P6051208-ODB_144.jpg"></a></div></div></div><figcaption class="wp-caption-text gallery-caption"><i>Chlorobium<br>luteolum</i></figcaption>
                     // [76] =>  data-index="8"><div class="wpmf-gallery-icon"><div class="square_thumbnail"><div class="img_centered"><a class=" not_video noLightbox" data-lightbox="0" data-href="https://www.protisten.de/home-new/colorless-flagellates/obazoa-choanoflagellata-colorless-flagellates/salpingoeca-clarkii/" title="Salpingoeca clarkii" target="_self" data-index="8"><img decoding="async" class="wpmf_img" alt="Salpingoeca clarkii" src="https://www.protisten.de/wp-content/uploads/2024/09/Asset_Salpingoeca-clarkii-063-200-2-IMG-643-497-AQU-1.jpg" data-type="wpmfgalleryimg" data-lazy-src="https://www.protisten.de/wp-content/uploads/2024/09/Asset_Salpingoeca-clarkii-063-200-2-IMG-643-497-AQU-1.jpg"></a></div></div></div><figcaption class="wp-caption-text gallery-caption"><i>Salpingoeca<br>clarkii</i></figcaption>
-
-
                 }
                 print_r($records);
-                exit("\nhuli 1\n");
+                // exit("\nhuli 1\n");
             }
-
         }
-        exit("\nstop 5\n");
+        // exit("\nstop 5\n");
+        return $records;
     }
     // ================================================================================ end
 
@@ -314,7 +376,7 @@ class Protisten_deAPI_V2
         $r->term_name       = 'Wolfgang Bettighofer';
         $r->agentRole       = 'creator';
         $r->identifier      = md5("$r->term_name|$r->agentRole");
-        $r->term_homepage   = 'http://www.protisten.de/english/index.html';
+        $r->term_homepage   = 'https://www.protisten.de/';
         $r->term_mbox       = 'Wolfgang.Bettighofer@gmx.de';
         $this->archive_builder->write_object_to_file($r);
         $this->agent_id = array($r->identifier);
