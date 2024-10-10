@@ -36,7 +36,7 @@ class Protisten_deAPI_V2
             foreach($paths as $url) {
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
-                break; //debug - process only 1
+                // break; //debug - process only 1
             }
         }
         else exit("\nStructure changed. Investigate.\n");
@@ -55,8 +55,8 @@ class Protisten_deAPI_V2
             // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/achnanthes-armillaris/';
             // $url2 = 'https://www.protisten.de/home-new/metazoa/hydrozoa/hydra-viridissima/';
             // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/acanthoceras-zachariasii/';
-            $url2 = 'https://www.protisten.de/home-new/bac-proteo/zoogloea-ramigera/';
-            $url2 = 'https://www.protisten.de/home-new/bac-proteo/macromonas-fusiformis/';
+            // $url2 = 'https://www.protisten.de/home-new/bac-proteo/zoogloea-ramigera/';
+            // $url2 = 'https://www.protisten.de/home-new/bac-proteo/macromonas-fusiformis/';
             if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
                 if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
                     // print_r($arr[1]); //exit("\nhuli 3\n");
@@ -65,7 +65,7 @@ class Protisten_deAPI_V2
                 $images1 = array();
                 // background-image:url(https://www.protisten.de/wp-content/uploads/2024/06/Centropyxis-aculeata-Matrix-063-200-Mipro-P3224293-302-HID_NEW.jpg)
                 if(preg_match_all("/background-image\:url\((.*?)\)/ims", $html, $arr)) {
-                    print_r($arr[1]); //exit("\nhuli 3\n");
+                    // print_r($arr[1]); //exit("\nhuli 3\n");
                     $images1 = $arr[1];
                 }
 
@@ -73,7 +73,7 @@ class Protisten_deAPI_V2
                 if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {
                     foreach($arr[1] as $h) {
                         if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) {
-                            print_r($arr2[1]);
+                            // print_r($arr2[1]);
                             $images2 = array_merge($images2, $arr2[1]);
                         }
                     }
@@ -83,7 +83,7 @@ class Protisten_deAPI_V2
                 $final = array_filter($final); //remove null arrays
                 $final = array_unique($final); //make unique
                 $final = array_values($final); //reindex key
-                print_r($final);
+                // print_r($final);
 
                 $tmp = array();
                 $genus_dash_species = pathinfo($url2, PATHINFO_BASENAME); //e.g. zoogloea-ramigera
@@ -91,7 +91,7 @@ class Protisten_deAPI_V2
                     if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
                 }
                 print_r($tmp); echo " return - 111";
-                if(count($tmp) > 0) return $tmp;
+                // if(count($tmp) > 0) return $tmp; //start save here
 
                 // last chance
                 $final = array();
@@ -103,11 +103,12 @@ class Protisten_deAPI_V2
                         }
                     }
                     print_r($final); echo " return - 222";
-                    return $final;
+                    // return $final; //start save here
+                    if(count($final) == 0) exit("\nhuli 3\n");
                 }
             }
-        }
-        exit("\nhuli 4\n");
+        } //end foreach()
+        // exit("\nhuli 4\n");
     }
     private function get_records_per_group($url)
     {
