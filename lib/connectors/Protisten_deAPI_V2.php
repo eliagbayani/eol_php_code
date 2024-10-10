@@ -49,6 +49,7 @@ class Protisten_deAPI_V2
     {
         $url = 'https://www.protisten.de/home-new/bac-cya-chlorobi/'; //force assign dev only debug only
         $url = 'https://www.protisten.de/home-new/colorless-flagellates/';
+        $url = 'https://www.protisten.de/home-new/bac-proteo/';
         if($html = Functions::lookup_with_cache($url, $this->download_options)) {
             // echo "\n$html\n";
             if(preg_match_all("/<figure class=\"wpmf-gallery-item\"(.*?)<\/figure>/ims", $html, $arr)) { //this gives 2 records, we use the 2nd one
