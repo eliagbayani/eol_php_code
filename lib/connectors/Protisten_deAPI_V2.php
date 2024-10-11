@@ -63,7 +63,7 @@ class Protisten_deAPI_V2
             // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/';
             // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
             // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
-            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { echo "\n$html\n";
+            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
                 if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
                     // print_r($arr[1]); //exit("\nhuli 5\n");
                 }
@@ -229,6 +229,7 @@ class Protisten_deAPI_V2
     private function get_genus_if_spec($title)
     {
         if($title == 'Echinodermata larva') return 'Echinodermenlarve';
+        elseif($title == 'Teleostei egg') return 'Fischei-STEMI-4180361-HEL_NEW'; // https://www.protisten.de/wp-content/uploads/2024/08/Fischei-STEMI-4180361-HEL_NEW.jpg
 
         if(stripos($title, " spec.") !== false) { //string is found
             $arr = explode(" ", $title); // "Pyxidicula spec."
