@@ -62,13 +62,13 @@ class Protisten_deAPI_V2
             // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
             if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
                 if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
-                    // print_r($arr[1]); //exit("\nhuli 3\n");
+                    // print_r($arr[1]); //exit("\nhuli 5\n");
                 }
 
                 $images1 = array();
                 // background-image:url(https://www.protisten.de/wp-content/uploads/2024/06/Centropyxis-aculeata-Matrix-063-200-Mipro-P3224293-302-HID_NEW.jpg)
                 if(preg_match_all("/background-image\:url\((.*?)\)/ims", $html, $arr)) {
-                    print_r($arr[1]); //exit("\nhuli 3\n");
+                    print_r($arr[1]); //exit("\nhuli 6\n");
                     $images1 = $arr[1];
                 }
 
@@ -94,10 +94,10 @@ class Protisten_deAPI_V2
                 echo "\ngenus_dash_species: [$genus_dash_species]";
                 // ------------------------------------------------------------------------------
                 $genus_species = self::get_genus_species($rec['title']);
-                $genus_dash_species2 = str_replace(" ", "-", $genus_species);
+                $genus_dash_species2 = str_replace(" ", "-", $genus_species); // Gadus-morhua
                 echo "\ngenus_dash_species2: [$genus_dash_species2]";
                 // ------------------------------------------------------------------------------
-                $genus_dash_species3 = str_replace(" ", "", $genus_species);
+                $genus_dash_species3 = str_replace(" ", "", $genus_species); //Gadusmorhua
                 echo "\ngenus_dash_species3: [$genus_dash_species3]";
                 // ------------------------------------------------------------------------------
                 $addtl_synonym = self::get_addtl_synonym($html);
@@ -110,6 +110,9 @@ class Protisten_deAPI_V2
 
                 $genus_dash2 = false;
                 if($genus_dash == 'Foraminifera') $genus_dash2 = 'Foraminifere';
+
+                $tmp_arr = explode(" ", $rec['title']);
+                $genus_name = $tmp_arr[0];  // "Gadus"
                 // ------------------------------------------------------------------------------
                 foreach($final as $f) {
                     if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
@@ -140,8 +143,18 @@ class Protisten_deAPI_V2
                         }
                     }
                     print_r($final); echo " return - 222";
+                    if(count($final) == 0) { 
+                        
+                        if($genus_name) {
+                            foreach($arr[1] as $str) {
+                                if(stripos($f, $genus_name) !== false) $final[] = $str; //string is found    
+                            }
+                            if(count($final) == 0) { 
+                                print_r($rec); print_r($this->debug); exit("\nhuli 3\n"); 
+                            }
+                        }
+                    }
                     // return $final; //start save here
-                    if(count($final) == 0) { print_r($rec); exit("\nhuli 3\n"); }
                 }
             }
         } //end foreach()
@@ -154,6 +167,7 @@ class Protisten_deAPI_V2
         // $url = 'https://www.protisten.de/home-new/colorless-flagellates/';
         // $url = 'https://www.protisten.de/home-new/bac-proteo/';
         // $url = 'https://www.protisten.de/home-new/heliozoic-amoeboids/';
+        $this->debug['url in question'] = $url;
         if($html = Functions::lookup_with_cache($url, $this->download_options)) { // echo "\n$html\n";
             if(preg_match_all("/<figure class=\"wpmf-gallery-item\"(.*?)<\/figure>/ims", $html, $arr)) { //this gives 2 records, we use the 2nd one
                 print_r($arr[1]);
@@ -161,6 +175,9 @@ class Protisten_deAPI_V2
                 foreach($arr[1] as $str) { $save = array();
                     if(preg_match("/title=\"(.*?)\"/ims", $str, $arr2)) $save['title'] = $arr2[1];
                     if(preg_match("/data-href=\"(.*?)\"/ims", $str, $arr2)) $save['data-href'] = $arr2[1];
+
+                    if(substr($save['data-href'], -4) == '.jpg') continue;
+
                     if(preg_match("/target=\"(.*?)\"/ims", $str, $arr2)) $save['target'] = $arr2[1];
                     if(preg_match("/src=\"(.*?)\"/ims", $str, $arr2)) $save['src'] = $arr2[1];
                     if(preg_match("/data-lazy-src=\"(.*?)\"/ims", $str, $arr2)) $save['data-lazy-src'] = $arr2[1];
