@@ -50,6 +50,9 @@ class Protisten_deAPI_V2
         $recs = self::get_records_per_group($url);
         foreach($recs as $rec) { print_r($rec); //exit("\nhuli 2\n");
             $url2 = $rec['data-href'];
+
+            if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') continue;
+
             // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/acanthocystis-penardi/';
             // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/glutinoconcha/excentrostoma/centropyxis-aculeata/';
             // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/achnanthes-armillaris/';
@@ -60,7 +63,7 @@ class Protisten_deAPI_V2
             // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/';
             // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
             // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
-            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
+            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { echo "\n$html\n";
                 if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
                     // print_r($arr[1]); //exit("\nhuli 5\n");
                 }
@@ -68,12 +71,15 @@ class Protisten_deAPI_V2
                 $images1 = array();
                 // background-image:url(https://www.protisten.de/wp-content/uploads/2024/06/Centropyxis-aculeata-Matrix-063-200-Mipro-P3224293-302-HID_NEW.jpg)
                 if(preg_match_all("/background-image\:url\((.*?)\)/ims", $html, $arr)) {
-                    print_r($arr[1]); //exit("\nhuli 6\n");
+                    print_r($arr[1]); echo " zzz\n"; //exit("\nhuli 6\n");
                     $images1 = $arr[1];
                 }
 
                 $images2 = array();
-                if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) { print_r($arr[1]);
+                if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) { 
+                // if(preg_match_all("/decoding=\"async\"(.*?)<\/div>/ims", $html, $arr)) { 
+
+                    print_r($arr[1]); echo " yyy\n";
                     foreach($arr[1] as $h) {
                         if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) {
                             // print_r($arr2[1]);
@@ -93,7 +99,7 @@ class Protisten_deAPI_V2
                 $genus_dash_species = pathinfo($url2, PATHINFO_BASENAME); //e.g. zoogloea-ramigera
                 echo "\ngenus_dash_species: [$genus_dash_species]";
                 // ------------------------------------------------------------------------------
-                $genus_species = self::get_genus_species($rec['title']);
+                $genus_species = self::get_genus_species($rec['title']); // Aspidisca pulcherrima var. baltica
                 $genus_dash_species2 = str_replace(" ", "-", $genus_species); // Gadus-morhua
                 echo "\ngenus_dash_species2: [$genus_dash_species2]";
                 // ------------------------------------------------------------------------------
@@ -113,6 +119,7 @@ class Protisten_deAPI_V2
 
                 $tmp_arr = explode(" ", $rec['title']);
                 $genus_name = $tmp_arr[0];  // "Gadus"
+                echo "\ngenus_name: [$genus_name]";
                 // ------------------------------------------------------------------------------
                 foreach($final as $f) {
                     if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
@@ -127,7 +134,16 @@ class Protisten_deAPI_V2
                     }
                 }
                 print_r($tmp); echo " return - 111";
-                // if(count($tmp) > 0) return $tmp; //start save here
+
+                if(count($tmp) == 0) {
+                    foreach($final as $f) {
+                        if(stripos($f, "Asset_") !== false) continue; //string is found
+                        if(stripos($f, $genus_name.".jpg") !== false) continue; //string is found
+                        if(stripos($f, $genus_name) !== false) $tmp[] = $f; //string is found    
+                    }
+                    print_r($tmp); echo " return - 222";
+                }
+
 
                 // last chance
                 $final = array();
@@ -137,7 +153,7 @@ class Protisten_deAPI_V2
                             if(stripos($str, "Asset_") !== false) continue; //string is found
                             if(stripos($str, $genus_dash_species) !== false) $final[] = $str; //string is found
                             if($genus_dash) {
-                                if(stripos($f, $genus_dash) !== false) $final[] = $str; //string is found
+                                if(stripos($str, $genus_dash) !== false) $final[] = $str; //string is found
                             }                    
         
                         }
@@ -147,10 +163,15 @@ class Protisten_deAPI_V2
                         
                         if($genus_name) {
                             foreach($arr[1] as $str) {
-                                if(stripos($f, $genus_name) !== false) $final[] = $str; //string is found    
+                                if(stripos($str, "Asset_") !== false) continue; //string is found
+                                if(stripos($str, $genus_name.".jpg") !== false) continue; //string is found
+                                if(stripos($str, $genus_name) !== false) $final[] = $str; //string is found    
                             }
                             if(count($final) == 0) { 
-                                print_r($rec); print_r($this->debug); exit("\nhuli 3\n"); 
+                                print_r($rec); print_r($this->debug); exit("\nhuli 3 [$genus_name]\n"); 
+                            }
+                            else {
+                                print_r($final); echo(" 111\n");
                             }
                         }
                     }
@@ -206,9 +227,11 @@ class Protisten_deAPI_V2
         echo "\nNo synonyms...\n";
     }
     private function get_genus_if_spec($title)
-    {        
+    {
+        if($title == 'Echinodermata larva') return 'Echinodermenlarve';
+
         if(stripos($title, " spec.") !== false) { //string is found
-            $arr = explode(" ", $title); //// "Pyxidicula spec."
+            $arr = explode(" ", $title); // "Pyxidicula spec."
             return $arr[0]; // "Pyxidicula"
         }
         if(stripos($title, " species") !== false) { //string is found
@@ -218,7 +241,9 @@ class Protisten_deAPI_V2
     }
     private function get_genus_species($title)
     {   // "Cyphoderia ampulla (Ichthyosquama loricaria)"
+        // "Aspidisca pulcherrima var. baltica"
         $string = trim(preg_replace('/\s*\([^)]*\)/', '', $title)); //remove parenthesis OK
+        $string = str_replace("var. ", "", $string);
         return $string;
     }
     // ================================================================================ end
