@@ -67,7 +67,7 @@ class Protisten_deAPI_V2
                 $images1 = array();
                 // background-image:url(https://www.protisten.de/wp-content/uploads/2024/06/Centropyxis-aculeata-Matrix-063-200-Mipro-P3224293-302-HID_NEW.jpg)
                 if(preg_match_all("/background-image\:url\((.*?)\)/ims", $html, $arr)) {
-                    // print_r($arr[1]); //exit("\nhuli 3\n");
+                    print_r($arr[1]); //exit("\nhuli 3\n");
                     $images1 = $arr[1];
                 }
 
@@ -88,17 +88,29 @@ class Protisten_deAPI_V2
                 // print_r($final);
 
                 $tmp = array();
+                // ------------------------------------------------------------------------------
                 $genus_dash_species = pathinfo($url2, PATHINFO_BASENAME); //e.g. zoogloea-ramigera
-                
+                echo "\ngenus_dash_species: [$genus_dash_species]";
+                // ------------------------------------------------------------------------------
+                $genus_species = self::get_genus_species($rec['title']);
+                $genus_dash_species2 = str_replace(" ", "-", $genus_species);
+                echo "\ngenus_dash_species2: [$genus_dash_species2]";
+                // ------------------------------------------------------------------------------
+                $genus_dash_species3 = str_replace(" ", "", $genus_species);
+                echo "\ngenus_dash_species3: [$genus_dash_species3]";
+                // ------------------------------------------------------------------------------
                 $addtl_synonym = self::get_addtl_synonym($html);
                 $genus_dash_synonym = str_replace(" ", "-", $addtl_synonym);
-                
+                echo "\ngenus_dash_synonym: [$genus_dash_synonym]";
+                // ------------------------------------------------------------------------------
                 $genus_dash = false;
                 if($val = self::get_genus_if_spec($rec['title'])) $genus_dash = $val;
-                // exit("\n[$genus_dash]\n");
-
+                echo "\ngenus_dash: [$genus_dash]";
+                // ------------------------------------------------------------------------------
                 foreach($final as $f) {
                     if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
+                    if(stripos($f, $genus_dash_species2) !== false) $tmp[] = $f; //string is found
+                    if(stripos($f, $genus_dash_species3) !== false) $tmp[] = $f; //string is found
                     if(stripos($f, $genus_dash_synonym) !== false) $tmp[] = $f; //string is found
                     if($genus_dash) {
                         if(stripos($f, $genus_dash) !== false) $tmp[] = $f; //string is found
@@ -122,7 +134,7 @@ class Protisten_deAPI_V2
                     }
                     print_r($final); echo " return - 222";
                     // return $final; //start save here
-                    if(count($final) == 0) exit("\nhuli 3\n");
+                    if(count($final) == 0) { print_r($rec); exit("\nhuli 3\n"); }
                 }
             }
         } //end foreach()
@@ -175,6 +187,11 @@ class Protisten_deAPI_V2
             $arr = explode(" ", $title);
             return $arr[0]; // "Pyxidicula"
         }
+    }
+    private function get_genus_species($title)
+    {   // "Cyphoderia ampulla (Ichthyosquama loricaria)"
+        $string = trim(preg_replace('/\s*\([^)]*\)/', '', $title)); //remove parenthesis OK
+        return $string;
     }
     // ================================================================================ end
 
