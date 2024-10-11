@@ -57,7 +57,9 @@ class Protisten_deAPI_V2
             // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/acanthoceras-zachariasii/';
             // $url2 = 'https://www.protisten.de/home-new/bac-proteo/zoogloea-ramigera/';
             // $url2 = 'https://www.protisten.de/home-new/bac-proteo/macromonas-fusiformis/';
-            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
+            // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/';
+            // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
+            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { echo "\n$html\n";
                 if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
                     // print_r($arr[1]); //exit("\nhuli 3\n");
                 }
@@ -70,7 +72,7 @@ class Protisten_deAPI_V2
                 }
 
                 $images2 = array();
-                if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {
+                if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) { print_r($arr[1]);
                     foreach($arr[1] as $h) {
                         if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) {
                             // print_r($arr2[1]);
@@ -87,8 +89,20 @@ class Protisten_deAPI_V2
 
                 $tmp = array();
                 $genus_dash_species = pathinfo($url2, PATHINFO_BASENAME); //e.g. zoogloea-ramigera
+                
+                $addtl_synonym = self::get_addtl_synonym($html);
+                $genus_dash_synonym = str_replace(" ", "-", $addtl_synonym);
+                
+                $genus_dash = false;
+                if($val = self::get_genus_if_spec($rec['title'])) $genus_dash = $val;
+                // exit("\n[$genus_dash]\n");
+
                 foreach($final as $f) {
                     if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
+                    if(stripos($f, $genus_dash_synonym) !== false) $tmp[] = $f; //string is found
+                    if($genus_dash) {
+                        if(stripos($f, $genus_dash) !== false) $tmp[] = $f; //string is found
+                    }
                 }
                 print_r($tmp); echo " return - 111";
                 // if(count($tmp) > 0) return $tmp; //start save here
@@ -100,6 +114,10 @@ class Protisten_deAPI_V2
                         foreach($arr[1] as $str) {
                             if(stripos($str, "Asset_") !== false) continue; //string is found
                             if(stripos($str, $genus_dash_species) !== false) $final[] = $str; //string is found
+                            if($genus_dash) {
+                                if(stripos($f, $genus_dash) !== false) $final[] = $str; //string is found
+                            }                    
+        
                         }
                     }
                     print_r($final); echo " return - 222";
@@ -143,6 +161,20 @@ class Protisten_deAPI_V2
         }
         // exit("\nstop 5\n");
         return $records;
+    }
+    private function get_addtl_synonym($html)
+    {   // <p><strong>Add&#8217;l Synonyms: </strong><em>Pelodictyon luteolum</em> (Schmidle) Pfennig and Trüper 1971</p>
+        if(preg_match("/Add&#8217;l Synonyms:(.*?)\"/ims", $html, $arr)) {
+            if(preg_match("/<em>(.*?)<\/em>/ims", $arr[1], $arr)) return trim($arr[1]);
+        }
+        echo "\nNo synonyms...\n";
+    }
+    private function get_genus_if_spec($title)
+    {   // "Pyxidicula spec."
+        if(stripos($title, " spec.") !== false) { //string is found
+            $arr = explode(" ", $title);
+            return $arr[0]; // "Pyxidicula"
+        }
     }
     // ================================================================================ end
 
