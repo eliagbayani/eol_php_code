@@ -59,7 +59,8 @@ class Protisten_deAPI_V2
             // $url2 = 'https://www.protisten.de/home-new/bac-proteo/macromonas-fusiformis/';
             // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/';
             // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
-            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { echo "\n$html\n";
+            // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
+            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
                 if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
                     // print_r($arr[1]); //exit("\nhuli 3\n");
                 }
@@ -106,6 +107,9 @@ class Protisten_deAPI_V2
                 $genus_dash = false;
                 if($val = self::get_genus_if_spec($rec['title'])) $genus_dash = $val;
                 echo "\ngenus_dash: [$genus_dash]";
+
+                $genus_dash2 = false;
+                if($genus_dash == 'Foraminifera') $genus_dash2 = 'Foraminifere';
                 // ------------------------------------------------------------------------------
                 foreach($final as $f) {
                     if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
@@ -114,6 +118,9 @@ class Protisten_deAPI_V2
                     if(stripos($f, $genus_dash_synonym) !== false) $tmp[] = $f; //string is found
                     if($genus_dash) {
                         if(stripos($f, $genus_dash) !== false) $tmp[] = $f; //string is found
+                    }
+                    if($genus_dash2) {
+                        if(stripos($f, $genus_dash2) !== false) $tmp[] = $f; //string is found
                     }
                 }
                 print_r($tmp); echo " return - 111";
@@ -182,10 +189,14 @@ class Protisten_deAPI_V2
         echo "\nNo synonyms...\n";
     }
     private function get_genus_if_spec($title)
-    {   // "Pyxidicula spec."
+    {        
         if(stripos($title, " spec.") !== false) { //string is found
-            $arr = explode(" ", $title);
+            $arr = explode(" ", $title); //// "Pyxidicula spec."
             return $arr[0]; // "Pyxidicula"
+        }
+        if(stripos($title, " species") !== false) { //string is found
+            $arr = explode(" ", $title); //Foraminifera species
+            return $arr[0]; // "Foraminifera"
         }
     }
     private function get_genus_species($title)
