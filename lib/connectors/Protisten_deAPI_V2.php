@@ -25,6 +25,7 @@ class Protisten_deAPI_V2
         https://docs.google.com/spreadsheets/d/1QnT-o-t4bVp-BP4jFFA-Alr4PlIj7fAD6RRb5iC6BYA/edit#gid=0
         */
         $this->page['main'] = 'https://www.protisten.de';
+        $this->report = array(); //report for Wolfgang
     }
     function start()
     {   
@@ -33,7 +34,7 @@ class Protisten_deAPI_V2
 
         if($paths = self::get_main_paths()) {
             print_r($paths); //exit("\nstop 1\n");
-            foreach($paths as $url) {
+            foreach($paths as $url) { $this->report_main_url = $url;
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
                 // break; //debug - process only 1
@@ -85,11 +86,11 @@ class Protisten_deAPI_V2
                     }
                 }
 
-                $final = array_merge($images1, $images2);
-                $final = array_filter($final); //remove null arrays
-                $final = array_unique($final); //make unique
-                $final = array_values($final); //reindex key
-                // print_r($final);
+                $pre_tmp = array_merge($images1, $images2);
+                $pre_tmp = array_filter($pre_tmp); //remove null arrays
+                $pre_tmp = array_unique($pre_tmp); //make unique
+                $pre_tmp = array_values($pre_tmp); //reindex key
+                // print_r($pre_tmp);
 
                 $tmp = array();
                 // ------------------------------------------------------------------------------
@@ -118,7 +119,7 @@ class Protisten_deAPI_V2
                 $genus_name = $tmp_arr[0];  // "Gadus"
                 echo "\ngenus_name: [$genus_name]";
                 // ------------------------------------------------------------------------------
-                foreach($final as $f) {
+                foreach($pre_tmp as $f) {
                     if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
                     if(stripos($f, $genus_dash_species2) !== false) $tmp[] = $f; //string is found
                     if(stripos($f, $genus_dash_species3) !== false) $tmp[] = $f; //string is found
@@ -133,7 +134,7 @@ class Protisten_deAPI_V2
                 print_r($tmp); echo " return - 111";
 
                 if(count($tmp) == 0) {
-                    foreach($final as $f) {
+                    foreach($pre_tmp as $f) {
                         if(stripos($f, "Asset_") !== false) continue; //string is found
                         if(stripos($f, $genus_name.".jpg") !== false) continue; //string is found
                         if(stripos($f, $genus_name) !== false) $tmp[] = $f; //string is found    
@@ -164,16 +165,14 @@ class Protisten_deAPI_V2
                             if(count($final) == 0) { 
                                 print_r($rec); print_r($this->debug); exit("\nhuli 3 [$genus_name]\n"); 
                             }
-                            else {
-                                print_r($final); echo(" 111\n");
-                            }
+                            else { print_r($final); echo(" 111\n"); }
                         }
                     }
                     // return $final; //start save here
                 }
             }
         } //end foreach()
-        // exit("\nhuli 4\n");
+        // exit("\nhuli 4\n"); $rec $final
     }
     private function get_records_per_group($url)
     {
@@ -185,7 +184,7 @@ class Protisten_deAPI_V2
         $this->debug['url in question'] = $url;
         if($html = Functions::lookup_with_cache($url, $this->download_options)) { // echo "\n$html\n";
             if(preg_match_all("/<figure class=\"wpmf-gallery-item\"(.*?)<\/figure>/ims", $html, $arr)) { //this gives 2 records, we use the 2nd one
-                print_r($arr[1]);
+                print_r($arr[1]); echo " - ito siya\n";
                 $records = array(); $taken_already = array();
                 foreach($arr[1] as $str) { $save = array();
                     if(preg_match("/title=\"(.*?)\"/ims", $str, $arr2)) $save['title'] = $arr2[1];
