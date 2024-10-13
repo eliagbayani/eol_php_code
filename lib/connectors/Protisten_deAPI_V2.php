@@ -26,6 +26,10 @@ class Protisten_deAPI_V2
         */
         $this->page['main'] = 'https://www.protisten.de';
         $this->report = array(); //report for Wolfgang
+        if(Functions::is_production()) $path = '/extra/other_files/protisten_de/';
+        else                           $path = '/Volumes/OWC_Express/other_files/protisten_de/';
+        if(!is_dir($path)) mkdir($path);
+        $this->report_file = $path.'protistenDE_images.tsv';
     }
     function start()
     {   
@@ -41,7 +45,8 @@ class Protisten_deAPI_V2
             }
         }
         else exit("\nStructure changed. Investigate.\n");
-        print_r($this->report); exit("\nstop muna\n");
+        print_r($this->report); self::write_tsv_report();
+        exit("\nstop muna\n");
         $this->archive_builder->finalize(true);
         if(isset($this->debug)) print_r($this->debug);
         if(!@$this->debug['does not exist']) echo "\n--No broken images!--\n";    
@@ -94,8 +99,8 @@ class Protisten_deAPI_V2
             }
 
             $images2 = array();
-            if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {      //switching during dev
-            // if(preg_match_all("/decoding=\"async\"(.*?)<\/div>/ims", $html, $arr)) {                 //switching during dev
+            // if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {      //switching during dev
+            if(preg_match_all("/decoding=\"async\"(.*?)<\/div>/ims", $html, $arr)) {                 //switching during dev
                 print_r($arr[1]); echo " yyy\n";
                 foreach($arr[1] as $h) {
                     if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) { // print_r($arr2[1]);
@@ -138,6 +143,7 @@ class Protisten_deAPI_V2
             echo "\ngenus_name: [$genus_name]";
             // ------------------------------------------------------------------------------
             foreach($pre_tmp as $f) {
+                if(stripos($f, "Asset_") !== false) continue; //string is found
                 if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
                 if(stripos($f, $genus_dash_species2) !== false) $tmp[] = $f; //string is found
                 if(stripos($f, $genus_dash_species3) !== false) $tmp[] = $f; //string is found
@@ -260,6 +266,36 @@ class Protisten_deAPI_V2
         $string = trim(preg_replace('/\s*\([^)]*\)/', '', $title)); //remove parenthesis OK
         $string = str_replace("var. ", "", $string);
         return $string;
+    }
+    private function write_tsv_report()
+    {
+        $WRITE = Functions::file_open($this->report_file, "w");
+        foreach($this->report as $url_group => $rek) {
+            $arr = array();
+            $arr[] = $url_group;
+            fwrite($WRITE, implode("\t", $arr)."\n");
+            // ----------------------------------------------
+            foreach($rek as $sciname => $rec) {
+                $arr = array();
+                $arr[] = "";
+                $arr[] = $sciname;
+                $arr[] = $rec['url'];
+                fwrite($WRITE, implode("\t", $arr)."\n");
+                // ----------------------------------------------
+                if($val = @$rec['images']) {
+                    foreach($val as $img) {
+                        $arr = array();
+                        $arr[] = "";
+                        $arr[] = "";
+                        $arr[] = $img;
+                        $arr[] = '-description-';
+                        fwrite($WRITE, implode("\t", $arr)."\n");
+                    }    
+                }
+                // ----------------------------------------------
+            }
+        }
+        fclose($WRITE);
     }
     // ================================================================================ end
 
