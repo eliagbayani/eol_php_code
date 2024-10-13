@@ -41,7 +41,7 @@ class Protisten_deAPI_V2
             }
         }
         else exit("\nStructure changed. Investigate.\n");
-        exit("\nstop muna\n");
+        print_r($this->report); exit("\nstop muna\n");
         $this->archive_builder->finalize(true);
         if(isset($this->debug)) print_r($this->debug);
         if(!@$this->debug['does not exist']) echo "\n--No broken images!--\n";    
@@ -50,129 +50,149 @@ class Protisten_deAPI_V2
     {
         $recs = self::get_records_per_group($url);
         foreach($recs as $rec) { print_r($rec); //exit("\nhuli 2\n");
-            $url2 = $rec['data-href'];
-            if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') continue; //page not found
-            // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/acanthocystis-penardi/';
-            // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/glutinoconcha/excentrostoma/centropyxis-aculeata/';
-            // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/achnanthes-armillaris/';
-            // $url2 = 'https://www.protisten.de/home-new/metazoa/hydrozoa/hydra-viridissima/';
-            // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/acanthoceras-zachariasii/';
-            // $url2 = 'https://www.protisten.de/home-new/bac-proteo/zoogloea-ramigera/';
-            // $url2 = 'https://www.protisten.de/home-new/bac-proteo/macromonas-fusiformis/';
-            // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/';
-            // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
-            // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
-            if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
-                if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
-                    // print_r($arr[1]); //exit("\nhuli 5\n");
-                }
+            /*Array(
+                [title] => Teleostei egg
+                [data-href] => https://www.protisten.de/home-new/metazoa/chordata/teleostei-species/
+                [target] => _blank
+                [src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
+                [data-lazy-src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
+            )*/
+            $images = self::process_taxon_rec($rec);
+            $images = array_filter($images); //remove null arrays
+            $images = array_unique($images); //make unique
+            $images = array_values($images); //reindex key
+            $this->report[$url][$rec['title']]['url'] = $rec['data-href'];
+            $this->report[$url][$rec['title']]['images'] = $images;
 
-                $images1 = array();
-                // background-image:url(https://www.protisten.de/wp-content/uploads/2024/06/Centropyxis-aculeata-Matrix-063-200-Mipro-P3224293-302-HID_NEW.jpg)
-                if(preg_match_all("/background-image\:url\((.*?)\)/ims", $html, $arr)) {
-                    print_r($arr[1]); echo " zzz\n"; //exit("\nhuli 6\n");
-                    $images1 = $arr[1];
-                }
+        } //end foreach()
+        // print_r($this->report); exit;
+    }
+    private function process_taxon_rec($rec)
+    {
+        $url2 = $rec['data-href'];
+        if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') return; //page not found
+        // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/acanthocystis-penardi/';
+        // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/glutinoconcha/excentrostoma/centropyxis-aculeata/';
+        // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/achnanthes-armillaris/';
+        // $url2 = 'https://www.protisten.de/home-new/metazoa/hydrozoa/hydra-viridissima/';
+        // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/acanthoceras-zachariasii/';
+        // $url2 = 'https://www.protisten.de/home-new/bac-proteo/zoogloea-ramigera/';
+        // $url2 = 'https://www.protisten.de/home-new/bac-proteo/macromonas-fusiformis/';
+        // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/';
+        // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
+        // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
+        if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
+            if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
+                // print_r($arr[1]); //exit("\nhuli 5\n");
+            }
 
-                $images2 = array();
-                if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {      //switching during dev
-                // if(preg_match_all("/decoding=\"async\"(.*?)<\/div>/ims", $html, $arr)) {                 //switching during dev
-                    print_r($arr[1]); echo " yyy\n";
-                    foreach($arr[1] as $h) {
-                        if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) {
-                            // print_r($arr2[1]);
-                            $images2 = array_merge($images2, $arr2[1]);
-                        }
+            $images1 = array();
+            // background-image:url(https://www.protisten.de/wp-content/uploads/2024/06/Centropyxis-aculeata-Matrix-063-200-Mipro-P3224293-302-HID_NEW.jpg)
+            if(preg_match_all("/background-image\:url\((.*?)\)/ims", $html, $arr)) {
+                print_r($arr[1]); echo " zzz\n"; //exit("\nhuli 6\n");
+                $images1 = $arr[1];
+            }
+
+            $images2 = array();
+            if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {      //switching during dev
+            // if(preg_match_all("/decoding=\"async\"(.*?)<\/div>/ims", $html, $arr)) {                 //switching during dev
+                print_r($arr[1]); echo " yyy\n";
+                foreach($arr[1] as $h) {
+                    if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) { // print_r($arr2[1]);
+                        $images2 = array_merge($images2, $arr2[1]);
                     }
-                }
-
-                $pre_tmp = array_merge($images1, $images2);
-                $pre_tmp = array_filter($pre_tmp); //remove null arrays
-                $pre_tmp = array_unique($pre_tmp); //make unique
-                $pre_tmp = array_values($pre_tmp); //reindex key
-                // print_r($pre_tmp);
-
-                $tmp = array();
-                // ------------------------------------------------------------------------------
-                $genus_dash_species = pathinfo($url2, PATHINFO_BASENAME); //e.g. zoogloea-ramigera
-                echo "\ngenus_dash_species: [$genus_dash_species]";
-                // ------------------------------------------------------------------------------
-                $genus_species = self::get_genus_species($rec['title']); // Aspidisca pulcherrima var. baltica
-                $genus_dash_species2 = str_replace(" ", "-", $genus_species); // Gadus-morhua
-                echo "\ngenus_dash_species2: [$genus_dash_species2]";
-                // ------------------------------------------------------------------------------
-                $genus_dash_species3 = str_replace(" ", "", $genus_species); //Gadusmorhua
-                echo "\ngenus_dash_species3: [$genus_dash_species3]";
-                // ------------------------------------------------------------------------------
-                $addtl_synonym = self::get_addtl_synonym($html);
-                $genus_dash_synonym = str_replace(" ", "-", $addtl_synonym);
-                echo "\ngenus_dash_synonym: [$genus_dash_synonym]";
-                // ------------------------------------------------------------------------------
-                $genus_dash = false;
-                if($val = self::get_genus_if_spec($rec['title'])) $genus_dash = $val;
-                echo "\ngenus_dash: [$genus_dash]";
-
-                $genus_dash2 = false; //manual assigned
-                if($genus_dash == 'Foraminifera') $genus_dash2 = 'Foraminifere';
-
-                $tmp_arr = explode(" ", $rec['title']);
-                $genus_name = $tmp_arr[0];  // "Gadus"
-                echo "\ngenus_name: [$genus_name]";
-                // ------------------------------------------------------------------------------
-                foreach($pre_tmp as $f) {
-                    if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
-                    if(stripos($f, $genus_dash_species2) !== false) $tmp[] = $f; //string is found
-                    if(stripos($f, $genus_dash_species3) !== false) $tmp[] = $f; //string is found
-                    if(stripos($f, $genus_dash_synonym) !== false) $tmp[] = $f; //string is found
-                    if($genus_dash) {
-                        if(stripos($f, $genus_dash) !== false) $tmp[] = $f; //string is found
-                    }
-                    if($genus_dash2) {
-                        if(stripos($f, $genus_dash2) !== false) $tmp[] = $f; //string is found
-                    }
-                }
-                print_r($tmp); echo " return - 111";
-
-                if(count($tmp) == 0) {
-                    foreach($pre_tmp as $f) {
-                        if(stripos($f, "Asset_") !== false) continue; //string is found
-                        if(stripos($f, $genus_name.".jpg") !== false) continue; //string is found
-                        if(stripos($f, $genus_name) !== false) $tmp[] = $f; //string is found    
-                    }
-                    print_r($tmp); echo " return - 222";
-                }
-
-                // last chance
-                $final = array();
-                if(count($tmp) == 0) {
-                    if(preg_match_all("/src=\"(.*?)\"/ims", $html, $arr)) {
-                        foreach($arr[1] as $str) {
-                            if(stripos($str, "Asset_") !== false) continue; //string is found
-                            if(stripos($str, $genus_dash_species) !== false) $final[] = $str; //string is found
-                            if($genus_dash) {
-                                if(stripos($str, $genus_dash) !== false) $final[] = $str; //string is found
-                            }                            
-                        }
-                    }
-                    print_r($final); echo " return - 222";
-                    if(count($final) == 0) { 
-                        if($genus_name) {
-                            foreach($arr[1] as $str) {
-                                if(stripos($str, "Asset_") !== false) continue; //string is found
-                                if(stripos($str, $genus_name.".jpg") !== false) continue; //string is found
-                                if(stripos($str, $genus_name) !== false) $final[] = $str; //string is found    
-                            }
-                            if(count($final) == 0) { 
-                                print_r($rec); print_r($this->debug); exit("\nhuli 3 [$genus_name]\n"); 
-                            }
-                            else { print_r($final); echo(" 111\n"); }
-                        }
-                    }
-                    // return $final; //start save here
                 }
             }
-        } //end foreach()
-        // exit("\nhuli 4\n"); $rec $final
+
+            $pre_tmp = array_merge($images1, $images2);
+            $pre_tmp = array_filter($pre_tmp); //remove null arrays
+            $pre_tmp = array_unique($pre_tmp); //make unique
+            $pre_tmp = array_values($pre_tmp); //reindex key
+            // print_r($pre_tmp);
+
+            $tmp = array();
+            // ------------------------------------------------------------------------------
+            $genus_dash_species = pathinfo($url2, PATHINFO_BASENAME); //e.g. zoogloea-ramigera
+            echo "\ngenus_dash_species: [$genus_dash_species]";
+            // ------------------------------------------------------------------------------
+            $genus_species = self::get_genus_species($rec['title']); // Aspidisca pulcherrima var. baltica
+            $genus_dash_species2 = str_replace(" ", "-", $genus_species); // Gadus-morhua
+            echo "\ngenus_dash_species2: [$genus_dash_species2]";
+            // ------------------------------------------------------------------------------
+            $genus_dash_species3 = str_replace(" ", "", $genus_species); //Gadusmorhua
+            echo "\ngenus_dash_species3: [$genus_dash_species3]";
+            // ------------------------------------------------------------------------------
+            $addtl_synonym = self::get_addtl_synonym($html);
+            $genus_dash_synonym = str_replace(" ", "-", $addtl_synonym);
+            echo "\ngenus_dash_synonym: [$genus_dash_synonym]";
+            // ------------------------------------------------------------------------------
+            $genus_dash = false;
+            if($val = self::get_genus_if_spec($rec['title'])) $genus_dash = $val;
+            echo "\ngenus_dash: [$genus_dash]";
+
+            $genus_dash2 = false; //manual assigned
+            if($genus_dash == 'Foraminifera') $genus_dash2 = 'Foraminifere';
+
+            $tmp_arr = explode(" ", $rec['title']);
+            $genus_name = $tmp_arr[0];  // "Gadus"
+            echo "\ngenus_name: [$genus_name]";
+            // ------------------------------------------------------------------------------
+            foreach($pre_tmp as $f) {
+                if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
+                if(stripos($f, $genus_dash_species2) !== false) $tmp[] = $f; //string is found
+                if(stripos($f, $genus_dash_species3) !== false) $tmp[] = $f; //string is found
+                if(stripos($f, $genus_dash_synonym) !== false) $tmp[] = $f; //string is found
+                if($genus_dash) {
+                    if(stripos($f, $genus_dash) !== false) $tmp[] = $f; //string is found
+                }
+                if($genus_dash2) {
+                    if(stripos($f, $genus_dash2) !== false) $tmp[] = $f; //string is found
+                }
+            }
+            print_r($tmp); echo " ret - 111";
+            if(count($tmp) > 0) return $tmp;
+
+            if(count($tmp) == 0) {
+                foreach($pre_tmp as $f) {
+                    if(stripos($f, "Asset_") !== false) continue; //string is found
+                    if(stripos($f, $genus_name.".jpg") !== false) continue; //string is found
+                    if(stripos($f, $genus_name) !== false) $tmp[] = $f; //string is found    
+                }
+                print_r($tmp); echo " ret - 222";
+            }
+            if(count($tmp) > 0) return $tmp;
+
+            // last chance
+            $final = array();
+            if(count($tmp) == 0) {
+                if(preg_match_all("/src=\"(.*?)\"/ims", $html, $arr)) {
+                    foreach($arr[1] as $str) {
+                        if(stripos($str, "Asset_") !== false) continue; //string is found
+                        if(stripos($str, $genus_dash_species) !== false) $final[] = $str; //string is found
+                        if($genus_dash) {
+                            if(stripos($str, $genus_dash) !== false) $final[] = $str; //string is found
+                        }                            
+                    }
+                }
+                print_r($final); echo " ret - 222";
+                if(count($final) > 0) return $final;
+
+                if(count($final) == 0) { 
+                    if($genus_name) {
+                        foreach($arr[1] as $str) {
+                            if(stripos($str, "Asset_") !== false) continue; //string is found
+                            if(stripos($str, $genus_name.".jpg") !== false) continue; //string is found
+                            if(stripos($str, $genus_name) !== false) $final[] = $str; //string is found    
+                        }
+                        if(count($final) == 0) { 
+                            print_r($rec); print_r($this->debug); exit("\nhuli 3 [$genus_name]\n"); 
+                        }
+                        else { print_r($final); echo(" 111\n"); return $final; }        
+                    }
+                }
+            }
+        }
+        print_r($rec); print_r($this->debug); exit("\nhuli 4 - should not go here.\n"); 
     }
     private function get_records_per_group($url)
     {
