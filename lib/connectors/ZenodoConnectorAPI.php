@@ -705,6 +705,15 @@ class ZenodoConnectorAPI
         echo "\nContributors to save:"; print_r($final);
         // */
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        $keywords_final = array();
+        if($val = @$obj_1st['metadata']['keywords']) {
+            foreach($val as $kw) {
+                $kw = str_replace("'", "__", $kw);
+                $keywords_final[] = $kw;
+            }
+        }
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
@@ -715,7 +724,7 @@ class ZenodoConnectorAPI
                                     // "files" => array() //$obj_1st['files']
                                     "access_right" => @$obj_1st['metadata']['access_right'],
                                     "contributors" => @$obj_1st['metadata']['contributors'],
-                                    "keywords" => @$obj_1st['metadata']['keywords'],
+                                    "keywords" => $keywords_final,
                                     "related_identifiers" => @$obj_1st['metadata']['related_identifiers'],
                                     "imprint_publisher" => @$obj_1st['metadata']['imprint_publisher'],
                                     "communities" => @$obj_1st['metadata']['communities'],
