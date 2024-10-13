@@ -24,7 +24,7 @@ class Protisten_deAPI_V2
         /* Google sheet used: This is sciname mapping to EOL PageID. Initiated by Wolfgang Bettighofer.
         https://docs.google.com/spreadsheets/d/1QnT-o-t4bVp-BP4jFFA-Alr4PlIj7fAD6RRb5iC6BYA/edit#gid=0
         */
-        $this->page['main']           = 'https://www.protisten.de';
+        $this->page['main'] = 'https://www.protisten.de';
     }
     function start()
     {   
@@ -50,9 +50,7 @@ class Protisten_deAPI_V2
         $recs = self::get_records_per_group($url);
         foreach($recs as $rec) { print_r($rec); //exit("\nhuli 2\n");
             $url2 = $rec['data-href'];
-
-            if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') continue;
-
+            if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') continue; //page not found
             // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/acanthocystis-penardi/';
             // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/glutinoconcha/excentrostoma/centropyxis-aculeata/';
             // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/achnanthes-armillaris/';
@@ -76,9 +74,8 @@ class Protisten_deAPI_V2
                 }
 
                 $images2 = array();
-                if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) { 
-                // if(preg_match_all("/decoding=\"async\"(.*?)<\/div>/ims", $html, $arr)) { 
-
+                if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {      //switching during dev
+                // if(preg_match_all("/decoding=\"async\"(.*?)<\/div>/ims", $html, $arr)) {                 //switching during dev
                     print_r($arr[1]); echo " yyy\n";
                     foreach($arr[1] as $h) {
                         if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) {
@@ -114,7 +111,7 @@ class Protisten_deAPI_V2
                 if($val = self::get_genus_if_spec($rec['title'])) $genus_dash = $val;
                 echo "\ngenus_dash: [$genus_dash]";
 
-                $genus_dash2 = false;
+                $genus_dash2 = false; //manual assigned
                 if($genus_dash == 'Foraminifera') $genus_dash2 = 'Foraminifere';
 
                 $tmp_arr = explode(" ", $rec['title']);
@@ -144,7 +141,6 @@ class Protisten_deAPI_V2
                     print_r($tmp); echo " return - 222";
                 }
 
-
                 // last chance
                 $final = array();
                 if(count($tmp) == 0) {
@@ -154,13 +150,11 @@ class Protisten_deAPI_V2
                             if(stripos($str, $genus_dash_species) !== false) $final[] = $str; //string is found
                             if($genus_dash) {
                                 if(stripos($str, $genus_dash) !== false) $final[] = $str; //string is found
-                            }                    
-        
+                            }                            
                         }
                     }
                     print_r($final); echo " return - 222";
                     if(count($final) == 0) { 
-                        
                         if($genus_name) {
                             foreach($arr[1] as $str) {
                                 if(stripos($str, "Asset_") !== false) continue; //string is found
@@ -195,9 +189,10 @@ class Protisten_deAPI_V2
                 $records = array(); $taken_already = array();
                 foreach($arr[1] as $str) { $save = array();
                     if(preg_match("/title=\"(.*?)\"/ims", $str, $arr2)) $save['title'] = $arr2[1];
-                    if(preg_match("/data-href=\"(.*?)\"/ims", $str, $arr2)) $save['data-href'] = $arr2[1];
-
-                    if(substr($save['data-href'], -4) == '.jpg') continue;
+                    if(preg_match("/data-href=\"(.*?)\"/ims", $str, $arr2)) {
+                        $save['data-href'] = $arr2[1];
+                        if(substr($save['data-href'], -4) == '.jpg') continue;
+                    }
 
                     if(preg_match("/target=\"(.*?)\"/ims", $str, $arr2)) $save['target'] = $arr2[1];
                     if(preg_match("/src=\"(.*?)\"/ims", $str, $arr2)) $save['src'] = $arr2[1];
