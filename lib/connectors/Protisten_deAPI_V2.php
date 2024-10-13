@@ -40,7 +40,7 @@ class Protisten_deAPI_V2
             }
         }
         else exit("\nStructure changed. Investigate.\n");
-        exit("\nstop 3\n");
+        exit("\nstop muna\n");
         $this->archive_builder->finalize(true);
         if(isset($this->debug)) print_r($this->debug);
         if(!@$this->debug['does not exist']) echo "\n--No broken images!--\n";    
