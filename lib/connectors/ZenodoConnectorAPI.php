@@ -152,7 +152,7 @@ class ZenodoConnectorAPI
         $id = 13317092; // National Checklists 2019: United Arab Emirates Species List
         $id = 13321393; //Wikipedia: wikipedia_combined_languages_batch2
         $id = 13317273; //National Checklists 2019: Afghanistan Species List
-        $id = 13319457;
+        $id = 13879731;
 
         // metadata.subjects.subject:"EOL Content Partners: Water Body Checklists 2019"
 
@@ -193,10 +193,10 @@ class ZenodoConnectorAPI
         /* batch 24 - 28
         if(!in_array('EOL Content Partners: Water Body Checklists 2019', $obj_1st['metadata']['keywords'])) return;
         */
-        // /* batch 24 - 28
+        /* batch 24 - 28
         if(!in_array('EOL Content Partners', $obj_1st['metadata']['keywords'])) return;
         // https://zenodo.org/search?q=metadata.subjects.subject%3A%22EOL%20Content%20Partners%22&f=subject%3AEOL%20Content%20Partners&l=list&p=1&s=10&sort=bestmatch
-        // */
+        */
 
         $id = $obj_1st['id'];
         if($zenodo_id != $id) {
@@ -344,9 +344,11 @@ class ZenodoConnectorAPI
             } //end foreach()    
         }
         // Oct_6
-        if(in_array('EOL Content Partners: Wikipedia', $o['metadata']['keywords'])) {
-            if(!self::is_name_in_Contributors('Eli Agbayani', $final)) {
-                $final[] = array('name' => 'Eli Agbayani', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => @$this->ORCIDs['Eli Agbayani']);
+        if($val = @$o['metadata']['keywords']) {
+            if(in_array('EOL Content Partners: Wikipedia', $val)) {
+                if(!self::is_name_in_Contributors('Eli Agbayani', $final)) {
+                    $final[] = array('name' => 'Eli Agbayani', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => @$this->ORCIDs['Eli Agbayani']);
+                }    
             }    
         }
 
@@ -485,6 +487,13 @@ class ZenodoConnectorAPI
         $notes = @$obj_1st['metadata']['notes'];
         $notes = self::format_description($notes);
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        $keywords_final = array();
+        if($val = @$obj_1st['metadata']['keywords']) {
+            foreach($val as $kw) {
+                $kw = str_replace("'", "__", $kw);
+                $keywords_final[] = $kw;
+            }
+        }
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         array_shift($obj_1st['files']);
@@ -496,7 +505,7 @@ class ZenodoConnectorAPI
                                     // "files" => array() //$obj_1st['files']
                                     "access_right" => @$obj_1st['metadata']['access_right'],
                                     "contributors" => @$obj_1st['metadata']['contributors'],                                    
-                                    "keywords" => str_replace("'", "__", $obj_1st['metadata']['keywords']),
+                                    "keywords" => $keywords_final,
                                     "related_identifiers" => @$obj_1st['metadata']['related_identifiers'],
                                     "imprint_publisher" => @$obj_1st['metadata']['imprint_publisher'],
                                     "communities" => @$obj_1st['metadata']['communities'],
