@@ -325,7 +325,7 @@ class Protisten_deAPI
         else                     return false; //echo 'File not found';
         */
 
-        // /* fopen worked spledidly OK
+        // /* fopen worked splendidly OK
         // Open file
         $handle = @fopen($image_url, 'r');
         // Check if file exists
