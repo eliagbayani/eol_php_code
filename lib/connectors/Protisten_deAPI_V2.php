@@ -144,6 +144,7 @@ class Protisten_deAPI_V2
             // ------------------------------------------------------------------------------
             foreach($pre_tmp as $f) {
                 if(stripos($f, "Asset_") !== false) continue; //string is found
+                if(stripos($f, $genus_name.".jpg") !== false) continue; //string is found
                 if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
                 if(stripos($f, $genus_dash_species2) !== false) $tmp[] = $f; //string is found
                 if(stripos($f, $genus_dash_species3) !== false) $tmp[] = $f; //string is found
