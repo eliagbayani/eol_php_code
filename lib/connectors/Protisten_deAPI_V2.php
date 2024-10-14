@@ -30,23 +30,31 @@ class Protisten_deAPI_V2
         else                           $path = '/Volumes/OWC_Express/other_files/protisten_de/';
         if(!is_dir($path)) mkdir($path);
         $this->report_file = $path.'protistenDE_images.tsv';
+        $this->protisten_de_legacy_taxa = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/refs/heads/master/protisten_de/protisten_2024_07_10/taxon.tab';
     }
     function start()
     {   
-        self::taxon_mapping_from_GoogleSheet(); exit("\nstop 1\n");
-        // self::write_agent();
+        self::taxon_mapping_from_GoogleSheet(); //exit("\nstop 1\n");
+        self::load_legacy_taxa_data(); //print_r($this->legacy); exit("\nstop 2\n");
+        self::write_agent();
 
         if($paths = self::get_main_paths()) {
             print_r($paths); //exit("\nstop 1\n");
-            foreach($paths as $url) { $this->report_main_url = $url;
+            $i = 0;
+            foreach($paths as $url) { $i++; $this->report_main_url = $url;
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
                 // break; //debug - process only 1
+                if($i >= 3) break; //debug only
             }
         }
         else exit("\nStructure changed. Investigate.\n");
-        print_r($this->report); self::write_tsv_report();
-        exit("\nstop muna\n");
+        self::write_dwca();
+        print_r($this->report);
+        /* main operation
+        self::write_tsv_report();
+        */
+        // exit("\nstop muna\n");
         $this->archive_builder->finalize(true);
         if(isset($this->debug)) print_r($this->debug);
         if(!@$this->debug['does not exist']) echo "\n--No broken images!--\n";    
@@ -62,15 +70,17 @@ class Protisten_deAPI_V2
                 [src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
                 [data-lazy-src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
             )*/
-            $images = self::process_taxon_rec($rec);
+            $ret = self::process_taxon_rec($rec); //print_r($ret);
+            $images = $ret['images'];
             $images = array_filter($images); //remove null arrays
             $images = array_unique($images); //make unique
             $images = array_values($images); //reindex key
             $this->report[$url][$rec['title']]['url'] = $rec['data-href'];
+            $this->report[$url][$rec['title']]['EOLid'] = @$rec['EOLid'];
             $this->report[$url][$rec['title']]['images'] = $images;
 
         } //end foreach()
-        // print_r($this->report); exit;
+        // print_r($this->report); exit("\nstopx\n");
     }
     private function process_taxon_rec($rec)
     {
@@ -87,6 +97,16 @@ class Protisten_deAPI_V2
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
         if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
+
+            if(preg_match_all("/eol.org\/pages\/(.*?)\/names\"/ims", $html, $arr)) {
+                $ret_arr = array_filter($arr[1]); //remove null arrays
+                $ret_arr = array_unique($ret_arr); //make unique
+                $ret_arr = array_values($ret_arr); //reindex key
+                if(count($ret_arr) > 1) { print_r($rec); echo("\nInvestigate more than 1 EOL ID.\n"); $rec['EOLid'] = $ret_arr[0]; } //Raphidocystis tubifera 61003987
+                if(count($ret_arr) < 1) { print_r($rec); exit("\nInvestigate no EOL ID found.\n"); }
+                if(count($ret_arr) == 1) { $rec['EOLid'] = $ret_arr[0]; print_r($rec); print_r($ret_arr); exit("\nhuli ka\n"); }
+            }
+
             if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
                 // print_r($arr[1]); //exit("\nhuli 5\n");
             }
@@ -101,7 +121,7 @@ class Protisten_deAPI_V2
             $images2 = array();
             // if(preg_match_all("/decoding=\"async\" width=\"800\"(.*?)<\/div>/ims", $html, $arr)) {      //switching during dev
             if(preg_match_all("/decoding=\"async\"(.*?)<\/div>/ims", $html, $arr)) {                 //switching during dev
-                print_r($arr[1]); echo " yyy\n";
+                // print_r($arr[1]); echo " yyy\n";
                 foreach($arr[1] as $h) {
                     if(preg_match_all("/src=\"(.*?)\"/ims", $h, $arr2)) { // print_r($arr2[1]);
                         $images2 = array_merge($images2, $arr2[1]);
@@ -157,7 +177,7 @@ class Protisten_deAPI_V2
                 }
             }
             print_r($tmp); echo " ret - 111";
-            if(count($tmp) > 0) return $tmp;
+            if(count($tmp) > 0) { $rec['images'] = $tmp; return $rec; }
 
             if(count($tmp) == 0) {
                 foreach($pre_tmp as $f) {
@@ -167,7 +187,7 @@ class Protisten_deAPI_V2
                 }
                 print_r($tmp); echo " ret - 222";
             }
-            if(count($tmp) > 0) return $tmp;
+            if(count($tmp) > 0) { $rec['images'] = $tmp; return $rec; }
 
             // last chance
             $final = array();
@@ -182,7 +202,7 @@ class Protisten_deAPI_V2
                     }
                 }
                 print_r($final); echo " ret - 222";
-                if(count($final) > 0) return $final;
+                if(count($final) > 0) { $rec['images'] = $final; return $rec; }
 
                 if(count($final) == 0) { 
                     if($genus_name) {
@@ -194,12 +214,12 @@ class Protisten_deAPI_V2
                         if(count($final) == 0) { 
                             print_r($rec); print_r($this->debug); exit("\nhuli 3 [$genus_name]\n"); 
                         }
-                        else { print_r($final); echo(" 111\n"); return $final; }        
+                        else { print_r($final); echo(" 111\n"); $rec['images'] = $final; return $rec; }        
                     }
                 }
             }
         }
-        print_r($rec); print_r($this->debug); exit("\nhuli 4 - should not go here.\n"); 
+        print_r($rec); print_r($this->debug); exit("\nhuli 4 - should not go here.\n"); //return
     }
     private function get_records_per_group($url)
     {
@@ -211,7 +231,7 @@ class Protisten_deAPI_V2
         $this->debug['url in question'] = $url;
         if($html = Functions::lookup_with_cache($url, $this->download_options)) { // echo "\n$html\n";
             if(preg_match_all("/<figure class=\"wpmf-gallery-item\"(.*?)<\/figure>/ims", $html, $arr)) { //this gives 2 records, we use the 2nd one
-                print_r($arr[1]); echo " - ito siya\n";
+                // print_r($arr[1]); echo " - ito siya\n";
                 $records = array(); $taken_already = array();
                 foreach($arr[1] as $str) { $save = array();
                     if(preg_match("/title=\"(.*?)\"/ims", $str, $arr2)) $save['title'] = $arr2[1];
@@ -267,6 +287,95 @@ class Protisten_deAPI_V2
         $string = trim(preg_replace('/\s*\([^)]*\)/', '', $title)); //remove parenthesis OK
         $string = str_replace("var. ", "", $string);
         return $string;
+    }
+    private function write_dwca()
+    {   echo "\nlegacy taxa count: ".count($this->legacy)."\n";
+        foreach($this->report as $url_group => $rek) {
+            foreach($rek as $sciname => $rec) {
+                /*Array(
+                    [url] => https://www.protisten.de/home-new/testatamoeboids-infra/cercozoa-testate2/imbricatea2/euglyphida2/cyphoderia-amphoralis/
+                    [images] => Array(
+                            [0] => https://www.protisten.de/wp-content/uploads/2024/07/Cyphoderia-amphoralis-040-100-5232701-738-GOW_NEW.jpg
+                            [1] => https://www.protisten.de/wp-content/uploads/2024/07/Cyphoderia-amphoralis-040-100-5240001-028-GOW_NEW.jpg
+                        )
+                )*/
+
+                // /* format massage names
+                $sciname = str_ireplace(" spec.", "", $sciname);
+                $sciname = trim(preg_replace('/\s*\([^)]*\)/', '', $sciname)); //remove parenthesis OK // Cyphoderia ampulla (Ichthyosquama loricaria)
+                // */
+
+                if($legacy = @$this->legacy[$sciname]) {
+                    print_r($legacy); echo "$sciname - found in legacy\n";
+                    /*Array(
+                        [taxonID] => 592e6d83ad97bbdf341d1f4fb4141fd8
+                        [parentNameUsageID] => euglyphida-cyphoderiidae
+                        [higherClassification] => Eucaryota|SAR (Stramenopiles, Alveolates, Rhizaria)|Rhizaria|Cercozoa|Imbricatea|Silicofilosea|Euglyphida|Cyphoderiidae
+                    )*/
+                }
+                else { echo "\n-------------\n[$sciname]\n"; echo(" - not found in legacy\n"); }
+
+                $taxon = new \eol_schema\Taxon();
+                $taxon->scientificName = $sciname;
+                $taxon->EOLid = @$this->taxon_EOLpageID[$sciname];
+                if($legacy) {
+                    $taxon->taxonID = $legacy['taxonID'];
+                    $taxon->parentNameUsageID = $legacy['parentNameUsageID'];
+                    $taxon->higherClassification = $legacy['higherClassification'];
+                }
+                else {
+                    $taxon->taxonID = md5($sciname);
+                }
+                $rec['taxonID'] = $taxon->taxonID;
+                $taxon->furtherInformationURL = $rec['url'];
+
+                // if(isset($this->remove_scinames[$r['sciname']])) continue; //will need to confirm if still going to be used        
+                // if($reference_ids) $taxon->referenceID = implode("; ", $reference_ids); //copied template
+                if(!isset($this->taxon_ids[$taxon->taxonID])) {
+                    $this->archive_builder->write_object_to_file($taxon);
+                    $this->taxon_ids[$taxon->taxonID] = '';
+                }
+                if($val = @$r['ancestry']) self::create_taxa_for_ancestry($val, $taxon->parentNameUsageID);
+                if(@$rec['images']) self::write_image($rec);
+
+                // $arr[] = $sciname;
+                // $arr[] = $rec['url'];
+                // if($val = @$rec['images']) {
+                // }
+            }
+        }
+        // exit("\nstop muna a\n");
+    }
+    private function load_legacy_taxa_data()
+    {   $options = $this->download_options;
+        $options['expire_seconds'] = false;
+        $local_tsv = Functions::save_remote_file_to_local($this->protisten_de_legacy_taxa, $options);
+        $i = 0;
+        foreach(new FileIterator($local_tsv) as $line_number => $line) { $i++;
+            $row = explode("\t", $line);
+            if($i == 1) $fields = $row;
+            else {
+                $k = -1;
+                $rec = array();
+                foreach($fields as $field) { $k++;
+                    $rec[$field] = @$row[$k];
+                }
+                $rec = array_map('trim', $rec);
+                // print_r($rec); break; exit;
+            }
+            /*Array(
+                [taxonID] => cca346e3c523a12c1532c45d6de2ad98
+                [furtherInformationURL] => http://www.protisten.de/gallery-ALL/2-Acanthoceras-spec.html
+                [parentNameUsageID] => chaetocerotales-acanthocerotaceae
+                [scientificName] => Acanthoceras zachariasii
+                [higherClassification] => Eucaryota|SAR (Stramenopiles, Alveolates, Rhizaria)|Stramenopiles|Ochrophyta|Bacillariophyta|Coscinodiscophyceae|Coscinodiscophycidae|Chaetocerotales|Acanthocerotaceae
+                [EOLid] => 
+            )*/
+            if($sciname = @$rec['scientificName']) {
+                $this->legacy[$sciname] = array('taxonID' => $rec['taxonID'], 'parentNameUsageID' => $rec['parentNameUsageID'], 'higherClassification' => $rec['higherClassification']);
+            }
+        }
+        unlink($local_tsv);
     }
     private function write_tsv_report()
     {
@@ -330,73 +439,6 @@ class Protisten_deAPI_V2
             }
         }
     }
-    private function parse_image_page($rec)
-    {
-        $html_filename = $rec['image_page'];
-        // echo "\n".$html_filename." -- ";
-
-        $this->filenames = array();
-        $this->filenames[] = $html_filename;
-        
-        $rec['next_pages'] = self::get_all_next_pages($this->page['image_page_url'].$html_filename);
-        $rec['media_info'] = self::get_media_info($rec);
-        if($rec['media_info']) self::write_archive($rec);
-    }
-    private function get_media_info($rec)
-    {
-        $media_info = array();
-        if($pages = @$rec['next_pages']) {
-            foreach($pages as $html_filename) {
-                if($val = self::parse_media($this->page['image_page_url'].$html_filename)) $media_info[] = $val;
-            }
-        }
-        return $media_info;
-    }
-    private function parse_media($url)
-    {
-        $m = array();
-        if($html = Functions::lookup_with_cache($url, $this->download_options)) {
-            $html = utf8_encode($html); //needed for this resource. May not be needed for other resources.
-            $html = Functions::conv_to_utf8($html);
-            $html = self::clean_str($html);
-            if(preg_match("/MARK 14\:(.*?)<\/td>/ims", $html, $arr)) {
-                $tmp = str_replace("&nbsp;", " ", strip_tags($arr[1]));
-                if(preg_match("/\-\-\>(.*?)~~~/ims", $tmp."~~~", $arr)) $tmp = $arr[1];
-                $tmp = Functions::remove_whitespace(trim($tmp));
-                $m['desc'] = $tmp;
-            }
-            if(preg_match("/MARK 12\:(.*?)<\/td>/ims", $html, $arr)) {
-                if(preg_match("/<img src=\"(.*?)\"/ims", $arr[1], $arr2)) $m['image'] = $arr2[1];
-                /*
-                e.g. value is:                     "pics/Acanthoceras_040-125_P6020240-251-totale_ODB.jpg"
-                http://www.protisten.de/gallery-ALL/pics/Acanthoceras_040-125_P6020240-251-totale_ODB.jpg
-                */
-            }
-            if(preg_match("/MARK 13\:(.*?)<\/td>/ims", $html, $arr)) {
-                $tmp = str_replace("&nbsp;", " ", strip_tags($arr[1]));
-                if(preg_match("/\-\-\>(.*?)~~~/ims", $tmp."~~~", $arr)) $tmp = $arr[1];
-                $tmp = str_ireplace(' spec.', '', $tmp);
-                $tmp = Functions::remove_whitespace(trim($tmp));
-                $m['sciname'] = $tmp;
-            }
-            if(preg_match("/MARK 10\:(.*?)<\/td>/ims", $html, $arr)) {
-                $tmp = str_replace("&nbsp;", " ", strip_tags($arr[1]));
-                if(preg_match("/\-\-\>(.*?)~~~/ims", $tmp."~~~", $arr)) $tmp = Functions::remove_whitespace($arr[1]);
-                // echo "\n[".$tmp."]\n";
-                $arr = explode(":",$tmp);
-                $arr = array_map('trim', $arr);
-                // print_r($arr);
-                $m['ancestry'] = $arr;
-                
-                $tmp = array_pop($arr); //last element
-                $m['parent_id'] = self::format_id($arr[count($arr)-1])."-".self::format_id($tmp); //combination of last 2 immediate parents
-                // echo "\n$parent\n"; exit;
-            }
-            // print_r($m); exit;
-        }
-        if(@$m['sciname'] && @$m['image']) return $m;
-        else return array();
-    }
     private function format_id($id)
     {
         return strtolower(str_replace(" ", "_", $id));
@@ -449,41 +491,6 @@ class Protisten_deAPI_V2
         }
         else echo "\nSite is unavailable: [".$this->page['main']."]\n";
         return false;
-    }
-    private function write_archive($rec)
-    {
-        // print_r($rec); exit;
-        /* [media_info] => Array(
-            [0] => Array(
-                    [desc] => Scale bar indicates 50 µm. The specimen was gathered in the wetlands of national park Unteres Odertal (100 km north east of Berlin). The image was built up using several photomicrographic frames with manual stacking technique. Images were taken using Zeiss Universal with Olympus C7070 CCD camera. Image under Creative Commons License V 3.0 (CC BY-NC-SA). Der Messbalken markiert eine Länge von 50 µm. Die Probe wurde in den Feuchtgebieten des Nationalpark Unteres Odertal (100 km nordöstlich von Berlin) gesammelt. Mikrotechnik: Zeiss Universal, Kamera: Olympus C7070. Creative Commons License V 3.0 (CC BY-NC-SA). For permission to use of (high-resolution) images please contact postmaster@protisten.de.
-                    [image] => pics/Acanthoceras_040-125_P6020240-251-totale_ODB.jpg
-                    [sciname] => Acanthoceras spec.
-                )
-        */
-        $i = -1;
-        foreach($rec['media_info'] as $r) { $i++;
-            $taxon = new \eol_schema\Taxon();
-            $r['taxon_id'] = md5($r['sciname']);
-            $r['source_url'] = $this->page['image_page_url'].@$rec['next_pages'][$i];
-            $taxon->taxonID                 = $r['taxon_id'];
-            $taxon->scientificName          = $r['sciname'];
-            
-            if($EOLid = @$this->taxon_EOLpageID[$r['sciname']]) $taxon->EOLid = $EOLid; // http://eol.org/schema/EOLid
-            if(isset($this->remove_scinames[$r['sciname']])) continue;
-            
-            $taxon->parentNameUsageID       = $r['parent_id'];
-            $taxon->furtherInformationURL   = $r['source_url'];
-            // $taxon->taxonRank                = '';
-            $taxon->higherClassification    = implode("|", $r['ancestry']);
-            // echo "\n$taxon->higherClassification\n";
-            // if($reference_ids) $taxon->referenceID = implode("; ", $reference_ids);
-            if(!isset($this->taxon_ids[$taxon->taxonID])) {
-                $this->archive_builder->write_object_to_file($taxon);
-                $this->taxon_ids[$taxon->taxonID] = '';
-            }
-            if($val = @$r['ancestry']) self::create_taxa_for_ancestry($val, $taxon->parentNameUsageID);
-            if(@$r['image']) self::write_image($r);
-        }
     }
     private function create_taxa_for_ancestry($ancestry, $parent_id)
     {
@@ -538,35 +545,38 @@ class Protisten_deAPI_V2
     }
     private function write_image($rec)
     {
-        $mr = new \eol_schema\MediaResource();
-        $mr->agentID                = implode("; ", $this->agent_id);
-        $mr->taxonID                = $rec["taxon_id"];
-        $mr->identifier             = md5($rec['image']);
-        $mr->type                   = "http://purl.org/dc/dcmitype/StillImage";
-        $mr->language               = 'en';
-        $mr->format                 = Functions::get_mimetype($rec['image']);
-        $this->debug['mimetype'][$mr->format] = '';
-
-        $mr->accessURI              = self::format_accessURI($this->page['image_page_url'].$rec['image']);
-        
-        // /* New: Jun 13,2023
-        if(!self::image_exists_YN($mr->accessURI)) {
-            $this->debug['does not exist'][$mr->accessURI] = '';
-            return;
-        }
-        // */
-        
-        $mr->furtherInformationURL  = self::format_furtherInfoURL($rec['source_url'], $mr->accessURI, $mr);
-        $mr->Owner                  = "Wolfgang Bettighofer";
-        $mr->UsageTerms             = "http://creativecommons.org/licenses/by-nc-sa/3.0/";
-        $mr->description            = @$rec["desc"];
-        if(!isset($this->obj_ids[$mr->identifier])) {
-            $this->archive_builder->write_object_to_file($mr);
-            $this->obj_ids[$mr->identifier] = '';
+        foreach($rec['images'] as $image) {
+            $mr = new \eol_schema\MediaResource();
+            $mr->agentID                = implode("; ", $this->agent_id);
+            $mr->taxonID                = $rec["taxonID"];
+            $mr->identifier             = md5($image);
+            $mr->type                   = "http://purl.org/dc/dcmitype/StillImage";
+            $mr->language               = 'en';
+            $mr->format                 = Functions::get_mimetype($image);
+            $this->debug['mimetype'][$mr->format] = '';
+            $mr->accessURI              = $image;
+            
+            // /* New: Jun 13,2023
+            if(!self::image_exists_YN($mr->accessURI)) {
+                $this->debug['does not exist'][$mr->accessURI] = '';
+                continue;
+            }
+            // */
+            
+            $mr->furtherInformationURL  = $rec['url'];
+            $mr->Owner                  = "Wolfgang Bettighofer";
+            $mr->UsageTerms             = "http://creativecommons.org/licenses/by-nc-sa/3.0/";
+            $mr->description            = ''; //waiting on Wolfgang
+            if(!isset($this->obj_ids[$mr->identifier])) {
+                $this->archive_builder->write_object_to_file($mr);
+                $this->obj_ids[$mr->identifier] = '';
+            }
         }
     }
     private function image_exists_YN($image_url)
-    {   /* curl didn't work
+    {   
+        return true; //debug only dev only
+        /* curl didn't work
         // Initialize cURL
         $ch = curl_init($image_url);
         curl_setopt($ch, CURLOPT_NOBODY, true);
