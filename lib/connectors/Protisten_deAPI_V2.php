@@ -33,7 +33,7 @@ class Protisten_deAPI_V2
     }
     function start()
     {   
-        // self::taxon_mapping_from_GoogleSheet();
+        self::taxon_mapping_from_GoogleSheet(); exit("\nstop 1\n");
         // self::write_agent();
 
         if($paths = self::get_main_paths()) {
@@ -289,7 +289,7 @@ class Protisten_deAPI_V2
                         $arr[] = "";
                         $arr[] = "";
                         $arr[] = $img;
-                        $arr[] = '-description-';
+                        $arr[] = '-enter description here-';
                         fwrite($WRITE, implode("\t", $arr)."\n");
                     }    
                 }
@@ -698,7 +698,7 @@ class Protisten_deAPI_V2
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
         $params['spreadsheetID'] = '1QnT-o-t4bVp-BP4jFFA-Alr4PlIj7fAD6RRb5iC6BYA';
         $params['range']         = 'Sheet1!A2:D70'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
-        $arr = $func->access_google_sheet($params); // print_r($arr); exit;
+        $arr = $func->access_google_sheet($params); //print_r($arr); exit;
         /*Array(
             [0] => Array(
                     [0] => Actinotaenium clevei
@@ -715,11 +715,15 @@ class Protisten_deAPI_V2
                 )
         */
         foreach($arr as $rec) {
-            $this->taxon_EOLpageID[$rec[0]] = pathinfo($rec[1], PATHINFO_BASENAME);
-            if($val = @$rec[2]) $this->remove_scinames[$val] = '';
+            if($val = @$rec[1]) { //https://eol.org/pages/38982105/names
+                if(preg_match("/\/pages\/(.*?)\/names/ims", $val, $arr)) {
+                    $this->taxon_EOLpageID[$rec[0]] = $arr[1];
+                }
+            }
+            // if($val = @$rec[2]) $this->remove_scinames[$val] = ''; //seems obsolete already
         }
         print_r($this->taxon_EOLpageID);
-        print_r($this->remove_scinames); //exit;
+        // print_r($this->remove_scinames); exit; //seems obsolete already
     }
 }
 ?>
