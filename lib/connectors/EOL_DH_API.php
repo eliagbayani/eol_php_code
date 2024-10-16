@@ -71,7 +71,21 @@ class EOL_DH_API
                 foreach($fields as $fld) {
                     $rec[$fld] = $line[$k]; $k++;
                 }
-                // print_r($rec); exit;
+                // print_r($rec); //exit("\nelix\n");
+                /*Array( latest as of Oct 16, 2024
+                    [taxonID] => EOL-000003003860
+                    [source] => MIP:Clastidium-rivulare
+                    [furtherInformationURL] => 
+                    [acceptedNameUsageID] => 
+                    [parentNameUsageID] => EOL-000000001312
+                    [scientificName] => Clastidium rivulare (Hansgirg) Hansgirg, 1892
+                    [taxonRank] => species
+                    [taxonomicStatus] => accepted
+                    [datasetID] => MIP
+                    [canonicalName] => Clastidium rivulare
+                    [eolID] => 57358984
+                    [Landmark] => 
+                )*/
                 /*Array(
                     [taxonID] => -168611
                     [acceptedNameUsageID] => -168611
@@ -125,8 +139,15 @@ class EOL_DH_API
                 $this->parent_of_taxonID[$rec['taxonID']] = $rec['parentNameUsageID'];
                 $this->landmark_value_of[$eolID] = $rec['Landmark'];
                 if($rec['taxonRank'] == 'family') $this->is_family[$eolID] = '';
+
+                // /*
+                // [canonicalName] => Clastidium rivulare
+                // [eolID] => 57358984
+                if($val = @$rec['canonicalName']) $this->DH_canonical_EOLid[$val] = $eolID;
+                // */
             }
         }
+        // print_r($this->DH_canonical_EOLid); exit("\n111 222\n");
         /* may not want to force assign this:
         $this->DH_2_EOL[93302] = 6061725; //Biota - Cellular Organisms
         */

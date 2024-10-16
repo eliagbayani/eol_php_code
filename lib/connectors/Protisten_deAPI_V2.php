@@ -34,13 +34,14 @@ class Protisten_deAPI_V2
     }
     function start()
     {   
-        /* access DH
+        // /* access DH
         require_library('connectors/EOL_DH_API');
         $func = new EOL_DH_API();
         $func->parse_DH(); $landmark_only = true; //default value anyway is true
-        // $page_id = 46564415; //4200;
-        // $ancestry = $func->get_ancestry_via_DH($page_id); print_r($ancestry); exit("\nexit DH test\n"); //good test OK
-        */
+        $page_id = 46564415; //4200;
+        $ancestry = $func->get_ancestry_via_DH($page_id); print_r($ancestry); //exit("\nexit DH test\n"); //good test OK
+        print_r($func->DH_canonical_EOLid); exit("\nchaeli\n");
+        // */
 
         self::taxon_mapping_from_GoogleSheet(); //print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
         self::load_legacy_taxa_data();          //print_r($this->legacy);             exit("\nstop 2\n");
