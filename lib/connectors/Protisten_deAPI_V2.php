@@ -314,6 +314,8 @@ class Protisten_deAPI_V2
             $arr = explode(" ", $name); //Foraminifera species
             $final = $arr[0]; // "Foraminifera"
         }
+
+        $final = str_ireplace(" var. ", "", $final);
         return trim($final);
     }
     private function get_genus_species($title)
