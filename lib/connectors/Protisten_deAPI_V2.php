@@ -383,9 +383,9 @@ class Protisten_deAPI_V2
                     }
                 }
 
-                if($val = @$rec['XLS_EOLid'])                           $taxon->EOLid = $val;
-                elseif($val = @$rec['DH_EOLid'])                        $taxon->EOLid = $val;
-                elseif($val = @$this->taxon_EOLpageID_HTML[$sciname])   $taxon->EOLid = $val;
+                if($val = @$rec['XLS_EOLid'])                           $taxon->EOLid = $val;   //from Google spreadsheet
+                elseif($val = @$rec['DH_EOLid'])                        $taxon->EOLid = $val;   //from Katja's DH
+                elseif($val = @$this->taxon_EOLpageID_HTML[$sciname])   $taxon->EOLid = $val;   //from website scrape
                 else                                                    $taxon->EOLid = '';
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
@@ -809,7 +809,7 @@ class Protisten_deAPI_V2
                 if(preg_match("/\/pages\/(.*?)\/names/ims", $val, $arr)) { //e.g. https://eol.org/pages/52309510/names
                     $this->taxon_EOLpageID[$rec[0]] = $arr[1];
                 }
-                if(preg_match("/\/pages\/(.*?)elicha/ims", $val."elicha", $arr)) { //e.g. https://eol.org/pages/90436
+                elseif(preg_match("/\/pages\/(.*?)elicha/ims", $val."elicha", $arr)) { //e.g. https://eol.org/pages/90436
                     $this->taxon_EOLpageID[$rec[0]] = $arr[1];
                 }
             }
