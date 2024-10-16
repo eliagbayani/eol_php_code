@@ -42,8 +42,8 @@ class Protisten_deAPI_V2
         // $ancestry = $func->get_ancestry_via_DH($page_id); print_r($ancestry); exit("\nexit DH test\n"); //good test OK
         */
 
-        self::taxon_mapping_from_GoogleSheet(); print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
-        self::load_legacy_taxa_data();          print_r($this->legacy);           //exit("\nstop 2\n");
+        self::taxon_mapping_from_GoogleSheet(); //print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
+        self::load_legacy_taxa_data();          //print_r($this->legacy);             exit("\nstop 2\n");
         self::write_agent();
 
         if($paths = self::get_main_paths()) {
@@ -53,12 +53,12 @@ class Protisten_deAPI_V2
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
                 // break; //debug - process only 1
-                if($i >= 3) break; //debug only
+                // if($i >= 3) break; //debug only
             }
         }
         else exit("\nStructure changed. Investigate.\n");
         self::write_dwca();
-        print_r($this->report);
+        // print_r($this->report);
         /* main operation
         self::write_tsv_report();
         */
@@ -335,7 +335,8 @@ class Protisten_deAPI_V2
                     if($taxon->EOLid != $html_EOLid) {
                         echo "\n---------------------------\n";
                         print_r($rek); print_r($rec);
-                        exit("\nEOL IDs not equal [$sciname] XLS:[$taxon->EOLid] | HTML:[$html_EOLid]\n");
+                        $this->debug['for Wolfgang']['wrong EOL id'][$sciname][$rec['url']] = "Should be [$taxon->EOLid] and not [$html_EOLid]";
+                        // exit("\nEOL IDs not equal [$sciname] XLS:[$taxon->EOLid] | HTML:[$html_EOLid]\n");
                     }
                 }
                 // */
