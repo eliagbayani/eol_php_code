@@ -335,21 +335,39 @@ class Protisten_deAPI_V2
                 $taxon = new \eol_schema\Taxon();
                 $taxon->scientificName = $sciname;
 
-                // /*
+                /*
+                [Cochliopodium vestitum] => Array
+                                (
+                                    [url] => https://www.protisten.de/home-new/naked-amoeboids/amoebozoa-naked/discosea/himantismenida/cochliopodiidae/cochliopodium-vestitum/
+                                    [DH_EOLid] => 
+                                    [XLS_EOLid] => 60963261
+                [Mastigamoeba aspera] => Array
+                    (
+                        [url] => https://www.protisten.de/home-new/naked-amoeboids/amoebozoa-naked/evosea/archamoebae/mastigamoeba-aspera/
+                        [DH_EOLid] => 
+                        [XLS_EOLid] => 
+                [Pelomyxa palustris] => Array
+                    (
+                        [url] => https://www.protisten.de/home-new/naked-amoeboids/amoebozoa-naked/evosea/archamoebae/pelomyxa-palustris/
+                        [DH_EOLid] => 491173
+                        [XLS_EOLid] => 
+                */
+
+                // /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 if($taxon->EOLid = @$this->taxon_EOLpageID[$sciname]) {
                     $html_EOLid = @$this->taxon_EOLpageID_HTML[$sciname];
                     if($taxon->EOLid != $html_EOLid) {
-                        echo "\n---------------------------\n";
-                        print_r($rek); print_r($rec);
+                        echo "\n---------------------------\n"; print_r($rek); print_r($rec);
                         $this->debug['for Wolfgang']['wrong EOL id'][$sciname][$rec['url']] = "Should be [$taxon->EOLid] and not [$html_EOLid]";
                         // exit("\nEOL IDs not equal [$sciname] XLS:[$taxon->EOLid] | HTML:[$html_EOLid]\n");
                     }
                 }
-                elseif($val = @$rec['DH_EOLid']) {
-                    $taxon->EOLid = $val;
-                    // print_r($rec); exit("\nhuli ka 2 [$sciname] [$val]\n");
-                }
-                // */
+
+                if($val = @$rec['XLS_EOLid'])                           $taxon->EOLid = $val;
+                elseif($val = @$rec['DH_EOLid'])                        $taxon->EOLid = $val;
+                elseif($val = @$this->taxon_EOLpageID_HTML[$sciname])   $taxon->EOLid = $val;
+                else                                                    $taxon->EOLid = '';
+                // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
                 if($legacy) {
                     $taxon->taxonID = $legacy['taxonID'];
