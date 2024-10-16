@@ -1,38 +1,61 @@
 <?php
 namespace php_active_record;
-/* connector: No specific connector. But now used in EOLv2MetadataAPI.php */
+/* connector: No specific connector. But now used in EOLv2MetadataAPI.php 
+
+What DH to use as of Oct 16, 2024. From Katja:
+Hi Eli, 
+It depends on what you are using it for. If you need the currently active DH, that's still 
+[this one](https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/1c3b5f47-a3b9-40d3-a31e-13d91bbbed35). 
+https://editors.eol.org/uploaded_resources/1c3/b5f/dhv21.zip
+
+But we'll hopefully get a new one soon and the current version for that 
+is [here](https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource/157a00d8-489d-4993-8db7-67d2301cc43c).
+https://editors.eol.org/other_files/DWH/DH223test2.zip
+*/
+
 
 class EOL_DH_API
 {
     function __construct()
     {
+        // for the longest time
         $this->EOL_DH = "http://localhost/cp/summary%20data%20resources/DH/eoldynamichierarchywithlandmarks.zip";
+
+        // as of Oct 16, 2024 from Katja:
+        // /Volumes/Crucial_2TB/other_files2/DH_working_2024/dhv21/taxon.tab
+        $this->EOL_DH = "http://localhost/other_files2/DH_working_2024/dhv21.zip";
     }
-    private function extract_DH()
+    private function extract_DH($filename)
     {
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
-        $paths = $func->extract_archive_file($this->EOL_DH, "taxa.txt", array('timeout' => 60*10, 'expire_seconds' => 60*60*24*25)); //expires in 25 days
-        $tables['taxa'] = 'taxa.txt';
+        $paths = $func->extract_archive_file($this->EOL_DH, $filename, array('timeout' => 60*10, 'expire_seconds' => 60*60*24*25)); //expires in 25 days
+        $tables['taxa'] = $filename;
         $paths['tables'] = $tables;
         return $paths;
     }
     private function prep_DH()
     {
+        // $filename = 'taxa.txt'; //obsolete
+        $filename = 'taxon.tab';
         // if(true) {
         if(Functions::is_production()) {
-            if(!($info = self::extract_DH())) return;
+            if(!($info = self::extract_DH($filename))) return;
         }
         else { //local development only
             /*
-            $info = Array('archive_path' => '/opt/homebrew/var/www/eol_php_code/tmp/dir_52635/EOL_dynamic_hierarchy/',   //for eoldynamichierarchyv1.zip
+            $info = Array('archive_path' => '/opt/homebrew/var/www/eol_php_code/tmp/dir_52635/EOL_dynamic_hierarchy/',  //for eoldynamichierarchyv1.zip
                           'temp_dir' => '/opt/homebrew/var/www/eol_php_code/tmp/dir_52635/',
-                          'tables' => Array('taxa' => 'taxa.txt')); */
-            $info = Array('archive_path' => '/opt/homebrew/var/www/eol_php_code/tmp/dir_86040/',                         //for eoldynamichierarchywithlandmarks.zip
+                          'tables' => Array('taxa' => 'taxa.txt'));
+            $info = Array('archive_path' => '/opt/homebrew/var/www/eol_php_code/tmp/dir_86040/',                        //for eoldynamichierarchywithlandmarks.zip
                           'temp_dir' => '/opt/homebrew/var/www/eol_php_code/tmp/dir_86040/',
                           'tables' => Array('taxa' => 'taxa.txt'));
+            */
+            $info = Array('archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_35497/',                             //for dhv21.zip
+                          'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_35497/',
+                          'tables'       => Array('taxa' => $filename));            
         }
-        // print_r($info);
+        print_r($info);
         return $info;
     }
     public function parse_DH()
@@ -94,11 +117,14 @@ class EOL_DH_API
                 // if($rec['Landmark']) print_r($rec);
                 if(in_array($rec['EOLid'], Array(7687,3014522,42399419,32005829,3014446,2908256))) print_r($rec);
                 */
-                $this->EOL_2_DH[$rec['EOLid']] = $rec['taxonID'];
-                $this->DH_2_EOL[$rec['taxonID']] = $rec['EOLid'];
+
+                $eolID = $rec['eolID'];
+
+                $this->EOL_2_DH[$eolID] = $rec['taxonID'];
+                $this->DH_2_EOL[$rec['taxonID']] = $eolID;
                 $this->parent_of_taxonID[$rec['taxonID']] = $rec['parentNameUsageID'];
-                $this->landmark_value_of[$rec['EOLid']] = $rec['Landmark'];
-                if($rec['taxonRank'] == 'family') $this->is_family[$rec['EOLid']] = '';
+                $this->landmark_value_of[$eolID] = $rec['Landmark'];
+                if($rec['taxonRank'] == 'family') $this->is_family[$eolID] = '';
             }
         }
         /* may not want to force assign this:

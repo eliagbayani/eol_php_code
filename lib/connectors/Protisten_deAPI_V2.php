@@ -34,8 +34,16 @@ class Protisten_deAPI_V2
     }
     function start()
     {   
-        self::taxon_mapping_from_GoogleSheet(); //exit("\nstop 1\n");
-        self::load_legacy_taxa_data(); //print_r($this->legacy); exit("\nstop 2\n");
+        /* access DH
+        require_library('connectors/EOL_DH_API');
+        $func = new EOL_DH_API();
+        $func->parse_DH(); $landmark_only = true; //default value anyway is true
+        // $page_id = 46564415; //4200;
+        // $ancestry = $func->get_ancestry_via_DH($page_id); print_r($ancestry); exit("\nexit DH test\n"); //good test OK
+        */
+
+        self::taxon_mapping_from_GoogleSheet(); print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
+        self::load_legacy_taxa_data();          print_r($this->legacy);           //exit("\nstop 2\n");
         self::write_agent();
 
         if($paths = self::get_main_paths()) {
@@ -104,7 +112,11 @@ class Protisten_deAPI_V2
                 $ret_arr = array_values($ret_arr); //reindex key
                 if(count($ret_arr) > 1) { print_r($rec); echo("\nInvestigate more than 1 EOL ID.\n"); $rec['EOLid'] = $ret_arr[0]; } //Raphidocystis tubifera 61003987
                 if(count($ret_arr) < 1) { print_r($rec); exit("\nInvestigate no EOL ID found.\n"); }
-                if(count($ret_arr) == 1) { $rec['EOLid'] = $ret_arr[0]; print_r($rec); print_r($ret_arr); exit("\nhuli ka\n"); }
+                if(count($ret_arr) == 1) { 
+                    $rec['EOLid'] = $ret_arr[0]; 
+                    // print_r($rec); print_r($ret_arr); exit("\nhuli ka\n");
+                    $this->taxon_EOLpageID_HTML[$rec['title']] = $rec['EOLid'];
+                }
             }
 
             if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
@@ -317,7 +329,17 @@ class Protisten_deAPI_V2
 
                 $taxon = new \eol_schema\Taxon();
                 $taxon->scientificName = $sciname;
-                $taxon->EOLid = @$this->taxon_EOLpageID[$sciname];
+                // /*
+                if($taxon->EOLid = @$this->taxon_EOLpageID[$sciname]) {
+                    $html_EOLid = @$this->taxon_EOLpageID_HTML[$sciname];
+                    if($taxon->EOLid != $html_EOLid) {
+                        echo "\n---------------------------\n";
+                        print_r($rek); print_r($rec);
+                        exit("\nEOL IDs not equal [$sciname] XLS:[$taxon->EOLid] | HTML:[$html_EOLid]\n");
+                    }
+                }
+                // */
+
                 if($legacy) {
                     $taxon->taxonID = $legacy['taxonID'];
                     $taxon->parentNameUsageID = $legacy['parentNameUsageID'];
@@ -703,11 +725,13 @@ class Protisten_deAPI_V2
         // print_r($this->stable_urls_info); echo "\n".count($this->stable_urls_info)."\n";
     } */
     private function taxon_mapping_from_GoogleSheet()
-    {
+    {   /* Google sheet used: This is sciname mapping to EOL PageID. Initiated by Wolfgang Bettighofer.
+        https://docs.google.com/spreadsheets/d/1QnT-o-t4bVp-BP4jFFA-Alr4PlIj7fAD6RRb5iC6BYA/edit#gid=0
+        */
         require_library('connectors/GoogleClientAPI');
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
         $params['spreadsheetID'] = '1QnT-o-t4bVp-BP4jFFA-Alr4PlIj7fAD6RRb5iC6BYA';
-        $params['range']         = 'Sheet1!A2:D70'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
+        $params['range']         = 'Sheet1!A2:D200'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
         $arr = $func->access_google_sheet($params); //print_r($arr); exit;
         /*Array(
             [0] => Array(
@@ -732,7 +756,7 @@ class Protisten_deAPI_V2
             }
             // if($val = @$rec[2]) $this->remove_scinames[$val] = ''; //seems obsolete already
         }
-        print_r($this->taxon_EOLpageID);
+        // print_r($this->taxon_EOLpageID);
         // print_r($this->remove_scinames); exit; //seems obsolete already
     }
 }
