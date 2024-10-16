@@ -56,12 +56,12 @@ class Protisten_deAPI_V2
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
                 // break; //debug - process only 1
-                if($i >= 3) break; //debug only
+                // if($i >= 3) break; //debug only
             }
         }
         else exit("\nStructure changed. Investigate.\n");
         self::write_dwca();
-        print_r($this->report); exit("\nprint report\n");
+        // print_r($this->report); exit("\nprint report\n");
         /* main operation
         self::write_tsv_report();
         */
@@ -369,6 +369,10 @@ class Protisten_deAPI_V2
                 else                                                    $taxon->EOLid = '';
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+
+                // if($val = $taxon->EOLid) $taxon->taxonID = $val;
+                // else                     $taxon->taxonID = md5($sciname);
+
                 if($legacy) {
                     $taxon->taxonID = $legacy['taxonID'];
                     $taxon->parentNameUsageID = $legacy['parentNameUsageID'];
@@ -376,7 +380,9 @@ class Protisten_deAPI_V2
                 }
                 else {
                     $taxon->taxonID = md5($sciname);
+                    @$this->debug['no ID']++;
                 }
+
                 $rec['taxonID'] = $taxon->taxonID;
                 $taxon->furtherInformationURL = $rec['url'];
 
