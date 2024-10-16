@@ -38,9 +38,11 @@ class Protisten_deAPI_V2
         require_library('connectors/EOL_DH_API');
         $func = new EOL_DH_API();
         $func->parse_DH(); $landmark_only = true; //default value anyway is true
-        $page_id = 46564415; //4200;
-        $ancestry = $func->get_ancestry_via_DH($page_id); print_r($ancestry); //exit("\nexit DH test\n"); //good test OK
-        print_r($func->DH_canonical_EOLid); exit("\nchaeli\n");
+        // $page_id = 46564415; //4200;
+        // $ancestry = $func->get_ancestry_via_DH($page_id); print_r($ancestry); //exit("\nexit DH test\n"); //good test OK
+        // print_r($func->DH_canonical_EOLid);
+        // print_r($func->DH_canonical_EOLid['Chroococcus turgidus']);
+        // exit("\nchaeli\n");
         // */
 
         self::taxon_mapping_from_GoogleSheet(); //print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
@@ -330,7 +332,7 @@ class Protisten_deAPI_V2
 
                 $taxon = new \eol_schema\Taxon();
                 $taxon->scientificName = $sciname;
-                // /*
+                /*
                 if($taxon->EOLid = @$this->taxon_EOLpageID[$sciname]) {
                     $html_EOLid = @$this->taxon_EOLpageID_HTML[$sciname];
                     if($taxon->EOLid != $html_EOLid) {
@@ -340,7 +342,15 @@ class Protisten_deAPI_V2
                         // exit("\nEOL IDs not equal [$sciname] XLS:[$taxon->EOLid] | HTML:[$html_EOLid]\n");
                     }
                 }
-                // */
+                elseif($val = @$func->DH_canonical_EOLid[$sciname]) {
+                    print_r($rec);
+                    exit("\nhuli ka 2 [$sciname] [$val]\n");
+                }
+                */
+                if($val = @$func->DH_canonical_EOLid[$sciname]) {
+                    print_r($rec);
+                    exit("\nhuli ka 2 [$sciname] [$val]\n");
+                }
 
                 if($legacy) {
                     $taxon->taxonID = $legacy['taxonID'];
