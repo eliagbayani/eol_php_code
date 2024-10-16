@@ -36,12 +36,12 @@ class Protisten_deAPI_V2
     {   
         // /* access DH
         require_library('connectors/EOL_DH_API');
-        $func = new EOL_DH_API();
-        $func->parse_DH(); $landmark_only = true; //default value anyway is true
+        $this->func = new EOL_DH_API();
+        $this->func->parse_DH(); $landmark_only = true; //default value anyway is true
         // $page_id = 46564415; //4200;
-        // $ancestry = $func->get_ancestry_via_DH($page_id); print_r($ancestry); //exit("\nexit DH test\n"); //good test OK
-        // print_r($func->DH_canonical_EOLid);
-        // print_r($func->DH_canonical_EOLid['Chroococcus turgidus']);
+        // $ancestry = $this->func->get_ancestry_via_DH($page_id); print_r($ancestry); //exit("\nexit DH test\n"); //good test OK
+        // print_r($this->func->DH_canonical_EOLid);
+        // print_r($this->func->DH_canonical_EOLid['Chroococcus turgidus']);
         // exit("\nchaeli\n");
         // */
 
@@ -56,12 +56,12 @@ class Protisten_deAPI_V2
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
                 // break; //debug - process only 1
-                // if($i >= 3) break; //debug only
+                if($i >= 3) break; //debug only
             }
         }
         else exit("\nStructure changed. Investigate.\n");
         self::write_dwca();
-        // print_r($this->report);
+        print_r($this->report); exit("\nprint report\n");
         /* main operation
         self::write_tsv_report();
         */
@@ -81,14 +81,16 @@ class Protisten_deAPI_V2
                 [src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
                 [data-lazy-src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
             )*/
+
             $ret = self::process_taxon_rec($rec); //print_r($ret);
             $images = $ret['images'];
             $images = array_filter($images); //remove null arrays
             $images = array_unique($images); //make unique
             $images = array_values($images); //reindex key
-            $this->report[$url][$rec['title']]['url'] = $rec['data-href'];
-            $this->report[$url][$rec['title']]['EOLid'] = @$rec['EOLid'];
-            $this->report[$url][$rec['title']]['images'] = $images;
+            $this->report[$url][$rec['title']]['url']       = $rec['data-href'];
+            $this->report[$url][$rec['title']]['DH_EOLid']  = @$this->func->DH_canonical_EOLid[$rec['title']];  //EOLid from the Katjaj's DH file
+            $this->report[$url][$rec['title']]['XLS_EOLid'] = $this->taxon_EOLpageID[$rec['title']];            //EOLid from Wolfgang's Googlespreadsheet
+            $this->report[$url][$rec['title']]['images']    = $images;
 
         } //end foreach()
         // print_r($this->report); exit("\nstopx\n");
@@ -332,7 +334,8 @@ class Protisten_deAPI_V2
 
                 $taxon = new \eol_schema\Taxon();
                 $taxon->scientificName = $sciname;
-                /*
+
+                // /*
                 if($taxon->EOLid = @$this->taxon_EOLpageID[$sciname]) {
                     $html_EOLid = @$this->taxon_EOLpageID_HTML[$sciname];
                     if($taxon->EOLid != $html_EOLid) {
@@ -342,15 +345,11 @@ class Protisten_deAPI_V2
                         // exit("\nEOL IDs not equal [$sciname] XLS:[$taxon->EOLid] | HTML:[$html_EOLid]\n");
                     }
                 }
-                elseif($val = @$func->DH_canonical_EOLid[$sciname]) {
-                    print_r($rec);
-                    exit("\nhuli ka 2 [$sciname] [$val]\n");
+                elseif($val = @$rec['DH_EOLid']) {
+                    $taxon->EOLid = $val;
+                    // print_r($rec); exit("\nhuli ka 2 [$sciname] [$val]\n");
                 }
-                */
-                if($val = @$func->DH_canonical_EOLid[$sciname]) {
-                    print_r($rec);
-                    exit("\nhuli ka 2 [$sciname] [$val]\n");
-                }
+                // */
 
                 if($legacy) {
                     $taxon->taxonID = $legacy['taxonID'];
