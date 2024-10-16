@@ -815,7 +815,7 @@ class Protisten_deAPI_V2
             }
             // if($val = @$rec[2]) $this->remove_scinames[$val] = ''; //seems obsolete already
         }
-        print_r($this->taxon_EOLpageID); exit;
+        // print_r($this->taxon_EOLpageID); exit;
         // print_r($this->remove_scinames); exit; //seems obsolete already
     }
 }
