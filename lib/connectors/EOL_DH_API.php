@@ -71,6 +71,7 @@ class EOL_DH_API
                 foreach($fields as $fld) {
                     $rec[$fld] = $line[$k]; $k++;
                 }
+                $rec = array_map('trim', $rec);
                 // print_r($rec); //exit("\nelix\n");
                 /*Array( latest as of Oct 16, 2024
                     [taxonID] => EOL-000003003860
@@ -143,7 +144,9 @@ class EOL_DH_API
                 // /*
                 // [canonicalName] => Clastidium rivulare
                 // [eolID] => 57358984
-                if($val = @$rec['canonicalName']) $this->DH_canonical_EOLid[$val] = $eolID;
+                $canonicalName = @$rec['canonicalName'];
+                if($val = @$rec['canonicalName'])   $this->DH_canonical_EOLid[$val] = $eolID;
+                if($val = @$rec['eolID'])           $this->DH_EOLid_canonical[$val] = $canonicalName;
                 // */
             }
         }
@@ -156,9 +159,9 @@ class EOL_DH_API
         // recursive_rmdir($info['temp_dir']);
         // echo ("\n temporary directory removed: " . $info['temp_dir']);
     }
-    public function get_ancestry_via_DH($page_id, $landmark_only = true)
+    public function get_ancestry_via_DH($page_id, $landmark_only = true, $return_completeYN = false)
     {
-        $final = array(); $final2 = array();
+        $final = array(); $final2 = array(); $final3 = array();
         $taxonID = @$this->EOL_2_DH[$page_id];
         if(!$taxonID) {
             echo "\nThis page_id [$page_id] is not found in DH.\n";
@@ -177,15 +180,20 @@ class EOL_DH_API
                 if($this->landmark_value_of[$EOLid]) $final2[] = $EOLid; */
 
                 if($landmark_only) { //default; new strategy: using Landmark value   ver 2
-                    if($this->landmark_value_of[$EOLid] || isset($this->is_family[$EOLid])) $final2[] = $EOLid;
+                    if($this->landmark_value_of[$EOLid] || isset($this->is_family[$EOLid])) {
+                        $final2[] = $EOLid;
+                        $final3[] = array('EOLid' => $EOLid, 'canonical' => $this->DH_EOLid_canonical[$EOLid]);
+                    }
                 }
                 else { //orig strategy
                     $final2[] = $EOLid;
+                    $final3[] = array('EOLid' => $EOLid, 'canonical' => $this->DH_EOLid_canonical[$EOLid]);
                 }
             }
             $i++;
         }
-        return $final2;
+        if($return_completeYN)  return $final3;
+        else                    return $final2;
     }
 }
 ?>

@@ -37,11 +37,15 @@ class Protisten_deAPI_V2
         // /* access DH
         require_library('connectors/EOL_DH_API');
         $this->func = new EOL_DH_API();
-        $this->func->parse_DH(); $landmark_only = true; //default value anyway is true
-        // $page_id = 46564415; //4200;
-        // $ancestry = $this->func->get_ancestry_via_DH($page_id); print_r($ancestry); //exit("\nexit DH test\n"); //good test OK
+        $this->func->parse_DH(); $landmark_only = true; $return_completeYN = true; //default value anyway is true
+        $page_id = 46564415; //Gadus morhua
+        // $page_id = 46564414; //Gadus
+        // $page_id = 60963261; //Cochliopodium vestitum (Archer 1871)
+        // $page_id = 4200;
+        // $ancestry = $this->func->get_ancestry_via_DH($page_id, $landmark_only, $return_completeYN); print_r($ancestry); 
+        // exit("\nexit DH test\n"); //good test OK
         // print_r($this->func->DH_canonical_EOLid);
-        // print_r($this->func->DH_canonical_EOLid['Chroococcus turgidus']);
+        print_r($this->func->DH_canonical_EOLid['Difflugia ventricosa']);
         // exit("\nchaeli\n");
         // */
 
@@ -83,13 +87,14 @@ class Protisten_deAPI_V2
             )*/
 
             $ret = self::process_taxon_rec($rec); //print_r($ret);
-            $images = $ret['images'];
+            if($val = $ret['images']) $images = $val;
+            else                      $images = array();
             $images = array_filter($images); //remove null arrays
             $images = array_unique($images); //make unique
             $images = array_values($images); //reindex key
             $this->report[$url][$rec['title']]['url']       = $rec['data-href'];
-            $this->report[$url][$rec['title']]['DH_EOLid']  = @$this->func->DH_canonical_EOLid[$rec['title']];  //EOLid from the Katjaj's DH file
-            $this->report[$url][$rec['title']]['XLS_EOLid'] = $this->taxon_EOLpageID[$rec['title']];            //EOLid from Wolfgang's Googlespreadsheet
+            $this->report[$url][$rec['title']]['DH_EOLid']  = @$this->func->DH_canonical_EOLid[self::clean_sciname($rec['title'])];  //EOLid from the Katjaj's DH file
+            $this->report[$url][$rec['title']]['XLS_EOLid'] = @$this->taxon_EOLpageID[$rec['title']];            //EOLid from Wolfgang's Googlespreadsheet
             $this->report[$url][$rec['title']]['images']    = $images;
 
         } //end foreach()
@@ -297,6 +302,19 @@ class Protisten_deAPI_V2
             $arr = explode(" ", $title); //Foraminifera species
             return $arr[0]; // "Foraminifera"
         }
+    }
+    private function clean_sciname($name)
+    {
+        $final = trim($name);
+        if(stripos($name, " spec.") !== false) { //string is found
+            $arr = explode(" ", $name); // "Pyxidicula spec."
+            $final = $arr[0]; // "Pyxidicula"
+        }
+        if(stripos($name, " species") !== false) { //string is found
+            $arr = explode(" ", $name); //Foraminifera species
+            $final = $arr[0]; // "Foraminifera"
+        }
+        return trim($final);
     }
     private function get_genus_species($title)
     {   // "Cyphoderia ampulla (Ichthyosquama loricaria)"
@@ -768,6 +786,7 @@ class Protisten_deAPI_V2
         $params['spreadsheetID'] = '1QnT-o-t4bVp-BP4jFFA-Alr4PlIj7fAD6RRb5iC6BYA';
         $params['range']         = 'Sheet1!A2:D200'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
         $arr = $func->access_google_sheet($params); //print_r($arr); exit;
+        /* IMPORTANT: 2nd parm boolean if false it will expire cache. It true (default) it will use cache. */
         /*Array(
             [0] => Array(
                     [0] => Actinotaenium clevei
@@ -785,13 +804,16 @@ class Protisten_deAPI_V2
         */
         foreach($arr as $rec) {
             if($val = @$rec[1]) { //https://eol.org/pages/38982105/names
-                if(preg_match("/\/pages\/(.*?)\/names/ims", $val, $arr)) {
+                if(preg_match("/\/pages\/(.*?)\/names/ims", $val, $arr)) { //e.g. https://eol.org/pages/52309510/names
+                    $this->taxon_EOLpageID[$rec[0]] = $arr[1];
+                }
+                if(preg_match("/\/pages\/(.*?)elicha/ims", $val."elicha", $arr)) { //e.g. https://eol.org/pages/90436
                     $this->taxon_EOLpageID[$rec[0]] = $arr[1];
                 }
             }
             // if($val = @$rec[2]) $this->remove_scinames[$val] = ''; //seems obsolete already
         }
-        // print_r($this->taxon_EOLpageID);
+        print_r($this->taxon_EOLpageID); exit;
         // print_r($this->remove_scinames); exit; //seems obsolete already
     }
 }
