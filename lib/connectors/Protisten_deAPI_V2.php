@@ -138,7 +138,9 @@ class Protisten_deAPI_V2
                 if(count($ret_arr) == 1) { 
                     $rec['EOLid'] = $ret_arr[0]; 
                     // print_r($rec); print_r($ret_arr); exit("\nhuli ka\n");
-                    $this->taxon_EOLpageID_HTML[$rec['title']] = $rec['EOLid'];
+                    $sciname = self::clean_sciname(rec['title']);
+                    $this->taxon_EOLpageID_HTML[$sciname]['EOLid']          = $rec['EOLid'];
+                    $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']    = self::parse_FamAndOrder($html);
                 }
             }
 
@@ -390,7 +392,7 @@ class Protisten_deAPI_V2
 
                 // /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 if($taxon->EOLid = @$this->taxon_EOLpageID[$sciname]) {
-                    $html_EOLid = @$this->taxon_EOLpageID_HTML[$sciname];
+                    $html_EOLid = @$this->taxon_EOLpageID_HTML[$sciname]['EOLid'];
                     if($taxon->EOLid != $html_EOLid) {
                         echo "\n---------------------------\n"; print_r($rek); print_r($rec);
                         $this->debug['for Wolfgang']['wrong EOL id'][$sciname][$rec['url']] = "Should be [$taxon->EOLid] and not [$html_EOLid]";
@@ -398,10 +400,10 @@ class Protisten_deAPI_V2
                     }
                 }
 
-                if($val = @$rec['XLS_EOLid'])                           $taxon->EOLid = $val;   //from Google spreadsheet
-                elseif($val = @$rec['DH_EOLid'])                        $taxon->EOLid = $val;   //from Katja's DH
-                elseif($val = @$this->taxon_EOLpageID_HTML[$sciname])   $taxon->EOLid = $val;   //from website scrape
-                else                                                    $taxon->EOLid = '';
+                if($val = @$rec['XLS_EOLid'])                                   $taxon->EOLid = $val;   //from Google spreadsheet
+                elseif($val = @$rec['DH_EOLid'])                                $taxon->EOLid = $val;   //from Katja's DH
+                elseif($val = @$this->taxon_EOLpageID_HTML[$sciname]['EOLid'])  $taxon->EOLid = $val;   //from website scrape
+                else                                                            $taxon->EOLid = '';
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
@@ -516,6 +518,18 @@ class Protisten_deAPI_V2
         }
         fclose($WRITE);
     }
+    private function parse_FamAndOrder($html)
+    {
+        $final = array();
+        // Family <big><strong>Arcellidae</strong></big>
+        if(preg_match("/Family <big>(.*?)<\/big>/ims", $html, $arr)) {
+            $final['family'] = strip_tags($arr[1]);
+        }
+        if(preg_match("/Order <big>(.*?)<\/big>/ims", $html, $arr)) {
+            $final['order'] = strip_tags($arr[1]);
+        }
+        return $final;
+    }
     // ================================================================================ end
 
     private function process_one_batch($filename)
@@ -603,9 +617,9 @@ class Protisten_deAPI_V2
     }
     private function pick_the_EOLid($sciname)
     {
-            if($val = @$this->func->DH_canonical_EOLid[$sciname])   return $val; //EOLid from the Katjaj's DH file
-        elseif($val = @$this->taxon_EOLpageID[$sciname])            return $val; //EOLid from Wolfgang's Googlespreadsheet
-        elseif($val = @$this->taxon_EOLpageID_HTML[$sciname])       return $val; //from website scrape
+            if($val = @$this->func->DH_canonical_EOLid[$sciname])       return $val; //EOLid from the Katjaj's DH file
+        elseif($val = @$this->taxon_EOLpageID[$sciname])                return $val; //EOLid from Wolfgang's Googlespreadsheet
+        elseif($val = @$this->taxon_EOLpageID_HTML[$sciname]['EOLid'])  return $val; //from website scrape
         else return "";
     }
     private function create_taxa_for_ancestry($ancestry)
