@@ -133,6 +133,9 @@ class EOL_DH_API
                 if(in_array($rec['EOLid'], Array(7687,3014522,42399419,32005829,3014446,2908256))) print_r($rec);
                 */
 
+                // EOL-000003139502
+                if(substr($rec['taxonID'],0,4) != 'EOL-') continue;
+
                 $eolID = $rec['eolID'];
 
                 $this->EOL_2_DH[$eolID] = $rec['taxonID'];
