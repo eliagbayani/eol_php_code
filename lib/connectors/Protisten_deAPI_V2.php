@@ -37,12 +37,13 @@ class Protisten_deAPI_V2
         // /* access DH
         require_library('connectors/EOL_DH_API');
         $this->func = new EOL_DH_API();
-        $this->func->parse_DH(); $landmark_only = true; $return_completeYN = true; //default value anyway is true
+        $this->func->parse_DH(); $landmark_only = false; $return_completeYN = true; //default value anyway is true
         // $page_id = 46564415; //Gadus morhua
         // $page_id = 46564414; //Gadus
         // $page_id = 60963261; //Cochliopodium vestitum (Archer 1871)
         // $page_id = 4200;
-        // $ancestry = $this->func->get_ancestry_via_DH($page_id, $landmark_only, $return_completeYN); print_r($ancestry); 
+        // $page_id = 1062539;
+        // $ancestry = $this->func->get_ancestry_via_DH($page_id, $landmark_only, $return_completeYN); print_r($ancestry); exit("\n-end test DH-\n");
         // exit("\nexit DH test\n"); //good test OK
         // print_r($this->func->DH_canonical_EOLid);
         // print_r($this->func->DH_canonical_EOLid['Difflugia ventricosa']);

@@ -59,7 +59,7 @@ class EOL_DH_API
         return $info;
     }
     public function parse_DH()
-    {
+    {   echo "\nPreparing dynamic hierarchy...\n";
         $info = self::prep_DH();
         $i = 0;
         foreach(new FileIterator($info['archive_path'].$info['tables']['taxa']) as $line_number => $line) {
@@ -158,6 +158,7 @@ class EOL_DH_API
         // remove temp dir
         // recursive_rmdir($info['temp_dir']);
         // echo ("\n temporary directory removed: " . $info['temp_dir']);
+        echo "\nDynamic hierarchy ready OK.\n";
     }
     public function get_ancestry_via_DH($page_id, $landmark_only = true, $return_completeYN = false)
     {
