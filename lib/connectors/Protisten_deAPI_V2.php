@@ -327,8 +327,8 @@ class Protisten_deAPI_V2
             $arr = explode(" ", $name); //Foraminifera species
             $final = $arr[0]; // "Foraminifera"
         }
-
-        $final = str_ireplace(" var. ", " ", $final);
+        $final = str_ireplace(" var.", "", $final);
+        $final = str_ireplace(" spec.", "", $final);
         return trim($final);
     }
     private function get_genus_species($title)
@@ -353,7 +353,7 @@ class Protisten_deAPI_V2
                 )*/
 
                 // /* format massage names
-                $sciname = str_ireplace(" spec.", "", $sciname);
+                $sciname = self::clean_sciname($sciname);
                 $sciname = trim(preg_replace('/\s*\([^)]*\)/', '', $sciname)); //remove parenthesis OK // Cyphoderia ampulla (Ichthyosquama loricaria)
                 // */
 
