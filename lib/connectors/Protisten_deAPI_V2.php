@@ -78,7 +78,7 @@ class Protisten_deAPI_V2
     private function process_one_group($url)
     {
         $recs = self::get_records_per_group($url);
-        foreach($recs as $rec) { print_r($rec); //exit("\nhuli 2\n");
+        foreach($recs as $rec) { //print_r($rec); //exit("\nhuli 2\n");
             /*Array(
                 [title] => Teleostei egg
                 [data-href] => https://www.protisten.de/home-new/metazoa/chordata/teleostei-species/
@@ -94,8 +94,9 @@ class Protisten_deAPI_V2
             $images = array_unique($images); //make unique
             $images = array_values($images); //reindex key
             $this->report[$url][$rec['title']]['url']       = $rec['data-href'];
-            $this->report[$url][$rec['title']]['DH_EOLid']  = @$this->func->DH_canonical_EOLid[self::clean_sciname($rec['title'])];  //EOLid from the Katjaj's DH file
-            $this->report[$url][$rec['title']]['XLS_EOLid'] = @$this->taxon_EOLpageID[$rec['title']];            //EOLid from Wolfgang's Googlespreadsheet
+            $title = self::clean_sciname($rec['title']);
+            $this->report[$url][$rec['title']]['DH_EOLid']  = @$this->func->DH_canonical_EOLid[$title];  //EOLid from the Katjaj's DH file
+            $this->report[$url][$rec['title']]['XLS_EOLid'] = @$this->taxon_EOLpageID[$title];           //EOLid from Wolfgang's Googlespreadsheet
             $this->report[$url][$rec['title']]['images']    = $images;
 
         } //end foreach()
@@ -393,9 +394,26 @@ class Protisten_deAPI_V2
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-                // if($val = $taxon->EOLid) $taxon->taxonID = $val;
-                // else                     $taxon->taxonID = md5($sciname);
+                if($val = $taxon->EOLid) {
+                    $taxon->taxonID = $val;
+                    if($ancestry = $this->func->get_ancestry_via_DH($val, false, true)) { //2nd param: landmark_only | 3rd param: return_completeYN
+                        /*Array(
+                            [0] => Array(
+                                    [EOLid] => 6865
+                                    [canonical] => Brachionidae
+                            [1] => Array(
+                                    [EOLid] => 6851
+                                    [canonical] => Rotifera
+                        */
+                        $taxon->parentNameUsageID = $ancestry[0]['EOLid'];
+                        $taxon->higherClassification    = self::get_higherClassification($ancestry);
+                        self::create_taxa_for_ancestry($ancestry);
 
+                    }
+                }
+                else $taxon->taxonID = md5($sciname);
+
+                /*
                 if($legacy) {
                     $taxon->taxonID = $legacy['taxonID'];
                     $taxon->parentNameUsageID = $legacy['parentNameUsageID'];
@@ -405,6 +423,7 @@ class Protisten_deAPI_V2
                     $taxon->taxonID = md5($sciname);
                     @$this->debug['no ID']++;
                 }
+                */
 
                 $rec['taxonID'] = $taxon->taxonID;
                 $taxon->furtherInformationURL = $rec['url'];
@@ -415,7 +434,6 @@ class Protisten_deAPI_V2
                     $this->archive_builder->write_object_to_file($taxon);
                     $this->taxon_ids[$taxon->taxonID] = '';
                 }
-                if($val = @$r['ancestry']) self::create_taxa_for_ancestry($val, $taxon->parentNameUsageID);
                 if(@$rec['images']) self::write_image($rec);
 
                 // $arr[] = $sciname;
@@ -572,44 +590,66 @@ class Protisten_deAPI_V2
         else echo "\nSite is unavailable: [".$this->page['main']."]\n";
         return false;
     }
-    private function create_taxa_for_ancestry($ancestry, $parent_id)
+    private function pick_the_EOLid($sciname)
     {
-        // echo "\n$parent_id\n";
-        // print_r($ancestry);
-        //store taxon_id and parent_id
-        $i = -1; $store = array();
-        foreach($ancestry as $sci) {
-            $i++;
-            if($i == 0) $taxon_id = self::format_id($sci);
-            else        $taxon_id = self::format_id($ancestry[$i-1])."-".self::format_id($sci);
-            $store[] = $taxon_id;
-        }
-        // print_r($store);
-        //write to dwc
+            if($val = @$this->func->DH_canonical_EOLid[$sciname])   return $val; //EOLid from the Katjaj's DH file
+        elseif($val = @$this->taxon_EOLpageID[$sciname])            return $val; //EOLid from Wolfgang's Googlespreadsheet
+        elseif($val = @$this->taxon_EOLpageID_HTML[$sciname])       return $val; //from website scrape
+        else return "";
+    }
+    private function create_taxa_for_ancestry($ancestry)
+    {   /*Array(
+            [0] => Array(
+                    [EOLid] => 6865
+                    [canonical] => Brachionidae
+            [1] => Array(
+                    [EOLid] => 6851
+                    [canonical] => Rotifera
+        */
         $i = -1;
-        foreach($ancestry as $sci) {
-            $i++;
+        foreach($ancestry as $a) { $i++;
             $taxon = new \eol_schema\Taxon();
-            $taxon->taxonID                 = $store[$i];
-            $taxon->scientificName          = $sci;
+            $taxon->taxonID                 = $a['EOLid'];
+            $taxon->scientificName          = $a['canonical'];
+
+            $taxon->EOLid = self::pick_the_EOLid($taxon->scientificName); // http://eol.org/schema/EOLid
             
-            if($EOLid = @$this->taxon_EOLpageID[$sci]) $taxon->EOLid = $EOLid; // http://eol.org/schema/EOLid
+            $taxon->parentNameUsageID       = @$ancestry[$i+1]['EOLid'];
             
-            $taxon->parentNameUsageID       = @$store[$i-1];
-            $taxon->higherClassification    = self::get_higherClassification($ancestry, $i);
+
+            // if($val = $taxon->EOLid) {
+                // if($ancestry2 = $this->func->get_ancestry_via_DH($val, false, true)) { //2nd param: landmark_only | 3rd param: return_completeYN
+                    /*Array(
+                        [0] => Array(
+                                [EOLid] => 6865
+                                [canonical] => Brachionidae
+                        [1] => Array(
+                                [EOLid] => 6851
+                                [canonical] => Rotifera
+                    */
+                    // $taxon->parentNameUsageID = $ancestry2[0]['EOLid'];
+                    // $taxon->higherClassification    = self::get_higherClassification($ancestry2);
+                    // self::create_taxa_for_ancestry($ancestry2);
+                // }
+            // }
+
             if(!isset($this->taxon_ids[$taxon->taxonID])) {
                 $this->archive_builder->write_object_to_file($taxon);
                 $this->taxon_ids[$taxon->taxonID] = '';
             }
         }
     }
-    private function get_higherClassification($ancestry, $i)
-    {
-        $j = -1; $final = array();
-        foreach($ancestry as $sci) {
-            $j++;
-            if($j < $i) $final[] = $sci;
-        }
+    private function get_higherClassification($ancestry)
+    {   /*Array(
+            [0] => Array(
+                    [EOLid] => 6865
+                    [canonical] => Brachionidae
+            [1] => Array(
+                    [EOLid] => 6851
+                    [canonical] => Rotifera
+        */
+        $final = array();
+        foreach($ancestry as $a) $final[] = $a['canonical'];
         return implode("|", $final);
     }
     private function write_agent()

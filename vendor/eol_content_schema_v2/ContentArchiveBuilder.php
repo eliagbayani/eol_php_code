@@ -145,6 +145,7 @@ class ContentArchiveBuilder
                 if($p['property'] == $property)
                 {
                     $p = $this->only_accept_recognized_ranks($p); //NEW: May 31, 2024
+                    // echo "\nCheck: ".$p['property']['name']."\n"; //good debug
                     $this_line .= self::escape_string($p['value']);
                     $written_properties[] = $p['property'];
                 }
@@ -155,6 +156,7 @@ class ContentArchiveBuilder
         foreach($object_properties as $p)
         {
             $p = $this->only_accept_recognized_ranks($p); //NEW: May 31, 2024
+            // echo "\nCheck: ".$p['property']['name']."\n"; //good debug
             if(in_array($p['property'], $written_properties)) continue;
             $this_line .= self::escape_string($p['value']) . "\t";
             $this->file_columns[$object_class][] = $p['property'];
