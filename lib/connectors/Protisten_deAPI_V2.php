@@ -111,6 +111,7 @@ class Protisten_deAPI_V2
     {
         $url2 = $rec['data-href'];
         if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') return; //page not found
+
         // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/acanthocystis-penardi/';
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/glutinoconcha/excentrostoma/centropyxis-aculeata/';
         // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/achnanthes-armillaris/';
@@ -121,7 +122,12 @@ class Protisten_deAPI_V2
         // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/';
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
-        if($html = Functions::lookup_with_cache($url2, $this->download_options)) { //echo "\n$html\n";
+        // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-chroococcales/aphanothece-microscopica/';
+
+        $options = $this->download_options;
+        // $options['expire_seconds'] = 1; //debug only
+
+        if($html = Functions::lookup_with_cache($url2, $options)) { //echo "\n$html\n";
 
             if(preg_match_all("/eol.org\/pages\/(.*?)\/names\"/ims", $html, $arr)) {
                 $ret_arr = array_filter($arr[1]); //remove null arrays
@@ -831,7 +837,7 @@ class Protisten_deAPI_V2
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
         $params['spreadsheetID'] = '1QnT-o-t4bVp-BP4jFFA-Alr4PlIj7fAD6RRb5iC6BYA';
         $params['range']         = 'Sheet1!A2:D200'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
-        $arr = $func->access_google_sheet($params, false); //print_r($arr); exit;
+        $arr = $func->access_google_sheet($params); //print_r($arr); exit;
         /* IMPORTANT: 2nd parm boolean if false it will expire cache. It true (default) it will use cache. */
         /*Array(
             [0] => Array(

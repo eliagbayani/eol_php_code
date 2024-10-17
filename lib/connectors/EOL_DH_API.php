@@ -22,8 +22,9 @@ class EOL_DH_API
         $this->EOL_DH = "http://localhost/cp/summary%20data%20resources/DH/eoldynamichierarchywithlandmarks.zip";
 
         // as of Oct 16, 2024 from Katja:
-        // /Volumes/Crucial_2TB/other_files2/DH_working_2024/dhv21/taxon.tab
+        $this->EOL_DH = "https://editors.eol.org/uploaded_resources/1c3/b5f/dhv21.zip";
         $this->EOL_DH = "http://localhost/other_files2/DH_working_2024/dhv21.zip";
+        // /Volumes/Crucial_2TB/other_files2/DH_working_2024/dhv21/taxon.tab
     }
     private function extract_DH($filename)
     {
@@ -157,10 +158,11 @@ class EOL_DH_API
         /* may not want to force assign this:
         $this->DH_2_EOL[93302] = 6061725; //Biota - Cellular Organisms
         */
-        
+        /* main operation
         // remove temp dir
-        // recursive_rmdir($info['temp_dir']);
-        // echo ("\n temporary directory removed: " . $info['temp_dir']);
+        recursive_rmdir($info['temp_dir']);
+        echo ("\n temporary directory removed: " . $info['temp_dir']);
+        */
         echo "\nDynamic hierarchy ready OK.\n";
     }
     public function get_ancestry_via_DH($page_id, $landmark_only = true, $return_completeYN = false)
