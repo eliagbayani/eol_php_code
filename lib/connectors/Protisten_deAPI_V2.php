@@ -43,9 +43,9 @@ class Protisten_deAPI_V2
         // $page_id = 4200;
         // $ancestry = $this->func->get_ancestry_via_DH($page_id, $landmark_only, $return_completeYN); print_r($ancestry); exit("\n-end test DH-\n");
         // exit("\nexit DH test\n"); //good test OK
-        print_r($this->func->DH_canonical_EOLid);
-        print_r($this->func->DH_canonical_EOLid['Endomyxa']);
-        exit("\nchaeli\n");
+        // print_r($this->func->DH_canonical_EOLid);
+        // print_r($this->func->DH_canonical_EOLid['Endomyxa']);
+        // exit("\nchaeli\n");
         // */
 
         self::taxon_mapping_from_GoogleSheet(); //print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");

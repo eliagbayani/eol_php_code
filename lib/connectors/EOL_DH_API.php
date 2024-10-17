@@ -134,7 +134,7 @@ class EOL_DH_API
                 */
 
                 // EOL-000003139502
-                if(substr($rec['taxonID'],0,4) != 'EOL-') continue;
+                if(substr($rec['taxonID'],0,4) != 'EOL-') continue; //don't use SYN-
 
                 $eolID = $rec['eolID'];
 
