@@ -33,14 +33,15 @@ class Protisten_deAPI_V2
         $this->protisten_de_legacy_taxa = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/refs/heads/master/protisten_de/protisten_2024_07_10/taxon.tab';
     }
     function start()
-    {   // /* access DH
+    {   
+        // /* access DH
         require_library('connectors/EOL_DH_API');
         $this->func = new EOL_DH_API();
         $this->func->parse_DH(); $landmark_only = false; $return_completeYN = true; //default value anyway is true
         // $page_id = 46564415; //Gadus morhua
         // $page_id = 46564414; //Gadus
         // $page_id = 60963261; //Cochliopodium vestitum (Archer 1871)
-        // $page_id = 4200;
+        // $page_id = 52253740;
         // $ancestry = $this->func->get_ancestry_via_DH($page_id, $landmark_only, $return_completeYN); print_r($ancestry); exit("\n-end test DH-\n");
         // exit("\nexit DH test\n"); //good test OK
         // print_r($this->func->DH_canonical_EOLid);
@@ -49,6 +50,12 @@ class Protisten_deAPI_V2
         // */
 
         self::taxon_mapping_from_GoogleSheet(); //print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
+        // echo "\n111\n";
+        // print_r($this->taxon_EOLpageID['Heleopera petricola var. amethystea']); 
+        // echo "\n222\n";
+        // print_r($this->taxon_EOLpageID['Heleopera petricola amethystea']); 
+        // exit("\n-end 1-\n");
+
         self::load_legacy_taxa_data();          //print_r($this->legacy);             exit("\nstop 2\n");
         self::write_agent();
 
@@ -315,14 +322,14 @@ class Protisten_deAPI_V2
             $final = $arr[0]; // "Foraminifera"
         }
 
-        $final = str_ireplace(" var. ", "", $final);
+        $final = str_ireplace(" var. ", " ", $final);
         return trim($final);
     }
     private function get_genus_species($title)
     {   // "Cyphoderia ampulla (Ichthyosquama loricaria)"
         // "Aspidisca pulcherrima var. baltica"
         $string = trim(preg_replace('/\s*\([^)]*\)/', '', $title)); //remove parenthesis OK
-        $string = str_replace("var. ", "", $string);
+        $string = str_replace(" var. ", " ", $string);
         return $string;
     }
     private function write_dwca()
@@ -824,7 +831,7 @@ class Protisten_deAPI_V2
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
         $params['spreadsheetID'] = '1QnT-o-t4bVp-BP4jFFA-Alr4PlIj7fAD6RRb5iC6BYA';
         $params['range']         = 'Sheet1!A2:D200'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
-        $arr = $func->access_google_sheet($params); //print_r($arr); exit;
+        $arr = $func->access_google_sheet($params, false); //print_r($arr); exit;
         /* IMPORTANT: 2nd parm boolean if false it will expire cache. It true (default) it will use cache. */
         /*Array(
             [0] => Array(
@@ -852,7 +859,7 @@ class Protisten_deAPI_V2
             }
             // if($val = @$rec[2]) $this->remove_scinames[$val] = ''; //seems obsolete already
         }
-        // print_r($this->taxon_EOLpageID); exit;
+        // print_r($this->taxon_EOLpageID['Heleopera petricola var. amethystea']); exit("\nend 2\n");
         // print_r($this->remove_scinames); exit; //seems obsolete already
     }
 }
