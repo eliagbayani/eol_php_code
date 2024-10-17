@@ -329,12 +329,14 @@ class Protisten_deAPI_V2
     private function write_dwca()
     {   echo "\nlegacy taxa count: ".count($this->legacy)."\n";
         foreach($this->report as $url_group => $rek) {
-            foreach($rek as $sciname => $rec) {
+            foreach($rek as $sciname => $rec) { //print_r($rec); exit;
                 /*Array(
-                    [url] => https://www.protisten.de/home-new/testatamoeboids-infra/cercozoa-testate2/imbricatea2/euglyphida2/cyphoderia-amphoralis/
+                    [url] => https://www.protisten.de/home-new/bac-proteo/achromatium-oxaliferum/
+                    [DH_EOLid] => 898974
+                    [XLS_EOLid] => 
                     [images] => Array(
-                            [0] => https://www.protisten.de/wp-content/uploads/2024/07/Cyphoderia-amphoralis-040-100-5232701-738-GOW_NEW.jpg
-                            [1] => https://www.protisten.de/wp-content/uploads/2024/07/Cyphoderia-amphoralis-040-100-5240001-028-GOW_NEW.jpg
+                            [0] => https://www.protisten.de/wp-content/uploads/2024/01/achromatium-oxaliferum-jwbw-1.jpg
+                            [1] => https://www.protisten.de/wp-content/uploads/2024/01/achromatium-oxaliferum-tandem-w.jpg
                         )
                 )*/
 
