@@ -33,8 +33,7 @@ class Protisten_deAPI_V2
         $this->protisten_de_legacy_taxa = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/refs/heads/master/protisten_de/protisten_2024_07_10/taxon.tab';
     }
     function start()
-    {   
-        // /* access DH
+    {   // /* access DH
         require_library('connectors/EOL_DH_API');
         $this->func = new EOL_DH_API();
         $this->func->parse_DH(); $landmark_only = false; $return_completeYN = true; //default value anyway is true
@@ -42,12 +41,11 @@ class Protisten_deAPI_V2
         // $page_id = 46564414; //Gadus
         // $page_id = 60963261; //Cochliopodium vestitum (Archer 1871)
         // $page_id = 4200;
-        // $page_id = 1062539;
         // $ancestry = $this->func->get_ancestry_via_DH($page_id, $landmark_only, $return_completeYN); print_r($ancestry); exit("\n-end test DH-\n");
         // exit("\nexit DH test\n"); //good test OK
-        // print_r($this->func->DH_canonical_EOLid);
-        // print_r($this->func->DH_canonical_EOLid['Difflugia ventricosa']);
-        // exit("\nchaeli\n");
+        print_r($this->func->DH_canonical_EOLid);
+        print_r($this->func->DH_canonical_EOLid['Endomyxa']);
+        exit("\nchaeli\n");
         // */
 
         self::taxon_mapping_from_GoogleSheet(); //print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
@@ -611,27 +609,23 @@ class Protisten_deAPI_V2
             $taxon = new \eol_schema\Taxon();
             $taxon->taxonID                 = $a['EOLid'];
             $taxon->scientificName          = $a['canonical'];
-
             $taxon->EOLid = self::pick_the_EOLid($taxon->scientificName); // http://eol.org/schema/EOLid
-            
             $taxon->parentNameUsageID       = @$ancestry[$i+1]['EOLid'];
-            
 
-            // if($val = $taxon->EOLid) {
-                // if($ancestry2 = $this->func->get_ancestry_via_DH($val, false, true)) { //2nd param: landmark_only | 3rd param: return_completeYN
-                    /*Array(
-                        [0] => Array(
-                                [EOLid] => 6865
-                                [canonical] => Brachionidae
-                        [1] => Array(
-                                [EOLid] => 6851
-                                [canonical] => Rotifera
-                    */
-                    // $taxon->parentNameUsageID = $ancestry2[0]['EOLid'];
-                    // $taxon->higherClassification    = self::get_higherClassification($ancestry2);
-                    // self::create_taxa_for_ancestry($ancestry2);
-                // }
-            // }
+            /* decided not to add higherClassification for ancestry taxa
+            if($val = $taxon->EOLid) {
+                if($ancestry2 = $this->func->get_ancestry_via_DH($val, false, true)) { //2nd param: landmark_only | 3rd param: return_completeYN
+                    // Array(
+                    //     [0] => Array(
+                    //             [EOLid] => 6865
+                    //             [canonical] => Brachionidae
+                    //     [1] => Array(
+                    //             [EOLid] => 6851
+                    //             [canonical] => Rotifera
+                    $taxon->higherClassification    = self::get_higherClassification($ancestry2);
+                }
+            }
+            */
 
             if(!isset($this->taxon_ids[$taxon->taxonID])) {
                 $this->archive_builder->write_object_to_file($taxon);
