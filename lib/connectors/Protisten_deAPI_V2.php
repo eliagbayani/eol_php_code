@@ -123,12 +123,10 @@ class Protisten_deAPI_V2
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
         // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-chroococcales/aphanothece-microscopica/';
-
         // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/thalassiosira-leptopus/';
         // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/fragilariophyceae/asterionella-tekelili/';
+        // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/raphidocystis-tubifera/';
 
-
-        
         $options = $this->download_options;
         // $options['expire_seconds'] = 1; //debug only
 
@@ -158,7 +156,7 @@ class Protisten_deAPI_V2
             }
             else $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder'] = self::parse_FamAndOrder($html);
 
-            // print_r($this->taxon_EOLpageID_HTML); exit("\nstop 1\n");
+            // print_r(@$this->taxon_EOLpageID_HTML); exit("\nstop 1\n");
 
             if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
                 // print_r($arr[1]); //exit("\nhuli 5\n");
