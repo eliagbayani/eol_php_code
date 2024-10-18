@@ -124,12 +124,17 @@ class Protisten_deAPI_V2
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
         // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-chroococcales/aphanothece-microscopica/';
 
+        // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/thalassiosira-leptopus/';
+        // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/fragilariophyceae/asterionella-tekelili/';
+
+
+        
         $options = $this->download_options;
         // $options['expire_seconds'] = 1; //debug only
 
         if($html = Functions::lookup_with_cache($url2, $options)) { //echo "\n$html\n";
-
-            if(preg_match_all("/eol.org\/pages\/(.*?)\/names\"/ims", $html, $arr)) {
+            $sciname = self::clean_sciname($rec['title']);
+            if(preg_match_all("/eol.org\/pages\/(.*?)\/names\"/ims", $html, $arr)) { //<a href="https://eol.org/pages/11816/names" target="_blank">
                 $ret_arr = array_filter($arr[1]); //remove null arrays
                 $ret_arr = array_unique($ret_arr); //make unique
                 $ret_arr = array_values($ret_arr); //reindex key
@@ -137,12 +142,23 @@ class Protisten_deAPI_V2
                 if(count($ret_arr) < 1) { print_r($rec); exit("\nInvestigate no EOL ID found.\n"); }
                 if(count($ret_arr) == 1) { 
                     $rec['EOLid'] = $ret_arr[0]; 
-                    // print_r($rec); print_r($ret_arr); exit("\nhuli ka\n");
-                    $sciname = self::clean_sciname(rec['title']);
                     $this->taxon_EOLpageID_HTML[$sciname]['EOLid']          = $rec['EOLid'];
-                    $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']    = self::parse_FamAndOrder($html);
                 }
             }
+            if(preg_match_all("/eol.org\/pages\/(.*?)\"/ims", $html, $arr)) { //<a href="https://eol.org/pages/11816" target="_blank">
+                $ret_arr = array_filter($arr[1]); //remove null arrays
+                $ret_arr = array_unique($ret_arr); //make unique
+                $ret_arr = array_values($ret_arr); //reindex key
+                if(count($ret_arr) > 1) { print_r($rec); echo("\nInvestigate more than 1 EOL ID.\n"); $rec['EOLid'] = $ret_arr[0]; } //Raphidocystis tubifera 61003987
+                if(count($ret_arr) < 1) { print_r($rec); exit("\nInvestigate no EOL ID found.\n"); }
+                if(count($ret_arr) == 1) { 
+                    $rec['EOLid'] = $ret_arr[0]; 
+                    $this->taxon_EOLpageID_HTML[$sciname]['EOLid']          = $rec['EOLid'];
+                }
+            }
+            else $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder'] = self::parse_FamAndOrder($html);
+
+            // print_r($this->taxon_EOLpageID_HTML); exit("\nstop 1\n");
 
             if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
                 // print_r($arr[1]); //exit("\nhuli 5\n");
@@ -406,7 +422,6 @@ class Protisten_deAPI_V2
                 else                                                            $taxon->EOLid = '';
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-
                 if($val = $taxon->EOLid) {
                     $taxon->taxonID = $val;
                     if($ancestry = $this->func->get_ancestry_via_DH($val, false, true)) { //2nd param: landmark_only | 3rd param: return_completeYN
@@ -425,6 +440,16 @@ class Protisten_deAPI_V2
                     }
                 }
                 else $taxon->taxonID = md5($sciname);
+
+                // /* this block will negate above
+                if($val = @$this->taxon_EOLpageID_HTML[$sciname]['EOLid']) {}
+                else {
+                    $taxon->parentNameUsageID       = '';
+                    $taxon->higherClassification    = '';
+                    $taxon->family = @$this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']['family'];
+                    $taxon->order = @$this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']['order'];
+                }
+                // */
 
                 /*
                 if($legacy) {
