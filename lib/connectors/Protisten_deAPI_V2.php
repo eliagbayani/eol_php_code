@@ -41,7 +41,7 @@ class Protisten_deAPI_V2
         // $page_id = 46564415; //Gadus morhua
         // $page_id = 46564414; //Gadus
         // $page_id = 60963261; //Cochliopodium vestitum (Archer 1871)
-        // $page_id = 52253740;
+        // $page_id = 61003987;
         // $ancestry = $this->func->get_ancestry_via_DH($page_id, $landmark_only, $return_completeYN); print_r($ancestry); exit("\n-end test DH-\n");
         // exit("\nexit DH test\n"); //good test OK
         // print_r($this->func->DH_canonical_EOLid);
@@ -145,7 +145,7 @@ class Protisten_deAPI_V2
                     $this->taxon_EOLpageID_HTML[$sciname]['EOLid']          = $rec['EOLid'];
                 }
             }
-            if(preg_match_all("/eol.org\/pages\/(.*?)\"/ims", $html, $arr)) { //<a href="https://eol.org/pages/11816" target="_blank">
+            elseif(preg_match_all("/eol.org\/pages\/(.*?)\"/ims", $html, $arr)) { //<a href="https://eol.org/pages/11816" target="_blank">
                 $ret_arr = array_filter($arr[1]); //remove null arrays
                 $ret_arr = array_unique($ret_arr); //make unique
                 $ret_arr = array_values($ret_arr); //reindex key
@@ -446,8 +446,9 @@ class Protisten_deAPI_V2
                 else {
                     $taxon->parentNameUsageID       = '';
                     $taxon->higherClassification    = '';
-                    $taxon->family = @$this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']['family'];
                     $taxon->order = @$this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']['order'];
+                    $taxon->family = @$this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']['family'];
+                    $taxon->genus = @$this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']['genus'];
                 }
                 // */
 
@@ -552,6 +553,9 @@ class Protisten_deAPI_V2
         }
         if(preg_match("/Order <big>(.*?)<\/big>/ims", $html, $arr)) {
             $final['order'] = strip_tags($arr[1]);
+        }
+        if(preg_match("/Genus <big>(.*?)<\/big>/ims", $html, $arr)) {
+            $final['genus'] = strip_tags($arr[1]);
         }
         return $final;
     }
