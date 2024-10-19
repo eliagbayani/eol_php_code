@@ -92,7 +92,7 @@ class Protisten_deAPI_V2
                 [data-lazy-src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
             )*/
 
-            $ret = self::process_taxon_rec($rec); //print_r($ret);
+            $ret = self::process_taxon_rec($rec, $url); //print_r($ret); //2nd param $url is just for debug
             if($val = $ret['images']) $images = $val;
             else                      $images = array();
             $images = array_filter($images); //remove null arrays
@@ -107,10 +107,13 @@ class Protisten_deAPI_V2
         } //end foreach()
         // print_r($this->report); exit("\nstopx\n");
     }
-    private function process_taxon_rec($rec)
+    private function process_taxon_rec($rec, $url)
     {
         $url2 = $rec['data-href'];
-        if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') return; //page not found
+        if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') //return; //page not found
+            {
+                return; print_r($rec); exit("\nbroken link\n[$url]\n");
+            }
 
         // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/acanthocystis-penardi/';
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/glutinoconcha/excentrostoma/centropyxis-aculeata/';
@@ -132,6 +135,10 @@ class Protisten_deAPI_V2
 
         if($html = Functions::lookup_with_cache($url2, $options)) { //echo "\n$html\n";
             $sciname = self::clean_sciname($rec['title']);
+
+            to do: differentiate eol.org with tree and without tree but just a link to eol page
+
+
             if(preg_match_all("/eol.org\/pages\/(.*?)\/names\"/ims", $html, $arr)) { //<a href="https://eol.org/pages/11816/names" target="_blank">
                 $ret_arr = array_filter($arr[1]); //remove null arrays
                 $ret_arr = array_unique($ret_arr); //make unique
