@@ -136,36 +136,10 @@ class Protisten_deAPI_V2
         if($html = Functions::lookup_with_cache($url2, $options)) { //echo "\n$html\n";
             $sciname = self::clean_sciname($rec['title']);
 
-            to do: differentiate eol.org with tree and without tree but just a link to eol page
+            // to do: differentiate eol.org with tree and without tree but just a link to eol page
+            self::get_EOLid_from_HTML($html, $sciname, $rec);
 
-
-            if(preg_match_all("/eol.org\/pages\/(.*?)\/names\"/ims", $html, $arr)) { //<a href="https://eol.org/pages/11816/names" target="_blank">
-                $ret_arr = array_filter($arr[1]); //remove null arrays
-                $ret_arr = array_unique($ret_arr); //make unique
-                $ret_arr = array_values($ret_arr); //reindex key
-                if(count($ret_arr) > 1) { print_r($rec); echo("\nInvestigate more than 1 EOL ID.\n"); $rec['EOLid'] = $ret_arr[0]; } //Raphidocystis tubifera 61003987
-                if(count($ret_arr) < 1) { print_r($rec); exit("\nInvestigate no EOL ID found.\n"); }
-                if(count($ret_arr) == 1) { 
-                    $rec['EOLid'] = $ret_arr[0]; 
-                    $this->taxon_EOLpageID_HTML[$sciname]['EOLid']          = $rec['EOLid'];
-                }
-            }
-            elseif(preg_match_all("/eol.org\/pages\/(.*?)\"/ims", $html, $arr)) { //<a href="https://eol.org/pages/11816" target="_blank">
-                $ret_arr = array_filter($arr[1]); //remove null arrays
-                $ret_arr = array_unique($ret_arr); //make unique
-                $ret_arr = array_values($ret_arr); //reindex key
-                if(count($ret_arr) > 1) { print_r($rec); echo("\nInvestigate more than 1 EOL ID.\n"); $rec['EOLid'] = $ret_arr[0]; } //Raphidocystis tubifera 61003987
-                if(count($ret_arr) < 1) { print_r($rec); exit("\nInvestigate no EOL ID found.\n"); }
-                if(count($ret_arr) == 1) { 
-                    $rec['EOLid'] = $ret_arr[0]; 
-                    $this->taxon_EOLpageID_HTML[$sciname]['EOLid']          = $rec['EOLid'];
-                }
-            }
-            else $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder'] = self::parse_FamAndOrder($html);
-
-            // print_r(@$this->taxon_EOLpageID_HTML); exit("\nstop 1\n");
-
-            if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) {
+            if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) { //possibly for text descriptions. Not used atm.
                 // print_r($arr[1]); //exit("\nhuli 5\n");
             }
 
@@ -279,6 +253,31 @@ class Protisten_deAPI_V2
         }
         print_r($rec); print_r($this->debug); exit("\nhuli 4 - should not go here.\n"); //return
     }
+    private function get_EOLid_from_HTML($html, $sciname, $rec)
+    {
+        if(preg_match("/<a href=\"https:\/\/eol.org\/(.*?)<\/a>/ims", $html, $arr)) {
+            if(stripos($arr[1], "EOL-Button.jpg") !== false) { //string is found        //No EOL tree, just link to EOL page
+                $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder'] = self::parse_FamAndOrder($html);
+            }
+            else { //with EOL tree
+            }
+        }
+
+        $html = str_replace('/names"', '"', $html);                       //<a href="https://eol.org/pages/11816/names" target="_blank">
+        if(preg_match_all("/eol.org\/pages\/(.*?)\"/ims", $html, $arr)) { //<a href="https://eol.org/pages/11816" target="_blank">
+            $ret_arr = array_filter($arr[1]); //remove null arrays
+            $ret_arr = array_unique($ret_arr); //make unique
+            $ret_arr = array_values($ret_arr); //reindex key
+            if(count($ret_arr) > 1) { print_r($rec); echo("\nInvestigate more than 1 EOL ID.\n"); $rec['EOLid'] = $ret_arr[0]; } //Raphidocystis tubifera 61003987
+            if(count($ret_arr) < 1) { print_r($rec); exit("\nInvestigate no EOL ID found.\n"); }
+            if(count($ret_arr) == 1) { 
+                $rec['EOLid'] = $ret_arr[0]; 
+                $this->taxon_EOLpageID_HTML[$sciname]['EOLid'] = $rec['EOLid'];
+            }
+        }
+        else $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder'] = self::parse_FamAndOrder($html);
+        // print_r(@$this->taxon_EOLpageID_HTML); exit("\nstop 1\n");
+    } //$rec
     private function get_records_per_group($url)
     {
         $records = array();
