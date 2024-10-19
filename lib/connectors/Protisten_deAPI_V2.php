@@ -275,7 +275,7 @@ class Protisten_deAPI_V2
                 $this->taxon_EOLpageID_HTML[$sciname]['EOLid'] = $rec['EOLid'];
             }
         }
-        else $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder'] = self::parse_FamAndOrder($html);
+        else $this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder'] = self::parse_FamAndOrder($html); //should not go here anymore. But just in case.
         // print_r(@$this->taxon_EOLpageID_HTML); exit("\nstop 1\n");
     } //$rec
     private function get_records_per_group($url)
@@ -446,8 +446,7 @@ class Protisten_deAPI_V2
                 else $taxon->taxonID = md5($sciname);
 
                 // /* this block will negate above
-                if($val = @$this->taxon_EOLpageID_HTML[$sciname]['EOLid']) {}
-                else {
+                if(isset($this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder'])) {
                     $taxon->parentNameUsageID       = '';
                     $taxon->higherClassification    = '';
                     $taxon->order = @$this->taxon_EOLpageID_HTML[$sciname]['FamAndOrder']['order'];
