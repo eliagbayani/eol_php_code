@@ -120,15 +120,11 @@ class Protisten_deAPI_V2
         // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/achnanthes-armillaris/';
         // $url2 = 'https://www.protisten.de/home-new/metazoa/hydrozoa/hydra-viridissima/';
         // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/acanthoceras-zachariasii/';
-        // $url2 = 'https://www.protisten.de/home-new/bac-proteo/zoogloea-ramigera/';
-        // $url2 = 'https://www.protisten.de/home-new/bac-proteo/macromonas-fusiformis/';
-        // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-chlorobi/chlorobium-luteolum/';
-        // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/organoconcha/pyxidicula-spec/';
-        // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/foraminifera/foraminifera-spec/';
-        // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-chroococcales/aphanothece-microscopica/';
-        // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/thalassiosira-leptopus/';
-        // $url2 = 'https://www.protisten.de/home-new/bacillariophyta/fragilariophyceae/asterionella-tekelili/';
         // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/raphidocystis-tubifera/';
+
+        // if($url2 == 'https://www.protisten.de/home-new/colorless-flagellates/obazoa-choanoflagellata-colorless-flagellates/salpingoeca-ampulloides/') {
+        //     $this->download_options['expire_seconds'] = 1;
+        // }
 
         $options = $this->download_options;
         // $options['expire_seconds'] = 1; //debug only
@@ -268,7 +264,10 @@ class Protisten_deAPI_V2
             $ret_arr = array_filter($arr[1]); //remove null arrays
             $ret_arr = array_unique($ret_arr); //make unique
             $ret_arr = array_values($ret_arr); //reindex key
-            if(count($ret_arr) > 1) { print_r($rec); echo("\nInvestigate more than 1 EOL ID.\n"); $rec['EOLid'] = $ret_arr[0]; } //Raphidocystis tubifera 61003987
+            if(count($ret_arr) > 1) { print_r($rec); echo("\nInvestigate more than 1 EOL ID.\n"); 
+                $rec['EOLid'] = $ret_arr[0]; 
+                $this->taxon_EOLpageID_HTML[$sciname]['EOLid'] = $rec['EOLid'];
+            } //Raphidocystis tubifera 61003987
             if(count($ret_arr) < 1) { print_r($rec); exit("\nInvestigate no EOL ID found.\n"); }
             if(count($ret_arr) == 1) { 
                 $rec['EOLid'] = $ret_arr[0]; 
@@ -285,8 +284,10 @@ class Protisten_deAPI_V2
         // $url = 'https://www.protisten.de/home-new/colorless-flagellates/';
         // $url = 'https://www.protisten.de/home-new/bac-proteo/';
         // $url = 'https://www.protisten.de/home-new/heliozoic-amoeboids/';
-        $this->debug['url in question'][] = $url;
-        if($html = Functions::lookup_with_cache($url, $this->download_options)) { // echo "\n$html\n";
+        $this->debug['url main groups'][] = $url;
+        $options = $this->download_options;
+        $options['expire_seconds']= 60*60*24; //ideally 1 day cache
+        if($html = Functions::lookup_with_cache($url, $options)) { // echo "\n$html\n";
             if(preg_match_all("/<figure class=\"wpmf-gallery-item\"(.*?)<\/figure>/ims", $html, $arr)) { //this gives 2 records, we use the 2nd one
                 // print_r($arr[1]); echo " - ito siya\n";
                 $records = array(); $taken_already = array();
