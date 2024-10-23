@@ -507,8 +507,9 @@ class ZenodoConnectorAPI
                     [scheme] => url
                 )
         )*/
-        /* works OK :-)
+        // /* ----- start: Related Works
         $sought = array('identifier' => 'https://eol.org/resources/428', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
+        
         if($RI = @$obj_1st['metadata']['related_identifiers']) { print_r($RI);
             $add_isSourceOf_YN = true;
             foreach($RI as $r) {
@@ -519,7 +520,7 @@ class ZenodoConnectorAPI
         }
         else $RI = array();
         $obj_1st['metadata']['related_identifiers'] = $RI;
-        */
+        // ----- end: Related Works */
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
