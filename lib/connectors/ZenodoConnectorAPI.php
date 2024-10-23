@@ -63,6 +63,7 @@ class ZenodoConnectorAPI
         ------------------- end block */
 
         $id = 13761108; //FishBase
+        $id = 13933415; //AntWeb
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
     }
@@ -493,14 +494,32 @@ class ZenodoConnectorAPI
         }
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         /*[related_identifiers] => Array(
-                            [0] => Array(
-                                    [identifier] => https://editors.eol.org/eol_php_code/applications/content_server/resources/42_meta_recoded.tar.gz
-                                    [relation] => isSupplementTo
-                                    [resource_type] => dataset
-                                    [scheme] => url
-                                )
-                        )*/
-        // $RI = @$obj_1st['metadata']['related_identifiers']; print_r($RI); //exit;
+            [0] => Array(
+                    [identifier] => https://editors.eol.org/eol_php_code/applications/content_server/resources/42_meta_recoded.tar.gz
+                    [relation] => isSupplementTo
+                    [resource_type] => dataset
+                    [scheme] => url
+                )
+            [1] => Array(
+                    [identifier] => https://eol.org/resources/395
+                    [relation] => isSourceOf
+                    [resource_type] => dataset
+                    [scheme] => url
+                )
+        )*/
+        /* works OK :-)
+        $sought = array('identifier' => 'https://eol.org/resources/428', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
+        if($RI = @$obj_1st['metadata']['related_identifiers']) { print_r($RI);
+            $add_isSourceOf_YN = true;
+            foreach($RI as $r) {
+                if($r['identifier'] == $sought['identifier'] && $r['relation'] == $sought['relation']) $add_isSourceOf_YN = false;
+            }
+            if($add_isSourceOf_YN) { $RI[] = $sought; echo "\nisSourceOf is added.\n"; }
+            else echo "\nisSourceOf was not added. Already exists.\n";
+        }
+        else $RI = array();
+        $obj_1st['metadata']['related_identifiers'] = $RI;
+        */
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
