@@ -1,6 +1,6 @@
 <?php
 namespace php_active_record;
-/* */
+/**/
 class ZenodoConnectorAPI
 {
     function __construct($folder = null, $query = null)
@@ -9,7 +9,7 @@ class ZenodoConnectorAPI
     function latest_katja_changes_2() //for removing tags "EOL Content Partners"
     {
         $this->log_error(array("==================== Log starts here ===================="));
-        // /* ------------------- start block
+        /* ------------------- start block
 
         // https://zenodo.org/search?q=metadata.subjects.subject:"EOL Content Partners"&f=subject:EOL Content Partners&l=list&p=1&s=10&sort=bestmatch
         // https://zenodo.org/search?q=metadata.subjects.subject:"EOL Content Partners"&l=list&p=1&s=10&sort=bestmatch
@@ -60,7 +60,11 @@ class ZenodoConnectorAPI
             // break; //debug only dev only
         } //end while()        
         exit("\n-end bulk updates-\n");
-        // ------------------- end block */
+        ------------------- end block */
+
+        $id = 13761108; //FishBase
+        self::update_zenodo_record_of_latest_requested_changes($id);
+        exit("\n-----end per taxon, during dev-----\n");
     }
     function latest_katja_changes()
     {   
@@ -172,7 +176,7 @@ class ZenodoConnectorAPI
         $excluded_ids = array(13743941, 13751009);
         if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); //exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna\n");
 
         /* NEW Oct_6: to filter per tag requirement */
         /* batch 66 - 67
@@ -467,19 +471,12 @@ class ZenodoConnectorAPI
     }
     function update_Zenodo_record_latest($id, $obj_1st) //this updates the newversion object
     {
-        /* not used anymore...
-        $ret_obj = $this->retrieve_dataset($id);
-        // $links_edit = $ret_obj['links']['edit']; //not used
-        $links_publish = $ret_obj['links']['publish'];
-        */
-
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         $dates_final = self::get_dates_entries_from_html($obj_1st, false); //2nd param false is $updateDate_set2Current_YN
         // if(!self::has_type_equal2_Other($dates_final)) {
             // $dates_final[] = array("start" => date("Y-m-d"), "end" => date("Y-m-d"), "type" => 'Other', "description" => "metadata updated");
         // }
         // print_r($dates_final); exit;
-
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if($val = @$obj_1st['metadata']['license']) $license_final = $val;
         else                                        $license_final = "notspecified";
@@ -495,7 +492,6 @@ class ZenodoConnectorAPI
             }
         }
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
                                     "title" => str_replace("'", "__", $obj_1st['metadata']['title']),
