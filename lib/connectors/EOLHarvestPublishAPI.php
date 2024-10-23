@@ -69,10 +69,43 @@ class EOLHarvestPublishAPI
         foreach($resource_ids_names_list as $id => $name) { $i++;
             // http://content.eol.org/resources/626
             $num = self::format_number_with_leading_zeros($i, 5);
-            $row = "$num. <a target='$id $name' href='http://content.eol.org/resources/$id'>$name</a><br>";
+            // /* new block: get the other resource id e.g. https://eol.org/resources/425
+            $another_link = self::parse_the_other_id($id);
+            // */
+            $row = "$num. <a target='$id $name' href='http://content.eol.org/resources/$id'>$name</a> ____________________ [$another_link]<br>";
             fwrite($WRITE, $row."\n");
         }
         fclose($WRITE);
+    }
+    private function parse_the_other_id($id)
+    {
+        $another_resource_id = self::get_the_other_resource_id($id);
+        $another_url = "https://eol.org/resources/$another_resource_id";
+        $options = $this->download_options;
+        $options['expire_seconds'] = false;
+        $url = 'https://eol.org/resources/'.$another_resource_id;
+        $status = 'published';
+        if($html = Functions::lookup_with_cache($url, $options)) {
+            // <p>No import logs to show.</p>
+            if(stripos($html, 'No import logs to show') !== false) $status = 'unpublished'; //string is found 
+        }        
+        $another_link = "<a href='$another_url'>$another_resource_id {$status}</a>";
+        $arr = array('id' => $another_resource_id, 'status' => $status, 'content_id' => $id);
+        $json = json_encode($arr);
+        $another_link = "<a href='$another_url'>$json</a>";
+        return $another_link;
+    }
+    private function get_the_other_resource_id($id)
+    {
+        $options = $this->download_options;
+        $options['expire_seconds'] = false;
+        $url = 'http://content.eol.org/resources/'.$id;
+        if($html = Functions::lookup_with_cache($url, $options)) {
+            // <div class='item'><a href="https://eol.org/resources/1001">see in production</a></div>
+            if(preg_match("/eol.org\/resources\/(.*?)\">see in production/ims", $html, $arr)) {
+                return $arr[1];
+            }
+        }
     }
     private function format_number_with_leading_zeros($num, $padding)
     {
