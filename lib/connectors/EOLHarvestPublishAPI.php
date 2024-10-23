@@ -82,7 +82,7 @@ class EOLHarvestPublishAPI
         $another_resource_id = self::get_the_other_resource_id($id);
         $another_url = "https://eol.org/resources/$another_resource_id";
         $options = $this->download_options;
-        $options['expire_seconds'] = false;
+        $options['expire_seconds'] = 60*60*24*30; //1 month
         $url = 'https://eol.org/resources/'.$another_resource_id;
         $status = 'published';
         if($html = Functions::lookup_with_cache($url, $options)) {
@@ -98,7 +98,7 @@ class EOLHarvestPublishAPI
     private function get_the_other_resource_id($id)
     {
         $options = $this->download_options;
-        $options['expire_seconds'] = false;
+        $options['expire_seconds'] = false; //can always be false.
         $url = 'http://content.eol.org/resources/'.$id;
         if($html = Functions::lookup_with_cache($url, $options)) {
             // <div class='item'><a href="https://eol.org/resources/1001">see in production</a></div>
