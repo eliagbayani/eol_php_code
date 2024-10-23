@@ -176,7 +176,7 @@ class ZenodoConnectorAPI
         $excluded_ids = array(13743941, 13751009);
         if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna\n");
 
         /* NEW Oct_6: to filter per tag requirement */
         /* batch 66 - 67
@@ -491,6 +491,16 @@ class ZenodoConnectorAPI
                 $keywords_final[] = $kw;
             }
         }
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        /*[related_identifiers] => Array(
+                            [0] => Array(
+                                    [identifier] => https://editors.eol.org/eol_php_code/applications/content_server/resources/42_meta_recoded.tar.gz
+                                    [relation] => isSupplementTo
+                                    [resource_type] => dataset
+                                    [scheme] => url
+                                )
+                        )*/
+        // $RI = @$obj_1st['metadata']['related_identifiers']; print_r($RI); //exit;
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         array_shift($obj_1st['files']);
         $input['metadata'] = array(

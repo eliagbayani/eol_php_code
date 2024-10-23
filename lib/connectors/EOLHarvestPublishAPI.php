@@ -7,7 +7,7 @@ class EOLHarvestPublishAPI
     function __construct()
     {
         $this->download_options = array('cache' => 1, 'resource_id' => 'EOLHarPub', 'expire_seconds' => 60*60*1, 
-        'download_wait_time' => 500000, 'timeout' => 10800, 'download_attempts' => 2); //1 hr to expire
+        'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 2); //1 hr to expire
         $this->resource_harvest_list = "http://content.eol.org/?page=PAGE_NUM&per_page=PER_PAGE";
     }
     function generate_cache_for_EOLResourcesHarvestList()
