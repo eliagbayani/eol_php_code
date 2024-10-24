@@ -93,7 +93,7 @@ class EOLHarvestPublishAPI
             if(stripos($html, 'No import logs to show') !== false) $status = 'unpublished'; //string is found 
         }        
         $another_link = "<a href='$another_url'>$another_resource_id {$status}</a>";
-        $arr = array('name' => $name, 'id' => $another_resource_id, 'status' => $status, 'content_id' => $id, 'opendata_id' => $opendata_url);
+        $arr = array('id' => $another_resource_id, 'status' => $status, 'content_id' => $id, 'opendata_id' => $opendata_url, 'name' => $name);
         $json = json_encode($arr);
         $another_link = "<a href='$another_url'>$json</a>";
         return $another_link;
