@@ -599,10 +599,30 @@ class ZenodoConnectorAPI
     }
     private function build_EOL_resourceID_and_Zenodo_ID_info()
     {
-        $file = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv";
         $options = $this->download_options; 
         $options['expire_seconds'] = 60*60*24; //1 day cache
         $options['cache'] = 1;
+        // step 1
+        $url = 'https://editors.eol.org/eol_php_code/applications/content_server/resources/reports/EOL_harvest_list.html';
+        if($html = Functions::lookup_with_cache($url, $options)) { 
+            if(preg_match_all("/\{(.*?)\}/ims", $html, $arr)) { // print_r($arr[1]);
+                foreach($arr[1] as $str) {
+                    $json = "{".$str."}"; 
+                    $rec = json_decode($json, true); // echo "\n$json\n"; print_r($rec); exit("\nelix\n");
+                    /*Array(
+                        [name] => 000_English Vernaculars for Landmark Taxa
+                        [id] => 1001
+                        [status] => unpublished
+                        [content_id] => 550
+                        [opendata_id] => 4b1ad94f-0d20-47f1-8a43-c2cb0d670da4
+                    )*/
+                    $this->eol_resources[$rec['opendata_id']] = $rec;
+                }
+            }
+        }
+        // print_r($this->eol_resources); exit;
+        // step 2
+        $file = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv";
         if($local_file = Functions::save_remote_file_to_local($file, $options)) { $i = 0;
             foreach(new FileIterator($local_file) as $line_number => $line) { $i++;
                 $row = explode("\t", $line); // print_r($row);
@@ -624,7 +644,7 @@ class ZenodoConnectorAPI
                     [Resource_URL] => https://editors.eol.org/uploaded_resources/55a/d62/microscope.xml.gz
                     [OpenData_URL] => https://opendata.eol.org/dataset/4a668cee-f1da-4e95-9ed1-cb755a9aca4f/resource/55ad629d-dd89-4bac-8fff-96f219f4b323
                 )*/
-                if($val = @$rec['Zenodo_id']) $this->zenodo_2_eol_conn[$val] = $rec;
+                // if($val = @$rec['Zenodo_id']) $this->zenodo_2_eol_conn[$val] = $rec;
                 if($OpenData_id = pathinfo(@$rec['OpenData_URL'], PATHINFO_BASENAME)) $this->opendata_info[$OpenData_id] = $rec;
             }
             unlink($local_file);
@@ -632,7 +652,7 @@ class ZenodoConnectorAPI
         // unlink($local_file); //redundant
         // print_r($this->zenodo_2_eol_conn);
         print_r($this->opendata_info);
-        echo "\nzenodo_2_eol_conn: ".count($this->zenodo_2_eol_conn)."\n";
+        // echo "\nzenodo_2_eol_conn: ".count($this->zenodo_2_eol_conn)."\n";
         echo "\nopendata_info: ".count($this->opendata_info)."\n";
         exit;
     }
