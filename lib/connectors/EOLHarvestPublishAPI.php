@@ -79,7 +79,10 @@ class EOLHarvestPublishAPI
     }
     private function parse_the_other_id($id)
     {
-        $another_resource_id = self::get_the_other_resource_id($id);
+        $ret = self::get_the_other_resource_id($id);
+        $another_resource_id = @$ret['another resource id'];
+        $opendata_url        = @$ret['opendata url'];
+
         $another_url = "https://eol.org/resources/$another_resource_id";
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*30; //1 month
@@ -90,22 +93,30 @@ class EOLHarvestPublishAPI
             if(stripos($html, 'No import logs to show') !== false) $status = 'unpublished'; //string is found 
         }        
         $another_link = "<a href='$another_url'>$another_resource_id {$status}</a>";
-        $arr = array('id' => $another_resource_id, 'status' => $status, 'content_id' => $id);
+        $arr = array('id' => $another_resource_id, 'status' => $status, 'content_id' => $id, 'opendata_id' => $opendata_url);
         $json = json_encode($arr);
         $another_link = "<a href='$another_url'>$json</a>";
         return $another_link;
     }
     private function get_the_other_resource_id($id)
-    {
+    {   $final = array();
         $options = $this->download_options;
         $options['expire_seconds'] = false; //can always be false.
         $url = 'http://content.eol.org/resources/'.$id;
         if($html = Functions::lookup_with_cache($url, $options)) {
             // <div class='item'><a href="https://eol.org/resources/1001">see in production</a></div>
             if(preg_match("/eol.org\/resources\/(.*?)\">see in production/ims", $html, $arr)) {
-                return $arr[1];
+                $final['another resource id'] = $arr[1];
             }
+            /*  <div class='item'>
+                <strong>OpenData URL:</strong>
+                <a href="https://opendata.eol.org/dataset/legacy-partner-archive/resource/13e38317-112c-4df7-beb9-cb8d9d538d2c">13e38317-112c-4df7-beb9-cb8d9d538d2c</a>
+                </div> */
+            if(preg_match("/OpenData URL\:(.*?)<\/div>/ims", $html, $arr)) {
+                if(preg_match("/\/resource\/(.*?)\"/ims", $arr[1], $arr2)) $final['opendata url'] = $arr2[1];               
+            }           
         }
+        return $final;
     }
     private function format_number_with_leading_zeros($num, $padding)
     {
