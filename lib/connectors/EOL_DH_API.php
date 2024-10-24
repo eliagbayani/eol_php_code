@@ -1,6 +1,7 @@
 <?php
 namespace php_active_record;
-/* connector: No specific connector. But now used in EOLv2MetadataAPI.php 
+/* connector: Used in:  EOLv2MetadataAPI.php 
+                        Protisten_deAPI_V2.php (most recent usage)
 
 What DH to use as of Oct 16, 2024. From Katja:
 Hi Eli, 
@@ -13,12 +14,10 @@ is [here](https://opendata.eol.org/dataset/tram-807-808-809-810-dh-v1-1/resource
 https://editors.eol.org/other_files/DWH/DH223test2.zip
 */
 
-
 class EOL_DH_API
 {
     function __construct()
-    {
-        // for the longest time
+    {   // for the longest time
         $this->EOL_DH = "http://localhost/cp/summary%20data%20resources/DH/eoldynamichierarchywithlandmarks.zip";
 
         // as of Oct 16, 2024 from Katja:
