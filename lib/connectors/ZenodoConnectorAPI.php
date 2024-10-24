@@ -9,6 +9,11 @@ class ZenodoConnectorAPI
     function latest_katja_changes_2() //for removing tags "EOL Content Partners"
     {
         $this->log_error(array("==================== Log starts here ===================="));
+
+        // /* ---------- start: for Related Works - iSourceOf relationship
+        self::build_EOL_resourceID_and_Zenodo_ID_info();
+        // ---------- end: */
+
         /* ------------------- start block
 
         // https://zenodo.org/search?q=metadata.subjects.subject:"EOL Content Partners"&f=subject:EOL Content Partners&l=list&p=1&s=10&sort=bestmatch
@@ -507,7 +512,7 @@ class ZenodoConnectorAPI
                     [scheme] => url
                 )
         )*/
-        // /* ----- start: Related Works
+        // /* ----- start: Related Works -----
         $sought = array('identifier' => 'https://eol.org/resources/428', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
         
         if($RI = @$obj_1st['metadata']['related_identifiers']) { print_r($RI);
@@ -520,7 +525,7 @@ class ZenodoConnectorAPI
         }
         else $RI = array();
         $obj_1st['metadata']['related_identifiers'] = $RI;
-        // ----- end: Related Works */
+        // ----- end: Related Works ----- */
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
@@ -739,7 +744,6 @@ class ZenodoConnectorAPI
             }
         }
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
