@@ -11,7 +11,7 @@ class ZenodoConnectorAPI
         $this->log_error(array("==================== Log starts here ===================="));
 
         // /* ---------- start: for Related Works - iSourceOf relationship
-        self::build_EOL_resourceID_and_Zenodo_ID_info();
+        self::build_EOL_resourceID_and_Zenodo_ID_info(); exit("\nstop3\n");
         // ---------- end: */
 
         /* ------------------- start block
@@ -20,8 +20,8 @@ class ZenodoConnectorAPI
         // https://zenodo.org/search?q=metadata.subjects.subject:"EOL Content Partners"&l=list&p=1&s=10&sort=bestmatch
         // https://zenodo.org/search?q=metadata.subjects.subject:"taxonomy"&f=subject:taxonomy&l=list&p=1&s=10&sort=bestmatch
 
-        $q = 'metadata.subjects.subject:"EOL Content Partners"';        //works OK
-        // $q = 'metadata.subjects.subject:"taxonomy"';                 //works OK
+        $q = 'metadata.subjects.subject:"EOL Content Partners"';         //works OK - can be part of main operation
+        // $q = 'metadata.subjects.subject:"taxonomy"';                     //works OK - can be part of main operation
 
         // didn't work, but no need
         // $f = 'subject:"EOL Content Partners"';
@@ -36,15 +36,15 @@ class ZenodoConnectorAPI
             // else continue;
 
             echo "\nProcessing page: [$page]...\n";
-            $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.               '&size=25&page=PAGENUM"                     -H "Content-Type: application/json"';
-            $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page=PAGENUM&q="'.urlencode($q).' -H "Content-Type: application/json"';
+            if(isset($q)) $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page=PAGENUM&q="'.urlencode($q).' -H "Content-Type: application/json"';
+            else          $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.               '&size=25&page=PAGENUM"                     -H "Content-Type: application/json"';
 
             // $cmd = str_replace('PAGENUM', $page, $cmd); //SHOULDN'T BE USED HERE
             $cmd = str_replace('PAGENUM', '1', $cmd); //USE THIS INSTEAD
 
             // echo "\nlist depostions cmd: [$cmd]\n";
             $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
-            $obj = json_decode(trim($json), true);  //echo "\n=====\n"; print_r($obj); echo "\n=====\n"; exit("\n".count($obj)."\n");
+            $obj = json_decode(trim($json), true);  echo "\n=====\n"; print_r($obj); echo "\n=====\n"; exit("\n".count($obj)."\n");
             if(!$obj) break;
             echo "\nStart Batch: $page | No. of records: ".count($obj)."\n";
             foreach($obj as $o)  { //print_r($o); exit;
@@ -56,10 +56,10 @@ class ZenodoConnectorAPI
             }
             print_r($stats); //exit;
             // ----- main operation
-            $IDs = array_keys($IDs); $i = 0;
-            foreach($IDs as $id)  { $i++; echo "\n [$page][$i]. "; sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
-            print_r($stats); //exit;
-            echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
+            // $IDs = array_keys($IDs); $i = 0;
+            // foreach($IDs as $id)  { $i++; echo "\n [$page][$i]. "; sleep(3); self::update_zenodo_record_of_latest_requested_changes($id); }
+            // print_r($stats); //exit;
+            // echo "\nEnd Batch: $page | No. of records: ".count($obj)."\n"; sleep(60);
             // -----
             if(count($obj) < 25) break; //means it is the last batch.
             // break; //debug only dev only
@@ -512,7 +512,8 @@ class ZenodoConnectorAPI
                     [scheme] => url
                 )
         )*/
-        // /* ----- start: Related Works -----
+        /* ----- start: Related Works -----
+        exit("\nwala pa\n");
         $sought = array('identifier' => 'https://eol.org/resources/428', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
         
         if($RI = @$obj_1st['metadata']['related_identifiers']) { print_r($RI);
@@ -525,7 +526,7 @@ class ZenodoConnectorAPI
         }
         else $RI = array();
         $obj_1st['metadata']['related_identifiers'] = $RI;
-        // ----- end: Related Works ----- */
+        ----- end: Related Works ----- */
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
@@ -595,6 +596,45 @@ class ZenodoConnectorAPI
         // echo "\n----- goes here 3 ".strlen($description)."\n"; echo "\n[$description]\n";
         $description = str_replace("'", "__", $description);
         return $description;
+    }
+    private function build_EOL_resourceID_and_Zenodo_ID_info()
+    {
+        $file = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv";
+        $options = $this->download_options; 
+        $options['expire_seconds'] = 60*60*24; //1 day cache
+        $options['cache'] = 1;
+        if($local_file = Functions::save_remote_file_to_local($file, $options)) { $i = 0;
+            foreach(new FileIterator($local_file) as $line_number => $line) { $i++;
+                $row = explode("\t", $line); // print_r($row);
+                if($i == 1) {
+                    $fields = $row;
+                    $fields = array_filter($fields); //print_r($fields);
+                    continue;
+                }
+                else {
+                    $k = 0; $rec = array();
+                    foreach($fields as $fld) { $rec[$fld] = @$row[$k]; $k++; }
+                }
+                $rec = array_map('trim', $rec);
+                // print_r($rec); exit("\nstopx\n");
+                /*Array(
+                    [Zenodo_id] => 13318002
+                    [Resource_id] => microscope
+                    [Resource_name] => micro*scope
+                    [Resource_URL] => https://editors.eol.org/uploaded_resources/55a/d62/microscope.xml.gz
+                    [OpenData_URL] => https://opendata.eol.org/dataset/4a668cee-f1da-4e95-9ed1-cb755a9aca4f/resource/55ad629d-dd89-4bac-8fff-96f219f4b323
+                )*/
+                if($val = @$rec['Zenodo_id']) $this->zenodo_2_eol_conn[$val] = $rec;
+                if($OpenData_id = pathinfo(@$rec['OpenData_URL'], PATHINFO_BASENAME)) $this->opendata_info[$OpenData_id] = $rec;
+            }
+            unlink($local_file);
+        }
+        // unlink($local_file); //redundant
+        // print_r($this->zenodo_2_eol_conn);
+        print_r($this->opendata_info);
+        echo "\nzenodo_2_eol_conn: ".count($this->zenodo_2_eol_conn)."\n";
+        echo "\nopendata_info: ".count($this->opendata_info)."\n";
+        exit;
     }
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ end @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record
