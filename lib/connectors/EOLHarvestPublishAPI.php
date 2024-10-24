@@ -70,14 +70,14 @@ class EOLHarvestPublishAPI
             // http://content.eol.org/resources/626
             $num = self::format_number_with_leading_zeros($i, 5);
             // /* new block: get the other resource id e.g. https://eol.org/resources/425
-            $another_link = self::parse_the_other_id($id);
+            $another_link = self::parse_the_other_id($id, $name);
             // */
             $row = "$num. <a target='$id $name' href='http://content.eol.org/resources/$id'>$name</a> ____________________ [$another_link]<br>";
             fwrite($WRITE, $row."\n");
         }
         fclose($WRITE);
     }
-    private function parse_the_other_id($id)
+    private function parse_the_other_id($id, $name)
     {
         $ret = self::get_the_other_resource_id($id);
         $another_resource_id = @$ret['another resource id'];
@@ -93,7 +93,7 @@ class EOLHarvestPublishAPI
             if(stripos($html, 'No import logs to show') !== false) $status = 'unpublished'; //string is found 
         }        
         $another_link = "<a href='$another_url'>$another_resource_id {$status}</a>";
-        $arr = array('id' => $another_resource_id, 'status' => $status, 'content_id' => $id, 'opendata_id' => $opendata_url);
+        $arr = array('name' => $name, 'id' => $another_resource_id, 'status' => $status, 'content_id' => $id, 'opendata_id' => $opendata_url);
         $json = json_encode($arr);
         $another_link = "<a href='$another_url'>$json</a>";
         return $another_link;
