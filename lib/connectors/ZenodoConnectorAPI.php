@@ -6,42 +6,46 @@ class ZenodoConnectorAPI
     function __construct($folder = null, $query = null)
     {}
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    function jen_related_works()
+    function jen_Related_Works()
     {
         $this->log_error(array("==================== Log starts here ====================Related Works"));
 
         // /* ---------- start: for Related Works - iSourceOf relationship
-        self::build_EOL_resourceID_and_Zenodo_ID_info(); exit("\nstop3\n");
+        self::build_EOL_resourceID_and_Zenodo_ID_info(); //exit("\nstop3\n");
         // ---------- end: */
-        // /* main operation
-        /*[87794797-6169-4935-908c-c304ed594875] => Array(
-                    [name] => Panama Species List
-                    [id] => 196
-                    [status] => published
-                    [content_id] => 285
-                    [opendata_id] => 87794797-6169-4935-908c-c304ed594875
-                )
-        [87794797-6169-4935-908c-c304ed594875] => Array(
-                [Zenodo_id] => 13316781
-                [Resource_id] => SC_panama
-                [Resource_name] => Panama Species List
-                [Resource_URL] => https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_panama.tar.gz
-                [OpenData_URL] => https://opendata.eol.org/dataset/5d99ead1-db10-40ad-9aac-b1b5611d979e/resource/87794797-6169-4935-908c-c304ed594875
-            )
-        */
+        /* start: main operation
+        // [87794797-6169-4935-908c-c304ed594875] => Array(
+        //             [name] => Panama Species List
+        //             [id] => 196
+        //             [status] => published
+        //             [content_id] => 285
+        //             [opendata_id] => 87794797-6169-4935-908c-c304ed594875
+        //         )
+        // [87794797-6169-4935-908c-c304ed594875] => Array(
+        //         [Zenodo_id] => 13316781
+        //         [Resource_id] => SC_panama
+        //         [Resource_name] => Panama Species List
+        //         [Resource_URL] => https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_panama.tar.gz
+        //         [OpenData_URL] => https://opendata.eol.org/dataset/5d99ead1-db10-40ad-9aac-b1b5611d979e/resource/87794797-6169-4935-908c-c304ed594875
+        //     )
         // print_r($this->eol_resources); print_r($this->opendata_info);
+        $final = array();
         foreach($this->eol_resources as $opendata_id => $eol_rec) {
-            if($zenodo_rec = @$this->opendata_info[$opendata_id]) {
-
-            }            
+            if($eol_rec['status'] == 'published') {
+                if($zenodo_rec = @$this->opendata_info[$opendata_id]) {
+                    $zenodo_id = $zenodo_rec['Zenodo_id'];
+                    $final[$zenodo_id] = "https://eol.org/resources/" . $eol_rec['id'];
+                }
+            }
         }
-
+        print_r($final);
         exit("\n- end Related Works -\n");
-        // */
-
+        ----- end: main operation */
 
         $id = 13761108; //FishBase
         $id = 13933415; //AntWeb
+        $id = 13321654; //Zoosystematics and Evolution
+        $this->record_in_question = array('identifier' => 'https://eol.org/resources/547', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
     }
@@ -546,9 +550,11 @@ class ZenodoConnectorAPI
                     [scheme] => url
                 )
         )*/
-        /* ----- start: Related Works -----
-        exit("\nwala pa\n");
-        $sought = array('identifier' => 'https://eol.org/resources/428', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
+        // /* ----- start: Related Works -----
+        // exit("\nwala pa\n");
+
+        // $this->record_in_question = array('identifier' => 'https://eol.org/resources/547', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url'); //force assign
+        $sought = $this->record_in_question;
         
         if($RI = @$obj_1st['metadata']['related_identifiers']) { print_r($RI);
             $add_isSourceOf_YN = true;
@@ -560,7 +566,7 @@ class ZenodoConnectorAPI
         }
         else $RI = array();
         $obj_1st['metadata']['related_identifiers'] = $RI;
-        ----- end: Related Works ----- */
+        // ----- end: Related Works ----- */
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
@@ -700,11 +706,10 @@ class ZenodoConnectorAPI
                 [OpenData_URL] => https://opendata.eol.org/dataset/5d99ead1-db10-40ad-9aac-b1b5611d979e/resource/87794797-6169-4935-908c-c304ed594875
             )
         */
-        print_r($this->eol_resources);
-        print_r($this->opendata_info);
-        // echo "\nzenodo_2_eol_conn: ".count($this->zenodo_2_eol_conn)."\n";
-        echo "\nopendata_info: ".count($this->opendata_info)."\n";
-        exit;
+        // print_r($this->eol_resources); print_r($this->opendata_info);
+        echo "\n eol_resources: ".count($this->eol_resources)."\n";
+        echo "\n opendata_info: ".count($this->opendata_info)."\n";
+        // exit;
     }
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ end @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function update_zenodo_record_of_eol_resource($zenodo_id, $actual_file) //upload of actual file to a published Zenodo record

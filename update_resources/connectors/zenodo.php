@@ -23,8 +23,8 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // exit("\n".urldecode($str)."\n");
 
 $func = new ZenodoAPI();
-
-$func->latest_katja_changes_2(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
+$func->jen_Related_Works();
+// $func->latest_katja_changes_2(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
 // $func->latest_katja_changes(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
 
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
