@@ -13,7 +13,8 @@ class ZenodoConnectorAPI
         // /* ---------- start: for Related Works - iSourceOf relationship
         self::build_EOL_resourceID_and_Zenodo_ID_info(); //exit("\nstop3\n");
         // ---------- end: */
-        /* start: main operation
+
+        // /* start: main operation
         // [87794797-6169-4935-908c-c304ed594875] => Array(
         //             [name] => Panama Species List
         //             [id] => 196
@@ -38,9 +39,16 @@ class ZenodoConnectorAPI
                 }
             }
         }
-        print_r($final);
+        print_r($final); echo "\nTotal records: ".count($final)."\n";
+        foreach($final as $zenodo_id => $url) {
+            if($zenodo_id && $url) {
+                $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
+                self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
+                break; //debug only - run only the 1st hit
+            }
+        }
         exit("\n- end Related Works -\n");
-        ----- end: main operation */
+        // ----- end: main operation */
 
         $id = 13761108; //FishBase
         $id = 13933415; //AntWeb
@@ -329,6 +337,16 @@ class ZenodoConnectorAPI
                 if($val = @$this->html_contributors[$name]['isni'])  $r['isni']  = "$val";      //no doc example, never worked    
                 if($val = @$this->html_contributors[$name]['ror'])   $r['ror']   = "$val";      //was never proven      
                 if($orcid = @$this->ORCIDs[$name]) $r['orcid'] = $orcid; //implement saved ORCIDs
+
+                // /* manual check: no choice until API catches us with site
+                    // [type] => DataManager
+                    // [orcid] => 0000-0001-7134-3324 -> this is Schulz, Katja
+                if($r['orcid'] == '0000-0001-7134-3324') {
+                    $r['type']['role']['id'] = 'DataManager';
+                    $r['role']['type']['id'] = 'DataManager';
+                }
+                // */
+
                 $final[] = $r;
             }
         }
