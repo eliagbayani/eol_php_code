@@ -6,16 +6,50 @@ class ZenodoConnectorAPI
     function __construct($folder = null, $query = null)
     {}
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    function latest_katja_changes_2() //for removing tags "EOL Content Partners"
+    function jen_related_works()
     {
-        $this->log_error(array("==================== Log starts here ===================="));
+        $this->log_error(array("==================== Log starts here ====================Related Works"));
 
         // /* ---------- start: for Related Works - iSourceOf relationship
         self::build_EOL_resourceID_and_Zenodo_ID_info(); exit("\nstop3\n");
         // ---------- end: */
+        // /* main operation
+        /*[87794797-6169-4935-908c-c304ed594875] => Array(
+                    [name] => Panama Species List
+                    [id] => 196
+                    [status] => published
+                    [content_id] => 285
+                    [opendata_id] => 87794797-6169-4935-908c-c304ed594875
+                )
+        [87794797-6169-4935-908c-c304ed594875] => Array(
+                [Zenodo_id] => 13316781
+                [Resource_id] => SC_panama
+                [Resource_name] => Panama Species List
+                [Resource_URL] => https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_panama.tar.gz
+                [OpenData_URL] => https://opendata.eol.org/dataset/5d99ead1-db10-40ad-9aac-b1b5611d979e/resource/87794797-6169-4935-908c-c304ed594875
+            )
+        */
+        // print_r($this->eol_resources); print_r($this->opendata_info);
+        foreach($this->eol_resources as $opendata_id => $eol_rec) {
+            if($zenodo_rec = @$this->opendata_info[$opendata_id]) {
+
+            }            
+        }
+
+        exit("\n- end Related Works -\n");
+        // */
+
+
+        $id = 13761108; //FishBase
+        $id = 13933415; //AntWeb
+        self::update_zenodo_record_of_latest_requested_changes($id);
+        exit("\n-----end per taxon, during dev-----\n");
+    }
+    function latest_katja_changes_2() //for removing tags "EOL Content Partners"
+    {
+        $this->log_error(array("==================== Log starts here ===================="));
 
         /* ------------------- start block
-
         // https://zenodo.org/search?q=metadata.subjects.subject:"EOL Content Partners"&f=subject:EOL Content Partners&l=list&p=1&s=10&sort=bestmatch
         // https://zenodo.org/search?q=metadata.subjects.subject:"EOL Content Partners"&l=list&p=1&s=10&sort=bestmatch
         // https://zenodo.org/search?q=metadata.subjects.subject:"taxonomy"&f=subject:taxonomy&l=list&p=1&s=10&sort=bestmatch
