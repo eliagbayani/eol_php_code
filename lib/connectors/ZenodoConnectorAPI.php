@@ -288,7 +288,7 @@ class ZenodoConnectorAPI
         }
     }
     private function fill_in_katja_changes($o)
-    {   // print_r($o); exit("\nstop muna 1\n");
+    {   //print_r($o); exit("\nstop muna 1\n");
         // $o['metadata']['creators'][0]['affiliation'] = "Eli was here 5."; //dev only
         /* Agents
         - For records that have Hosting institution: Anne Thessen under Contributors, remove the Contributors record, 
@@ -338,13 +338,13 @@ class ZenodoConnectorAPI
                 if($val = @$this->html_contributors[$name]['ror'])   $r['ror']   = "$val";      //was never proven      
                 if($orcid = @$this->ORCIDs[$name]) $r['orcid'] = $orcid; //implement saved ORCIDs
 
-                // /* manual check: no choice until API catches us with site
+                // /* manual check: no choice until API catches us with site --> BUT all type of combinations didn't work; can't add a type e.g. DataManager
                     // [type] => DataManager
                     // [orcid] => 0000-0001-7134-3324 -> this is Schulz, Katja
-                if($r['orcid'] == '0000-0001-7134-3324') {
-                    $r['type']['role']['id'] = 'DataManager';
-                    $r['role']['type']['id'] = 'DataManager';
-                }
+                // if($r['orcid'] == '0000-0001-7134-3324') {
+                //     $r['type']['role']['id'] = 'DataManager';
+                //     $r['role']['type']['id'] = 'DataManager';
+                // }
                 // */
 
                 $final[] = $r;
@@ -1139,7 +1139,14 @@ class ZenodoConnectorAPI
             if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) { //echo "\ndito 1\n"; 
                 $json = substr_replace(trim($arr[1]), '', -1); //remove last char
                 if($arr = json_decode($json, true)) {
-                    print_r($arr); //very good debug 
+                    print_r($arr); //exit("\nvery gud!\n"); //very good debug 
+
+                    // /* New:
+                    if(in_array($what, array('creators', 'creators2'))) {
+                        if(self::there_is_role($arr)) $this->log_error(array("There is role in Creator: ", $obj['id']));
+                    }
+                    // */
+
                     foreach(@$arr as $r) {
                         if($name = @$r['person_or_org']['name']) {
                             if($identifiers = @$r['person_or_org']['identifiers']) {
@@ -1160,6 +1167,41 @@ class ZenodoConnectorAPI
                     } //end foreach()    
                 }
             }
+        }
+    }
+    private function there_is_role($arr)
+    {
+        /*Array(
+            [0] => Array(
+                    [affiliations] => Array(
+                            [0] => Array(
+                                    [name] => National Museum of Natural History, Smithsonian Institution
+                                )
+                        )
+                    [person_or_org] => Array(
+                            [family_name] => Schulz
+                            [given_name] => Katja
+                            [identifiers] => Array(
+                                    [0] => Array(
+                                            [identifier] => 0000-0001-7134-3324
+                                            [scheme] => orcid
+                                        )
+                                )
+                            [name] => Schulz, Katja
+                            [type] => personal
+                        )
+                    [role] => Array(
+                            [id] => datamanager
+                            [title] => Array(
+                                    [de] => DatenmanagerIn
+                                    [en] => Data manager
+                                )
+                        )
+                )
+        )
+        */
+        foreach($arr as $r) {
+            if(@$r['role']) return true;
         }
     }
     private function remove_all_in_between_inclusive($left, $right, $html, $includeRight = true)
