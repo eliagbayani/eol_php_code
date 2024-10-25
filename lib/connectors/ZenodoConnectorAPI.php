@@ -39,12 +39,23 @@ class ZenodoConnectorAPI
                 }
             }
         }
-        print_r($final); echo "\nTotal records: ".count($final)."\n";
-        foreach($final as $zenodo_id => $url) {
-            if($zenodo_id && $url) {
+        // print_r($final); 
+        echo "\nTotal Published records: ".count($final)."\n"; //exit;
+        $i = 0; $hits = 0;
+        foreach($final as $zenodo_id => $url) { $i++;
+            echo "\nprocessing $i ... [$zenodo_id]\n";
+
+            // do batches
+            if($i < 3) continue;
+            elseif($i >= 3 && $i <= 10) {}
+            elseif($i > 10) break;
+            else continue;
+
+            if($zenodo_id && $url) { $hits++;
                 $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
                 self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
-                break; //debug only - run only the 1st hit
+                // break; //debug only - run only the 1st hit
+                // if($hits >= 2) break; //debug only
             }
         }
         exit("\n- end Related Works -\n");
