@@ -650,7 +650,23 @@ class ZenodoConnectorAPI
             unlink($local_file);
         }
         // unlink($local_file); //redundant
-        // print_r($this->zenodo_2_eol_conn);
+        /*
+        [87794797-6169-4935-908c-c304ed594875] => Array(
+                    [name] => Panama Species List
+                    [id] => 196
+                    [status] => published
+                    [content_id] => 285
+                    [opendata_id] => 87794797-6169-4935-908c-c304ed594875
+                )
+        [87794797-6169-4935-908c-c304ed594875] => Array(
+                [Zenodo_id] => 13316781
+                [Resource_id] => SC_panama
+                [Resource_name] => Panama Species List
+                [Resource_URL] => https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_panama.tar.gz
+                [OpenData_URL] => https://opendata.eol.org/dataset/5d99ead1-db10-40ad-9aac-b1b5611d979e/resource/87794797-6169-4935-908c-c304ed594875
+            )
+        */
+        print_r($this->eol_resources);
         print_r($this->opendata_info);
         // echo "\nzenodo_2_eol_conn: ".count($this->zenodo_2_eol_conn)."\n";
         echo "\nopendata_info: ".count($this->opendata_info)."\n";
