@@ -46,9 +46,9 @@ class ZenodoConnectorAPI
             echo "\nprocessing $i ... [$zenodo_id]\n";
 
             // do batches
-            if($i < 3) continue;
-            elseif($i >= 3 && $i <= 10) {}
-            elseif($i > 10) break;
+            if($i < 11) continue;
+            elseif($i >= 11 && $i <= 50) {}
+            elseif($i > 50) break;
             else continue;
 
             if($zenodo_id && $url) { $hits++;
