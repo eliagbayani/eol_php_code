@@ -42,7 +42,7 @@ class ZenodoConnectorAPI
         // print_r($final); 
         echo "\nTotal Published records: ".count($final)."\n"; //exit;
 
-        /* ---------- start: normal
+        // /* ---------- start: normal
         $i = 0; $hits = 0;
         foreach($final as $zenodo_id => $url) { $i++;
             echo "\nprocessing $i ... [$zenodo_id]\n";
@@ -62,9 +62,9 @@ class ZenodoConnectorAPI
             }
         }
         exit("\n- end Related Works -\n");
-        ---------- end: normal */
+        // ---------- end: normal */
 
-        // /* ---------- dev only
+        /* ---------- start: dev only
         $id = 13761108; //FishBase $id = 13933415; //AntWeb $id = 13321654; //Zoosystematics and Evolution
         $id = 13320903; //Insect Wings - unchanged
         $id = 13320567; //unchanged
@@ -75,7 +75,7 @@ class ZenodoConnectorAPI
         }
         else echo "\nTest didn't proceed!\n";
         exit("\n-----end per taxon, during dev-----\n");
-        // ---------- */
+        ---------- end: dev only */
 
         // ----- end: main operation */
     }
