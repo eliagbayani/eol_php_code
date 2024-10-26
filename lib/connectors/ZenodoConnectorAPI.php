@@ -42,7 +42,7 @@ class ZenodoConnectorAPI
         // print_r($final); 
         echo "\nTotal Published records: ".count($final)."\n"; //exit;
 
-        // /* ---------- start: normal
+        /* ---------- start: normal
         $i = 0; $hits = 0;
         foreach($final as $zenodo_id => $url) { $i++;
             echo "\nprocessing $i ... [$zenodo_id]\n";
@@ -62,20 +62,19 @@ class ZenodoConnectorAPI
             }
         }
         exit("\n- end Related Works -\n");
-        // ---------- end: normal */
+        ---------- end: normal */
 
-        /* ---------- start: dev only
+        // /* ---------- start: dev only
         $id = 13761108; //FishBase $id = 13933415; //AntWeb $id = 13321654; //Zoosystematics and Evolution
-        $id = 13320903; //Insect Wings - unchanged
-        $id = 13320567; //unchanged
-        $id = 13321623; //unchanged
+        $id = 13320903; //Insect Wings - unchanged  $id = 13320567; //unchanged  $id = 13321623; //unchanged
+        $id = 13320563; //Saproxylic Organisms
         if($url = @$final[$id]) {
             $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
             self::update_zenodo_record_of_latest_requested_changes($id);
         }
         else echo "\nTest didn't proceed!\n";
         exit("\n-----end per taxon, during dev-----\n");
-        ---------- end: dev only */
+        // ---------- end: dev only */
 
         // ----- end: main operation */
     }

@@ -121,6 +121,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->show_print_r = false;
         $this->html_contributors = array();
         $this->ORCIDs['Eli Agbayani'] = '0009-0007-6825-9034'; //https://orcid.org/0009-0007-6825-9034
+        $this->ORCIDs['Agbayani, Eli'] = '0009-0007-6825-9034'; //https://orcid.org/0009-0007-6825-9034
         $this->ORCIDs['Jen Hammock'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
         $this->ORCIDs['Hammock, Jennifer'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
         $this->ORCIDs['Jennifer Hammock'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
