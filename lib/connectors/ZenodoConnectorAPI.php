@@ -46,12 +46,12 @@ class ZenodoConnectorAPI
             echo "\nprocessing $i ... [$zenodo_id]\n";
 
             // do batches
-            if($i < 11) continue;
-            elseif($i >= 11 && $i <= 50) {}
-            elseif($i > 50) break;
+            if($i < 140) continue;
+            elseif($i >= 140 && $i <= 180) {}
+            elseif($i > 180) break;
             else continue;
 
-            if($zenodo_id && $url) { $hits++;
+            if($zenodo_id && $url) { $hits++; sleep(2);
                 $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
                 self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
                 // break; //debug only - run only the 1st hit
