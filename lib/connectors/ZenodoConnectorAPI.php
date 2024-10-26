@@ -48,9 +48,9 @@ class ZenodoConnectorAPI
             echo "\nprocessing $i ... [$zenodo_id]\n";
 
             // do batches
-            if($i < 606) continue;
-            elseif($i >= 606 && $i <= 706) {}
-            elseif($i > 706) break;
+            if($i < 707) continue;
+            elseif($i >= 707 && $i <= 962) {}
+            elseif($i > 962) break;
             else continue;
 
             // echo "\nprocessing $i ... [$zenodo_id]\n"; exit; //debug only
