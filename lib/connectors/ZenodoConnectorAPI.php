@@ -441,7 +441,7 @@ class ZenodoConnectorAPI
         }
 
         // /* New:
-        $final = self::add_or_notAdd_katja($o['metadata']['creators'], $final); //return contributors
+        $final = self::add_or_notAdd_katja($o['metadata']['creators'], $final); //return value is: contributors
         // */
 
         $o['metadata']['contributors'] = $final; 
@@ -559,9 +559,31 @@ class ZenodoConnectorAPI
     }
     private function add_or_notAdd_katja($creators, $contributors)
     {
-        print_r($creators);
-        print_r($contributors);
-        exit("\nelix 1\n");
+        // print_r($creators); print_r($contributors); exit("\nelix 1\n");
+        /*Array(
+            [0] => Array(
+                    [name] => Schulz, Katja
+                    [affiliation] => National Museum of Natural History, Smithsonian Institution
+                    [orcid] => 0000-0001-7134-3324
+                )
+        )*/
+
+        if($katja_exists_in_creators = self::if_exists_in_creatorsORcontributors($creators, 'Schulz, Katja', '0000-0001-7134-3324')) {
+            //if yes then add katja as DataManager in Contributors, if not there yet
+            if($katja_exists_in_contributors = self::if_exists_in_creatorsORcontributors($contributors, 'Schulz, Katja', '0000-0001-7134-3324')) {}
+            else { //not there yet
+                $r = $katja_exists_in_creators;
+                $contributors[] = array('name' => $r['name'], 'type' => 'DataManager', 'orcid' => $r['orcid'], 'affiliation' => $r['affiliation']);
+            }
+        }
+        return $contributors;
+    }
+    private function if_exists_in_creatorsORcontributors($arr, $name, $orcid)
+    {
+        foreach($arr as $r) {
+            if(@$r['orcid'] == $orcid || @$r['name'] == $name) return $r;
+        }
+        return false;
     }
     function update_Zenodo_record_latest($id, $obj_1st) //this updates the newversion object
     {
