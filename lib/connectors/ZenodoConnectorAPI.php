@@ -41,16 +41,19 @@ class ZenodoConnectorAPI
         }
         // print_r($final); 
         echo "\nTotal Published records: ".count($final)."\n"; //exit;
+
+        /* ---------- start: normal
         $i = 0; $hits = 0;
         foreach($final as $zenodo_id => $url) { $i++;
             echo "\nprocessing $i ... [$zenodo_id]\n";
 
             // do batches
-            if($i < 140) continue;
-            elseif($i >= 140 && $i <= 180) {}
-            elseif($i > 180) break;
+            if($i < 606) continue;
+            elseif($i >= 606 && $i <= 706) {}
+            elseif($i > 706) break;
             else continue;
 
+            // echo "\nprocessing $i ... [$zenodo_id]\n"; exit; //debug only
             if($zenodo_id && $url) { $hits++; sleep(2);
                 $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
                 self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
@@ -59,14 +62,22 @@ class ZenodoConnectorAPI
             }
         }
         exit("\n- end Related Works -\n");
-        // ----- end: main operation */
+        ---------- end: normal */
 
-        $id = 13761108; //FishBase
-        $id = 13933415; //AntWeb
-        $id = 13321654; //Zoosystematics and Evolution
-        $this->record_in_question = array('identifier' => 'https://eol.org/resources/547', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
-        self::update_zenodo_record_of_latest_requested_changes($id);
+        // /* ---------- dev only
+        $id = 13761108; //FishBase $id = 13933415; //AntWeb $id = 13321654; //Zoosystematics and Evolution
+        $id = 13320903; //Insect Wings - unchanged
+        $id = 13320567; //unchanged
+        $id = 13321623; //unchanged
+        if($url = @$final[$id]) {
+            $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
+            self::update_zenodo_record_of_latest_requested_changes($id);
+        }
+        else echo "\nTest didn't proceed!\n";
         exit("\n-----end per taxon, during dev-----\n");
+        // ---------- */
+
+        // ----- end: main operation */
     }
     function latest_katja_changes_2() //for removing tags "EOL Content Partners"
     {
@@ -239,7 +250,7 @@ class ZenodoConnectorAPI
         $excluded_ids = array(13743941, 13751009);
         if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
 
         /* NEW Oct_6: to filter per tag requirement */
         /* batch 66 - 67
@@ -429,6 +440,10 @@ class ZenodoConnectorAPI
             }    
         }
 
+        // /* New:
+        $final = self::add_or_notAdd_katja($o['metadata']['creators'], $final); //return contributors
+        // */
+
         $o['metadata']['contributors'] = $final; 
         echo "\nContributors to save:"; print_r($final);
         // */
@@ -542,6 +557,12 @@ class ZenodoConnectorAPI
         // print_r($o); exit("\nstop muna 1\n");
         return $o;
     }
+    private function add_or_notAdd_katja($creators, $contributors)
+    {
+        print_r($creators);
+        print_r($contributors);
+        exit("\nelix 1\n");
+    }
     function update_Zenodo_record_latest($id, $obj_1st) //this updates the newversion object
     {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -590,7 +611,7 @@ class ZenodoConnectorAPI
             foreach($RI as $r) {
                 if($r['identifier'] == $sought['identifier'] && $r['relation'] == $sought['relation']) $add_isSourceOf_YN = false;
             }
-            if($add_isSourceOf_YN) { $RI[] = $sought; echo "\nisSourceOf is added.\n"; }
+            if($add_isSourceOf_YN) { $RI[] = $sought; echo "\nisSourceOf is added.\n"; print_r($RI); }
             else echo "\nisSourceOf was not added. Already exists.\n";
         }
         else $RI = array();
@@ -619,7 +640,7 @@ class ZenodoConnectorAPI
 
         ); //this is needed for publishing a newly uploaded file.
 
-        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = $val; //impt. bec. metadata description must not be blank.
+        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = str_replace("'", "__", $val); //impt. bec. metadata description must not be blank.
 
         // Resource type: Missing data for required field.
         // Creators: Missing data for required field.
@@ -911,7 +932,7 @@ class ZenodoConnectorAPI
 
         ); //this is needed for publishing a newly uploaded file.
 
-        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = $val; //impt. bec. metadata description must not be blank.
+        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = str_replace("'", "__", $val); //impt. bec. metadata description must not be blank.
 
         // Resource type: Missing data for required field.
         // Creators: Missing data for required field.

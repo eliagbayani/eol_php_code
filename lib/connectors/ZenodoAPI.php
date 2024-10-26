@@ -1434,7 +1434,14 @@ class ZenodoAPI extends ZenodoConnectorAPI
             self::log_error(array("ERROR", $what, $what2, $json_error));
             return true;
         }
-        else return false;
+        else {
+            if(@$o['id'] && @$o['metadata']['title']) {}
+            else {
+                $self::log_error(array("ERROR: [$what] operation failed."));
+                return true;
+            }
+        }
+        return false;
     }
     function log_error($arr)
     {
