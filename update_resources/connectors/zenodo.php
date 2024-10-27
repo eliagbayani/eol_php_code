@@ -23,7 +23,7 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // exit("\n".urldecode($str)."\n");
 
 $func = new ZenodoAPI();
-$func->jen_Related_Works();
+// $func->jen_Related_Works(); //one-time only | DONE Oct 27, 2024
 // $func->latest_katja_changes_2(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
 // $func->latest_katja_changes(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
 

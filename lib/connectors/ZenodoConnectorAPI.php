@@ -68,11 +68,13 @@ class ZenodoConnectorAPI
         $id = 13761108; //FishBase $id = 13933415; //AntWeb $id = 13321654; //Zoosystematics and Evolution
         $id = 13320903; //Insect Wings - unchanged  $id = 13320567; //unchanged  $id = 13321623; //unchanged
         $id = 13320563; //Saproxylic Organisms
+        $id = 13886436; //with ROR and ISNI: USDA NRCS PLANTS Database: USDA PLANTS images DwCA | isSourceOf = https://eol.org/resources/469
+        $id = 13318018; //ver 1 of 13886436
         if($url = @$final[$id]) {
             $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
             self::update_zenodo_record_of_latest_requested_changes($id);
         }
-        else echo "\nTest didn't proceed!\n";
+        else echo "\nTest record didn't proceed!\n".count($final)."\n";
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
 
@@ -425,6 +427,10 @@ class ZenodoConnectorAPI
                     if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
                     if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //no doc example, never worked    
                     if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //was never proven      
+                    /* Contingency since isni and ror don't work: THIS PRODUCED A VALIDATION ERROR
+                    if($val = @$this->html_contributors[$name]['isni'])  $tmp['gnd'] = "$val";     //contingency    
+                    if($val = @$this->html_contributors[$name]['ror'])   $tmp['orcid'] = "$val";      //contingency
+                    */
                     if($orcid = @$this->ORCIDs[$name]) $tmp['orcid'] = $orcid; //implement saved ORCIDs
                     $final[] = $tmp;
                 }
@@ -914,6 +920,10 @@ class ZenodoConnectorAPI
                 if($val = @$this->html_contributors[$name]['gnd'])   $tmp['gnd'] = $val;        //worked OK, with doc example orcid    - html isni 0000 0004 0478 6311
                 if($val = @$this->html_contributors[$name]['isni'])  $tmp['isni'] = "$val";     //no doc example, never worked    
                 if($val = @$this->html_contributors[$name]['ror'])   $tmp['ror'] = "$val";      //was never proven      
+                // /* Contingency since isni and ror don't work: THIS PRODUCED A VALIDATION ERROR
+                if($val = @$this->html_contributors[$name]['isni'])  $tmp['gnd'] = "$val";     //contingency    
+                if($val = @$this->html_contributors[$name]['ror'])   $tmp['orcid'] = "$val";      //contingency
+                // */
                 if($orcid = @$this->ORCIDs[$name]) $tmp['orcid'] = $orcid; //implement saved ORCIDs
                 $final[] = $tmp;    
             } //end foreach()    
