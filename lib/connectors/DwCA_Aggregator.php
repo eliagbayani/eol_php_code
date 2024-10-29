@@ -145,7 +145,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
         $index = $this->let_media_document_go_first_over_description($index); // print_r($index); exit;
         foreach($index as $row_type) {
 
-            if($this->resource_id == '71') {} //Wikimedia commons
+            if(in_array($this->resource_id, array('71', 'wikipedia_combined_languages', 'wikipedia_combined_languages_batch2'))) {} //Wikimedia commons, Wikipedia
             else {
                 // /* NEW: remove media rowtype: Jul 8, 2024
                 if($row_type == strtolower("http://eol.org/schema/media/Document")) continue;
