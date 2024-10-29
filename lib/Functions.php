@@ -442,7 +442,7 @@ class Functions
         // */
 
         if(@$end_options['go_zenodo']) {
-            // /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
+            /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
             // $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign
             $EOL_resource_id = $resource_id;
             require_library('connectors/ZenodoConnectorAPI');
@@ -461,7 +461,7 @@ class Functions
             // }
             $func->update_Zenodo_record_using_EOL_resourceID($EOL_resource_id);
             // $func->new_description_for_zenodo = ""; //initialize again
-            // */
+            */
         }
     }
     public static function get_time_elapsed($timestart)
