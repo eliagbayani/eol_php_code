@@ -463,6 +463,7 @@ class Functions
             // $func->new_description_for_zenodo = ""; //initialize again
             // */
         }
+        else echo "\nDesigned not to proceed to Zenodo at this time [$resource_id].\n";
     }
     public static function get_time_elapsed($timestart)
     {
