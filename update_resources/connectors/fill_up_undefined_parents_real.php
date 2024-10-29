@@ -85,15 +85,14 @@ while($undefined) { $ctr++;
     else                           $dwca_file = 'http://localhost/eol_php_code/applications/content_server/resources_3/'.$resource_id.'.tar.gz';
     $undefined = process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param);
 }
+echo "\n--------------------END: fillup missing parent entries--------------------\n";
 
-// /* new: Oct 29,2024 - final step where Zenodo record should be updated
+/* new: Oct 29,2024 - final step where Zenodo record should be updated
 require_library('connectors/DwCA_Utility');
 $func = new DwCA_Utility($resource_id, $dwca_file);
 $func->convert_archive(array(), array());
 Functions::finalize_dwca_resource($resource_id, false, true, time_elapsed());
-// */
-
-echo "\n--------------------END: fillup missing parent entries--------------------\n";
+*/
 
 function process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param)
 {
