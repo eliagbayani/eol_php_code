@@ -178,7 +178,7 @@ class DwCA_Aggregator_Functions
             $rec['http://purl.org/dc/terms/bibliographicCitation'] = $rec['http://purl.org/dc/terms/source'];
             unset($rec['http://purl.org/dc/terms/source']);
             // /* supplement with data from media row_type
-            if($val = $this->info_taxonID_mediaRec[$taxon_id]) {
+            if($val = $this->info_taxonID_mediaRec[$taxon_id]) { //exit("\nreached this.\n"); good debug
                 $rec['http://ns.adobe.com/xap/1.0/rights/UsageTerms']   = $val['UsageTerms']; //Public Domain
                 $rec['http://purl.org/dc/terms/rights']                 = $val['rights']; //No known copyright restrictions apply. See Agosti, D., Egloff, W., 2009. Taxonomic information exchange and copyright: the Plazi approach. BMC Research Notes 2009, 2:53 for further explanation.
                 $rec['http://ns.adobe.com/xap/1.0/rights/Owner']        = $val['Owner'];
