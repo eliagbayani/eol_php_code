@@ -1055,7 +1055,7 @@ class ZenodoConnectorAPI
             }
             unlink($local_file);
         }
-        unlink($local_file);
+        // unlink($local_file); //redundant
     }
     function get_dates_entries_from_html($obj, $updateDate_set2Current_YN = true)
     {   /*
