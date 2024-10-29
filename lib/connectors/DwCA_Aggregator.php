@@ -380,6 +380,12 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
                 if(!isset($this->object_ids[$identifier])) $this->object_ids[$identifier] = '';
                 else continue;
             }
+            elseif($what == "taxon") {
+                //identifier must be unique
+                $identifier = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+                if(!isset($this->taxon_ids[$identifier])) $this->taxon_ids[$identifier] = '';
+                else continue;
+            }
             elseif($what == "agent") {
                 //identifier must be unique
                 $identifier = $rec['http://purl.org/dc/terms/identifier'];
