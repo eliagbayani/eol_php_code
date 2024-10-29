@@ -87,12 +87,14 @@ while($undefined) { $ctr++;
 }
 echo "\n--------------------END: fillup missing parent entries--------------------\n";
 
-/* new: Oct 29,2024 - final step where Zenodo record should be updated
-require_library('connectors/DwCA_Utility');
-$func = new DwCA_Utility($resource_id, $dwca_file);
-$func->convert_archive(array(), array());
-Functions::finalize_dwca_resource($resource_id, false, true, time_elapsed());
-*/
+/* new: Oct 29,2024 - final step where Zenodo record should be updated. Because all iterations above have not updated Zenodo as intended. */
+// /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
+$EOL_resource_id = $resource_id;
+require_library('connectors/ZenodoConnectorAPI');
+require_library('connectors/ZenodoAPI');
+$func = new ZenodoAPI();
+$func->update_Zenodo_record_using_EOL_resourceID($EOL_resource_id);
+// */
 
 function process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param)
 {
