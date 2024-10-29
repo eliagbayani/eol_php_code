@@ -29,7 +29,7 @@ php5.6 fill_up_undefined_parents.php jenkins '{"resource_id": "wikipedia_en_trai
 -> generates wikipedia_en_traits_tmp4.tar.gz
 
 ------------------------------------ 3rd client: same as 2nd client. For all text wikipedia languages (es, de, etc.)
-php fill_up_undefined_parents.php _ '{"resource_id": "80", "source_dwca": "80", "resource": "fillup_missing_parents"}'
+php fill_up_undefined_parents.php _ '{"resource_id": "80",           "source_dwca": "80",           "resource": "fillup_missing_parents"}'
 php fill_up_undefined_parents.php _ '{"resource_id": "wikipedia-sv", "source_dwca": "wikipedia-sv", "resource": "fillup_missing_parents"}'
 
 # generates 80.tar.gz
@@ -85,6 +85,14 @@ while($undefined) { $ctr++;
     else                           $dwca_file = 'http://localhost/eol_php_code/applications/content_server/resources_3/'.$resource_id.'.tar.gz';
     $undefined = process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param);
 }
+
+// /* new: Oct 29,2024 - final step where Zenodo record should be updated
+require_library('connectors/DwCA_Utility');
+$func = new DwCA_Utility($resource_id, $dwca_file);
+$func->convert_archive(array(), array());
+Functions::finalize_dwca_resource($resource_id, false, true, time_elapsed());
+// */
+
 echo "\n--------------------END: fillup missing parent entries--------------------\n";
 
 function process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param)
@@ -107,7 +115,7 @@ function process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param
     /* This will be processed in FillUpMissingParentsAPI.php which will be called from DwCA_Utility.php */
     $func->convert_archive($preferred_rowtypes, $excluded_rowtypes);
     // echo "\n===Ready to finalize...\n";
-    Functions::finalize_dwca_resource($resource_id, false, false, $timestart);
+    Functions::finalize_dwca_resource($resource_id, false, false, $timestart, CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false));
     
     $status = chmod(CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz", 0775);
     echo "\nFile permission update: [$status]\n";
