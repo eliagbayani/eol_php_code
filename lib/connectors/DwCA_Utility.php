@@ -186,7 +186,7 @@ class DwCA_Utility
                     self::process_fields($harvester->process_row_type($row_type), 'occurrence_specific');
                 }
                 else { //original, the rest goes here
-                    echo "\nThe rest goes here []\n";
+                    print_r($info);
                     // if($this->resource_id == '71_new' && $row_type == "http://eol.org/schema/media/document") {
                     //     self::carry_over($meta, 'document');
                     // }

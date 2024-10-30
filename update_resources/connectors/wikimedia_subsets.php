@@ -77,8 +77,11 @@ $func->convert_archive($preferred_rowtypes);
 Functions::finalize_dwca_resource($resource_id, false, true); //2nd param false means not a big file, 3rd param true means delete working folder in CONTENT_RESOURCE_LOCAL_PATH
 $func = '';
 
-if(file_exists(CONTENT_RESOURCE_LOCAL_PATH . "71_new.tar.gz")) unlink(CONTENT_RESOURCE_LOCAL_PATH . "71_new.tar.gz");
-else exit("\nCannot delete [71_new.tar.gz]\n");
+if(file_exists(CONTENT_RESOURCE_LOCAL_PATH . "71_new.tar.gz")) {
+    if(unlink(CONTENT_RESOURCE_LOCAL_PATH . "71_new.tar.gz")) {}
+    else exit("\n----------\nCannot delete [71_new.tar.gz]\n----------\n");
+}
+
 $resource_id = '71_new';
 $func = new DwCA_Utility($resource_id, CONTENT_RESOURCE_LOCAL_PATH . "71" . ".tar.gz");
 $preferred_rowtypes = array('http://rs.tdwg.org/dwc/terms/taxon', 'http://eol.org/schema/agent/agent', 'http://eol.org/schema/media/document');
