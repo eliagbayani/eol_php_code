@@ -855,7 +855,10 @@ class ZenodoConnectorAPI
                 // ========== end */
             }            
         }
-        else echo "\nERROR: newversion object not created!\n";
+        else {
+            echo "\n----------\nERROR Zenodo: newversion object not created!\n";
+            print_r($obj_1st); echo "\n----------\n";
+        }
         // */
     }
     function update_Zenodo_record_v2($id, $obj_1st) //this updates the newversion object
