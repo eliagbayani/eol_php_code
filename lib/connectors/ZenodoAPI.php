@@ -1047,6 +1047,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 echo "\n=====upload=====\n"; 
                 if($this->show_print_r) print_r($obj); 
                 echo "\n=====upload end=====\n";
+                if(self::if_error($obj, 'upload bucket', @$obj['id'])) return false;
                 return $obj;    
             }    
         }
@@ -1061,7 +1062,6 @@ class ZenodoAPI extends ZenodoConnectorAPI
             echo "\n=======newversion=======\n"; 
             if($this->show_print_r) print_r($obj); 
             echo "\n=======newversion end=======\n"; //exit("\nstop: newversion\n");
-
             if(self::if_error($obj, 'newversion', @$obj['id'])) return false;
             return $obj;    
         }
@@ -1436,9 +1436,11 @@ class ZenodoAPI extends ZenodoConnectorAPI
             return true;
         }
         else {
-            if(@$o['id'] && @$o['metadata']['title']) {}
+            if(@$o['id'] && @$o['metadata']['title']) {} //no error; will return false below
             else {
-                self::log_error(array("ERROR: [$what] operation failed."));
+                echo "\nERROR Zenodo: [$what] [$what2] operation failed.\n";
+                print_r($o);
+                self::log_error(array("ERROR: [$what] [$what2] operation failed."));
                 return true;
             }
         }
