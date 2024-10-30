@@ -188,7 +188,7 @@ class DwCA_Utility
                 else { //original, the rest goes here
                     self::process_fields($harvester->process_row_type($row_type), $this->extensions[$row_type]);
 
-                    /* not implemented but is the right sol'n for memory leak. Not increasing the memory allocation.
+                    /* not implemented but is the right sol'n for insuficient memory. And NOT increasing the memory allocation in wikimedia_subsets.php
                     if($this->resource_id == '71_new' && $row_type == "http://eol.org/schema/media/document") {
                         self::carry_over($meta, 'document'); //was never run but should work just need to get the value for $meta from local $info.
                     }

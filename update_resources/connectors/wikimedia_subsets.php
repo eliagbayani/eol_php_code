@@ -63,7 +63,7 @@ $timestart = time_elapsed();
 // $GLOBALS['ENV_DEBUG'] = false;
 require_library('connectors/DwCA_Utility');
 // ini_set('memory_limit','7096M'); //required
-ini_set('memory_limit','10096M'); //required
+ini_set('memory_limit','10096M'); //required - Not the desired sol'n. There is a proposed sol'n in DwCA_Utility.php (search for "sol'n for insuficient memory")
 
 // This will rename 71.tar.gz from the long Jenkins run to 71_orig.tar.gz
 // The remaining 71.tar.gz is the resource with just images.
@@ -82,11 +82,13 @@ if(file_exists(CONTENT_RESOURCE_LOCAL_PATH . "71_new.tar.gz")) {
     else exit("\n----------\nCannot delete [71_new.tar.gz]\n----------\n");
 }
 
+// /* this block is designed to remove vernacular extension in DwCA: in preparation for the next step.
 $resource_id = '71_new';
 $func = new DwCA_Utility($resource_id, CONTENT_RESOURCE_LOCAL_PATH . "71" . ".tar.gz");
 $preferred_rowtypes = array('http://rs.tdwg.org/dwc/terms/taxon', 'http://eol.org/schema/agent/agent', 'http://eol.org/schema/media/document');
 $func->convert_archive($preferred_rowtypes);
 Functions::finalize_dwca_resource($resource_id, false, true);
+// */
 
 if(file_exists(CONTENT_RESOURCE_LOCAL_PATH . "71_new.tar.gz")) {
     Functions::file_rename(CONTENT_RESOURCE_LOCAL_PATH . "71.tar.gz", CONTENT_RESOURCE_LOCAL_PATH . "71_".date("Y-m-d").".tar.gz");
