@@ -185,12 +185,20 @@ class DwCA_Utility
                 elseif($annotateYes && $row_type == "http://rs.tdwg.org/dwc/terms/occurrence") {
                     self::process_fields($harvester->process_row_type($row_type), 'occurrence_specific');
                 }
-                else self::process_fields($harvester->process_row_type($row_type), $this->extensions[$row_type]); //original, the rest goes here
+                else { //original, the rest goes here
+                    echo "\nThe rest goes here []\n";
+                    // if($this->resource_id == '71_new' && $row_type == "http://eol.org/schema/media/document") {
+                    //     self::carry_over($meta, 'document');
+                    // }
+                    // else { //orig | the rest goes here
+                        self::process_fields($harvester->process_row_type($row_type), $this->extensions[$row_type]);
+                    // }
+                }
                 // */
                 
             }
             else echo "\nun-processed:A [$row_type]: ".@$this->extensions[$row_type]."\n";
-        }
+        } //end foreach()
         
         // /* ================================= start of customization =================================
         if($this->resource_id == "24") {
@@ -735,8 +743,7 @@ class DwCA_Utility
         $ref_ids = array();
         //end used in validation
         $count = 0;
-        foreach($records as $rec)
-        {
+        foreach($records as $rec) {
             // if($count >= 10) break; //debug only
             $count++;
             if    ($class == "vernacular")  $c = new \eol_schema\VernacularName();
@@ -761,8 +768,7 @@ class DwCA_Utility
             // if($class == "taxon") print_r($rec);
             
             $keys = array_keys($rec);
-            foreach($keys as $key)
-            {
+            foreach($keys as $key) {
                 $temp = pathinfo($key);
                 $field = $temp["basename"];
 
@@ -885,7 +891,6 @@ class DwCA_Utility
                 }
                 */
                 
-                
                 /* Need to have unique agent ids. It is confined to a pre-defined list of resources bec. it is memory intensive and most resources have already unique ref ids.
                 First used for DATA-1569 resource 'lifedesks.tar.gz', connector [lifedesk_eol_export.php] */
                 if(in_array($this->resource_id, array("lifedesks")) || in_array(substr($this->resource_id,0,3), array("LD_", "EOL"))) {
@@ -956,6 +961,42 @@ class DwCA_Utility
             }
         } //main loop
         return $count;
+    }
+    private function carry_over($meta, $class)
+    {   //print_r($meta);
+        echo "\ncarry_over...[$class][$meta->file_uri]\n"; $i = 0;
+        foreach(new FileIterator($meta->file_uri) as $line => $row) {
+            $i++; if(($i % 100000) == 0) echo "\n".number_format($i);
+            if($meta->ignore_header_lines && $i == 1) continue;
+            if(!$row) continue;
+            // $row = Functions::conv_to_utf8($row); //possibly to fix special chars. but from copied template
+            $tmp = explode("\t", $row);
+            $rec = array(); $k = 0;
+            foreach($meta->fields as $field) {
+                if(!$field['term']) continue;
+                $rec[$field['term']] = $tmp[$k];
+                $k++;
+            }
+            // print_r($rec); exit("\ndebug...\n");
+            $uris = array_keys($rec);
+            
+            if    ($class == "vernacular")          $o = new \eol_schema\VernacularName();
+            elseif($class == "agent")               $o = new \eol_schema\Agent();
+            elseif($class == "reference")           $o = new \eol_schema\Reference();
+            elseif($class == "taxon")               $o = new \eol_schema\Taxon();
+            elseif($class == "document")            $o = new \eol_schema\MediaResource();
+            elseif($class == "occurrence")          $o = new \eol_schema\Occurrence();
+            elseif($class == "occurrence_specific") $o = new \eol_schema\Occurrence_specific(); //1st client is 10088_5097_ENV
+            elseif($class == "measurementorfact")   $o = new \eol_schema\MeasurementOrFact();
+            else exit("\nUndefined class [$class]. Will terminate.\n");
+            
+            foreach($uris as $uri) {
+                $field = pathinfo($uri, PATHINFO_BASENAME);
+                $o->$field = $rec[$uri];
+            }
+            $this->archive_builder->write_object_to_file($o);
+            // if($i >= 10) break; //debug only
+        }
     }
     function build_id_name_array($records)
     {

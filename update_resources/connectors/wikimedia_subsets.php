@@ -62,7 +62,8 @@ include_once(dirname(__FILE__) . "/../../config/environment.php");
 $timestart = time_elapsed();
 // $GLOBALS['ENV_DEBUG'] = false;
 require_library('connectors/DwCA_Utility');
-ini_set('memory_limit','7096M'); //required
+// ini_set('memory_limit','7096M'); //required
+ini_set('memory_limit','10096M'); //required
 
 // This will rename 71.tar.gz from the long Jenkins run to 71_orig.tar.gz
 // The remaining 71.tar.gz is the resource with just images.
@@ -77,6 +78,7 @@ Functions::finalize_dwca_resource($resource_id, false, true); //2nd param false 
 $func = '';
 
 if(file_exists(CONTENT_RESOURCE_LOCAL_PATH . "71_new.tar.gz")) unlink(CONTENT_RESOURCE_LOCAL_PATH . "71_new.tar.gz");
+else exit("\nCannot delete [71_new.tar.gz]\n");
 $resource_id = '71_new';
 $func = new DwCA_Utility($resource_id, CONTENT_RESOURCE_LOCAL_PATH . "71" . ".tar.gz");
 $preferred_rowtypes = array('http://rs.tdwg.org/dwc/terms/taxon', 'http://eol.org/schema/agent/agent', 'http://eol.org/schema/media/document');
