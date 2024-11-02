@@ -145,8 +145,11 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
         $index = $this->let_media_document_go_first_over_description($index); // print_r($index); exit;
         foreach($index as $row_type) {
 
-            if(in_array($this->resource_id, array('71', 'wikipedia_combined_languages', 'wikipedia_combined_languages_batch2'))) {} //Wikimedia commons, Wikipedia
-            else {
+            if(in_array($this->resource_id, array('71', '80', 'wikipedia_combined_languages', 'wikipedia_combined_languages_batch2'))) {} //Wikimedia commons, Wikipedia
+            elseif(stripos($dwca_file, "wikipedia") !== false) {} //found string
+            elseif(stripos($dwca_file, "of10") !== false) {} //found string
+            elseif(stripos($dwca_file, "of6") !== false) {} //found string
+            else { //as of Oct 2024 - I'm thinking I'm not sure why I excluded media objects starting Jul 8, 2024.
                 // /* NEW: remove media rowtype: Jul 8, 2024
                 if($row_type == strtolower("http://eol.org/schema/media/Document")) continue;
                 // */    
