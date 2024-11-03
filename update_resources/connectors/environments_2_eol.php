@@ -508,9 +508,16 @@ php5.6 environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "re
 http://rs.tdwg.org/ontology/voc/SPMInfoItems#GeneralDescription: 51
 http://rs.tdwg.org/ontology/voc/SPMInfoItems#Distribution: 44
 ===================================================================================================================== Pensoft journals END
+
+orig:
+php environments_2_eol.php _ '{"task": "generate_eol_tags_pensoft", "resource":"Raw English Wikipedia - initial step", "resource_id":"617", "subjects":"Description"}'
+new: with range:
+php environments_2_eol.php _ '{"task": "generate_eol_tags_pensoft", "resource":"Raw English Wikipedia - initial step", "resource_id":"617", "subjects":"Description", "conn_run": "1"}'
+php environments_2_eol.php _ '{"task": "generate_eol_tags_pensoft", "resource":"Raw English Wikipedia - initial step", "resource_id":"617", "subjects":"Description", "conn_run": "2"}'
+php environments_2_eol.php _ '{"task": "generate_eol_tags_pensoft", "resource":"Raw English Wikipedia - initial step", "resource_id":"617", "subjects":"Description", "conn_run": "3"}'
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
-// $GLOBALS['ENV_DEBUG'] = true;
+$GLOBALS['ENV_DEBUG'] = false; //true;
 ini_set('memory_limit','8096M'); //required
 
 $timestart = time_elapsed();

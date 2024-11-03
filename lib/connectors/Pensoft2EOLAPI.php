@@ -175,7 +175,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         echo ("\nallowed_terms_URIs from EOL terms file: [".count($this->allowed_terms_URIs)."]\n");
     }
     function generate_eol_tags_pensoft($resource, $timestart = '', $download_options = array('timeout' => 172800, 'expire_seconds' => 60*60*24*30))
-    {   //print_r($this->param); exit;
+    {   print_r($this->param); //exit;
         if(!self::test_is_passed()) exit("\nTest failed. Needed service is not available\n");
         else echo "\nTest passed OK\n";
         
@@ -443,13 +443,21 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             
             // /* ---------- debug only --- range ranges caching cache
             $m = Functions::show_totals($meta->file_uri); echo "\nTotal rows in media extension: [$m]";
-            $m = $m/3;                                    echo "\nDivided by 3: [$m]\n";
+            $m = $m/3;                                    echo "\nDivided by 3: [$m]| conn_run: [".$this->param['conn_run']."]\n";
+            if($val = $this->param['conn_run']) { //1st client 617_ENV
+                if($val == 1) { $n = 1;     $o = $m;   }
+                if($val == 2) { $n = $m;    $o = $m*2; }
+                if($val == 3) { $n = $m*2;  $o = $m*3; }
+            }
             if($this->param['resource_id'] == "617_ENV") { //total 841539 (895956 as of 3Nov2024) objects in media tab '617_ENV'
                 // $m = 895956/3; # can run 3 connectors. Comment 2 rows and un-comment 1 row.
-                if($i >= 1 &&    $i < $m) {}
+                // if($i >= 1 &&    $i < $m) {}
                 // if($i >= $m &&   $i < $m*2) {}
                 // if($i >= $m*2 && $i < $m*3) {}
-                else continue; 
+                // else continue; 
+                
+                if($i >= $n && $i < $o) {}
+                else continue;  
             }
             // if($this->param['resource_id'] == "TreatmentBank_ENV") { //total rows in media tab -> $m = 2,083,549 -> as of 19Dec2023, rounded to 2083600
             //     // $m = 2083600/3; # rounded . can run 3 connectors. Comment 2 rows and un-comment 1 row.
