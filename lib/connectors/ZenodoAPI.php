@@ -118,7 +118,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         https://www.whatismybrowser.com/detect/what-is-my-user-agent/
         */
         $this->new_description_for_zenodo = "";
-        $this->show_print_r = true; //false;
+        $this->show_print_r = false;
         $this->html_contributors = array();
         $this->ORCIDs['Eli Agbayani'] = '0009-0007-6825-9034'; //https://orcid.org/0009-0007-6825-9034
         $this->ORCIDs['Agbayani, Eli'] = '0009-0007-6825-9034'; //https://orcid.org/0009-0007-6825-9034
