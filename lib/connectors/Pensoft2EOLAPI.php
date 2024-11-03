@@ -32,6 +32,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
 {
     function __construct($param)
     {
+        $GLOBALS['ENV_DEBUG'] = false; //true;
         $this->param = $param; // print_r($param); exit;
         /*Array(
             [task] => generate_eol_tags_pensoft
@@ -418,6 +419,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         echo "\nprocess ".$meta->file_uri."...\n";
         echo "\nRun Pensoft annotator...\n";
         $i = 0; $saved = 0;
+        // /* Used when caching. First client: 617_ENV
+        $m = Functions::show_totals($meta->file_uri); echo "\nTotal rows in media extension: [$m]";
+        $m = $m/3;                                    echo "\nDivided by 3: [$m]| conn_run: [".$this->param['conn_run']."]\n";
+        // */
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
             $i++; if(($i % $this->modulo) == 0) echo "\nxyz".number_format($i);
             if($GLOBALS['ENV_DEBUG']) echo " -[$i]- ";
@@ -442,8 +447,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             // if($taxonID != 'Q1000262') continue; //debug only
             
             // /* ---------- debug only --- range ranges caching cache
-            $m = Functions::show_totals($meta->file_uri); echo "\nTotal rows in media extension: [$m]";
-            $m = $m/3;                                    echo "\nDivided by 3: [$m]| conn_run: [".$this->param['conn_run']."]\n";
             if($val = $this->param['conn_run']) { //1st client 617_ENV
                 if($val == 1) { $n = 1;     $o = $m;   }
                 if($val == 2) { $n = $m;    $o = $m*2; }
@@ -455,7 +458,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 // if($i >= $m &&   $i < $m*2) {}
                 // if($i >= $m*2 && $i < $m*3) {}
                 // else continue; 
-                
+
                 if($i >= $n && $i < $o) {}
                 else continue;  
             }

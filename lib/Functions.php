@@ -2343,7 +2343,7 @@ class Functions
     public static function show_totals($file)
     {
         $total = shell_exec("wc -l < ".escapeshellarg($file));
-        $total = trim($total);  echo "\n[$file] total rows: [$total]\n";
+        $total = trim($total);  //echo "\n[$file] total rows: [$total]\n";
         return $total;
     }
     function combine_all_eol_resource_xmls($resource_id, $files)
