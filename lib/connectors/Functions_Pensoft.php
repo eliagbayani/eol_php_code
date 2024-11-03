@@ -259,7 +259,7 @@ class Functions_Pensoft
                 $next_word = @$parts[$i+1];
                 $first_char_next_word = substr($next_word, 0, 1);
                 if(ctype_upper($first_char_next_word)) {
-                    debug("\nINVALID: first_char_next_word: [$first_char_next_word]-false\n"); 
+                    // debug("\nINVALID: first_char_next_word: [$first_char_next_word]-false\n");
                     return false;
                 }
             }
@@ -269,7 +269,7 @@ class Functions_Pensoft
                 $next_word = @$parts[$i+1];
                 $first_char_next_word = substr($next_word, 0, 1);
                 if(ctype_upper($first_char_next_word)) {
-                    debug("\nINVALID: [$part][$next_word]-false\n");
+                    // debug("\nINVALID: [$part][$next_word]-false\n");
                     return false;
                 }
             }
