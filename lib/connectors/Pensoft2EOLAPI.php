@@ -425,7 +425,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // */
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
             $i++; if(($i % $this->modulo) == 0) echo "\nxyz".number_format($i);
-            if($GLOBALS['ENV_DEBUG']) echo " -[$i]- ";
+            // if($GLOBALS['ENV_DEBUG']) echo " -[$i]- ";
             if($meta->ignore_header_lines && $i == 1) continue;
             if(!$row) continue;
             $row = Functions::conv_to_utf8($row); //possibly to fix special chars
