@@ -1436,13 +1436,15 @@ class ZenodoAPI extends ZenodoConnectorAPI
             return true;
         }
         else {
-            // if(@$o['id'] && @$o['metadata']['title']) {} //no error; will return false below
-            // else {
-            //     echo "\nERROR Zenodo: [$what] [$what2] operation failed.\n";
-            //     print_r($o);
-            //     self::log_error(array("ERROR: [$what] [$what2] operation failed."));
-            //     return true;
-            // }
+            /* This is very wrong!!! Never un-comment this.
+            if(@$o['id'] && @$o['metadata']['title']) {} //no error; will return false below
+            else {
+                echo "\nERROR Zenodo: [$what] [$what2] operation failed.\n";
+                print_r($o);
+                self::log_error(array("ERROR: [$what] [$what2] operation failed."));
+                return true;
+            }
+            */
         }
         return false;
     }
