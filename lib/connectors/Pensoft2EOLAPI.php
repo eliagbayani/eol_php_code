@@ -56,9 +56,12 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $this->subjects['Uses'] = 'http://rs.tdwg.org/ontology/voc/SPMInfoItems#Uses'; //for list-type in SI PDFs
         $this->subjects['GeneralDescription'] = 'http://rs.tdwg.org/ontology/voc/SPMInfoItems#GeneralDescription'; //first client ZooKeys (20.tar.gz)
         
-        /* Wikipedia EN
+        /* Wikipedia EN = 80.tar.gz
         http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description:  389994
         http://rs.tdwg.org/ontology/voc/SPMInfoItems#TaxonBiology: 382437
+        as of Nov 3, 2024:
+        http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description:  448125
+        http://rs.tdwg.org/ontology/voc/SPMInfoItems#TaxonBiology: 447831
         */
         /*-----------------------Paths----------------------*/
         if(Functions::is_production()) $this->root_path = '/var/www/html/Pensoft_annotator/'; //'/html/Pensoft_annotator/';
@@ -438,23 +441,24 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             
             // if($taxonID != 'Q1000262') continue; //debug only
             
-            /* debug only --- range ranges caching cache
-            // if($this->param['resource_id'] == "617_ENV") { //total 841539 objects in media tab '617_ENV'
-            //     $m = 841539/3; # can run 3 connectors. Comment 2 rows and un-comment 1 row.
-            //     // if($i >= 1 &&    $i < $m) {}
-            //     // if($i >= $m &&   $i < $m*2) {}
-            //     // if($i >= $m*2 && $i < $m*3) {}
-            //     if($i >= 480000) {}
-            //     else continue; 
-            // }
-            if($this->param['resource_id'] == "TreatmentBank_ENV") { //total rows in media tab -> $m = 2,083,549 -> as of 19Dec2023, rounded to 2083600
-                $m = 2083600/3; # rounded . can run 3 connectors. Comment 2 rows and un-comment 1 row.
-                // if($i >= 1 &&    $i < $m) {}
+            // /* ---------- debug only --- range ranges caching cache
+            $m = Functions::show_totals($meta->file_uri); echo "\nTotal rows in media extension: [$m]";
+            $m = $m/3;                                    echo "\nDivided by 3: [$m]\n";
+            if($this->param['resource_id'] == "617_ENV") { //total 841539 (895956 as of 3Nov2024) objects in media tab '617_ENV'
+                // $m = 895956/3; # can run 3 connectors. Comment 2 rows and un-comment 1 row.
+                if($i >= 1 &&    $i < $m) {}
                 // if($i >= $m &&   $i < $m*2) {}
-                if($i >= $m*2 && $i < $m*3) {}
+                // if($i >= $m*2 && $i < $m*3) {}
                 else continue; 
             }
-            */
+            // if($this->param['resource_id'] == "TreatmentBank_ENV") { //total rows in media tab -> $m = 2,083,549 -> as of 19Dec2023, rounded to 2083600
+            //     // $m = 2083600/3; # rounded . can run 3 connectors. Comment 2 rows and un-comment 1 row.
+            //     // if($i >= 1 &&    $i < $m) {}
+            //     // if($i >= $m &&   $i < $m*2) {}
+            //     if($i >= $m*2 && $i < $m*3) {}
+            //     else continue; 
+            // }
+            // ---------- */
             
             // print_r($this->allowed_subjects); exit;
             if(self::valid_record($rec)) {
