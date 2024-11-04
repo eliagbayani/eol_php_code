@@ -210,7 +210,7 @@ class MultipleConnJenkinsAPI //this makes use of the GBIF DwCA occurrence downlo
         // for more debugging...
         // echo "\ncmd: $cmd
         //       \nc: $c";
-        // echo "\nshell_debug: [$shell_debug]";
+        echo "\n---start shell-------------------------\nshell_debug: [$shell_debug]\n---end shell-------------------------\n";
         echo "\nCACHE_PATH 03 is ".CACHE_PATH."\n";
         sleep(20); //this is important so Jenkins will detect that the first job is already taken and will use the next available job. Effective works OK
         // */
