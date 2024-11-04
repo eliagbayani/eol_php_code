@@ -441,7 +441,10 @@ class Functions
         $func->update_CKAN_resource_using_EOL_resourceID($resource_id);
         // */
 
-        if(@$end_options['go_zenodo']) {
+        $msg = "\n[$resource_id] will not go to Zenodo at this time.\n";
+        if(stripos($resource_id, "wikipedia-") !== false) { echo $msg; } //wikipedia lang resources will go to Zenodo in FillUpMissingParentsAPI.php, not here. //string is found
+        elseif(in_array($resource_id, array('80', '957'))) { echo $msg; } //same reason as 80 en and 957 de both are wikipedia lang resource also
+        elseif(@$end_options['go_zenodo']) {
             // /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
             // $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign
             $EOL_resource_id = $resource_id;
