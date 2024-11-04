@@ -58,8 +58,8 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
         $this->html_report = $this->path_2_file_dat . "opendata_zenodo.html";
 
-        $this->EOL_resource_id_and_Zenodo_id_file = $this->path_2_file_dat . "EOL_resource_id_and_Zenodo_id_file.tsv";
-        $WRITE = Functions::file_open($this->EOL_resource_id_and_Zenodo_id_file, "c");
+        $this->Write_EOL_resource_id_and_Zenodo_id_file = $this->path_2_file_dat . "EOL_resource_id_and_Zenodo_id_file.tsv";
+        $WRITE = Functions::file_open($this->Write_EOL_resource_id_and_Zenodo_id_file, "c");
         fclose($WRITE);
 
         // /* main report
@@ -127,6 +127,8 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->ORCIDs['Jennifer Hammock'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
         $this->ORCIDs['Schulz, Katja'] = ''; //https://orcid.org/0000-0001-7134-3324
         $this->ORCIDs['Katja Schulz'] = ''; //https://orcid.org/0000-0001-7134-3324
+
+        $this->github_EOL_resource_id_and_Zenodo_id_file = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv';
     }
     function start()
     {   self::log_error(array("==================== Log starts here ===================="));

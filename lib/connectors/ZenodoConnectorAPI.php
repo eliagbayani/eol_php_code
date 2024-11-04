@@ -739,7 +739,7 @@ class ZenodoConnectorAPI
         }
         // print_r($this->eol_resources); exit;
         // step 2
-        $file = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv";
+        $file = $this->github_EOL_resource_id_and_Zenodo_id_file;
         if($local_file = Functions::save_remote_file_to_local($file, $options)) { $i = 0;
             foreach(new FileIterator($local_file) as $line_number => $line) { $i++;
                 $row = explode("\t", $line); // print_r($row);
@@ -1000,7 +1000,7 @@ class ZenodoConnectorAPI
         // , 'id' => $r['id'], 'package_id' => $r['package_id']
         // print_r($save);
         $fields = array_keys($save); //print_r($fields); exit;
-        $filename = $this->EOL_resource_id_and_Zenodo_id_file;
+        $filename = $this->Write_EOL_resource_id_and_Zenodo_id_file;
         $WRITE = Functions::file_open($filename, "a");
         clearstatcache(); //important for filesize()
         if(filesize($filename) == 0) fwrite($WRITE, implode("\t", $fields) . "\n");
@@ -1023,9 +1023,10 @@ class ZenodoConnectorAPI
     }
     private function get_zenodo_id_using_eol_resource_id($resource_id)
     {
-        $file = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv";
+        $file = $this->github_EOL_resource_id_and_Zenodo_id_file;
         $options = $this->download_options; 
         $options['expire_seconds'] = 60*60*24; //1 day cache
+        $options['expire_seconds'] = 0; //expires now
         $options['cache'] = 1;
         if($local_file = Functions::save_remote_file_to_local($file, $options)) {
             $i = 0;
