@@ -201,12 +201,11 @@ class MultipleConnJenkinsAPI //this makes use of the GBIF DwCA occurrence downlo
         $ctrler->write_to_sh($params['uuid'].$postfix, $cmd);
         $cmd = $ctrler->generate_exec_command($params['uuid'].$postfix); //pass the desired basename of the .sh filename (e.g. xxx.sh then pass "xxx")
         $c = $ctrler->build_curl_cmd_for_jenkins($cmd, $task);
-        /* good debug
-        echo "\n-------------------------\ncmd: [$cmd]\n";
-        echo "\ntask: [$task]\n";
-        echo "\nc: [$c]\n";
-        exit("\nstop muna, investigate...\n");
-        */
+        // /* good debug
+        echo "\n---startx debug----------------------\ncmd: [$cmd]\ntask: [$task]\nc: [$c]";
+        // exit("\nstop muna, investigate...\n");
+        echo "\n---endx debug----------------------\n";
+        // */
         $shell_debug = shell_exec($c);
         // for more debugging...
         // echo "\ncmd: $cmd
