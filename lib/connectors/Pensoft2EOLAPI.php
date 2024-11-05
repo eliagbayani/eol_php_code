@@ -421,7 +421,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $i = 0; $saved = 0;
         // /* Used when caching. First client: 617_ENV
         $m = Functions::show_totals($meta->file_uri); echo "\nTotal rows in media extension: [$m]";
-        $m = $m/3;                                    echo "\nDivided by 3: [$m]| conn_run: [".$this->param['conn_run']."]\n";
+        $m = $m/6;                                    echo "\nDivided by 6: [$m]| conn_run: [".$this->param['conn_run']."]\n";
         // */
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
             $i++; if(($i % $this->modulo) == 0) echo "\nxyz".number_format($i);
@@ -451,8 +451,11 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 if($val == 1) { $n = 1;     $o = $m;   }
                 if($val == 2) { $n = $m;    $o = $m*2; }
                 if($val == 3) { $n = $m*2;  $o = $m*3; }
+                if($val == 4) { $n = $m*3;  $o = $m*4; }
+                if($val == 5) { $n = $m*4;  $o = $m*5; }
+                if($val == 6) { $n = $m*5;  $o = $m*6; }
             }
-            if($this->param['resource_id'] == "617_ENV") { //total 841539 (895956 as of 3Nov2024) objects in media tab '617_ENV'
+            if($this->param['resource_id'] == "617_ENV") { //total 841539 (895956 as of 3Nov2024) objects in media tab '80.tar.gz'
                 // $m = 895956/3; # can run 3 connectors. Comment 2 rows and un-comment 1 row.
                 // if($i >= 1 &&    $i < $m) {}
                 // if($i >= $m &&   $i < $m*2) {}
