@@ -1360,7 +1360,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         return $ids;
     }
     private function save_media_metadata_for_these_objects($obj_identifiers, $meta)
-    {   echo "\nsave_media_metadata_for_these_objects()...";
+    {   echo "\nsave_media_metadata_for_these_objects()...[$meta->file_uri]";
         // $this->json_temp_path = create_temp_dir() . "/"; //abandoned. not used anymore.
         echo("\njson temp path: ".$this->json_temp_path['metadata']."\n");
         $agent_ids = array();
