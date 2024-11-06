@@ -1091,7 +1091,7 @@ class WikiDataAPI extends WikipediaAPI
                 $mr->type                   = $media['type'];
                 $mr->format                 = $media['format'];
                 $mr->subtype                = $media['subtype'];
-                $mr->language               = $media['language'];
+                $mr->language               = self::clean_language_code($media['language']);
                 $mr->UsageTerms             = $media['UsageTerms'];
                 // $mr->CVterm                 = $media['CVterm'];
                 $mr->description            = $media['description'];
@@ -2272,7 +2272,7 @@ class WikiDataAPI extends WikipediaAPI
         $api_call = "https://commons.wikimedia.org/w/api.php?format=json&action=query&prop=imageinfo&iiprop=extmetadata&titles=Image:".$file;
         // echo "\n[$api_call]\n";
         if($json = Functions::lookup_with_cache($api_call, $options)) {
-            $json = self::clean_html($json); //new ditox eli
+            $json = self::clean_html($json);
             $arr = json_decode($json, true);
             // print_r($arr); exit;
             if(is_array(@$arr["query"]["pages"])) $arr = array_values($arr["query"]["pages"]); //normal
@@ -3013,7 +3013,7 @@ class WikiDataAPI extends WikipediaAPI
             if($rec['lang'] == "be-tarask") $rec['lang'] = 'be';
             elseif($rec['lang'] == "zh-min-nan") $rec['lang'] = 'nan';
             
-            $v->language        = $rec['lang'];
+            $v->language        = self::clean_language_code($rec['lang']);
 
             if($val = @$rec['isPreferredName']) $v->isPreferredName = $val;
 
@@ -3768,6 +3768,12 @@ class WikiDataAPI extends WikipediaAPI
         $valid = array($this->license['public domain'], $this->license['by'], $this->license['by-nc'], $this->license['by-sa'], $this->license['by-nc-sa'], $this->license['no restrictions']);
         if(in_array($license, $valid)) return true;
         else                           return false;
+    }
+    private function clean_language_code($str)
+    {   // will fix entries e.g. es-419
+        $arr = explode("-", $str);
+        $arr = array_map('trim', $arr);
+        return $arr[0];
     }
     // private function checkaddslashes($str){
     //     if(strpos(str_replace("\'",""," $str"),"'")!=false)
