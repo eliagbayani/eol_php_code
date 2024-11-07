@@ -420,8 +420,10 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         echo "\nRun Pensoft annotator...\n";
         $i = 0; $saved = 0;
         // /* Used when caching. First client: 617_ENV
-        $m = Functions::show_totals($meta->file_uri); echo "\nTotal rows in media extension: [$m]";
-        $m = $m/6;                                    echo "\nDivided by 6: [$m]| conn_run: [".$this->param['conn_run']."]\n";
+        if($conn_run = @$this->param['conn_run']) {
+            $m = Functions::show_totals($meta->file_uri); echo "\nTotal rows in media extension: [$m]";
+            $m = $m/6;                                    echo "\nDivided by 6: [$m]| conn_run: [".$conn_run."]\n";
+        }
         // */
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
             $i++; if(($i % $this->modulo) == 0) echo "\nxyz".number_format($i);
@@ -446,14 +448,16 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             
             // if($taxonID != 'Q1000262') continue; //debug only
             
-            // /* ---------- debug only --- range ranges caching cache
-            if($val = $this->param['conn_run']) { //1st client 617_ENV
-                if($val == 1) { $n = 1;     $o = $m;   }
-                if($val == 2) { $n = $m;    $o = $m*2; }
-                if($val == 3) { $n = $m*2;  $o = $m*3; }
-                if($val == 4) { $n = $m*3;  $o = $m*4; }
-                if($val == 5) { $n = $m*4;  $o = $m*5; }
-                if($val == 6) { $n = $m*5;  $o = $m*6; }
+            // /* ---------- range ranges caching cache
+            if($conn_run) { //1st client 617_ENV | can be used for all resources
+                if($conn_run == 1) { $n = 1;     $o = $m;   }
+                if($conn_run == 2) { $n = $m;    $o = $m*2; }
+                if($conn_run == 3) { $n = $m*2;  $o = $m*3; }
+                if($conn_run == 4) { $n = $m*3;  $o = $m*4; }
+                if($conn_run == 5) { $n = $m*4;  $o = $m*5; }
+                if($conn_run == 6) { $n = $m*5;  $o = $m*6; }
+                if($i >= $n && $i < $o) {}
+                else continue;
             }
             if($this->param['resource_id'] == "617_ENV") { //total 841539 (895956 as of 3Nov2024) objects in media tab '80.tar.gz'
                 // $m = 895956/3; # can run 3 connectors. Comment 2 rows and un-comment 1 row.
@@ -461,17 +465,14 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 // if($i >= $m &&   $i < $m*2) {}
                 // if($i >= $m*2 && $i < $m*3) {}
                 // else continue; 
-
-                if($i >= $n && $i < $o) {}
-                else continue;  
             }
-            // if($this->param['resource_id'] == "TreatmentBank_ENV") { //total rows in media tab -> $m = 2,083,549 -> as of 19Dec2023, rounded to 2083600
-            //     // $m = 2083600/3; # rounded . can run 3 connectors. Comment 2 rows and un-comment 1 row.
-            //     // if($i >= 1 &&    $i < $m) {}
-            //     // if($i >= $m &&   $i < $m*2) {}
-            //     if($i >= $m*2 && $i < $m*3) {}
-            //     else continue; 
-            // }
+            if($this->param['resource_id'] == "TreatmentBank_ENV") { //total rows in media tab -> $m = 2,083,549 -> as of 19Dec2023, rounded to 2083600
+                // $m = 2083600/3; # rounded . can run 3 connectors. Comment 2 rows and un-comment 1 row.
+                // if($i >= 1 &&    $i < $m) {}
+                // if($i >= $m &&   $i < $m*2) {}
+                // if($i >= $m*2 && $i < $m*3) {}
+                // else continue;                 
+            }
             // ---------- */
             
             // print_r($this->allowed_subjects); exit;
