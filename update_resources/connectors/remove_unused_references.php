@@ -2,6 +2,7 @@
 namespace php_active_record;
 /* This is generic way of removing unused references.
 first client: GloBI 
+    php                             remove_unused_references.php _ '{"resource_id": "globi_associations_delta"}' --- OBSOLETE params
     php update_resources/connectors/remove_unused_references.php _ '{"resource_id": "globi_associations_delta", "resource": "remove_unused_references", "resource_name": "GloBI"}'
 */
 
