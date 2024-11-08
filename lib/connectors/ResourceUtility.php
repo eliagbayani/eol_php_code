@@ -285,7 +285,11 @@ class ResourceUtility
 
 
             if($what == 'build-up ref info') { //for remove_unused_references()
-                if($val = @$rec['http://eol.org/schema/reference/referenceID']) $this->referenceIDs[$val] = '';
+                $full_reference = @$rec['http://eol.org/schema/reference/full_reference'];
+                $title = @$rec['http://purl.org/dc/terms/title'];
+                if($full_reference || $title) {
+                    if($val = @$rec['http://eol.org/schema/reference/referenceID']) $this->referenceIDs[$val] = '';
+                }
             }
             elseif($what == 'create_reference') { //for remove_unused_references()
                 $referenceID = $rec['http://purl.org/dc/terms/identifier'];
