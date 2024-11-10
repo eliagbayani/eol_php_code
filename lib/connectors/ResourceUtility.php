@@ -286,8 +286,9 @@ class ResourceUtility
 
             if($what == 'build-up ref info') { //for remove_unused_references()
                 $full_reference = @$rec['http://eol.org/schema/reference/full_reference'];
-                $title = @$rec['http://purl.org/dc/terms/title'];
-                if($full_reference || $title) {
+                $primaryTitle   = @$rec['http://eol.org/schema/reference/primaryTitle'];
+                $title          = @$rec['http://purl.org/dc/terms/title'];                
+                if($full_reference || $primaryTitle || $title) {
                     if($val = @$rec['http://eol.org/schema/reference/referenceID']) $this->referenceIDs[$val] = '';
                 }
             }
