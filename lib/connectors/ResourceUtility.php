@@ -285,18 +285,18 @@ class ResourceUtility
 
 
             if($what == 'build-up ref info') { //for remove_unused_references()
+                if($val = @$rec['http://eol.org/schema/reference/referenceID']) $this->referenceIDs[$val] = '';
+            }
+            elseif($what == 'create_reference') { //for remove_unused_references()
                 $full_reference = @$rec['http://eol.org/schema/reference/full_reference'];
                 $primaryTitle   = @$rec['http://eol.org/schema/reference/primaryTitle'];
                 $title          = @$rec['http://purl.org/dc/terms/title'];                
                 if($full_reference || $primaryTitle || $title) {
-                    if($val = @$rec['http://eol.org/schema/reference/referenceID']) $this->referenceIDs[$val] = '';
-                }
-            }
-            elseif($what == 'create_reference') { //for remove_unused_references()
-                $referenceID = $rec['http://purl.org/dc/terms/identifier'];
-                if(isset($this->referenceIDs[$referenceID])) { //start saving
-                    $o = new \eol_schema\Reference();
-                    self::loop_write($o, $rec);
+                    $referenceID = $rec['http://purl.org/dc/terms/identifier'];
+                    if(isset($this->referenceIDs[$referenceID])) { //start saving
+                        $o = new \eol_schema\Reference();
+                        self::loop_write($o, $rec);
+                    }    
                 }
             }
 
