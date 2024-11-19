@@ -443,25 +443,19 @@ class Functions
 
         $msg = "\n[$resource_id] will not go to Zenodo at this time.\n";
         if(stripos($resource_id, "wikipedia-") !== false) { echo $msg; } //wikipedia lang resources will go to Zenodo in FillUpMissingParentsAPI.php, not here. //string is found
-        elseif(in_array($resource_id, array('80', '957'))) { echo $msg; } //same reason as 80 en and 957 de both are wikipedia lang resource also
+        elseif(in_array($resource_id, array('80', '957', '201'))) { echo $msg; }
+        /* exclude:
+        same reason with 80 en and 957 de - both are wikipedia lang resource also
+        13322676	201	Museum of Comparative Zoology, Harvard	https://editors.eol.org/eol_php_code/applications/content_server/resources/201.tar.gz	https://opendata.eol.org/dataset/befc28a0-43ac-4b82-9db3-cae728744bc8/resource/43a9e0bb-fd46-4bd2-8037-69fd2143be88
+            -> there is a final 201_meta_recoded_2.tar.gz resource that is in Zenodo. 201.tar.gz is just a step. 202 should be deleted in CKAN actually.
+        */
         elseif(@$end_options['go_zenodo']) {
             // /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
-            // $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign
+            // $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign, dev only
             $EOL_resource_id = $resource_id;
             require_library('connectors/ZenodoConnectorAPI');
             require_library('connectors/ZenodoAPI');
             $func = new ZenodoAPI();
-            // $func->new_description_for_zenodo = false; //important to initialize to false
-            // require_library('connectors/CKAN_API_AccessAPI');
-            // $ckan_func = new CKAN_API_AccessAPI('EOL resource', ""); //other values: "EOL dump" or "EOL file"
-            // $ckan_record = $ckan_func->get_ckan_record_using_EOL_resource_id($EOL_resource_id);
-            // if($ckan_resource_id = @$ckan_record[1]) {
-            //     $rec = $ckan_func->retrieve_ckan_resource_using_id($ckan_resource_id); // print_r($rec);
-            //     $new_description = $ckan_func->format_description($rec['result']['description']);
-            //     echo "\nold desc: [".$rec['result']['description']."]";
-            //     echo "\nnew desc: [$new_description]\n";
-            //     $func->new_description_for_zenodo = $new_description; //a global field in ZenodoAPI.php
-            // }
             $func->update_Zenodo_record_using_EOL_resourceID($EOL_resource_id);
             // $func->new_description_for_zenodo = ""; //initialize again
             // */
