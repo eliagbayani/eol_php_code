@@ -48,7 +48,7 @@ class WikipediaHtmlAPI
                 self::save_taxon_text_to_html($filename);
             }
         }
-        echo "\nNo DwCA: ".count($this->debug['[No DwcA]'])."\n";
+        echo "\nNo DwCA: ".count(@$this->debug['[No DwcA]'])."\n";
         print_r($this->debug);
         self::generate_main_html_page(); //uses ["reports/wikipedia_html/*.html"] in eol-archive to select HTML to be included in main.html.
         /* To do:
