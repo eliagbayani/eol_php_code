@@ -1,4 +1,4 @@
-<?php
+<?php 
 namespace php_active_record;
 /* connector: [wikipedia_html.php]
 This generates a single HTML page for every wikipedia-xxx.tar.gz. It gets one text object and generates an HTML page for it.
@@ -18,6 +18,9 @@ class WikipediaHtmlAPI
 
         //https://editors.eol.org/eol_php_code/applications/content_server/resources/reports/taxon_wiki_per_language_count_2023_08.txt
         $this->source_languages = CONTENT_RESOURCE_LOCAL_PATH."reports/taxon_wiki_per_language_count_YYYY_MM.txt";
+        // /* temporary until the above file with changing YYYY_MM is working again.
+        $this->source_languages = 'https://editors.eol.org/eol_php_code/applications/content_server/resources/reports/taxon_wiki_per_language_count_2023_08.txt';
+        // */
         // used as list of langs to generate HTML for
     }
     function start()
