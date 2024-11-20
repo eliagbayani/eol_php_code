@@ -443,6 +443,7 @@ class Functions
 
         $msg = "\n[$resource_id] will not go to Zenodo at this time.\n";
         if(stripos($resource_id, "wikipedia-") !== false) { echo $msg; } //wikipedia lang resources will go to Zenodo in FillUpMissingParentsAPI.php, not here. //string is found
+        elseif(stripos($resource_id, "wikipedia_combined") !== false) { echo $msg; }
         elseif(in_array($resource_id, array('80', '957', '201'))) { echo $msg; }
         /* exclude:
         same reason with 80 en and 957 de - both are wikipedia lang resource also
