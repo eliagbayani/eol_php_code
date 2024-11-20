@@ -2,6 +2,10 @@
 namespace php_active_record;
 /* This can be a generic connector that combines DwCA's. 
 
+But this one works for wikipedia resources exclusively.
+Generates wikipedia_combined_languages.tar.gz
+and       wikipedia_combined_languages_batch2.tar.gz
+
 wikipedia_combined_languages	    Friday 2020-05-08 06:21:06 AM	{"media_resource.tab":99277, "taxon.tab":25775, "time_elapsed":{"sec":576.91, "min":9.62, "hr":0.16}}
 wikipedia_combined_languages_batch2	Friday 2020-05-08 06:22:23 AM	{"media_resource.tab":3033, "taxon.tab":3366, "time_elapsed":{"sec":653.4, "min":10.89, "hr":0.18}}
 
@@ -11,7 +15,6 @@ wikipedia_combined_languages_batch2	Friday 2020-05-08 09:31:43 AM	{"media_resour
 
 wget https://editors.eol.org/eol_php_code/applications/content_server/resources/wikipedia_combined_languages_batch2.tar.gz
 wget -c https://editors.eol.org/eol_php_code/applications/content_server/resources/wikipedia_combined_languages.tar.gz
-
 */
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");
