@@ -208,6 +208,7 @@ class WikipediaHtmlAPI
                 $minus_2_month2 = date("Y_m", strtotime("-2 months")); //minus 2 month2 --- 2023_06
                 $txt_file = str_replace("YYYY_MM", $minus_2_month2, $this->source_languages);
                 if(file_exists($txt_file)) return $txt_file;
+                elseif(file_exists($this->source_languages)) return $this->source_languages; //new, default to an old legacy file
                 else exit("\nInvestigate: No source text file for list of languages [$txt_file].\n");
             }
         }
