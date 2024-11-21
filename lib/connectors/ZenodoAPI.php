@@ -842,7 +842,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         // echo "\nRequest output:\n[$output]\n";
     }
 
-    function edit_Zenodo_dataset($obj, $data = false)
+    function edit_Zenodo_dataset($obj, $data = false) //request to edit a record
     {
         if($edit = @$obj['links']['edit']) { 
             // curl -i -X POST https://zenodo.org/api/deposit/depositions/1234/actions/edit?access_token=ACCESS_TOKEN
@@ -923,7 +923,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 echo "\n- [$page_num] $i. [$id] [$result_title]...";
                 $final[] = $o;
             }
-            // return; //debug only
+            return; //debug only
             // if($page_num >= 3) return; //debug only
         } //end while()
         return $final;

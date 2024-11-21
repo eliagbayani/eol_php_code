@@ -10,42 +10,11 @@ class ZenodoConnectorAPI
     {
         $this->log_error(array("==================== Log starts here ====================Deprecated tasks"));
 
-        // /* ---------- start: for Related Works - iSourceOf relationship
+        /* ---------- start: for Related Works - iSourceOf relationship
         self::build_EOL_resourceID_and_Zenodo_ID_info(); //exit("\nstop3\n");
-        // ---------- end: */
-        /*
-        print_r($this->eol_resources['87794797-6169-4935-908c-c304ed594875']);
-        print_r($this->opendata_info['87794797-6169-4935-908c-c304ed594875']);
-        exit;
-        */
-        // /* start: main operation
-        // [87794797-6169-4935-908c-c304ed594875] => Array(
-        //             [name] => Panama Species List
-        //             [id] => 196
-        //             [status] => published
-        //             [content_id] => 285
-        //             [opendata_id] => 87794797-6169-4935-908c-c304ed594875
-        //         )
-        // [87794797-6169-4935-908c-c304ed594875] => Array(
-        //         [Zenodo_id] => 13316781
-        //         [Resource_id] => SC_panama
-        //         [Resource_name] => Panama Species List
-        //         [Resource_URL] => https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_panama.tar.gz
-        //         [OpenData_URL] => https://opendata.eol.org/dataset/5d99ead1-db10-40ad-9aac-b1b5611d979e/resource/87794797-6169-4935-908c-c304ed594875
-        //     )
-        // print_r($this->eol_resources); print_r($this->opendata_info);
-        $final = array();
-        foreach($this->eol_resources as $opendata_id => $eol_rec) {
-            if($eol_rec['status'] == 'published') {
-                if($zenodo_rec = @$this->opendata_info[$opendata_id]) {
-                    $zenodo_id = $zenodo_rec['Zenodo_id'];
-                    $final[$zenodo_id] = "https://eol.org/resources/" . $eol_rec['id'];
-                }
-            }
-        }
-        // print_r($final); 
-        echo "\nTotal Published records: ".count($final)."\n"; //exit;
+        ---------- end: */
 
+        // /* start: main operation
         /* ---------- start: normal
         $i = 0; $hits = 0;
         foreach($final as $zenodo_id => $url) { $i++;
@@ -69,16 +38,8 @@ class ZenodoConnectorAPI
         ---------- end: normal */
 
         // /* ---------- start: dev only
-        $id = 13761108; //FishBase $id = 13933415; //AntWeb $id = 13321654; //Zoosystematics and Evolution
-        $id = 13320903; //Insect Wings - unchanged  $id = 13320567; //unchanged  $id = 13321623; //unchanged
-        $id = 13320563; //Saproxylic Organisms
-        $id = 13886436; //with ROR and ISNI: USDA NRCS PLANTS Database: USDA PLANTS images DwCA | isSourceOf = https://eol.org/resources/469
-        $id = 13318018; //ver 1 of 13886436
-        if($url = @$final[$id]) {
-            $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
-            self::update_zenodo_record_of_latest_requested_changes($id);
-        }
-        else echo "\nTest record didn't proceed!\n".count($final)."\n";
+        $id = 13313293; //[13313293] [National Checklists: Turkmenistan]...
+        self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
 
@@ -361,9 +322,9 @@ class ZenodoConnectorAPI
             else exit("\nInvestigate not equal IDs: [$zenodo_id] != [$id]\n");
         }
 
-        $edit_obj = $this->edit_Zenodo_dataset($obj_1st); //exit("\nstop muna 1\n");
+        $edit_obj = $this->edit_Zenodo_dataset($obj_1st); //request to edit a record //exit("\nstop muna 1\n");
 
-        if($this->if_error($edit_obj, 'edit_0924', $id)) {}
+        if($this->if_error($edit_obj, 'edit_22Nov2024', $id)) {}
         else {
             if($obj_latest = self::fill_in_katja_changes($edit_obj)) self::update_then_publish($id, $obj_latest);    
         }
@@ -459,7 +420,6 @@ class ZenodoConnectorAPI
 
         $o['metadata']['creators'] = $final;
         echo "\nCreators to save:"; print_r($final);
-
         // */
         /*
         "creators": [{  "person_or_org": {"name": "Encyclopedia of Life", "type": "organizational"}, 
@@ -474,7 +434,7 @@ class ZenodoConnectorAPI
     
                 // if($r['name'] == 'Eli Agbayani') continue;
     
-                if($r['type'] == 'HostingInstitution'     && $r['name'] == 'Anne Thessen')
+                if($r['type'] == 'HostingInstitution' && $r['name'] == 'Anne Thessen')
                 {   /*
                     and add the following as the new Creator:            
                         Person

@@ -23,7 +23,7 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // exit("\n".urldecode($str)."\n");
 
 $func = new ZenodoAPI();
-// $func->jen_Related_Works_2(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
+$func->jen_Related_Works_2(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
 // $func->jen_Related_Works(); //one-time only | DONE Oct 27, 2024
 // $func->latest_katja_changes_2(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
 // $func->latest_katja_changes(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
@@ -31,8 +31,8 @@ $func = new ZenodoAPI();
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 
 // /* -----
-$q = "+title:checklists -title:2019 +title:water"; //works splendidly - OK!
-$q = "+title:FishBase";
+$q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
+// $q = "+title:FishBase";
 if($obj = $func->get_depositions_by_part_title($q)) {
   print_r($obj); exit("\n-found-\n");
 }
