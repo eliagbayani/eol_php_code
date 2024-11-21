@@ -326,7 +326,11 @@ class ZenodoConnectorAPI
 
         if($this->if_error($edit_obj, 'edit_22Nov2024', $id)) {}
         else {
-            if($obj_latest = self::fill_in_katja_changes($edit_obj)) self::update_then_publish($id, $obj_latest);    
+            /* ran already
+            $obj_latest = self::fill_in_Katja_changes($edit_obj);
+            */
+            $obj_latest = self::fill_in_Jen_changes($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
+            if($obj_latest) self::update_then_publish($id, $obj_latest);
         }
     }
     private function update_then_publish($id, $obj_latest)
@@ -349,7 +353,7 @@ class ZenodoConnectorAPI
             // */            
         }
     }
-    private function fill_in_katja_changes($o)
+    private function fill_in_Katja_changes($o)
     {   //print_r($o); exit("\nstop muna 1\n");
         // $o['metadata']['creators'][0]['affiliation'] = "Eli was here 5."; //dev only
         /* Agents
@@ -494,7 +498,6 @@ class ZenodoConnectorAPI
         /* Keywords & subjects
         1. For all data sets with keyword "EOL Content Partners: National Checklists 2019" or "EOL Content Partners: Water Body Checklists 2019" add keyword "deprecated"
         2. Remove all keywords with the prefix "format:", e.g., "format: ZIP", "format: TAR", "format: XML", etc.        
-        
         [keywords] => Array(
                     [0] => EOL Content Partners: National Checklists 2019
                     [1] => format: Darwin Core Archive
@@ -522,7 +525,7 @@ class ZenodoConnectorAPI
             }
         }
         $final = self::remove_null_make_unique_reindex_key($final);
-        echo "\nKeywords to save (geography): "; print_r($final);
+        echo "\nKeywords to save: "; print_r($final);
         $o['metadata']['keywords'] = $final;
 
         // Oct_6 'descriptions' Wikipedia
@@ -610,7 +613,6 @@ class ZenodoConnectorAPI
                     [orcid] => 0000-0001-7134-3324
                 )
         )*/
-
         if($katja_exists_in_creators = self::if_exists_in_creatorsORcontributors($creators, 'Schulz, Katja', '0000-0001-7134-3324')) {
             //if yes then add katja as DataManager in Contributors, if not there yet
             if($katja_exists_in_contributors = self::if_exists_in_creatorsORcontributors($contributors, 'Schulz, Katja', '0000-0001-7134-3324')) {}
