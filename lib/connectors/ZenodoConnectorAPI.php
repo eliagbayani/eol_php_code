@@ -6,7 +6,7 @@ class ZenodoConnectorAPI
     function __construct($folder = null, $query = null)
     {}
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    function jen_Related_Works_2()
+    function jen_Deprecated_Works()
     {
         $this->log_error(array("==================== Log starts here ====================Deprecated tasks"));
 
@@ -667,23 +667,22 @@ class ZenodoConnectorAPI
                     [scheme] => url
                 )
         )*/
-        // /* ----- start: Related Works -----
-        // exit("\nwala pa\n");
 
+        // /* --------------------- start: Related Works ---------------------
         // $this->record_in_question = array('identifier' => 'https://eol.org/resources/547', 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url'); //force assign
-        $sought = $this->record_in_question;
-        
+        $sought = @$this->record_in_question;
         if($RI = @$obj_1st['metadata']['related_identifiers']) { print_r($RI);
             $add_isSourceOf_YN = true;
             foreach($RI as $r) {
-                if($r['identifier'] == $sought['identifier'] && $r['relation'] == $sought['relation']) $add_isSourceOf_YN = false;
+                if($r['identifier'] == @$sought['identifier'] && $r['relation'] == @$sought['relation']) $add_isSourceOf_YN = false;
             }
             if($add_isSourceOf_YN) { $RI[] = $sought; echo "\nisSourceOf is added.\n"; print_r($RI); }
             else echo "\nisSourceOf was not added. Already exists.\n";
         }
         else $RI = array();
         $obj_1st['metadata']['related_identifiers'] = $RI;
-        // ----- end: Related Works ----- */
+        // --------------------- end: Related Works --------------------- */
+        
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         array_shift($obj_1st['files']);
         $input['metadata'] = array(
@@ -1343,11 +1342,10 @@ class ZenodoConnectorAPI
         if(end($arr) == "") {} //echo "\nlast element is nothing\n";
         else $desc .= chr(13); //add a next line
 
+        /* working OK but now obsolete
         $forced_date = date("m/d/Y H:i:s"); //date today
         $date = strtotime($forced_date);
         $date_format = date("M d, Y h:i A", $date);  //July 13, 2023 08:30 AM
-
-        /* working OK but now obsolete
         // $this->iso_date_str = self::iso_date_format()
         $add_str = "####--- __"."EOL DwCA resource last updated: ".$date_format."__ ---####";
         $desc .= $add_str;
