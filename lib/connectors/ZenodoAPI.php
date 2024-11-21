@@ -892,6 +892,43 @@ class ZenodoAPI extends ZenodoConnectorAPI
             return $obj;    
         }
     }
+    function get_depositions_by_part_title($q, $allVersions = false)
+    {
+        $final = array();
+        echo "\nallVersions: [$allVersions]\n";
+        // $q = "title:($title)"; //too accepting...
+        // $q = "+title:checklists -title:2019 +title:water"; //works splendidly - OK!
+        $page_num = 0;
+        while(true) { $page_num++;
+            if($allVersions) $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&allversions=true&sort=bestmatch&size=25&page='.$page_num.'&q="'.urlencode($q).' -H "Content-Type: application/json"';
+            else             $cmd = 'curl -X GET "https://zenodo.org/api/deposit/depositions?access_token='.ZENODO_TOKEN.'&sort=bestmatch&size=25&page='.$page_num.'&q="'.urlencode($q).' -H "Content-Type: application/json"';
+
+            $json = shell_exec($cmd);               //echo "\n--------------------\n$json\n--------------------\n";
+            $obj = json_decode(trim($json), true);  //echo "\n=====by title=====\n"; print_r($obj); echo "\n=====by title=====\n"; exit;
+
+            if(!$obj) { return $final;
+                // if($allVersions) return;
+                // else return self::get_depositions_by_part_title($q, true);
+            }
+            if(count($obj) == 0) { return $final;
+                // if($allVersions) return;
+                // else return self::get_depositions_by_part_title($q, true);
+            }
+
+            echo "\nneedle: [$q]\n";
+            $i = 0;
+            foreach($obj as $o) { $i++;
+                $id = $o['id'];
+                $result_title = $o['metadata']['title'];
+                echo "\n- [$page_num] $i. [$id] [$result_title]...";
+                $final[] = $o;
+            }
+            // return; //debug only
+            // if($page_num >= 3) return; //debug only
+        } //end while()
+        return $final;
+    }
+
     function get_deposition_by_title_allversions($title)
     {
 
