@@ -39,7 +39,7 @@ class ZenodoConnectorAPI
 
         // /* ---------- start: dev only
         $id = 13313293; //[13313293] [National Checklists: Turkmenistan]...
-        $id = 13316763; //National Checklists 2019: Niue
+        // $id = 13316763; //National Checklists 2019: Niue
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -380,7 +380,10 @@ class ZenodoConnectorAPI
         return $keywords;
     }
     private function fill_in_Jen_changes($o)
-    {   echo "\n[".$o['metadata']['title']."]\n";
+    {   
+        // print_r($o); 
+        echo "\n[".$o['metadata']['title']."]\n";
+        print_r($o['metadata']['keywords']); echo "orig keywords\n";
         $extension = false;
         $resource_has_connectorYN = false;
         if($RI = @$o['metadata']['related_identifiers']) {
@@ -388,6 +391,7 @@ class ZenodoConnectorAPI
                 print_r(pathinfo($isSupplementTo_url));
                 $extension = pathinfo($isSupplementTo_url, PATHINFO_EXTENSION); //zip gz
 
+                if($extension == 'zip') echo "\nIt is a .zip file.\n";
                 // Array(
                 //     [dirname] => https://editors.eol.org/eol_php_code/applications/content_server/resources
                 //     [basename] => SC_niue.tar.gz
@@ -415,6 +419,20 @@ class ZenodoConnectorAPI
                 $o['metadata']['keywords'] = $keywords;
             }
         }
+
+        
+        if(stripos($o['metadata']['title'], 'Checklists 2019:') !== false) { //string is found
+            echo "\nRemove keyword: 'deprecated'\n";
+            $keywords = $o['metadata']['keywords'];
+            $keywords = self::add_to_keywords('geography', $keywords);
+            $keywords = self::remove_from_keywords('deprecated', $keywords);
+            $o['metadata']['keywords'] = $keywords;
+
+        }
+
+
+
+
         print_r($o['metadata']['keywords']);
         exit("\nstop muna: fill_in_Jen_changes()\n");
         return $o;
