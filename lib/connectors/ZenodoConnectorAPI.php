@@ -39,6 +39,7 @@ class ZenodoConnectorAPI
 
         // /* ---------- start: dev only
         $id = 13313293; //[13313293] [National Checklists: Turkmenistan]...
+        $id = 13316763; //National Checklists 2019: Niue
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -290,7 +291,7 @@ class ZenodoConnectorAPI
         $excluded_ids = array(13743941, 13751009);
         if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna\n");
 
         /* NEW Oct_6: to filter per tag requirement */
         /* batch 66 - 67
@@ -352,6 +353,71 @@ class ZenodoConnectorAPI
             }
             // */            
         }
+    }
+    private function get_identifier_of_isSupplementTo_from_RI($RI)
+    {   /*  [related_identifiers] => Array(
+        [0] => Array(
+                [identifier] => https://editors.eol.org/uploaded_resources/fa6/cc3/turkmenistan.zip
+                [relation] => isSupplementTo
+                [resource_type] => dataset
+                [scheme] => url
+            )
+        ) */
+        foreach($RI as $r) {
+            if($r['relation'] == 'isSupplementTo') return $r['identifier'];
+        }
+    }
+    private function add_to_keywords($new_kw, $keywords)
+    {
+        if(!in_array($new_kw, $keywords)) $keywords[] = $new_kw;
+        return $keywords;
+    }
+    private function remove_from_keywords($del_val, $keywords)
+    {
+        if (($key = array_search($del_val, $keywords)) !== false) {
+            unset($keywords[$key]);            
+        }
+        return $keywords;
+    }
+    private function fill_in_Jen_changes($o)
+    {   echo "\n[".$o['metadata']['title']."]\n";
+        $extension = false;
+        $resource_has_connectorYN = false;
+        if($RI = @$o['metadata']['related_identifiers']) {
+            if($isSupplementTo_url = self::get_identifier_of_isSupplementTo_from_RI($RI)) {
+                print_r(pathinfo($isSupplementTo_url));
+                $extension = pathinfo($isSupplementTo_url, PATHINFO_EXTENSION); //zip gz
+
+                // Array(
+                //     [dirname] => https://editors.eol.org/eol_php_code/applications/content_server/resources
+                //     [basename] => SC_niue.tar.gz
+                //     [extension] => gz
+                //     [filename] => SC_niue.tar
+                // )
+                if(stripos(pathinfo($isSupplementTo_url, PATHINFO_DIRNAME), 'editors.eol.org/eol_php_code/applications/content_server/resources') !== false) { //string is found
+                    if(stripos(pathinfo($isSupplementTo_url, PATHINFO_BASENAME), '.tar.gz') !== false) { //string is found
+                        echo "\nResource has a connector\n";
+                    }
+                }
+                
+
+            }
+        }
+        $creators = @$o['metadata']['creators'];
+        if(self::if_exists_in_creatorsORcontributors($creators, 'Anne Thessen', '')) {
+            echo "\ndito Anne Thessen...\n";
+            print_r($creators);
+            if($extension == 'zip') {
+                echo "\nAdd keyword: 'deprecated'\n";
+                $keywords = $o['metadata']['keywords'];
+                $keywords = self::add_to_keywords('deprecated', $keywords);
+                $keywords = self::remove_from_keywords('geography', $keywords);
+                $o['metadata']['keywords'] = $keywords;
+            }
+        }
+        print_r($o['metadata']['keywords']);
+        exit("\nstop muna: fill_in_Jen_changes()\n");
+        return $o;
     }
     private function fill_in_Katja_changes($o)
     {   //print_r($o); exit("\nstop muna 1\n");
@@ -496,11 +562,8 @@ class ZenodoConnectorAPI
         /* Keywords & subjects
         1. For all data sets with keyword "EOL Content Partners: National Checklists 2019" or "EOL Content Partners: Water Body Checklists 2019" add keyword "deprecated"
         2. Remove all keywords with the prefix "format:", e.g., "format: ZIP", "format: TAR", "format: XML", etc.        
-        [keywords] => Array(
-                    [0] => EOL Content Partners: National Checklists 2019
-                    [1] => format: Darwin Core Archive
-                )        
-        */
+        [keywords] => Array( [0] => EOL Content Partners: National Checklists 2019
+                             [1] => format: Darwin Core Archive )*/
         // #1
         if($keywords = @$o['metadata']['keywords']) {
             if(in_array('EOL Content Partners: National Checklists 2019', $keywords) || in_array('EOL Content Partners: Water Body Checklists 2019', $keywords)) {
@@ -624,7 +687,12 @@ class ZenodoConnectorAPI
     private function if_exists_in_creatorsORcontributors($arr, $name, $orcid)
     {
         foreach($arr as $r) {
-            if(@$r['orcid'] == $orcid || @$r['name'] == $name) return $r;
+            if($name) {
+                if(@$r['name'] == $name) return $r;
+            }
+            if($orcid) {
+                if(@$r['orcid'] == $orcid) return $r;
+            }
         }
         return false;
     }
