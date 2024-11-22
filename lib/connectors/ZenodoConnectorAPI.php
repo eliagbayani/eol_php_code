@@ -290,7 +290,7 @@ class ZenodoConnectorAPI
         $excluded_ids = array(13743941, 13751009);
         if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); //exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna\n");
 
         /* NEW Oct_6: to filter per tag requirement */
         /* batch 66 - 67
@@ -326,7 +326,7 @@ class ZenodoConnectorAPI
 
         if($this->if_error($edit_obj, 'edit_22Nov2024', $id)) {}
         else {
-            /* ran already
+            /* ran already - DONE
             $obj_latest = self::fill_in_Katja_changes($edit_obj);
             */
             $obj_latest = self::fill_in_Jen_changes($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
@@ -391,7 +391,7 @@ class ZenodoConnectorAPI
         // )
         // ------------------------------------ */ 
 
-        // /* ------------------ creators latest
+        // /* ------------------ START creators latest
         $final = array();
         foreach(@$o['metadata']['creators'] as $r) {
             if($r['name'] == 'script') $final[] = array('name' => 'Encyclopedia of Life', 'type' => 'HostingInstitution', 'affiliation' => ''); //orig
@@ -403,16 +403,14 @@ class ZenodoConnectorAPI
                 if($val = @$this->html_contributors[$name]['isni'])  $r['isni']  = "$val";      //no doc example, never worked    
                 if($val = @$this->html_contributors[$name]['ror'])   $r['ror']   = "$val";      //was never proven      
                 if($orcid = @$this->ORCIDs[$name]) $r['orcid'] = $orcid; //implement saved ORCIDs
-
-                // /* manual check: no choice until API catches us with site --> BUT all type of combinations didn't work; can't add a type e.g. DataManager
+                /* manual check: no choice until API catches us with site --> BUT all type of combinations didn't work; can't add a type e.g. DataManager
                     // [type] => DataManager
                     // [orcid] => 0000-0001-7134-3324 -> this is Schulz, Katja
                 // if($r['orcid'] == '0000-0001-7134-3324') {
                 //     $r['type']['role']['id'] = 'DataManager';
                 //     $r['role']['type']['id'] = 'DataManager';
                 // }
-                // */
-
+                */
                 $final[] = $r;
             }
         }
@@ -424,19 +422,19 @@ class ZenodoConnectorAPI
 
         $o['metadata']['creators'] = $final;
         echo "\nCreators to save:"; print_r($final);
-        // */
+        // ------------------ END creators latest */
         /*
         "creators": [{  "person_or_org": {"name": "Encyclopedia of Life", "type": "organizational"}, 
                         "role": {"id": "hostinginstitution", "title": {"de": "Bereitstellende Institution", "en": "Hosting institution"}}}]        
         */
 
-        // /* ------------------ contributors latest
+        // /* ------------------ START contributors latest
         $final = array();
         if($val = @$o['metadata']['contributors']) {
             foreach($val as $r) {
                 if(!@$r['name']) continue;
     
-                // if($r['name'] == 'Eli Agbayani') continue;
+                // if($r['name'] == 'Eli Agbayani') continue; //debug only
     
                 if($r['type'] == 'HostingInstitution' && $r['name'] == 'Anne Thessen')
                 {   /*
@@ -493,7 +491,7 @@ class ZenodoConnectorAPI
 
         $o['metadata']['contributors'] = $final; 
         echo "\nContributors to save:"; print_r($final);
-        // */
+        // ------------------ END contributors latest */
 
         /* Keywords & subjects
         1. For all data sets with keyword "EOL Content Partners: National Checklists 2019" or "EOL Content Partners: Water Body Checklists 2019" add keyword "deprecated"
@@ -706,7 +704,7 @@ class ZenodoConnectorAPI
 
         ); //this is needed for publishing a newly uploaded file.
 
-        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = str_replace("'", "__", $val); //impt. bec. metadata description must not be blank.
+        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = str_replace("'", "__", $val); //impt. bec. metadata description is never blank.
 
         // Resource type: Missing data for required field.
         // Creators: Missing data for required field.

@@ -34,7 +34,7 @@ $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
 // $q = "+title:FishBase";
 if($obj = $func->get_depositions_by_part_title($q)) {
-  print_r($obj); exit("\n-found-\n");
+  // print_r($obj); exit("\n-found-\n");
 }
 exit("\n-not found-\n");
 ----- */
