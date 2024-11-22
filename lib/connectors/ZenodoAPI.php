@@ -928,11 +928,6 @@ class ZenodoAPI extends ZenodoConnectorAPI
         } //end while()
         return $final;
     }
-
-    function get_deposition_by_title_allversions($title)
-    {
-
-    }
     function get_deposition_by_title($title, $allVersions = false)
     {   echo "\nallVersions: [$allVersions]\n";
         /* 1st option: not quite good        
