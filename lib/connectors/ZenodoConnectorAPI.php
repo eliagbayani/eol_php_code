@@ -364,7 +364,7 @@ class ZenodoConnectorAPI
             )
         ) */
         foreach($RI as $r) {
-            if($r['relation'] == 'isSupplementTo') return $r['identifier'];
+            if($r['relation'] == 'isSupplementTo') return $r['identifier']; //this is the url
         }
     }
     private function add_to_keywords($new_kw, $keywords)
@@ -379,19 +379,30 @@ class ZenodoConnectorAPI
         }
         return $keywords;
     }
-    private function fill_in_Jen_changes($o)
-    {   
-        // print_r($o); 
-        echo "\n[".$o['metadata']['title']."]\n";
+    private function is_one_of_Annes_checklists($title)
+    {
+        if(stripos($title, 'national checklists:') !== false) return true; //string is found
+        if(stripos($title, 'water body checklists:') !== false) return true; //string is found
+        return false;
+    }
+    private function is_one_of_Annes_post_checklists($title)
+    {
+        if(stripos($title, 'national checklists 2019:') !== false) return true; //string is found
+        if(stripos($title, 'water body checklists 2019:') !== false) return true; //string is found
+        return false;
+    }
+    private function fill_in_Jen_changes($o) //deprecated tasks
+    {   // print_r($o);
+        $title = $o['metadata']['title'];
+        echo "\n[".$title."]\n";
         print_r($o['metadata']['keywords']); echo "orig keywords\n";
+        $isSupplementTo_url = '';
         $extension = false;
         $resource_has_connectorYN = false;
         if($RI = @$o['metadata']['related_identifiers']) {
             if($isSupplementTo_url = self::get_identifier_of_isSupplementTo_from_RI($RI)) {
                 print_r(pathinfo($isSupplementTo_url));
                 $extension = pathinfo($isSupplementTo_url, PATHINFO_EXTENSION); //zip gz
-
-                if($extension == 'zip') echo "\nIt is a .zip file.\n";
                 // Array(
                 //     [dirname] => https://editors.eol.org/eol_php_code/applications/content_server/resources
                 //     [basename] => SC_niue.tar.gz
@@ -400,38 +411,34 @@ class ZenodoConnectorAPI
                 // )
                 if(stripos(pathinfo($isSupplementTo_url, PATHINFO_DIRNAME), 'editors.eol.org/eol_php_code/applications/content_server/resources') !== false) { //string is found
                     if(stripos(pathinfo($isSupplementTo_url, PATHINFO_BASENAME), '.tar.gz') !== false) { //string is found
-                        echo "\nResource has a connector\n";
+                        $resource_has_connectorYN = true;
+                        echo "\nResource has a connector, add Eli as DataManager.\n";
                     }
                 }
-                
-
             }
         }
         $creators = @$o['metadata']['creators'];
         if(self::if_exists_in_creatorsORcontributors($creators, 'Anne Thessen', '')) {
-            echo "\ndito Anne Thessen...\n";
+            echo "\nAnne Thessen is a creator...\n";
             print_r($creators);
-            if($extension == 'zip') {
-                echo "\nAdd keyword: 'deprecated'\n";
+            if($extension == 'zip' && self::is_one_of_Annes_checklists($title)) {
+                echo "\nIt is a .zip file.\n"; echo "\nAdd keyword: 'deprecated'\n";
                 $keywords = $o['metadata']['keywords'];
                 $keywords = self::add_to_keywords('deprecated', $keywords);
                 $keywords = self::remove_from_keywords('geography', $keywords);
                 $o['metadata']['keywords'] = $keywords;
             }
         }
-
         
-        if(stripos($o['metadata']['title'], 'Checklists 2019:') !== false) { //string is found
-            echo "\nRemove keyword: 'deprecated'\n";
-            $keywords = $o['metadata']['keywords'];
-            $keywords = self::add_to_keywords('geography', $keywords);
-            $keywords = self::remove_from_keywords('deprecated', $keywords);
-            $o['metadata']['keywords'] = $keywords;
-
+        if(self::is_one_of_Annes_post_checklists($title)) { echo "\nis_one_of_Annes_post_checklists\n";
+            if(stripos(pathinfo($isSupplementTo_url, PATHINFO_BASENAME), '.tar.gz') !== false) { //string is found
+                echo "\nIt is .tar.gz\n"; echo "\nRemove keyword: 'deprecated'\n";
+                $keywords = $o['metadata']['keywords'];
+                $keywords = self::add_to_keywords('geography', $keywords);
+                $keywords = self::remove_from_keywords('deprecated', $keywords);
+                $o['metadata']['keywords'] = $keywords;    
+            }
         }
-
-
-
 
         print_r($o['metadata']['keywords']);
         exit("\nstop muna: fill_in_Jen_changes()\n");
