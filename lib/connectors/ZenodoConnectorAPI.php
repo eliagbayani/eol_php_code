@@ -436,7 +436,7 @@ class ZenodoConnectorAPI
                 $keywords = $o['metadata']['keywords'];
                 $keywords = self::add_to_keywords('geography', $keywords);
                 $keywords = self::remove_from_keywords('deprecated', $keywords);
-                $o['metadata']['keywords'] = $keywords;    
+                $o['metadata']['keywords'] = $keywords;
             }
         }
 
