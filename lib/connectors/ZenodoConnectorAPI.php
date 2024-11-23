@@ -38,8 +38,9 @@ class ZenodoConnectorAPI
         ---------- end: normal */
 
         // /* ---------- start: dev only
-        $id = 13313293; //[13313293] [National Checklists: Turkmenistan]...
+        $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13316763; //National Checklists 2019: Niue
+        // $id = 13761108; //FishBase
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -79,7 +80,7 @@ class ZenodoConnectorAPI
                 }
             }
         }
-        // print_r($final); 
+        // print_r($final); exit;
         echo "\nTotal Published records: ".count($final)."\n"; //exit;
 
         /* ---------- start: normal
@@ -105,16 +106,27 @@ class ZenodoConnectorAPI
         ---------- end: normal */
 
         // /* ---------- start: dev only
-        $id = 13761108; //FishBase $id = 13933415; //AntWeb $id = 13321654; //Zoosystematics and Evolution
-        $id = 13320903; //Insect Wings - unchanged  $id = 13320567; //unchanged  $id = 13321623; //unchanged
-        $id = 13320563; //Saproxylic Organisms
-        $id = 13886436; //with ROR and ISNI: USDA NRCS PLANTS Database: USDA PLANTS images DwCA | isSourceOf = https://eol.org/resources/469
-        $id = 13318018; //ver 1 of 13886436
+        $id = 13761108; //FishBase $id = 13761108; //AntWeb $id = 13933415; //Zoosystematics and Evolution
+        // $id = 13320903; //Insect Wings - unchanged  $id = 13320567; //unchanged  $id = 13321623; //unchanged
+        // $id = 13320563; //Saproxylic Organisms
+        // $id = 13886436; //with ROR and ISNI: USDA NRCS PLANTS Database: USDA PLANTS images DwCA | isSourceOf = https://eol.org/resources/469
+        // $id = 13318018; //ver 1 of 13886436
+        // $id = 13313293;
+        $id = 13309886; //old FishBase
+        $id = 13761108; //latest FishBase
+
         if($url = @$final[$id]) {
             $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
             self::update_zenodo_record_of_latest_requested_changes($id);
         }
-        else echo "\nTest record didn't proceed!\n".count($final)."\n";
+        else {
+            echo "\nTest record didn't proceed!\n".count($final)."\n";
+            $this->record_in_question = array();
+            self::update_zenodo_record_of_latest_requested_changes($id);
+        }
+
+
+
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
 
@@ -439,9 +451,8 @@ class ZenodoConnectorAPI
                 $o['metadata']['keywords'] = $keywords;
             }
         }
-
-        print_r($o['metadata']['keywords']);
-        exit("\nstop muna: fill_in_Jen_changes()\n");
+        echo "\nkeywords to save: "; print_r($o['metadata']['keywords']);
+        // exit("\nstop muna: fill_in_Jen_changes()\n");
         return $o;
     }
     private function fill_in_Katja_changes($o)
@@ -767,7 +778,7 @@ class ZenodoConnectorAPI
             foreach($RI as $r) {
                 if($r['identifier'] == @$sought['identifier'] && $r['relation'] == @$sought['relation']) $add_isSourceOf_YN = false;
             }
-            if($add_isSourceOf_YN) { $RI[] = $sought; echo "\nisSourceOf is added.\n"; print_r($RI); }
+            if($add_isSourceOf_YN && $sought) { $RI[] = $sought; echo "\nisSourceOf is added.\n"; print_r($RI); }
             else echo "\nisSourceOf was not added. Already exists.\n";
         }
         else $RI = array();
@@ -810,11 +821,11 @@ class ZenodoConnectorAPI
         // $cmd = 'curl -s -H "Content-Type: application/json" -X PUT --data '."'$json'".' '.$links_edit.'?access_token='.ZENODO_TOKEN;
         
         // $cmd .= " 2>&1";
-        // echo "\n$cmd\n";
+        echo "\n$cmd\n";
         $json = shell_exec($cmd);           //echo "\n$json\n";
         $obj = json_decode(trim($json), true);    
         echo "\n----------update pubdate latest----------\n"; 
-        if($this->show_print_r) print_r($obj); 
+        if($this->show_print_r) print_r($obj);
         echo "\n----------update pubdate latest end----------\n";
         return $obj;
     }
