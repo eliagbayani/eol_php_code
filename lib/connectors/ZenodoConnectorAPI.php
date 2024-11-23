@@ -40,7 +40,7 @@ class ZenodoConnectorAPI
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13316763; //National Checklists 2019: Niue
-        // $id = 13761108; //FishBase
+        $id = 13761108; // new FishBase
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -405,6 +405,7 @@ class ZenodoConnectorAPI
     }
     private function fill_in_Jen_changes($o) //deprecated tasks
     {   // print_r($o);
+        $contributors = @$o['metadata']['contributors'];
         $title = $o['metadata']['title'];
         echo "\n[".$title."]\n";
         print_r($o['metadata']['keywords']); echo "orig keywords\n";
@@ -425,6 +426,10 @@ class ZenodoConnectorAPI
                     if(stripos(pathinfo($isSupplementTo_url, PATHINFO_BASENAME), '.tar.gz') !== false) { //string is found
                         $resource_has_connectorYN = true;
                         echo "\nResource has a connector, add Eli as DataManager.\n";
+
+                        if(!self::if_exists_in_creatorsORcontributors($contributors, 'Eli Agbayani', @$this->ORCIDs['Eli Agbayani'])) {
+                            $contributors[] = array('name' => 'Eli Agbayani', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => @$this->ORCIDs['Eli Agbayani']);
+                        }        
                     }
                 }
             }
@@ -452,7 +457,11 @@ class ZenodoConnectorAPI
             }
         }
         echo "\nkeywords to save: "; print_r($o['metadata']['keywords']);
-        // exit("\nstop muna: fill_in_Jen_changes()\n");
+
+        $o['metadata']['contributors'] = $contributors;
+        echo "\ncontributors to save: "; print_r($o['metadata']['contributors']);
+
+        exit("\nstop muna tayo...\n");
         return $o;
     }
     private function fill_in_Katja_changes($o)
@@ -1464,7 +1473,7 @@ class ZenodoConnectorAPI
     private function is_name_in_Contributors($name, $contributors)
     {
         foreach($contributors as $r) {
-            if($r['name'] == 'Eli Agbayani') return true;
+            if($r['name'] == $name) return true;
         }
         return false;
     }
