@@ -8,11 +8,21 @@ class ZenodoConnectorAPI
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     function jen_Deprecated_Works()
     {
-        $this->log_error(array("==================== Log starts here ====================Deprecated tasks"));
+        $this->log_error(array("==================== Log starts here ==================== Deprecated tasks"));
 
-        /* ---------- start: for Related Works - iSourceOf relationship
-        self::build_EOL_resourceID_and_Zenodo_ID_info(); //exit("\nstop3\n");
-        ---------- end: */
+        $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
+        // $q = "+title:FishBase";
+        // $q = "related.relation:isSourceOf";
+        // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
+        if($objs = $this->get_depositions_by_part_title($q)) { echo "\n-".count($objs)." found-\n"; //print_r($objs[0]);
+            $i = 0;
+            foreach($objs as $o) { $i++;
+                echo "\n$i. ".$o['id']."\n";
+            }
+
+        } //end if($objs)
+        exit("\n- end Deprecated tasks -\n");
+
 
         // /* start: main operation
         /* ---------- start: normal
@@ -40,7 +50,8 @@ class ZenodoConnectorAPI
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13316763; //National Checklists 2019: Niue
-        $id = 13761108; // new FishBase
+        // $id = 13761108; // new FishBase
+        $id = 13312899;
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -408,13 +419,13 @@ class ZenodoConnectorAPI
         $contributors = @$o['metadata']['contributors'];
         $title = $o['metadata']['title'];
         echo "\n[".$title."]\n";
-        print_r($o['metadata']['keywords']); echo "orig keywords\n";
+        print_r($o['metadata']['keywords']); echo "orig keywords\n"; print_r($o['metadata']['contributors']); echo "orig contributors\n";
         $isSupplementTo_url = '';
         $extension = false;
         $resource_has_connectorYN = false;
         if($RI = @$o['metadata']['related_identifiers']) {
             if($isSupplementTo_url = self::get_identifier_of_isSupplementTo_from_RI($RI)) {
-                print_r(pathinfo($isSupplementTo_url));
+                // print_r(pathinfo($isSupplementTo_url));
                 $extension = pathinfo($isSupplementTo_url, PATHINFO_EXTENSION); //zip gz
                 // Array(
                 //     [dirname] => https://editors.eol.org/eol_php_code/applications/content_server/resources
@@ -461,7 +472,7 @@ class ZenodoConnectorAPI
         $o['metadata']['contributors'] = $contributors;
         echo "\ncontributors to save: "; print_r($o['metadata']['contributors']);
 
-        exit("\nstop muna tayo...\n");
+        // exit("\nstop muna tayo...\n");
         return $o;
     }
     private function fill_in_Katja_changes($o)
@@ -830,7 +841,7 @@ class ZenodoConnectorAPI
         // $cmd = 'curl -s -H "Content-Type: application/json" -X PUT --data '."'$json'".' '.$links_edit.'?access_token='.ZENODO_TOKEN;
         
         // $cmd .= " 2>&1";
-        echo "\n$cmd\n";
+        // echo "\n$cmd\n";
         $json = shell_exec($cmd);           //echo "\n$json\n";
         $obj = json_decode(trim($json), true);    
         echo "\n----------update pubdate latest----------\n"; 

@@ -24,18 +24,19 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 
 $func = new ZenodoAPI();
 $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
+
+/* all these four (4) done already:
 // $func->jen_Related_Works(); //one-time only | DONE Oct 27, 2024
 // $func->latest_katja_changes_2(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
 // $func->latest_katja_changes(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2364296684
-
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
+*/
 
 /* -------------------------------------------------------------------------------------------- very good query results
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
 // $q = "+title:FishBase";
-$q = "related.relation:isSourceOf";
-$q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
-
+// $q = "related.relation:isSourceOf";
+// $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
 if($obj = $func->get_depositions_by_part_title($q)) {
   // print_r($obj); exit("\n-found-\n");
 }
