@@ -421,7 +421,6 @@ class ZenodoConnectorAPI
                     if(stripos(pathinfo($isSupplementTo_url, PATHINFO_BASENAME), '.tar.gz') !== false) { //string is found
                         $resource_has_connectorYN = true;
                         echo "\nResource has a connector, add Eli as DataManager.\n";
-
                         if(!self::if_exists_in_creatorsORcontributors($contributors, 'Eli Agbayani', @$this->ORCIDs['Eli Agbayani'])) {
                             $contributors[] = array('name' => 'Eli Agbayani', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => @$this->ORCIDs['Eli Agbayani']);
                         }        

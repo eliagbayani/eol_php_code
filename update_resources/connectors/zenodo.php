@@ -23,7 +23,7 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // exit("\n".urldecode($str)."\n");
 
 $func = new ZenodoAPI();
-$func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
+// $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
 
 /* all these four (4) done already:
 // $func->jen_Related_Works(); //one-time only | DONE Oct 27, 2024
@@ -36,12 +36,17 @@ $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
 $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
 
-$q = "+title:national +title:checklists +title:2019"; //works splendidly - OK!
+$q = "-title:checklists -title:2019 +related.relation:issupplementto"; //works splendidly - OK!
 
 
 // $q = "+title:FishBase";
 // $q = "related.relation:isSourceOf";
+// $q = "+related.relation:issourceof +keywords:deprecated -title:2019"; //very accurate query - OK!
 // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
+
+// $q = "+related.relation:issupplementto"; //very accurate query - OK!
+
+
 if($obj = $func->get_depositions_by_part_title($q)) {
   // print_r($obj); exit("\n-found-\n");
 }
