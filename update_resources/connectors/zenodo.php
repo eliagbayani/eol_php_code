@@ -41,21 +41,12 @@ print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
 // /* -------------------------------------------------------------------------------------------- very good query results
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
 $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
-
-$q = "+title:checklists +title:2019"; //set 'geography' remove 'deprecated'
-
-
-$q = "+title:FishBase";
-$q = "+title:(National Checklists: Democratic Republic of the Congo Species List)";
-
-
-
+$q = "+title:checklists +title:2019"; //set 'geography', remove 'deprecated', add isDerivedFrom
+// $q = "+title:FishBase";
 // $q = "related.relation:isSourceOf";
 // $q = "+related.relation:issourceof +keywords:deprecated -title:2019"; //very accurate query - OK!
 // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
-
 // $q = "+related.relation:issupplementto"; //very accurate query - OK!
-
 
 if($obj = $func->get_depositions_by_part_title($q)) {
   // print_r($obj); exit("\n-found-\n");

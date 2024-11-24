@@ -10,10 +10,11 @@ class ZenodoConnectorAPI
     {
         $this->log_error(array("==================== Log starts here ==================== Deprecated tasks"));
 
-        /* ---------- start: normal
+        // /* ---------- start: normal
         $q = "+title:national +title:checklists -title:2019 -title:water";      //works splendidly - OK!
         $q = "-title:national +title:checklists -title:2019 title:water";       //works splendidly - OK!
-        $q = "-title:checklists -title:2019 +related.relation:issupplementto";  //put Eli as DataManager - [51] 9. [13321765] [TaiEOL: Dragonflies of Taiwan - XML]...
+        $q = "-title:checklists -title:2019 +related.relation:issupplementto";  //RUNNING... put Eli as DataManager - [51] 9. [13321765] [TaiEOL: Dragonflies of Taiwan - XML]...
+        $q = "+title:checklists +title:2019";                                   //NEXT IN LINE: set 'geography', remove 'deprecated', add isDerivedFrom
         // $q = "+title:FishBase";
         // $q = "related.relation:isSourceOf";
         // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
@@ -31,12 +32,12 @@ class ZenodoConnectorAPI
             }
         } //end if($objs)
         exit("\n- end Deprecated tasks -\n");
-        ---------- end: normal */
+        // ---------- end: normal */
 
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13761108; // new FishBase
-        $id = 13317402;
+        $id = 13319783;
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
