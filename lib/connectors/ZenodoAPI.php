@@ -923,7 +923,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 echo "\n- [$page_num] $i. [$id] [$result_title]...";
                 $final[] = $o;
             }
-            // return; //debug only
+            // return $final; //debug only, return the first 25 records only
             // if($page_num >= 3) return; //debug only
         } //end while()
         return $final;

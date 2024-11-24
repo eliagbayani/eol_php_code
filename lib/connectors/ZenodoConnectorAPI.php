@@ -10,53 +10,37 @@ class ZenodoConnectorAPI
     {
         $this->log_error(array("==================== Log starts here ==================== Deprecated tasks"));
 
+        /* ---------- start: normal
         $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
+        $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
         // $q = "+title:FishBase";
         // $q = "related.relation:isSourceOf";
         // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
-        if($objs = $this->get_depositions_by_part_title($q)) { echo "\n-".count($objs)." found-\n"; //print_r($objs[0]);
-            $i = 0;
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]);
+            $i = 0; $total = count($objs);
             foreach($objs as $o) { $i++;
-                echo "\n$i. ".$o['id']."\n";
+                // do batches
+                // if($i < 26) continue;
+                // elseif($i >= 26 && $i <= 250) {}
+                // elseif($i > 250) break;
+                // else continue;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
+                // break; //debug only, run 1 only
             }
-
         } //end if($objs)
         exit("\n- end Deprecated tasks -\n");
-
-
-        // /* start: main operation
-        /* ---------- start: normal
-        $i = 0; $hits = 0;
-        foreach($final as $zenodo_id => $url) { $i++;
-            echo "\nprocessing $i ... [$zenodo_id]\n";
-
-            // do batches
-            if($i < 707) continue;
-            elseif($i >= 707 && $i <= 962) {}
-            elseif($i > 962) break;
-            else continue;
-
-            // echo "\nprocessing $i ... [$zenodo_id]\n"; exit; //debug only
-            if($zenodo_id && $url) { $hits++; sleep(2);
-                $this->record_in_question = array('identifier' => $url, 'relation' => 'isSourceOf', 'resource_type' => 'dataset', 'scheme' => 'url');
-                self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
-                // break; //debug only - run only the 1st hit
-                // if($hits >= 2) break; //debug only
-            }
-        }
-        exit("\n- end Related Works -\n");
         ---------- end: normal */
 
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13316763; //National Checklists 2019: Niue
         // $id = 13761108; // new FishBase
-        $id = 13312899;
+        $id = 13317155; //13317840;
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
 
-        // ----- end: main operation */
     }
     function jen_Related_Works()
     {
@@ -353,7 +337,7 @@ class ZenodoConnectorAPI
             /* ran already - DONE
             $obj_latest = self::fill_in_Katja_changes($edit_obj);
             */
-            $obj_latest = self::fill_in_Jen_changes($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
+            $obj_latest = self::fill_in_Jen_deprecated_tasks($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
             if($obj_latest) self::update_then_publish($id, $obj_latest);
         }
     }
@@ -414,7 +398,7 @@ class ZenodoConnectorAPI
         if(stripos($title, 'water body checklists 2019:') !== false) return true; //string is found
         return false;
     }
-    private function fill_in_Jen_changes($o) //deprecated tasks
+    private function fill_in_Jen_deprecated_tasks($o) //deprecated tasks
     {   // print_r($o);
         $contributors = @$o['metadata']['contributors'];
         $title = $o['metadata']['title'];
@@ -466,6 +450,11 @@ class ZenodoConnectorAPI
                 $keywords = self::remove_from_keywords('deprecated', $keywords);
                 $o['metadata']['keywords'] = $keywords;
             }
+            // /* waiting for Jen's reply
+            if(!self::if_exists_in_creatorsORcontributors($contributors, 'Anne Thessen', false)) {
+                $contributors[] = array('name' => 'Anne Thessen', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => '');
+            }
+            // */
         }
         echo "\nkeywords to save: "; print_r($o['metadata']['keywords']);
 
