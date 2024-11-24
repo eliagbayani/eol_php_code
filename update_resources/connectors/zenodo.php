@@ -32,14 +32,24 @@ $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 */
 
+/*
+$title = "National Checklists: Democratic Republic of the Congo Species List";
+$obj = $func->get_deposition_by_title($title);
+print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
+*/
+
 // /* -------------------------------------------------------------------------------------------- very good query results
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
 $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
 
-$q = "-title:checklists -title:2019 +related.relation:issupplementto"; //works splendidly - OK!
+$q = "+title:checklists +title:2019"; //set 'geography' remove 'deprecated'
 
 
-// $q = "+title:FishBase";
+$q = "+title:FishBase";
+$q = "+title:(National Checklists: Democratic Republic of the Congo Species List)";
+
+
+
 // $q = "related.relation:isSourceOf";
 // $q = "+related.relation:issourceof +keywords:deprecated -title:2019"; //very accurate query - OK!
 // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!

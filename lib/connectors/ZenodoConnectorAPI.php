@@ -10,10 +10,10 @@ class ZenodoConnectorAPI
     {
         $this->log_error(array("==================== Log starts here ==================== Deprecated tasks"));
 
-        // /* ---------- start: normal
+        /* ---------- start: normal
         $q = "+title:national +title:checklists -title:2019 -title:water";      //works splendidly - OK!
         $q = "-title:national +title:checklists -title:2019 title:water";       //works splendidly - OK!
-        $q = "-title:checklists -title:2019 +related.relation:issupplementto";  //works splendidly - OK! - [51] 9. [13321765] [TaiEOL: Dragonflies of Taiwan - XML]...
+        $q = "-title:checklists -title:2019 +related.relation:issupplementto";  //put Eli as DataManager - [51] 9. [13321765] [TaiEOL: Dragonflies of Taiwan - XML]...
         // $q = "+title:FishBase";
         // $q = "related.relation:isSourceOf";
         // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
@@ -31,12 +31,12 @@ class ZenodoConnectorAPI
             }
         } //end if($objs)
         exit("\n- end Deprecated tasks -\n");
-        // ---------- end: normal */
+        ---------- end: normal */
 
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13761108; // new FishBase
-        $id = 13318142;
+        $id = 13317402;
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -419,6 +419,14 @@ class ZenodoConnectorAPI
         }
         return $final;
     }
+    private function add_to_RelatedIdentifiers($RI, $arr)
+    {
+        foreach($RI as $r) {
+            if($r['relation'] == $arr['relation']) return $RI; //if exists already the same relation, then don't add it anymore.
+        }
+        $RI[] = $arr;
+        return $RI;
+    }
     private function fill_in_Jen_deprecated_tasks($o) //deprecated tasks
     {   // print_r($o);
         $contributors = @$o['metadata']['contributors'];
@@ -486,18 +494,33 @@ class ZenodoConnectorAPI
                 $keywords = self::remove_from_keywords('deprecated', $keywords);
                 $o['metadata']['keywords'] = $keywords;
             }
-            // /* waiting for Jen's reply
+            /* waiting for Jen's reply
             if(!self::if_exists_in_creatorsORcontributors($contributors, 'Anne Thessen', false)) {
                 $contributors[] = array('name' => 'Anne Thessen', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => '');
             }
+            */
+            // /* Jen already replied. Better to implement isDerivedFrom instead of adding 'Anne Thessen' as contributor DataManager.
+            $derived_from_title = str_ireplace("Checklists 2019:", "Checklists:", $title);
+            if($derived_from_obj = $this->get_deposition_by_title($derived_from_title)) {
+                echo "\n[".$derived_from_obj['links']['html']."]\n"; //exit("\n-end test-\n");
+                $RI = self::add_to_RelatedIdentifiers($RI, array('identifier' => $derived_from_obj['links']['html'], 'relation' => 'isDerivedFrom', 'resource_type' => 'dataset', 'scheme' => 'url'));
+                $o['metadata']['related_identifiers'] = $RI;    
+            }
             // */
+            /*[related_identifiers] => Array(
+                [0] => Array(
+                        [identifier] => https://editors.eol.org/eol_php_code/applications/content_server/resources/42_meta_recoded.tar.gz
+                        [relation] => isSupplementTo
+                        [resource_type] => dataset
+                        [scheme] => url
+                    )
+            )*/
         }
         echo "\nkeywords to save: "; print_r(@$o['metadata']['keywords']);
-
         $o['metadata']['contributors'] = $contributors;
         echo "\ncontributors to save: "; print_r($o['metadata']['contributors']);
-
-        // exit("\nstop muna tayo...\n");
+        echo "\nrelated_identifiers to save: "; print_r($o['metadata']['related_identifiers']);
+        // exit("\nstop muna tayo...\n"); $RI
         return $o;
     }
     private function fill_in_Katja_changes($o)
