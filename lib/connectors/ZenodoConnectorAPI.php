@@ -10,9 +10,10 @@ class ZenodoConnectorAPI
     {
         $this->log_error(array("==================== Log starts here ==================== Deprecated tasks"));
 
-        /* ---------- start: normal
-        $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
-        $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
+        // /* ---------- start: normal
+        $q = "+title:national +title:checklists -title:2019 -title:water";      //works splendidly - OK!
+        $q = "-title:national +title:checklists -title:2019 title:water";       //works splendidly - OK!
+        $q = "-title:checklists -title:2019 +related.relation:issupplementto";  //works splendidly - OK! - [51] 9. [13321765] [TaiEOL: Dragonflies of Taiwan - XML]...
         // $q = "+title:FishBase";
         // $q = "related.relation:isSourceOf";
         // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
@@ -30,13 +31,12 @@ class ZenodoConnectorAPI
             }
         } //end if($objs)
         exit("\n- end Deprecated tasks -\n");
-        ---------- end: normal */
+        // ---------- end: normal */
 
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
-        // $id = 13316763; //National Checklists 2019: Niue
         // $id = 13761108; // new FishBase
-        $id = 13317155; //13317840;
+        $id = 13313933;
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -401,9 +401,10 @@ class ZenodoConnectorAPI
     private function fill_in_Jen_deprecated_tasks($o) //deprecated tasks
     {   // print_r($o);
         $contributors = @$o['metadata']['contributors'];
+        if(!$contributors) $contributors = array();
         $title = $o['metadata']['title'];
         echo "\n[".$title."]\n";
-        print_r($o['metadata']['keywords']); echo "orig keywords\n"; print_r($o['metadata']['contributors']); echo "orig contributors\n";
+        print_r(@$o['metadata']['keywords']); echo "orig keywords\n"; print_r(@$o['metadata']['contributors']); echo "orig contributors\n";
         $isSupplementTo_url = '';
         $extension = false;
         $resource_has_connectorYN = false;
@@ -429,6 +430,8 @@ class ZenodoConnectorAPI
             }
         }
         $creators = @$o['metadata']['creators'];
+        if(!$creators) $creators = array();
+
         if(self::if_exists_in_creatorsORcontributors($creators, 'Anne Thessen', '')) {
             echo "\nAnne Thessen is a creator...\n";
             print_r($creators);
@@ -455,7 +458,7 @@ class ZenodoConnectorAPI
             }
             // */
         }
-        echo "\nkeywords to save: "; print_r($o['metadata']['keywords']);
+        echo "\nkeywords to save: "; print_r(@$o['metadata']['keywords']);
 
         $o['metadata']['contributors'] = $contributors;
         echo "\ncontributors to save: "; print_r($o['metadata']['contributors']);

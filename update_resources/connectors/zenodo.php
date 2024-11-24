@@ -23,7 +23,7 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // exit("\n".urldecode($str)."\n");
 
 $func = new ZenodoAPI();
-// $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
+$func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
 
 /* all these four (4) done already:
 // $func->jen_Related_Works(); //one-time only | DONE Oct 27, 2024
