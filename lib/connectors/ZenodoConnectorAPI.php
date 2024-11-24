@@ -36,7 +36,7 @@ class ZenodoConnectorAPI
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13761108; // new FishBase
-        $id = 13320933;
+        $id = 13318142;
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -428,11 +428,10 @@ class ZenodoConnectorAPI
         print_r(@$o['metadata']['keywords']); echo "orig keywords\n"; print_r(@$o['metadata']['contributors']); echo "orig contributors\n";
         $isSupplementTo_url = '';
         $extension = false;
-        $resource_has_connectorYN = false;
         if($RI = @$o['metadata']['related_identifiers']) {
             if($isSupplementTo_url = self::get_identifier_of_isSupplementTo_from_RI($RI)) {
                 // print_r(pathinfo($isSupplementTo_url));
-                $extension = pathinfo($isSupplementTo_url, PATHINFO_EXTENSION); //zip gz
+                $extension = pathinfo($isSupplementTo_url, PATHINFO_EXTENSION); //zip OR gz
                 // Array(
                 //     [dirname] => https://editors.eol.org/eol_php_code/applications/content_server/resources
                                  // https://editors.eol.org/eol_php_code/applications/content_server/resources/Trait_Data_Import/1688052519.tar.gz  
@@ -445,8 +444,16 @@ class ZenodoConnectorAPI
                         if(stripos(pathinfo($isSupplementTo_url, PATHINFO_DIRNAME), 'Trait_Data_Import') !== false) { //string is found
                             $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
                         }
+                        elseif(stripos($title, 'LifeDesk') !== false) { //string is found
+                            $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
+                        }
+                        elseif(self::if_exists_in_creatorsORcontributors($contributors, 'Jennifer Hammock', @$this->ORCIDs['Jennifer Hammock'])) {
+                            $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
+                        }
+                        elseif(self::if_exists_in_creatorsORcontributors($contributors, 'Katja Schulz', @$this->ORCIDs['Katja Schulz'])) {
+                            $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
+                        }
                         else {
-                            $resource_has_connectorYN = true;
                             echo "\nResource has a connector, add Eli as DataManager.\n";
                             if(!self::if_exists_in_creatorsORcontributors($contributors, 'Eli Agbayani', @$this->ORCIDs['Eli Agbayani'])) {
                                 $contributors[] = array('name' => 'Eli Agbayani', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => @$this->ORCIDs['Eli Agbayani']);

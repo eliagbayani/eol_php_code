@@ -125,8 +125,8 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->ORCIDs['Jen Hammock'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
         $this->ORCIDs['Hammock, Jennifer'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
         $this->ORCIDs['Jennifer Hammock'] = '0000-0002-9943-2342'; //https://orcid.org/0000-0002-9943-2342
-        $this->ORCIDs['Schulz, Katja'] = ''; //https://orcid.org/0000-0001-7134-3324
-        $this->ORCIDs['Katja Schulz'] = ''; //https://orcid.org/0000-0001-7134-3324
+        $this->ORCIDs['Schulz, Katja'] = '0000-0001-7134-3324'; //https://orcid.org/0000-0001-7134-3324
+        $this->ORCIDs['Katja Schulz'] = '0000-0001-7134-3324'; //https://orcid.org/0000-0001-7134-3324
 
         $this->github_EOL_resource_id_and_Zenodo_id_file = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv';
     }
