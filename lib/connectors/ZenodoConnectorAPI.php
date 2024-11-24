@@ -36,7 +36,7 @@ class ZenodoConnectorAPI
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13761108; // new FishBase
-        $id = 13313933;
+        $id = 13320933;
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -398,6 +398,27 @@ class ZenodoConnectorAPI
         if(stripos($title, 'water body checklists 2019:') !== false) return true; //string is found
         return false;
     }
+    private function remove_from_contributors($sought_name, $contributors)
+    {   /*Array(
+            [0] => Array(
+                    [name] => Schulz, Katja
+                    [affiliation] => National Museum of Natural History, Smithsonian Institution
+                    [type] => DataManager
+                    [orcid] => 0000-0001-7134-3324
+                )
+            [1] => Array(
+                    [name] => Eli Agbayani
+                    [type] => DataManager
+                    [affiliation] => Encyclopedia of Life
+                    [orcid] => 0009-0007-6825-9034
+                )
+        )*/
+        $final = array();
+        foreach($contributors as $c) {
+            if($c['name'] != $sought_name) $final[] = $c;
+        }
+        return $final;
+    }
     private function fill_in_Jen_deprecated_tasks($o) //deprecated tasks
     {   // print_r($o);
         $contributors = @$o['metadata']['contributors'];
@@ -414,17 +435,23 @@ class ZenodoConnectorAPI
                 $extension = pathinfo($isSupplementTo_url, PATHINFO_EXTENSION); //zip gz
                 // Array(
                 //     [dirname] => https://editors.eol.org/eol_php_code/applications/content_server/resources
+                                 // https://editors.eol.org/eol_php_code/applications/content_server/resources/Trait_Data_Import/1688052519.tar.gz  
                 //     [basename] => SC_niue.tar.gz
                 //     [extension] => gz
                 //     [filename] => SC_niue.tar
                 // )
                 if(stripos(pathinfo($isSupplementTo_url, PATHINFO_DIRNAME), 'editors.eol.org/eol_php_code/applications/content_server/resources') !== false) { //string is found
                     if(stripos(pathinfo($isSupplementTo_url, PATHINFO_BASENAME), '.tar.gz') !== false) { //string is found
-                        $resource_has_connectorYN = true;
-                        echo "\nResource has a connector, add Eli as DataManager.\n";
-                        if(!self::if_exists_in_creatorsORcontributors($contributors, 'Eli Agbayani', @$this->ORCIDs['Eli Agbayani'])) {
-                            $contributors[] = array('name' => 'Eli Agbayani', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => @$this->ORCIDs['Eli Agbayani']);
-                        }        
+                        if(stripos(pathinfo($isSupplementTo_url, PATHINFO_DIRNAME), 'Trait_Data_Import') !== false) { //string is found
+                            $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
+                        }
+                        else {
+                            $resource_has_connectorYN = true;
+                            echo "\nResource has a connector, add Eli as DataManager.\n";
+                            if(!self::if_exists_in_creatorsORcontributors($contributors, 'Eli Agbayani', @$this->ORCIDs['Eli Agbayani'])) {
+                                $contributors[] = array('name' => 'Eli Agbayani', 'type' => 'DataManager', 'affiliation' => 'Encyclopedia of Life', 'orcid' => @$this->ORCIDs['Eli Agbayani']);
+                            }            
+                        }
                     }
                 }
             }
