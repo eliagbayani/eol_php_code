@@ -36,6 +36,7 @@ $func = new ZenodoAPI();
 $title = "National Checklists: Democratic Republic of the Congo Species List";
 $title = "Water Body Checklists: Ceram Sea Species List";
 $title = "Water Body Checklists 2019: Timor Sea Species List";
+$title = "Water Body Checklists 2019: Aegean Sea Species List";
 $obj = $func->get_deposition_by_title($title);
 print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
 // */
@@ -46,7 +47,7 @@ $q = "-title:national +title:checklists -title:2019 title:water"; //works splend
 $q = "+title:checklists +title:2019"; //set 'geography', remove 'deprecated', add isDerivedFrom
 // $q = "+title:FishBase";
 // $q = "related.relation:isSourceOf";
-$q = "+related.relation:issourceof +keywords:deprecated title:2019"; //very accurate query - OK!
+$q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
 // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
 // $q = "+related.relation:issupplementto"; //very accurate query - OK!
 
