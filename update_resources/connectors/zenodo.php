@@ -23,7 +23,7 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // exit("\n".urldecode($str)."\n");
 
 $func = new ZenodoAPI();
-$func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
+// $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
 
 /* all these four (4) done already:
 // $func->jen_Related_Works(); //one-time only | DONE Oct 27, 2024
@@ -32,11 +32,13 @@ $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 */
 
-/*
+// /*
 $title = "National Checklists: Democratic Republic of the Congo Species List";
+$title = "Water Body Checklists: Ceram Sea Species List";
+$title = "Water Body Checklists 2019: Timor Sea Species List";
 $obj = $func->get_deposition_by_title($title);
 print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
-*/
+// */
 
 // /* -------------------------------------------------------------------------------------------- very good query results
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
@@ -44,7 +46,7 @@ $q = "-title:national +title:checklists -title:2019 title:water"; //works splend
 $q = "+title:checklists +title:2019"; //set 'geography', remove 'deprecated', add isDerivedFrom
 // $q = "+title:FishBase";
 // $q = "related.relation:isSourceOf";
-// $q = "+related.relation:issourceof +keywords:deprecated -title:2019"; //very accurate query - OK!
+$q = "+related.relation:issourceof +keywords:deprecated title:2019"; //very accurate query - OK!
 // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
 // $q = "+related.relation:issupplementto"; //very accurate query - OK!
 
