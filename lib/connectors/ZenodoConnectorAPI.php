@@ -21,11 +21,12 @@ class ZenodoConnectorAPI
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]);
             $i = 0; $total = count($objs);
             foreach($objs as $o) { $i++;
-                // do batches
-                // if($i < 26) continue;
-                // elseif($i >= 26 && $i <= 250) {}
-                // elseif($i > 250) break;
-                // else continue;
+                /* do batches
+                if($i < 860) continue;
+                elseif($i >= 860 && $i <= 1300) {}
+                elseif($i > 1300) break;
+                else continue;
+                */
                 echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
                 if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
                 // break; //debug only, run 1 only
@@ -37,7 +38,7 @@ class ZenodoConnectorAPI
         // /* ---------- start: dev only
         $id = 13313293; // [National Checklists: Turkmenistan]...
         // $id = 13761108; // new FishBase
-        $id = 13319783;
+        $id = 13323178;
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -454,6 +455,15 @@ class ZenodoConnectorAPI
                             $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
                         }
                         elseif(stripos($title, 'LifeDesk') !== false) { //string is found
+                            $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
+                        }
+                        elseif(stripos($title, 'myspecies') !== false) { //string is found
+                            $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
+                        }
+                        elseif(stripos($title, ' LD)') !== false) { //string is found
+                            $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
+                        }
+                        elseif(strpos(pathinfo($isSupplementTo_url, PATHINFO_BASENAME), 'LD_') !== false) { //string is found
                             $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
                         }
                         elseif(self::if_exists_in_creatorsORcontributors($contributors, 'Jennifer Hammock', @$this->ORCIDs['Jennifer Hammock'])) {
