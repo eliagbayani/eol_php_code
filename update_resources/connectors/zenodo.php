@@ -32,14 +32,14 @@ $func = new ZenodoAPI();
 // $func->start(); //main - this reads OpenData using its API and creates Zenodo records using the later's API.
 */
 
-// /*
+/*
 $title = "National Checklists: Democratic Republic of the Congo Species List";
 $title = "Water Body Checklists: Ceram Sea Species List";
 $title = "Water Body Checklists 2019: Timor Sea Species List";
 $title = "Water Body Checklists 2019: Aegean Sea Species List";
 $obj = $func->get_deposition_by_title($title);
 print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
-// */
+*/
 
 // /* -------------------------------------------------------------------------------------------- very good query results
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
@@ -49,7 +49,14 @@ $q = "+title:checklists +title:2019"; //set 'geography', remove 'deprecated', ad
 // $q = "related.relation:isSourceOf";
 $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
 // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
-// $q = "+related.relation:issupplementto"; //very accurate query - OK!
+
+$q = "+related.relation:issupplementto = %LD_%.tar.gz"; //doesn't work
+// $q = "+contributors.type:datamanager";
+// $q = "+title:Life";
+// $q = "+title:LifeDesk";
+// $q = "+title:LD_";
+$q = "+related.relation:issupplementto";
+$q = "+title:Scratchpad";
 
 if($obj = $func->get_depositions_by_part_title($q)) {
   // print_r($obj); exit("\n-found-\n");

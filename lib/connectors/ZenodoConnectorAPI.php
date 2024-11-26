@@ -13,8 +13,15 @@ class ZenodoConnectorAPI
         // /* ---------- start: normal
         $q = "+title:national +title:checklists -title:2019 -title:water";      //works splendidly - OK!
         $q = "-title:national +title:checklists -title:2019 title:water";       //works splendidly - OK!
-        $q = "-title:checklists -title:2019 +related.relation:issupplementto";  //RUNNING... put Eli as DataManager - [51] 9. [13321765] [TaiEOL: Dragonflies of Taiwan - XML]...
-        $q = "+title:checklists +title:2019";                                   //NEXT IN LINE: set 'geography', remove 'deprecated', add isDerivedFrom
+        $q = "-title:checklists -title:2019 +related.relation:issupplementto";  //DONE: put Eli as DataManager - [51] 9. [13321765] [TaiEOL: Dragonflies of Taiwan - XML]...
+        $q = "+title:checklists +title:2019";                                   //DONE: set 'geography', remove 'deprecated', add isDerivedFrom
+
+        // $q = "+title:Life";
+        // $q = "+title:LifeDesk";
+        // $q = "+title:LD_";
+        $q = "+title:myspecies"; //running...
+        $q = "+title:Scratchpad"; //next in line...
+
         // $q = "+title:FishBase";
         // $q = "related.relation:isSourceOf";
         // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
@@ -458,6 +465,9 @@ class ZenodoConnectorAPI
                             $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
                         }
                         elseif(stripos($title, 'myspecies') !== false) { //string is found
+                            $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
+                        }
+                        elseif(stripos($title, 'ScratchPad') !== false) { //string is found
                             $contributors = self::remove_from_contributors('Eli Agbayani', $contributors);
                         }
                         elseif(stripos($title, ' LD)') !== false) { //string is found
