@@ -6,22 +6,48 @@ class ZenodoConnectorAPI
     function __construct($folder = null, $query = null)
     {}
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ start @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    function jen_DOI_Works()
+    {
+        $this->log_error(array("==================== Log starts here ==================== DOI tasks"));
+        /* ---------- start: normal
+        $q = "+description:doi";
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]);
+            $i = 0; $total = count($objs);
+            foreach($objs as $o) { $i++;
+                
+                // -batches-
+                // if($i < 860) continue;
+                // elseif($i >= 860 && $i <= 1300) {}
+                // elseif($i > 1300) break;
+                // else continue;
+
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
+                // break; //debug only, run 1 only
+            }
+        } //end if($objs)
+        exit("\n- end DOI tasks -\n");
+        // ---------- end: normal */
+
+        // /* ---------- start: dev only
+        $id = 13316353;
+        self::update_zenodo_record_of_latest_requested_changes($id);
+        exit("\n-----end per taxon, during dev-----\n");
+        // ---------- end: dev only */
+    }
     function jen_Deprecated_Works()
     {
         $this->log_error(array("==================== Log starts here ==================== Deprecated tasks"));
-
         // /* ---------- start: normal
         $q = "+title:national +title:checklists -title:2019 -title:water";      //works splendidly - OK!
         $q = "-title:national +title:checklists -title:2019 title:water";       //works splendidly - OK!
         $q = "-title:checklists -title:2019 +related.relation:issupplementto";  //DONE: put Eli as DataManager - [51] 9. [13321765] [TaiEOL: Dragonflies of Taiwan - XML]...
         $q = "+title:checklists +title:2019";                                   //DONE: set 'geography', remove 'deprecated', add isDerivedFrom
-
         // $q = "+title:Life";
         // $q = "+title:LifeDesk";
         // $q = "+title:LD_";
         $q = "+title:myspecies"; //running...
         $q = "+title:Scratchpad"; //next in line...
-
         // $q = "+title:FishBase";
         // $q = "related.relation:isSourceOf";
         // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
@@ -49,7 +75,6 @@ class ZenodoConnectorAPI
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
-
     }
     function jen_Related_Works()
     {
@@ -345,8 +370,9 @@ class ZenodoConnectorAPI
         else {
             /* ran already - DONE
             $obj_latest = self::fill_in_Katja_changes($edit_obj);
-            */
             $obj_latest = self::fill_in_Jen_deprecated_tasks($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
+            */
+            $obj_latest = self::fill_in_Jen_DOI_tasks($edit_obj);
             if($obj_latest) self::update_then_publish($id, $obj_latest);
         }
     }
@@ -435,6 +461,11 @@ class ZenodoConnectorAPI
         }
         $RI[] = $arr;
         return $RI;
+    }
+    private function fill_in_Jen_DOI_tasks($o) //DOI tasks
+    {
+        print_r($o);
+        exit("\n-stop muna-\n");
     }
     private function fill_in_Jen_deprecated_tasks($o) //deprecated tasks
     {   // print_r($o);
