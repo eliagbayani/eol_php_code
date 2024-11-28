@@ -22,6 +22,16 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // $str = "https://zenodo.org/search?q=metadata.subjects.subject%3A%22EOL%20Content%20Partners%3A%20EduLifeDesks%20Archive%22&l=list&p=1&s=10&sort=bestmatch";
 // exit("\n".urldecode($str)."\n");
 
+
+// $desc = "doi: eli< doi: cha] doi: isaiah|"; echo "\n$desc\n";
+// $left = 'doi:'; //$right = " ";
+// // if(preg_match_all("/".preg_quote($left, '/')."(.*?)([<]|])/ims", $desc, $arr)) { print_r($arr[1]);
+// if(preg_match_all("/".preg_quote($left, '/')."(.*?)(<|]|\|)/ims", $desc, $arr)) { print_r($arr[1]);
+// }    
+// else echo "\nnot found\n";
+// exit("\n -end test- \n");
+
+
 $func = new ZenodoAPI();
 $func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
 

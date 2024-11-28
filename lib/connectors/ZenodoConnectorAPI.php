@@ -31,6 +31,10 @@ class ZenodoConnectorAPI
 
         // /* ---------- start: dev only
         $id = 13316353;
+        $id = 13319339; //http
+        $id = 13320381; //doi: http
+        $id = 13305288;
+
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
@@ -463,8 +467,43 @@ class ZenodoConnectorAPI
         return $RI;
     }
     private function fill_in_Jen_DOI_tasks($o) //DOI tasks
-    {
-        print_r($o);
+    {   // print_r($o);
+        $desc = $o['metadata']['description']; echo "\n---------\n[$desc]\n---------\n";
+        /*
+        https://doi.org/10.5061/dryad.37pvmcvsj        
+        https://doi.org/10.1093/icb/15.2.455
+        https://doi.org/10.3897/zookeys.189.2043
+        https://doi.org/10.1016/S0003-9365(87)80069-6
+        https://doi.org/10.3157/0002-8320(2007)133[167:CANGOM]2.0.CO;2        
+
+        doi:10.5194/essd-5-259-2013
+        doi:10.5061/dryad.dv1j5
+        http://datadryad.org/resource/doi:10.5061/dryad.0sd41
+        */
+        $tmp = array();
+        $desc .= "elicha";
+
+        $left = array();
+        $left[] = 'http://doi';     
+        $left[] = 'https://doi';     
+        $left[] = 'DOI:';     
+        $left[] = 'http://datadryad.org/resource/doi:';
+        $left[] = 'https://datadryad.org/resource/doi:';
+        foreach($left as $kaliwa) {
+            if(preg_match_all("/".preg_quote($kaliwa, '/')."(.*?)(<|\]|\)|elicha)/ims", $desc, $arr)) { print_r($arr[1]);
+                foreach($arr[1] as $str) {
+                    if(trim($str)) $tmp[] = $kaliwa . $str;
+                }
+            }    
+        }
+        print_r($tmp);
+        // 1st cleaning
+        $tmp2 = array();
+        foreach($tmp as $t) {
+            $t = str_replace("[", "", $t);
+            $tmp2[] = $t;
+        }
+        print_r($tmp2);
         exit("\n-stop muna-\n");
     }
     private function fill_in_Jen_deprecated_tasks($o) //deprecated tasks
