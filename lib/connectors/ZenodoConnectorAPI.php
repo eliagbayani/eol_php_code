@@ -34,6 +34,8 @@ class ZenodoConnectorAPI
         $id = 13319339; //http
         $id = 13320381; //doi: http
         $id = 13305288;
+        $id = 13283201; //13 DOI:
+        $id = 13283186; //doi: 10.1649/0010-065X(2008)61[1:ATROTG]2.0.CO;2 ---- violates our orig rules
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
@@ -468,7 +470,8 @@ class ZenodoConnectorAPI
     }
     private function fill_in_Jen_DOI_tasks($o) //DOI tasks
     {   // print_r($o);
-        $desc = $o['metadata']['description']; echo "\n---------\n[$desc]\n---------\n";
+        $id = $o['id'];
+        $desc = $o['metadata']['description']; echo "\n---------\n[$id]\n---------\n";
         /*
         https://doi.org/10.5061/dryad.37pvmcvsj        
         https://doi.org/10.1093/icb/15.2.455
@@ -482,6 +485,7 @@ class ZenodoConnectorAPI
         */
         $tmp = array();
         $desc .= "elicha";
+        $desc = str_ireplace("doi: ", "DOI:", $desc); //massage
 
         $left = array();
         $left[] = 'http://doi';     
@@ -490,17 +494,26 @@ class ZenodoConnectorAPI
         $left[] = 'http://datadryad.org/resource/doi:';
         $left[] = 'https://datadryad.org/resource/doi:';
         foreach($left as $kaliwa) {
-            if(preg_match_all("/".preg_quote($kaliwa, '/')."(.*?)(<|\]|\)|elicha)/ims", $desc, $arr)) { print_r($arr[1]);
-                foreach($arr[1] as $str) {
-                    if(trim($str)) $tmp[] = $kaliwa . $str;
-                }
-            }    
+            if($kaliwa == "DOI:") {
+                if(preg_match_all("/".preg_quote($kaliwa, '/')."(.*?)(\"|<|\]|\)| |elicha)/ims", $desc, $arr)) { print_r($arr[1]);
+                    foreach($arr[1] as $str) {
+                        if(trim($str)) $tmp[] = $kaliwa . $str;
+                    }
+                }        
+            }
+            else {
+                if(preg_match_all("/".preg_quote($kaliwa, '/')."(.*?)(\"|<| |elicha)/ims", $desc, $arr)) { print_r($arr[1]);
+                    foreach($arr[1] as $str) {
+                        if(trim($str)) $tmp[] = $kaliwa . $str;
+                    }
+                }    
+            }
         }
         print_r($tmp);
         // 1st cleaning
         $tmp2 = array();
         foreach($tmp as $t) {
-            $t = str_replace("[", "", $t);
+            if(substr($t,0,4) == "DOI:") $t = str_replace("[", "", $t);
             $tmp2[] = $t;
         }
         print_r($tmp2);
