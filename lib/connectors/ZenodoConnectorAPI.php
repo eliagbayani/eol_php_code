@@ -27,15 +27,18 @@ class ZenodoConnectorAPI
             }
         } //end if($objs)
         exit("\n- end DOI tasks -\n");
-        // ---------- end: normal */
+        ---------- end: normal */
 
         // /* ---------- start: dev only
         $id = 13316353;
         $id = 13319339; //http
         $id = 13320381; //doi: http
         $id = 13305288;
-        $id = 13283201; //13 DOI:
         $id = 13283186; //doi: 10.1649/0010-065X(2008)61[1:ATROTG]2.0.CO;2 ---- violates our orig rules
+        $id = 13319100; //remove ending period e.g. "DOI:10.1016/j.meatsci.2006.04.005."
+        $id = 13310461; //with duplicate DOIs
+        $id = 13305288; // ending )
+        $id = 13283201; //13 DOI:
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
@@ -379,7 +382,9 @@ class ZenodoConnectorAPI
             $obj_latest = self::fill_in_Jen_deprecated_tasks($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
             */
             $obj_latest = self::fill_in_Jen_DOI_tasks($edit_obj);
+            /* un-comment in real operation ---- part of main operation
             if($obj_latest) self::update_then_publish($id, $obj_latest);
+            */
         }
     }
     private function update_then_publish($id, $obj_latest)
@@ -468,6 +473,38 @@ class ZenodoConnectorAPI
         $RI[] = $arr;
         return $RI;
     }
+    private function adjust_misplaced_ending_char($str) //e.g. "http://doi.org/10.14344/IOC.ML.7.1)" - the ending parenthesis doesn't have an openning parenthesis.
+    {
+        $str = trim($str);
+        $last_char = substr($str, -1);
+        // echo "\nstr: [$str]\n"; echo "\nlast: [$last_char]\n";
+        if(in_array($last_char, array(")", "]", "}"))) {
+          if($last_char == ")") $start_char = "(";
+          if($last_char == "]") $start_char = "[";
+          if($last_char == "}") $start_char = "{";
+          $tmp_str = substr($str,0,strlen($str)-1);
+        //   echo "\ntmp str: [$tmp_str]\n";
+          if(stripos($tmp_str, $start_char) !== false) { //string is found
+            // echo "\nfinal: [$str]\n";
+            return $str;
+          }
+          else {
+            // echo "\nfinal: [$tmp_str]\n";
+            return $tmp_str;
+          }
+        }
+        return $str;
+    }
+    private function format_DOIs($str)
+    {
+        $str = trim($str);
+        /* if starts with "DOI:" it should not end with period (.) e.g. "DOI:10.1016/j.meatsci.2006.04.005." */
+        if(substr($str,0,4) == "DOI:") {
+            $last_char = substr($str, -1);
+            if($last_char == ".") return substr($str,0,strlen($str)-1); //remove the ending period
+        }
+        return $str;
+    }
     private function fill_in_Jen_DOI_tasks($o) //DOI tasks
     {   // print_r($o);
         $id = $o['id'];
@@ -483,6 +520,13 @@ class ZenodoConnectorAPI
         doi:10.5061/dryad.dv1j5
         http://datadryad.org/resource/doi:10.5061/dryad.0sd41
         */
+
+        // todo:
+        // - [13305453] - ends in ) ending parenthesis
+        // - ends in . period
+
+
+
         $tmp = array();
         $desc .= "elicha";
         $desc = str_ireplace("doi: ", "DOI:", $desc); //massage
@@ -514,10 +558,13 @@ class ZenodoConnectorAPI
         $tmp2 = array();
         foreach($tmp as $t) {
             if(substr($t,0,4) == "DOI:") $t = str_replace("[", "", $t);
+            $t = self::adjust_misplaced_ending_char($t); //e.g. http://doi.org/10.14344/IOC.ML.7.1)
+            $t = self::format_DOIs($t); //e.g. DOI:10.1016/j.meatsci.2006.04.005. -- remove ending period
             $tmp2[] = $t;
         }
+        $tmp2 = self::remove_null_make_unique_reindex_key($tmp2);
         print_r($tmp2);
-        exit("\n-stop muna-\n");
+        // exit("\n-stop muna-\n");
     }
     private function fill_in_Jen_deprecated_tasks($o) //deprecated tasks
     {   // print_r($o);

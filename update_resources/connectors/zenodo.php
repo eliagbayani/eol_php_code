@@ -22,15 +22,40 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 // $str = "https://zenodo.org/search?q=metadata.subjects.subject%3A%22EOL%20Content%20Partners%3A%20EduLifeDesks%20Archive%22&l=list&p=1&s=10&sort=bestmatch";
 // exit("\n".urldecode($str)."\n");
 
-
-// $desc = "doi: eli< doi: cha] doi: isaiah|"; echo "\n$desc\n";
-// $left = 'doi:'; //$right = " ";
-// // if(preg_match_all("/".preg_quote($left, '/')."(.*?)([<]|])/ims", $desc, $arr)) { print_r($arr[1]);
-// if(preg_match_all("/".preg_quote($left, '/')."(.*?)(<|]|\|)/ims", $desc, $arr)) { print_r($arr[1]);
-// }    
-// else echo "\nnot found\n";
-// exit("\n -end test- \n");
-
+/*
+$desc = "doi: eli< doi: cha] doi: isaiah|"; echo "\n$desc\n";
+$left = 'doi:'; //$right = " ";
+// if(preg_match_all("/".preg_quote($left, '/')."(.*?)([<]|])/ims", $desc, $arr)) { print_r($arr[1]);
+if(preg_match_all("/".preg_quote($left, '/')."(.*?)(<|]|\|)/ims", $desc, $arr)) { print_r($arr[1]);
+}    
+else echo "\nnot found\n";
+exit("\n -end test- \n");
+*/
+/*
+$str = "http://doi.org/10.14344/IOC.ML.7.1)";
+$str = "http://doi.org/10.14344/(IOC.ML.7.1)";
+// $str = "http://doi.org/10.14344/IOC.ML.7.1]";
+// $str = "http://doi.org/10.14344/[IOC.ML.7.1]";
+$str = trim($str);
+$last_char = substr($str, -1);
+echo "\nstr: [$str]\n"; echo "\nlast: [$last_char]\n";
+if(in_array($last_char, array(")", "]", "}"))) {
+  if($last_char == ")") $start_char = "(";
+  if($last_char == "]") $start_char = "[";
+  if($last_char == "}") $start_char = "{";
+  $tmp_str = substr($str,0,strlen($str)-1);
+  echo "\ntmp str: [$tmp_str]\n";
+  if(stripos($tmp_str, $start_char) !== false) { //string is found
+    echo "\nfinal: [$str]\n";
+    return $str;
+  }
+  else {
+    echo "\nfinal: [$tmp_str]\n";
+    return $tmp_str;
+  }
+}
+exit("\n -end test- \n");
+*/
 
 $func = new ZenodoAPI();
 $func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
