@@ -22,7 +22,7 @@ class ZenodoConnectorAPI
                 // else continue;
 
                 echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
-                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
+                // if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
                 // break; //debug only, run 1 only
             }
         } //end if($objs)
@@ -41,6 +41,9 @@ class ZenodoConnectorAPI
         $id = 13320601; //misc.
         $id = 13305288;
         $id = 13283186;
+        $id = 13322681; //missed out, reported by Jen
+        $id = 13313923; //missed out
+        $id = 13313923; //13320307; //13313923; //with error at some point
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
@@ -500,6 +503,7 @@ class ZenodoConnectorAPI
     private function format_DOIs($str)
     {
         $str = trim($str);
+        $str = urldecode($str);
         /* if starts with "DOI:" it should not end with period (.) e.g. "DOI:10.1016/j.meatsci.2006.04.005." */
         if(substr($str,0,4) == "DOI:") {
             // 1. remove ending period (.)
@@ -1058,7 +1062,7 @@ class ZenodoConnectorAPI
                                     "upload_type" => @$obj_1st['metadata']['upload_type'], //'dataset',
                                     // "files" => array() //$obj_1st['files']
                                     "access_right" => @$obj_1st['metadata']['access_right'],
-                                    "contributors" => @$obj_1st['metadata']['contributors'],                                    
+                                    // "contributors" => @$obj_1st['metadata']['contributors'],                         //some recs don't have contributors           
                                     "keywords" => $keywords_final,
                                     "related_identifiers" => @$obj_1st['metadata']['related_identifiers'],
                                     "imprint_publisher" => @$obj_1st['metadata']['imprint_publisher'],
@@ -1072,7 +1076,8 @@ class ZenodoConnectorAPI
 
         ); //this is needed for publishing a newly uploaded file.
 
-        if($val = @$obj_1st['metadata']['description']) $input['metadata']['description'] = str_replace("'", "__", $val); //impt. bec. metadata description is never blank.
+        if($val = @$obj_1st['metadata']['description'])  $input['metadata']['description'] = str_replace("'", "__", $val); //impt. bec. metadata description is never blank.
+        if($val = @$obj_1st['metadata']['contributors']) $input['metadata']['contributors'] = $val;
 
         // Resource type: Missing data for required field.
         // Creators: Missing data for required field.
