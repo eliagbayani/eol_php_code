@@ -9,7 +9,7 @@ class ZenodoConnectorAPI
     function jen_DOI_Works()
     {
         $this->log_error(array("==================== Log starts here ==================== DOI tasks"));
-        /* ---------- start: normal
+        // /* ---------- start: normal
         $q = "+description:doi";
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]);
             $i = 0; $total = count($objs);
@@ -27,7 +27,7 @@ class ZenodoConnectorAPI
             }
         } //end if($objs)
         exit("\n- end DOI tasks -\n");
-        ---------- end: normal */
+        // ---------- end: normal */
 
         // /* ---------- start: dev only
         $id = 13316353;
@@ -40,6 +40,7 @@ class ZenodoConnectorAPI
         $id = 13283201; //13 DOI:
         $id = 13320601; //misc.
         $id = 13305288;
+        $id = 13283186;
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
