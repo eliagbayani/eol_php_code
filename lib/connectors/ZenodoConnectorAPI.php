@@ -9,7 +9,7 @@ class ZenodoConnectorAPI
     function jen_DOI_Works()
     {
         $this->log_error(array("==================== Log starts here ==================== DOI tasks"));
-        // /* ---------- start: normal
+        /* ---------- start: normal
         $q = "+description:doi";
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]);
             $i = 0; $total = count($objs);
@@ -27,7 +27,7 @@ class ZenodoConnectorAPI
             }
         } //end if($objs)
         exit("\n- end DOI tasks -\n");
-        // ---------- end: normal */
+        ---------- end: normal */
 
         // /* ---------- start: dev only
         $id = 13316353;
@@ -39,6 +39,7 @@ class ZenodoConnectorAPI
         $id = 13305288; // ending )
         $id = 13283201; //13 DOI:
         $id = 13320601; //misc.
+        $id = 13305288;
 
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
@@ -382,9 +383,9 @@ class ZenodoConnectorAPI
             $obj_latest = self::fill_in_Jen_deprecated_tasks($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
             */
             $obj_latest = self::fill_in_Jen_DOI_tasks($edit_obj);
-            /* un-comment in real operation ---- part of main operation
+            // /* un-comment in real operation ---- part of main operation
             if($obj_latest) self::update_then_publish($id, $obj_latest);
-            */
+            // */
         }
     }
     private function update_then_publish($id, $obj_latest)
@@ -500,8 +501,19 @@ class ZenodoConnectorAPI
         $str = trim($str);
         /* if starts with "DOI:" it should not end with period (.) e.g. "DOI:10.1016/j.meatsci.2006.04.005." */
         if(substr($str,0,4) == "DOI:") {
+            // 1. remove ending period (.)
             $last_char = substr($str, -1);
-            if($last_char == ".") return substr($str,0,strlen($str)-1); //remove the ending period
+            if($last_char == ".") $str = substr($str,0,strlen($str)-1); //remove the ending period
+            // 2. remove 'DOI:' from string
+            $str = str_ireplace("DOI:", "", $str);
+        }
+        else {
+            /*Array(
+                [0] => http://doi.org/10.14344/IOC.ML.7.1
+                [1] => DOI:10.14344/IOC.ML.7.1
+            )*/
+            $str = str_ireplace("https://doi.org/", "", $str);
+            $str = str_ireplace("http://doi.org/", "", $str);
         }
         return $str;
     }
@@ -562,9 +574,41 @@ class ZenodoConnectorAPI
             $t = self::format_DOIs($t); //e.g. DOI:10.1016/j.meatsci.2006.04.005. -- remove ending period
             $tmp2[] = $t;
         }
-        $tmp2 = self::remove_null_make_unique_reindex_key($tmp2);
-        print_r($tmp2);
+        $final = self::remove_null_make_unique_reindex_key($tmp2);
+        print_r($final);
+
+        if($RI = @$o['metadata']['related_identifiers']) {}
+        else $RI = array();
+        print_r($RI); echo "orig RI\n"; //exit;
+        /* generate a related works record, with 
+            identifier=doi str
+            relation=References, 
+            scheme=doi, and 
+            resource type=publication? 
+            I think you can put the doi string directly into the identifier field in any of the formats we seem to have used, without further modification.      
+        Array(
+            [0] => Array(
+                [identifier] => 10.1002/iroh.19660510104
+                [relation] => references
+                [resource_type] => publication
+                [scheme] => doi
+            )
+        */
+        $identifiers = array();
+        foreach($RI as $r) {
+            if($identifier = $r['identifier']) $identifiers[] = $identifier;
+        }
+        foreach($final as $doi) {
+            if(!in_array($doi, $identifiers)) {
+                $save = array('identifier' => $doi, 'relation' => 'references', 'scheme' => 'doi', 'resource_type' => 'publication');
+                $RI[] = $save;
+            }
+            else echo "\nDOI [$doi] exists already.\n";
+        }
+        print_r($RI); echo "to be saved RI\n";
         // exit("\n-stop muna-\n");
+        $o['metadata']['related_identifiers'] = $RI;
+        return $o;
     }
     private function fill_in_Jen_deprecated_tasks($o) //deprecated tasks
     {   // print_r($o);
