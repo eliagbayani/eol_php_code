@@ -38,12 +38,6 @@ Or just simply:
 [taxonomy:binomial=Anarhichas lupus]
 */
 
-/* old API key
-define("DEVELOPER_KEY", "AI39si4JyuxT-aemiIm9JxeiFbr4F3hphhrhR1n3qPkvbCrrLRohUbBSA7ngDqku8mUGEAhYZpKDTfq2tu_mDPImDAggk8At5Q");
-*/
-/* Old API key. Replaced on Feb 9, 2020
-AIzaSyCXt2WPrcQniaMomonEruEOi3EHYlGEi3U
-*/
 /* Google Developers project name: EOL Connectors
    Public API access: API key: YOUR_API_KEY
 
