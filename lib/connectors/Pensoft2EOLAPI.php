@@ -110,10 +110,6 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $this->descendants_habitat_group['aquatic']    = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/AmphibiaWeb/descendants_of_aquatic.tsv';
    
         $this->remove_across_all_resources = array();
-        /* 2024: already placed in text file
-        $this->remove_across_all_resources = array('http://purl.obolibrary.org/obo/ENVO_01000760', 'http://purl.obolibrary.org/obo/ENVO_00000474'); //cloud, cut
-        $this->remove_across_all_resources[] = 'http://purl.obolibrary.org/obo/ENVO_00000016'; //'sea' per Jen: https://eol-jira.bibalex.org/browse/DATA-1858?focusedCommentId=65552&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65552
-        */
 
         $this->another_set_exclude_URIs = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/terms_implying_missing_filter.txt';
         $this->another_set_exclude_URIs_02 = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/terms_to_remove.txt';
