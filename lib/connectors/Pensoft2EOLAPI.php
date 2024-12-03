@@ -98,6 +98,8 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         }
         
         $this->download_options = array('expire_seconds' => 60*60*24, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1, 'delay_in_minutes' => 0.5);
+        // $this->download_options['expire_seconds'] = 1; //only for run_pensoft_test.php //comment in real operation
+
         $this->call['opendata resource via name'] = "https://opendata.eol.org/api/3/action/resource_search?query=name:RESOURCE_NAME";
 
         /* report for Jen - 'difference' report | entities file now obsolete
@@ -109,7 +111,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // exclude descendants of 'aquatic': AntWeb
         $this->descendants_habitat_group['aquatic']    = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/AmphibiaWeb/descendants_of_aquatic.tsv';
    
-        $this->remove_across_all_resources = array();
+        $this->remove_across_all_resources = array(); //original contents have now been moved to terms_to_remove.txt and/or other txt files below
 
         $this->another_set_exclude_URIs = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/terms_implying_missing_filter.txt';
         $this->another_set_exclude_URIs_02 = 'https://raw.githubusercontent.com/EOL/textmine_rules/main/terms_to_remove.txt';

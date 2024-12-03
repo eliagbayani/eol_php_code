@@ -157,7 +157,9 @@ foreach($IDs as $resource_id) {
         echo "\n[$resource_id $i] - "; echo("[$desc] [$ret]");
         // $i = 9; //force-assign
         if($resource_id == '24') {            
-            if($i == 1) {$s = "woodland-ENVO_01000175|orchard-ENVO_00000115|dune-ENVO_00000170"; if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+            // if($i == 1) {$s = "woodland-ENVO_01000175|orchard-ENVO_00000115|dune-ENVO_00000170"; if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+            if($i == 1) {$s = "woodland-ENVO_01000175|dune-ENVO_00000170"; if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
             if($i == 2) {$s = "mozambique-1036973|zambezi-Zambezi";     if($ret == $s)                          echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
             if($i == 3) {$s = "pakistan-1168579|valley-ENVO_00000100"; if($ret == $s)             echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
             if($i == 4) {$s = "slovakia-3057568|romania-798549|russia-2017370"; if($ret == $s)                  echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
@@ -186,7 +188,9 @@ foreach($IDs as $resource_id) {
         }
         if(in_array($resource_id, array('TreatmentBank_ENV', '617_ENV'))) {
             $q = array();
-            $q[1] = array('s' => "woodland-ENVO_01000175|orchard-ENVO_00000115|dune-ENVO_00000170");
+            // $q[1] = array('s' => "woodland-ENVO_01000175|orchard-ENVO_00000115|dune-ENVO_00000170");
+            $q[1] = array('s' => "woodland-ENVO_01000175|dune-ENVO_00000170");
+
             $q[2] = array('s' => "mozambique-1036973|zambezi-Zambezi");
             $q[3] = array('s' => "pakistan-1168579|valley-ENVO_00000100");
             $q[4] = array('s' => "slovakia-3057568|romania-798549|russia-2017370");
@@ -254,7 +258,8 @@ foreach($IDs as $resource_id) {
 
         if($i == 42) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 43) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
-        if($i == 44) {$s = "canal-ENVO_00000014";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        // if($i == 44) {$s = "canal-ENVO_00000014";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 44) {$s = "";                   if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         
         if($i == 45) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 46) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
@@ -262,10 +267,13 @@ foreach($IDs as $resource_id) {
         if($i == 48) {$s = "mountains-ENVO_00000081";               if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
         if($i == 49) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
-        if($i == 50) {$s = "orchard-ENVO_00000115";                 if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        // if($i == 50) {$s = "orchard-ENVO_00000115";                 if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 50) {$s = "";                 if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
         if($i == 51) {$s = "";                                      if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
-        if($i == 52) {$s = "bay-ENVO_00000032";                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        // if($i == 52) {$s = "bay-ENVO_00000032";                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 52) {$s = "";                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
 
         if($i == 53) {$s = "kelp forest-ENVO_01000058";             if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 54) {$s = "forest-ENVO_01000174";                  if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
