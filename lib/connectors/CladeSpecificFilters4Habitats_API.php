@@ -13,7 +13,7 @@ class CladeSpecificFilters4Habitats_API
         $this->debug = array();
     }
     /*================================================================= STARTS HERE ======================================================================*/
-    function start($info)
+    private function initialize()
     {
         // /* use external func for computation of descendants
         require_library('connectors/DH_v1_1_postProcessing');
@@ -25,7 +25,29 @@ class CladeSpecificFilters4Habitats_API
         $func = new Clean_MoF_Habitat_API(false, false);
         $this->descendants = $func->get_descendants_info(); //generates $this->descendants
         // */
+    }
+    function get_all_descendants_of_a_term($term, $label, $output='screen') //e.g. http://purl.obolibrary.org/obo/ENVO_00000002
+    {
+        self::initialize();
+        $final = self::get_descendants_of_term($term, $label, $output);
+        $final = array_keys($final);
+        asort($final);
+        $final = array_values($final);
 
+        // if($output == 'screen') $nextline = "\n";
+        // else                    $nextline = "<br>";
+        // echo $nextline;
+        // foreach($final as $term) echo $nextline . "$term";
+        // echo $nextline . '-end-'. $nextline . $nextline;
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($final);
+
+        return $final;
+    }
+    function start($info)
+    {
+        self::initialize();
         $this->descendants_of_marine = self::get_descendants_of_term('http://purl.obolibrary.org/obo/ENVO_00000447', "marine");
         $this->descendants_of_terrestrial = self::get_descendants_of_term('http://purl.obolibrary.org/obo/ENVO_00000446', "terrestrial");
         $this->descendants_of_coastalLand = self::get_descendants_of_term('http://purl.obolibrary.org/obo/ENVO_00000303', "coastal_land");
@@ -299,18 +321,20 @@ class CladeSpecificFilters4Habitats_API
         if(isset($this->descendants_of_terrestrial[$mValue])) return false;
         return true;
     }
-    private function get_descendants_of_term($term, $label)
+    private function get_descendants_of_term($term, $label, $output='screen')
     {
+        $nextline = "\n";
         $descendants_of_term = $this->func->get_descendants_of_taxID($term, false, $this->descendants);
-        echo "\nDescendants of $label ($term): ".count($descendants_of_term)."\n"; //print_r($descendants_of_term);
+        if($output == 'screen') echo $nextline . "Descendants of $label ($term): ".count($descendants_of_term)."\n"; //print_r($descendants_of_term);
         $this_descendants = self::re_orient($descendants_of_term); unset($descendants_of_term);
         $this_descendants[$term] = ''; // inclusive
-        echo "\nDescendants of $label ($term): ".count($this_descendants)."\n";
+        if($output == 'screen') echo $nextline . "Descendants of $label ($term): ".count($this_descendants)." (inclusive)\n";
         // print_r($this_descendants);
         return $this_descendants;
     }
     private function re_orient($arr)
-    {
+    {   
+        $final = array();
         foreach($arr as $item) $final[$item] = '';
         return $final;
     }
