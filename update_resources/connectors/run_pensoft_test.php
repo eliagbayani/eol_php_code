@@ -124,11 +124,13 @@ $descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noir
 $descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noire, and from saltx marsh creeks at Río San Pedro."; //marsh-ENVO_00000035
 // does not include 'salt marshes' or 'saltmarshes'.
 
+$descs[] = "Many animals live in the dense settlement biome."; //ENVO_01000248 (dense settlement biome), this is a descendant of ENVO_00000002. Which is now excluded.
+// dense settlement biome-ENVO_01000248 -> is now excluded
+
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-$descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noire, and from saltmarshes creeks at Río San Pedro.";
-$descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noire, and from salt marshes creeks at Río San Pedro.";
+$descs[] = "Many animals live in the dense settlement biome."; //ENVO_01000248 (dense settlement biome), this is a descendant of ENVO_00000002. Which is now excluded.
 */
 
 $final = array();
@@ -280,6 +282,7 @@ foreach($IDs as $resource_id) {
 
         if($i == 55) {$s = "salt marsh-ENVO_00000054";             if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 56) {$s = "marsh-ENVO_00000035";                  if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 57) {$s = "";                                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
     }
     echo "\nerrors: [$resource_id][$errors errors]";
     $final[] =     "[$resource_id][$errors errors]";

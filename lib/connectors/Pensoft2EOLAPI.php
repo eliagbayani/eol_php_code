@@ -28,6 +28,9 @@ http://api.pensoft.net/annotator?text=OZARK-OUACHITA PLECOPTERA SPECIES LIST. Oz
 https://github.com/EOL/textmine_rules
 -> Textmining rules: Filters, remapped lists, subset labels, etc. used in textmining connector using the Pensoft Annotator.
 */
+
+define("SERVICE_TERM_DESCENDANTS", "https://editors.eol.org/eol_php_code/update_resources/connectors/get_descendants_of_term.php?term=");
+
 class Pensoft2EOLAPI extends Functions_Pensoft
 {
     function __construct($param)
@@ -1721,6 +1724,15 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             $arr = array_values($arr); //reindex key
             // print_r($arr); exit("\n".count($arr)."\n");
             foreach($arr as $uri) $this->delete_MoF_with_these_uris[$uri] = '';
+        }
+        // */
+
+        // /* NEW: remove descendants of ENVO_00000002: https://github.com/EOL/ContentImport/issues/21#issuecomment-2508735608
+        $term = 'http://purl.obolibrary.org/obo/ENVO_00000002'; //a geographic feature resulting from the influence of human beings on nature
+        $url = SERVICE_TERM_DESCENDANTS . $term;
+        if($json = Functions::lookup_with_cache($url, $this->download_options)) {
+            $arr = json_decode($json, true);
+            foreach($arr as $uri) $this->delete_MoF_with_these_uris[$uri] = ''; 
         }
         // */
         
