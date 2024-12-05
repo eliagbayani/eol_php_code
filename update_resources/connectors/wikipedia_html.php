@@ -17,7 +17,7 @@ $filenames = array("80");
 foreach($filenames as $filename) {
     $file = "wikipedia-".$filename;
     if(in_array($filename, array("80", "957"))) $file = $filename;
-    $func->save_text_to_html($file);
+    $func->save_taxon_text_to_html($file);
 }
 */
 
