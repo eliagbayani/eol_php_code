@@ -2564,14 +2564,24 @@ class Functions
             if($val = trim($a[1])) return $val;
         }
     }
-    public static function delete_all_between($beginning, $end, $string) {
-      $beginningPos = strpos($string, $beginning);
-      $endPos = strpos($string, $end);
-      if ($beginningPos === false || $endPos === false) {
+    public static function delete_all_between($beginning, $end, $string, $inclusiveYN = true, $caseSensitiveYN = true) {
+        if($caseSensitiveYN) {
+            $beginningPos = strpos($string, $beginning);
+            $endPos = strpos($string, $end);  
+        }
+        else {
+            $beginningPos = stripos($string, $beginning);
+            $endPos = stripos($string, $end);  
+        }
+        if(!$inclusiveYN) {
+            $endPos = $endPos - strlen($end);
+        }
+        if ($beginningPos === false || $endPos === false) {
+            return trim($string);
+        }
+        $textToDelete = substr($string, $beginningPos, ($endPos + strlen($end)) - $beginningPos);
+        if($textToDelete) return self::delete_all_between($beginning, $end, str_replace($textToDelete, '', $string)); // recursion to ensure all occurrences are replaced
         return trim($string);
-      }
-      $textToDelete = substr($string, $beginningPos, ($endPos + strlen($end)) - $beginningPos);
-      return self::delete_all_between($beginning, $end, str_replace($textToDelete, '', $string)); // recursion to ensure all occurrences are replaced
     }
     public static function start_print_debug($this_debug, $resource_id)
     {

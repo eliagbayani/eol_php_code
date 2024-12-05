@@ -137,6 +137,7 @@ class WikipediaHtmlAPI
         recursive_rmdir($temp_dir);
         */
         echo ("\n temporary directory removed: " . $temp_dir);
+        if(isset($this->debug)) print_r($this->debug);
     }
     private function prepare_archive_for_access($dwca)
     {
@@ -182,7 +183,9 @@ class WikipediaHtmlAPI
                 $rec = array_map('trim', $rec); // print_r($rec); exit;
             
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description") {
-                    self::save_to_html($rec['description'], $filename);
+                    $desc = $rec['description'];
+                    $desc = self::remove_wiki_sections($desc);
+                    self::save_to_html($desc, $filename);
                     $savedYN = true;
                 }
                 else continue;
@@ -190,8 +193,8 @@ class WikipediaHtmlAPI
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#TaxonBiology") self::save_to_html($rec['description'], $filename);
                 else continue;
                 */
-                break; //part of main operation, process only 1 record.
-                // if($i >= 1000) break; //debug only
+                // break; //part of main operation, process only 1 record.
+                // if($i >= 100) break; //debug only
             }
         }
         if(!$savedYN) $this->debug['no HTML page generated'][$filename];
@@ -225,6 +228,83 @@ class WikipediaHtmlAPI
                 else exit("\nInvestigate: No source text file for list of languages [$txt_file].\n");
             }
         }
+    }
+    function remove_wiki_sections($html)
+    {
+        $sections = array('<h2 id="See_also">See also</h2>', '<h2 id="Notes">Notes</h2>', '<h2 id="References">References</h2>', '<h2 id="External_links">External links</h2>');
+        $sections[] = '<h2 id="Footnotes">Footnotes</h2>';
+        $sections[] = '<h2 id="Notes_and_references">Notes and references</h2>';
+        $sections[] = '<h2 id="Cited_references">Cited references</h2>';
+        $sections[] = '<h2 id="_References"> References</h2>';
+        $sections[] = '<h2 id="General_references">General references</h2>';
+        $sections[] = '<h2 id="External_links_and_references">External links and references</h2>';
+        $sections[] = '<h2 id="References_and_external_links">References and external links</h2>';
+        $sections[] = '<h2 id="Sources">Sources</h2>';
+        $sections[] = '<h2 id="Citations">Citations</h2>';
+        $sections[] = '<h2 id="General_References">General References</h2>';
+        $sections[] = '<h2 id="Bibliography_and_References">Bibliography and References</h2>';
+        $sections[] = '<h2 id="External_links_and_reference">External links and reference</h2>';
+        $sections[] = '<h2 id="Footnotes_and_references">Footnotes and references</h2>';
+        $sections[] = '<h2 id="Footnotes_&_References"><span id="Footnotes_.26_References"></span>Footnotes & References</h2>';
+        $sections[] = '<h2 id="References[6]"><span id="References.5B6.5D"></span>References<sup id="cite_ref-6"><a href="#cite_note-6"><span>[</span>6<span>]</span></a></sup></h2>';
+        $sections[] = '<h2 id="Literature_cited">Literature cited</h2>';
+        $sections[] = '<h2 id="References_and_links">References and links</h2>';
+        $sections[] = '<h2 id="References_and_further_reading">References and further reading</h2>';
+        $sections[] = '<h2 id="References====External_links"><span id="References.3D.3D.3D.3DExternal_links"></span>References====External links</h2>';
+        $sections[] = '<h2 id="References_links">References links</h2>';
+        $sections[] = '<h2 id="Reference">Reference</h2>';
+        $sections[] = '<h2 id="References_and_notes">References and notes</h2>';
+        $sections[] = '<h2 id="Reference_List">Reference List</h2>';
+        $sections[] = '<h2 id="Reference_list">Reference list</h2>';
+        $sections[] = '<h2 id="References.">References.</h2>';
+        $sections[] = '<h2 id="References,"><span id="References.2C"></span>References,</h2>';
+        $sections[] = '<h2 id="References"><a href="http://en.wikipedia.org/wiki/References" title="References">References</a></h2>';
+        $sections[] = '<h2 id="Further_reading">Further reading</h2>';
+        $sections[] = '<h2 id="References"><small>References</small></h2>';
+        $sections[] = '<h2 id="Rreferences">Rreferences</h2>';
+        $sections[] = '<h2 id="References"><i>References</i></h2>';
+        $sections[] = '<h2 id="References"><big>References</big></h2>';
+        $sections[] = '<h2 id="Cited_literature">Cited literature</h2>';
+        $sections[] = '<h2 id="Bibliography">Bibliography</h2>';
+        // $sections[] = '';
+        // $sections[] = '';
+        // $sections[] = '';
+        // $sections[] = '';
+        // $sections[] = '';
+        // $sections[] = '';
+        // $sections[] = '';
+        $sections[] = '<h2 id="References[3]"><span id="References.5B3.5D"></span>References<sup id="cite_ref-:0_3-1"><a href="#cite_note-:0-3"><span>[</span>3<span>]</span></a></sup></h2>';
+        $sections[] = '<h2 id="References[3]"><span id="References.5B3.5D"></span>References<sup id="cite_ref-3"><a href="#cite_note-3"><span>[</span>3<span>]</span></a></sup></h2>';
+        
+        // print_r($sections); exit;
+        
+        // <h2 id="References">References</h2></div>
+        if(preg_match_all("/<h2 id=(.*?)<\/h2>/ims", $html, $arr)) {
+            // print_r($arr[1]);
+            foreach($arr[1] as $str) $arr2[] = "<h2 id=" . $str . "</h2>";
+            // print_r($arr2);
+            $start_section = false;
+            foreach($arr2 as $str) {
+                if(in_array($str, $sections)) {
+                    $start_section = $str;
+                    break;
+                }
+            }
+            if(!$start_section) {
+                echo("\nCannot find start section.\n");
+                print_r($arr2);
+                @$this->debug['no start section']++;
+            }
+            else {
+                // echo "\nstart_section: [$start_section]\n";
+                $html = Functions::delete_all_between($start_section, "Retrieved from", $html, false, false); 
+                // 4th param $inclusiveYN = false
+                // 5th param $caseSensitiveYN = false
+            }
+
+        }
+        // exit("\n-stop muna-\n");
+        return $html;
     }
 }
 ?>
