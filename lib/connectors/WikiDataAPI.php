@@ -65,11 +65,11 @@ class WikiDataAPI extends WikipediaAPI
             $this->download_options['cache_path'] = "/extra/eol_cache_wiki_regions/";
         }
         else {
-            $this->path['raw_dump']         = "/Volumes/Thunderbolt4/wikidata/latest-all.json";       //from https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.gz
-            $this->path['wiki_data_json']   = "/Volumes/Thunderbolt4/wikidata/latest-all-taxon.json"; //an all_taxon dump generated from raw [latest-all.json.gz]
-            $this->path['commons']          = "/Volumes/Thunderbolt4/wikidata/wikimedia/commonswiki-latest-pages-articles.xml"; //from http://dumps.wikimedia.org/commonswiki/latest/commonswiki-latest-pages-articles.xml.bz2
-            $this->path['wikimedia_cache']  = "/Volumes/Thunderbolt4/wikimedia_cache/";
-            $this->download_options['cache_path'] = "/Volumes/Thunderbolt4/eol_cache_wiki_regions/";
+            $this->path['raw_dump']         = "/Volumes/Crucial_2TB/wikidata/latest-all.json";       //from https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.gz
+            $this->path['wiki_data_json']   = "/Volumes/Crucial_2TB/wikidata/latest-all-taxon.json"; //an all_taxon dump generated from raw [latest-all.json.gz]
+            $this->path['commons']          = "/Volumes/Crucial_2TB/wikidata/wikimedia/commonswiki-latest-pages-articles.xml"; //from http://dumps.wikimedia.org/commonswiki/latest/commonswiki-latest-pages-articles.xml.bz2
+            $this->path['wikimedia_cache']  = "/Volumes/Crucial_2TB/wikimedia_cache/";
+            $this->download_options['cache_path'] = "/Volumes/Crucial_2TB/eol_cache_wiki_regions/";
         }
         
         if($this->what == "wikipedia") { //80 - wikipedia-en | 957 - wikipedia-de
