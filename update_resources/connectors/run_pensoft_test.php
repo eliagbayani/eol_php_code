@@ -127,10 +127,15 @@ $descs[] = "Locality: Known from mangrove swamps at Luango, north to Pointe Noir
 $descs[] = "Many animals live in the dense settlement biome."; //ENVO_01000248 (dense settlement biome), this is a descendant of ENVO_00000002. Which is now excluded.
 // dense settlement biome-ENVO_01000248 -> is now excluded
 
+// "Stream" exclude; "stream" acceptable
+$descs[] = "Genova, Cosmo (11 January 2022). How to Preserve a Squirrel Pelt For Fly Tying. Field & Stream. Retrieved 1 June 2024.";
+$descs[] = "Many fish live in the stream.";
+
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-$descs[] = "Many animals live in the dense settlement biome."; //ENVO_01000248 (dense settlement biome), this is a descendant of ENVO_00000002. Which is now excluded.
+$descs[] = "Genova, Cosmo (11 January 2022). How to Preserve a Squirrel Pelt For Fly Tying. Field & Stream. Retrieved 1 June 2024.";
+$descs[] = "Many fish live in the stream.";
 */
 
 $final = array();
@@ -283,6 +288,10 @@ foreach($IDs as $resource_id) {
         if($i == 55) {$s = "salt marsh-ENVO_00000054";             if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 56) {$s = "marsh-ENVO_00000035";                  if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
         if($i == 57) {$s = "";                                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
+        if($i == 58) {$s = "";                                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 59) {$s = "stream-ENVO_01000253";                  if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+
     }
     echo "\nerrors: [$resource_id][$errors errors]";
     $final[] =     "[$resource_id][$errors errors]";
