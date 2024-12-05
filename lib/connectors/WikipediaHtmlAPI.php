@@ -133,14 +133,27 @@ class WikipediaHtmlAPI
         */
 
         // remove temp dir
+        /* main operation
         recursive_rmdir($temp_dir);
+        */
         echo ("\n temporary directory removed: " . $temp_dir);
     }
     private function prepare_archive_for_access($dwca)
     {
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
+        /* main operation
         $paths = $func->extract_archive_file($dwca, "meta.xml", array('timeout' => 172800, 'expire_seconds' => 60*60*24*30)); //1 month expires
+        */
+
+        // /* during dev only
+        // print_r($paths); exit;
+        $paths = Array(
+            "archive_path"  => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_57553/",
+            "temp_dir"      => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_57553/"
+        );
+        // */
+
         $archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
         $harvester = new ContentArchiveReader(NULL, $archive_path);
