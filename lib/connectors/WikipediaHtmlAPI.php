@@ -193,7 +193,7 @@ class WikipediaHtmlAPI
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#TaxonBiology") self::save_to_html($rec['description'], $filename);
                 else continue;
                 */
-                break; //part of main operation, process only 1 record.
+                // break; //part of main operation, process only 1 record.
                 // if($i >= 100) break; //debug only
             }
         }
@@ -237,7 +237,7 @@ class WikipediaHtmlAPI
         $ending_chars = substr($html, strlen($bad_ending_chars)*-1);
         if($ending_chars == $bad_ending_chars) $html = substr($html, 0, strlen($html) - strlen($bad_ending_chars));
 
-        // remove bad starting chars
+        // remove bad starting chars e.g. '>'
         $bad_starting_chars = ">";
         $starting_chars = substr($html, 0, strlen($bad_starting_chars));
         if($starting_chars == $bad_starting_chars) {
@@ -281,9 +281,8 @@ class WikipediaHtmlAPI
         $sections[] = '<h2 id="Cited_literature">Cited literature</h2>';
         $sections[] = '<h2 id="Bibliography">Bibliography</h2>';
         $sections[] = '<h2 id="Literature">Literature</h2>';
-        // $sections[] = '';
-        // $sections[] = '';
-        // $sections[] = '';
+        $sections[] = '<h2 id="Refererence">Refererence</h2>';
+        $sections[] = '<h2 id="Referernces">Referernces</h2>';
         // $sections[] = '';
         // $sections[] = '';
         // $sections[] = '';
