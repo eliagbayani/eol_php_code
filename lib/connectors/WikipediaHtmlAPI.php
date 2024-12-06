@@ -133,9 +133,9 @@ class WikipediaHtmlAPI
         */
 
         // remove temp dir
-        /* main operation
+        // /* main operation
         recursive_rmdir($temp_dir);
-        */
+        // */
         echo ("\n temporary directory removed: " . $temp_dir);
         if(isset($this->debug)) print_r($this->debug);
     }
@@ -143,17 +143,17 @@ class WikipediaHtmlAPI
     {
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
-        /* main operation
+        // /* main operation
         $paths = $func->extract_archive_file($dwca, "meta.xml", array('timeout' => 172800, 'expire_seconds' => 60*60*24*30)); //1 month expires
-        */
+        // */
 
-        // /* during dev only
+        /* during dev only
         // print_r($paths); exit;
         $paths = Array(
             "archive_path"  => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_57553/",
             "temp_dir"      => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_57553/"
         );
-        // */
+        */
 
         $archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
@@ -193,7 +193,7 @@ class WikipediaHtmlAPI
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#TaxonBiology") self::save_to_html($rec['description'], $filename);
                 else continue;
                 */
-                // break; //part of main operation, process only 1 record.
+                break; //part of main operation, process only 1 record.
                 // if($i >= 100) break; //debug only
             }
         }
