@@ -190,6 +190,13 @@ class WikipediaRegionalAPI
     }
     function get_comprehensive_desc($html)
     {
+        // /* New: Dec 7, 2024
+        if(!isset($this->func_WikipediaHtmlAPI)) {
+            require_library('connectors/WikipediaHtmlAPI');
+            $this->func_WikipediaHtmlAPI = new WikipediaHtmlAPI();
+        }
+        // */
+
         $lang = $this->language_code;
         if(self::is_orientation_right2left($html)) {
             // echo "\n$html\n";
@@ -444,7 +451,7 @@ class WikipediaRegionalAPI
         // Comprehensive Description
         $media['identifier']             = md5($rec['permalink']."Comprehensive Description");
         $media['title']                  = $rec['title'];
-        $media['description']            = $rec['comprehensive_desc'];
+        $media['description']            = $this->func_WikipediaHtmlAPI->remove_wiki_sections($rec['comprehensive_desc']);
         $media['CVterm']                 = 'http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description';
         // below here is same for the next text object
         $media['taxonID']                = $t->taxonID;
