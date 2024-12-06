@@ -193,7 +193,7 @@ class WikipediaHtmlAPI
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#TaxonBiology") self::save_to_html($rec['description'], $filename);
                 else continue;
                 */
-                // break; //part of main operation, process only 1 record.
+                break; //part of main operation, process only 1 record.
                 // if($i >= 100) break; //debug only
             }
         }
@@ -231,6 +231,20 @@ class WikipediaHtmlAPI
     }
     function remove_wiki_sections($html)
     {
+        // remove bad end chars e.g. '<div class="'
+        $html = trim($html);
+        $bad_ending_chars = '<div class="';
+        $ending_chars = substr($html, strlen($bad_ending_chars)*-1);
+        if($ending_chars == $bad_ending_chars) $html = substr($html, 0, strlen($html) - strlen($bad_ending_chars));
+
+        // remove bad starting chars
+        $bad_starting_chars = ">";
+        $starting_chars = substr($html, 0, strlen($bad_starting_chars));
+        if($starting_chars == $bad_starting_chars) {
+            $html = substr($html, strlen($bad_starting_chars), strlen($html));
+            $html = trim($html);
+        }
+
         $sections = array('<h2 id="See_also">See also</h2>', '<h2 id="Notes">Notes</h2>', '<h2 id="References">References</h2>', '<h2 id="External_links">External links</h2>');
         $sections[] = '<h2 id="Footnotes">Footnotes</h2>';
         $sections[] = '<h2 id="Notes_and_references">Notes and references</h2>';
@@ -266,7 +280,7 @@ class WikipediaHtmlAPI
         $sections[] = '<h2 id="References"><big>References</big></h2>';
         $sections[] = '<h2 id="Cited_literature">Cited literature</h2>';
         $sections[] = '<h2 id="Bibliography">Bibliography</h2>';
-        // $sections[] = '';
+        $sections[] = '<h2 id="Literature">Literature</h2>';
         // $sections[] = '';
         // $sections[] = '';
         // $sections[] = '';
