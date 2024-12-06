@@ -231,7 +231,7 @@ class WikipediaHtmlAPI
     }
     function remove_wiki_sections($html)
     {
-        // remove bad end chars e.g. '<div class="'
+        // remove bad ending chars e.g. '<div class="'
         $html = trim($html);
         $bad_ending_chars = '<div class="';
         $ending_chars = substr($html, strlen($bad_ending_chars)*-1);
@@ -288,12 +288,10 @@ class WikipediaHtmlAPI
         // $sections[] = '';
         $sections[] = '<h2 id="References[3]"><span id="References.5B3.5D"></span>References<sup id="cite_ref-:0_3-1"><a href="#cite_note-:0-3"><span>[</span>3<span>]</span></a></sup></h2>';
         $sections[] = '<h2 id="References[3]"><span id="References.5B3.5D"></span>References<sup id="cite_ref-3"><a href="#cite_note-3"><span>[</span>3<span>]</span></a></sup></h2>';
-        
         // print_r($sections); exit;
         
         // <h2 id="References">References</h2></div>
-        if(preg_match_all("/<h2 id=(.*?)<\/h2>/ims", $html, $arr)) {
-            // print_r($arr[1]);
+        if(preg_match_all("/<h2 id=(.*?)<\/h2>/ims", $html, $arr)) { // print_r($arr[1]);
             foreach($arr[1] as $str) $arr2[] = "<h2 id=" . $str . "</h2>";
             // print_r($arr2);
             $start_section = false;
