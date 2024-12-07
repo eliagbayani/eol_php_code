@@ -246,7 +246,16 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $excluded_rowtypes = array();
         
         // /* -------------------- start customize --------------------
-        if($this->param['resource_id'] == '617_ENV') $excluded_rowtypes = array('http://eol.org/schema/media/document'); //Wikipedia EN -> creates a new DwCA
+        if($this->param['resource_id'] == '617_ENV') { //Wikipedia EN -> creates a new DwCA
+            $excluded_rowtypes = array('http://eol.org/schema/media/document');
+    
+            // /* New: Dec 7, 2024
+            if(!isset($this->func_WikipediaHtmlAPI)) {
+                require_library('connectors/WikipediaHtmlAPI');
+                $this->func_WikipediaHtmlAPI = new WikipediaHtmlAPI();
+            }
+            // */
+        }
         elseif($this->param['resource_id'] == '21_ENV') $excluded_rowtypes = array(); //AmphibiaWeb text -> doesn't create a new DwCA
         if(in_array($this->param['resource_id'], array("10088_5097_ENV", "10088_6943_ENV", "118935_ENV", "120081_ENV", "120082_ENV", "118986_ENV", "118920_ENV", "120083_ENV", 
             "118237_ENV", "MoftheAES_ENV", "30355_ENV", "27822_ENV", "30354_ENV", "119035_ENV", "118946_ENV", "118936_ENV", "118950_ENV",
@@ -492,6 +501,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 $this->ontologies = "envo"; //always 'envo' unless WoRMS' distribution texts.
                 
                 // /* -------------------- start customize --------------------
+                if($this->param['resource_id'] == '617_ENV') {
+                    $desc = $rec['http://purl.org/dc/terms/description'];
+                    $desc = $this->func_WikipediaHtmlAPI->remove_start_ending_chars($desc); //no longer needed here, but just in case.
+                    $desc = $this->func_WikipediaHtmlAPI->remove_wiki_sections($desc);
+                    $rec['http://purl.org/dc/terms/description'] = $desc;
+                }
+
                 if($this->param['resource_id'] == '26_ENV') { //for WoRMS only with title = 'habitat' and 'distribution' will be processed.
                     if(strtolower($rec['http://purl.org/dc/terms/title']) == 'habitat') @$this->text_that_are_habitat++;
                     elseif(strtolower($rec['http://purl.org/dc/terms/title']) == 'distribution') $this->ontologies = "eol-geonames";

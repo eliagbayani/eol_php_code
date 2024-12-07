@@ -184,6 +184,7 @@ class WikipediaHtmlAPI
             
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description") {
                     $desc = $rec['description'];
+                    $desc = self::remove_start_ending_chars($desc);
                     $desc = self::remove_wiki_sections($desc);
                     self::save_to_html($desc, $filename);
                     $savedYN = true;
@@ -229,14 +230,8 @@ class WikipediaHtmlAPI
             }
         }
     }
-    function remove_wiki_sections($html)
+    function remove_start_ending_chars($html) //NEW: Dec 2024
     {
-        // remove bad ending chars e.g. '<div class="'
-        $html = trim($html);
-        $bad_ending_chars = '<div class="';
-        $ending_chars = substr($html, strlen($bad_ending_chars)*-1);
-        if($ending_chars == $bad_ending_chars) $html = substr($html, 0, strlen($html) - strlen($bad_ending_chars));
-
         // remove bad starting chars e.g. '>'
         $bad_starting_chars = ">";
         $starting_chars = substr($html, 0, strlen($bad_starting_chars));
@@ -245,6 +240,18 @@ class WikipediaHtmlAPI
             $html = trim($html);
         }
 
+        // remove bad ending chars e.g. '<div class="'
+        $html = trim($html);
+        $bad_ending_chars = '<div class="';
+        $ending_chars = substr($html, strlen($bad_ending_chars)*-1);
+        if($ending_chars == $bad_ending_chars) {
+            $html = substr($html, 0, strlen($html) - strlen($bad_ending_chars));
+        }
+        return $html;
+    }
+    function remove_wiki_sections($html) //NEW: Dec 2024
+    {
+        // below start remove wiki sections:
         $sections = array('<h2 id="See_also">See also</h2>', '<h2 id="Notes">Notes</h2>', '<h2 id="References">References</h2>', '<h2 id="External_links">External links</h2>');
         $sections[] = '<h2 id="Footnotes">Footnotes</h2>';
         $sections[] = '<h2 id="Notes_and_references">Notes and references</h2>';
