@@ -185,6 +185,14 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         if($this->param['resource_id'] == '21_ENV') { //AmphibiaWeb text: entire resource was processed.
             $this->descendants_of_saline_water = self::get_descendants_of_habitat_group('saline water'); //saline water. Per Jen: https://eol-jira.bibalex.org/browse/DATA-1870?focusedCommentId=65409&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-65409
         }
+        if($this->param['resource_id'] == '617_ENV') { //Wikipedia EN -> creates a new DwCA    
+            // /* New: Dec 7, 2024
+            if(!isset($this->func_WikipediaHtmlAPI)) {
+                require_library('connectors/WikipediaHtmlAPI');
+                $this->func_WikipediaHtmlAPI = new WikipediaHtmlAPI();
+            }
+            // */
+        }
         // ------------------------- end customize ------------------------- */
         
         self::lookup_opendata_resource();
@@ -247,14 +255,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         
         // /* -------------------- start customize --------------------
         if($this->param['resource_id'] == '617_ENV') { //Wikipedia EN -> creates a new DwCA
-            $excluded_rowtypes = array('http://eol.org/schema/media/document');
-    
-            // /* New: Dec 7, 2024
-            if(!isset($this->func_WikipediaHtmlAPI)) {
-                require_library('connectors/WikipediaHtmlAPI');
-                $this->func_WikipediaHtmlAPI = new WikipediaHtmlAPI();
-            }
-            // */
+            $excluded_rowtypes = array('http://eol.org/schema/media/document');    
         }
         elseif($this->param['resource_id'] == '21_ENV') $excluded_rowtypes = array(); //AmphibiaWeb text -> doesn't create a new DwCA
         if(in_array($this->param['resource_id'], array("10088_5097_ENV", "10088_6943_ENV", "118935_ENV", "120081_ENV", "120082_ENV", "118986_ENV", "118920_ENV", "120083_ENV", 
