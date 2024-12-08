@@ -145,14 +145,14 @@ class WikipediaHtmlAPI
         $func = new INBioAPI();
         // /* main operation
         $paths = $func->extract_archive_file($dwca, "meta.xml", array('timeout' => 172800, 'expire_seconds' => 60*60*24*30)); //1 month expires
-        // print_r($paths); exit;
+        print_r($paths); exit;
         // */
 
         /* during dev only
         // print_r($paths); exit;
         $paths = Array(
-            "archive_path"  => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_57553/",
-            "temp_dir"      => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_57553/"
+            "archive_path"  => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_03066/",
+            "temp_dir"      => "/Volumes/AKiTiO4/eol_php_code_tmp/dir_03066/"
         );
         */
 
@@ -186,8 +186,8 @@ class WikipediaHtmlAPI
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description") { //echo "\ngoes here 2\n";
                     $desc = $rec['description'];
                     $lang = $rec['language'];
-                    // $desc = self::remove_start_ending_chars($desc, $lang);
-                    // $desc = self::remove_wiki_sections($desc, $rec); //$rec here is just for debug
+                    $desc = self::remove_start_ending_chars($desc, $lang);
+                    $desc = self::remove_wiki_sections($desc, $rec); //$rec here is just for debug
                     self::save_to_html($desc, $filename);
                     $savedYN = true;
                 }
@@ -302,7 +302,7 @@ class WikipediaHtmlAPI
         $sections[] = '<h2 id="Refererence">Refererence</h2>';
         $sections[] = '<h2 id="Referernces">Referernces</h2>';
         $sections[] = '<h2 id="Identification">Identification</h2>';
-        $sections[] = '<h2 id="Taxonomy">Taxonomy</h2>';
+        // $sections[] = '<h2 id="Taxonomy">Taxonomy</h2>';     //don't add this, it will remove many good information
         // $sections[] = '<h2 id="Subspecies">Subspecies</h2>'; //don't add this, it will remove many good information
         // $sections[] = '<h2 id="Species">Species</h2>';       //don't add this, it will remove many good information
         $sections[] = '<h2 id="Other_Information">Other Information</h2>';
