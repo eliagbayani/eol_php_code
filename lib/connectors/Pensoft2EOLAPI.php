@@ -407,6 +407,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         // /* un-comment in real operation
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
+        $download_options['expire_seconds'] = 1;
         $paths = $func->extract_archive_file($this->DwCA_URLs[$resource], "meta.xml", $download_options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
         print_r($paths); //exit("\n-exit muna-\n");
         // */
