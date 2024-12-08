@@ -186,8 +186,8 @@ class WikipediaHtmlAPI
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description") { //echo "\ngoes here 2\n";
                     $desc = $rec['description'];
                     $lang = $rec['language'];
-                    $desc = self::remove_start_ending_chars($desc, $lang);
-                    $desc = self::remove_wiki_sections($desc, $rec); //$rec here is just for debug
+                    // $desc = self::remove_start_ending_chars($desc, $lang);
+                    // $desc = self::remove_wiki_sections($desc, $rec); //$rec here is just for debug
                     self::save_to_html($desc, $filename);
                     $savedYN = true;
                 }
@@ -303,8 +303,8 @@ class WikipediaHtmlAPI
         $sections[] = '<h2 id="Referernces">Referernces</h2>';
         $sections[] = '<h2 id="Identification">Identification</h2>';
         $sections[] = '<h2 id="Taxonomy">Taxonomy</h2>';
-        $sections[] = '<h2 id="Subspecies">Subspecies</h2>';
-        $sections[] = '<h2 id="Species">Species</h2>'; //Eli just added this
+        // $sections[] = '<h2 id="Subspecies">Subspecies</h2>'; //don't add this, it will remove many good information
+        // $sections[] = '<h2 id="Species">Species</h2>';       //don't add this, it will remove many good information
         $sections[] = '<h2 id="Other_Information">Other Information</h2>';
         $sections[] = '<h2 id="Gallery">Gallery</h2>';
         // $sections[] = '';    
