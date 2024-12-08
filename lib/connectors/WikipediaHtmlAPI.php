@@ -135,8 +135,8 @@ class WikipediaHtmlAPI
         // remove temp dir
         // /* main operation
         recursive_rmdir($temp_dir);
-        // */
         echo ("\n temporary directory removed: " . $temp_dir);
+        // */
         if(isset($this->debug)) print_r($this->debug);
     }
     private function prepare_archive_for_access($dwca)
@@ -145,6 +145,7 @@ class WikipediaHtmlAPI
         $func = new INBioAPI();
         // /* main operation
         $paths = $func->extract_archive_file($dwca, "meta.xml", array('timeout' => 172800, 'expire_seconds' => 60*60*24*30)); //1 month expires
+        // print_r($paths); exit;
         // */
 
         /* during dev only
@@ -168,7 +169,7 @@ class WikipediaHtmlAPI
         return array("harvester" => $harvester, "temp_dir" => $temp_dir, "tables" => $tables, "index" => $index);
     }
     private function process_extension($media_tab, $filename)
-    {
+    {   //echo "\ngoes here 1\n";
         $i = 0; $savedYN = false;
         foreach(new FileIterator($media_tab) as $line => $row) { $i++; 
             if($i == 1) $fields = explode("\t", $row);
@@ -182,10 +183,11 @@ class WikipediaHtmlAPI
                 }
                 $rec = array_map('trim', $rec); // print_r($rec); exit;
             
-                if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description") {
+                if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description") { //echo "\ngoes here 2\n";
                     $desc = $rec['description'];
-                    $desc = self::remove_start_ending_chars($desc);
-                    $desc = self::remove_wiki_sections($desc);
+                    $lang = $rec['language'];
+                    $desc = self::remove_start_ending_chars($desc, $lang);
+                    $desc = self::remove_wiki_sections($desc, $rec); //$rec here is just for debug
                     self::save_to_html($desc, $filename);
                     $savedYN = true;
                 }
@@ -230,14 +232,23 @@ class WikipediaHtmlAPI
             }
         }
     }
-    function remove_start_ending_chars($html) //NEW: Dec 2024
+    function remove_start_ending_chars($html, $language = false) //NEW: Dec 2024
     {
         // remove bad starting chars e.g. '>'
-        $bad_starting_chars = ">";
-        $starting_chars = substr($html, 0, strlen($bad_starting_chars));
-        if($starting_chars == $bad_starting_chars) {
-            $html = substr($html, strlen($bad_starting_chars), strlen($html));
-            $html = trim($html);
+        /* other bad staring chars from other languages
+        lang="ab" dir="ltr">
+        lang="ang" dir="ltr">
+        lang="atj" dir="ltr">
+        lang="fj" dir="ltr">
+        */
+        $bad_start_strings = array(">");
+        if($language) $bad_start_strings[] = 'lang="'.$language.'" dir="ltr">';
+        foreach($bad_start_strings as $bad_starting_chars) {
+            $starting_chars = substr($html, 0, strlen($bad_starting_chars));
+            if($starting_chars == $bad_starting_chars) {
+                $html = substr($html, strlen($bad_starting_chars), strlen($html));
+                $html = trim($html);
+            }    
         }
 
         // remove bad ending chars e.g. '<div class="'
@@ -249,7 +260,7 @@ class WikipediaHtmlAPI
         }
         return $html;
     }
-    function remove_wiki_sections($html) //NEW: Dec 2024
+    function remove_wiki_sections($html, $rec = array()) //NEW: Dec 2024 | $rec here is just for debug
     {
         // below start remove wiki sections:
         $sections = array('<h2 id="See_also">See also</h2>', '<h2 id="Notes">Notes</h2>', '<h2 id="References">References</h2>', '<h2 id="External_links">External links</h2>');
@@ -290,6 +301,13 @@ class WikipediaHtmlAPI
         $sections[] = '<h2 id="Literature">Literature</h2>';
         $sections[] = '<h2 id="Refererence">Refererence</h2>';
         $sections[] = '<h2 id="Referernces">Referernces</h2>';
+        $sections[] = '<h2 id="Identification">Identification</h2>';
+        $sections[] = '<h2 id="Taxonomy">Taxonomy</h2>';
+        $sections[] = '<h2 id="Subspecies">Subspecies</h2>';
+        $sections[] = '<h2 id="Species">Species</h2>'; //Eli just added this
+        $sections[] = '<h2 id="Other_Information">Other Information</h2>';
+        $sections[] = '<h2 id="Gallery">Gallery</h2>';
+        // $sections[] = '';    
         // $sections[] = '';
         // $sections[] = '';
         // $sections[] = '';
@@ -309,7 +327,7 @@ class WikipediaHtmlAPI
                 }
             }
             if(!$start_section) {
-                echo("\nCannot find start section.\n");
+                echo("\nCannot find start section.\n"); print_r(@$rec['furtherInformationURL']);
                 print_r($arr2);
                 @$this->debug['no start section']++;
             }

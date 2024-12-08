@@ -505,7 +505,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 if($this->param['resource_id'] == '617_ENV') {
                     $desc = $rec['http://purl.org/dc/terms/description'];
                     $desc = $this->func_WikipediaHtmlAPI->remove_start_ending_chars($desc); //no longer needed here, but just in case.
-                    $desc = $this->func_WikipediaHtmlAPI->remove_wiki_sections($desc);
+                    $desc = $this->func_WikipediaHtmlAPI->remove_wiki_sections($desc, $rec); //2nd param $rec here is just for debug
                     $rec['http://purl.org/dc/terms/description'] = $desc;
                 }
 
