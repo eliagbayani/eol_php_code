@@ -451,7 +451,7 @@ class WikipediaRegionalAPI
         // Comprehensive Description
         $media['identifier']             = md5($rec['permalink']."Comprehensive Description");
         $media['title']                  = $rec['title'];
-        $media['description']            = $this->func_WikipediaHtmlAPI->remove_start_ending_chars($rec['comprehensive_desc']);
+        $media['description']            = $this->func_WikipediaHtmlAPI->remove_start_ending_chars($rec['comprehensive_desc'], $this->language_code);
         $media['CVterm']                 = 'http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description';
         // below here is same for the next text object
         $media['taxonID']                = $t->taxonID;
