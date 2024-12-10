@@ -1342,7 +1342,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         "lbl": "hill",
         "context": "Michael R. and Joseph <b>Hill</b>",
         */
-        $words = array('urban', 'hill', 'heath', 'stream'); //Urban C. -> is a name
+        $words = array('urban', 'hill', 'heath', 'stream', 'corrie'); //Urban C. -> is a name | coombe. Many can be included here but since they are now blacklisted so no need.
         foreach($words as $word) {
             if($rek['lbl'] == $word) {
                 if(strpos($rek['context'], $word) !== false) return true;   //if small letter then OK   //string is found

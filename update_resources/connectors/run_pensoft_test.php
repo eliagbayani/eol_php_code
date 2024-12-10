@@ -130,12 +130,12 @@ $descs[] = "Many animals live in the dense settlement biome."; //ENVO_01000248 (
 // "Stream" exclude; "stream" acceptable
 $descs[] = "Genova, Cosmo (11 January 2022). How to Preserve a Squirrel Pelt For Fly Tying. Field & Stream. Retrieved 1 June 2024.";
 $descs[] = "Many fish live in the stream.";
+$descs[] = "A taxon named Trifolium occidentale Coombe. I like to go to these places cwm, coombe, corrie";
 
 /*
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-$descs[] = "Genova, Cosmo (11 January 2022). How to Preserve a Squirrel Pelt For Fly Tying. Field & Stream. Retrieved 1 June 2024.";
-$descs[] = "Many fish live in the stream.";
+$descs[] = "A taxon named Trifolium occidentale Coombe. I like to go to these places cwm, coombe, corrie";
 */
 
 $final = array();
@@ -290,7 +290,8 @@ foreach($IDs as $resource_id) {
         if($i == 57) {$s = "";                                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
         if($i == 58) {$s = "";                                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
-        if($i == 59) {$s = "stream-ENVO_01000253";                  if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 59) {$s = "stream-ENVO_01000253";                 if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
+        if($i == 60) {$s = "";                                     if($ret == $s) echo " -OK-"; else {echo " -ERROR- [$s]"; $errors++;} }
 
     }
     echo "\nerrors: [$resource_id][$errors errors]";
