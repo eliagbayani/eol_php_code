@@ -145,7 +145,7 @@ class WikipediaHtmlAPI
         $func = new INBioAPI();
         // /* main operation
         $paths = $func->extract_archive_file($dwca, "meta.xml", array('timeout' => 172800, 'expire_seconds' => 60*60*24*30)); //1 month expires
-        print_r($paths); exit;
+        // print_r($paths); exit;
         // */
 
         /* during dev only
