@@ -12,8 +12,8 @@ $func = new WikipediaHtmlAPI();
 
 // /* working OK - during dev only
 $filenames = array("80", "es", "957");
-$filenames = array("be-x-old", "zh-min-nan");
-$filenames = array("80");
+// $filenames = array("be-x-old", "zh-min-nan");
+// $filenames = array("80");
 foreach($filenames as $filename) {
     $file = "wikipedia-".$filename;
     if(in_array($filename, array("80", "957"))) $file = $filename;
