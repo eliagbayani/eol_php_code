@@ -186,7 +186,7 @@ class WikipediaHtmlAPI
                 if($rec['CVterm'] == "http://rs.tdwg.org/ontology/voc/SPMInfoItems#Description") { //echo "\ngoes here 2\n";
                     $desc = $rec['description'];
                     $lang = $rec['language'];
-                    // $desc = self::remove_start_ending_chars($desc, $lang);
+                    $desc = self::remove_start_ending_chars($desc, $lang);
                     /* Designed when generating individual HTML pages for languages, NOT to remove sections. Comment in real operation.
                     $desc = self::remove_wiki_sections($desc, $rec); //$rec here is just for debug
                     */
