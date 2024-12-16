@@ -53,7 +53,7 @@ class NationalChecklistsAPI
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); print_r($rec); //exit("\nstop muna\n");
+                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
                 /*Array(
                     [specieskey] => 1000148
                     [countrycode] => JP
