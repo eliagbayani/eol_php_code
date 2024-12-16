@@ -46,8 +46,6 @@ class GBIFdownloadRequestAPI
         if($this->resource_id == 'GBIF_map_harvest') $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF';
         elseif($this->resource_id == 'NMNH_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/NMNH_images';
         elseif($this->resource_id == 'Country_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Country_checklists';
-
-        
         elseif($this->resource_id == 'iNat_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/iNat_images';
         elseif($this->resource_id == 'Data_coverage')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Data_coverage';
         elseif($this->resource_id == 'GBIF_Netherlands')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_Netherlands';
@@ -320,15 +318,47 @@ class GBIFdownloadRequestAPI
 
         /* For all except $this->resource_id == 'GBIF_map_harvest' */
         
-        if($this->resource_id == 'Data_coverage') $format = 'SPECIES_LIST'; //'SPECIESLIST';
-        else                                      $format = 'DWCA';
+        if($this->resource_id == 'Data_coverage')           $format = 'SPECIES_LIST'; //'SPECIESLIST';
+        elseif($this->resource_id == 'Country_checklists')  $format = 'SQL_TSV_ZIP';
+        else                                                $format = 'DWCA';
 
         $param = Array( 'creator' => GBIF_USERNAME,
                         'notificationAddresses' => Array(0 => GBIF_EMAIL),
                         'sendNotification' => 1,
                         'format' => $format,
                         'predicate' => $predicate);
+
+        if($this->resource_id == 'Country_checklists') {
+            unset($param['predicate']);
+            $param['sql'] = "SELECT specieskey, countrycode
+            FROM occurrence
+            WHERE
+            specieskey IS NOT NULL
+            AND countrycode IS NOT NULL
+            AND occurrencestatus = 'PRESENT'
+            AND (
+                basisofrecord = 'HUMAN_OBSERVATION'
+                OR basisofrecord = 'MACHINE_OBSERVATION'
+                OR basisofrecord = 'OCCURRENCE'
+                OR basisofrecord = 'LIVING_SPECIMEN'
+                OR basisofrecord = 'MATERIAL_SAMPLE'
+            )
+            AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
+            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')
+            AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH')
+            GROUP BY specieskey, countrycode";
+        }
         return json_encode($param);
+        /* from GBIF API Downloads: Country_checklists
+            {
+            "sendNotification": true,
+            "notificationAddresses": [
+                "eagbayani@eol.org" 
+            ],
+            "format": "SQL_TSV_ZIP", 
+            "sql": "SELECT..." 
+            }        
+        */
     }
     private function save_json_2file($json)
     {
