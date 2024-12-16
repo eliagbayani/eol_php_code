@@ -46,6 +46,7 @@ class NationalChecklistsAPI
     {   echo "\nReading file: [$file]\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(($i % 1000) == 0) sleep(30);
             if(($i % 1000) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
             else {
@@ -70,7 +71,7 @@ class NationalChecklistsAPI
         
 
             }
-            if($i >= 20) break;
+            if($i >= 25) break;
         }
     }
     private function download_extract_gbif_zip_file()
