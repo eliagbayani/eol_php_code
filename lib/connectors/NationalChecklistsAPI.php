@@ -46,7 +46,7 @@ class NationalChecklistsAPI
     {   echo "\nReading file: [$file]\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 200000) == 0) echo "\n $i ";
+            if(($i % 1000) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
             else {
                 if(!$row) continue;
@@ -61,16 +61,16 @@ class NationalChecklistsAPI
                 $options = $this->download_options;
                 $options['expire_seconds'] = false;
                 if($json = Functions::lookup_with_cache($this->service['country'].$rec['countrycode'], $options)) {
-                    print_r(json_decode($json, true));
+                    // print_r(json_decode($json, true));
                 }
                 if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
-                    print_r(json_decode($json, true));
+                    // print_r(json_decode($json, true));
                 }
-                break;
+                // break;
         
 
             }
-            if($i >= 3) break;
+            if($i >= 20) break;
         }
     }
     private function download_extract_gbif_zip_file()
