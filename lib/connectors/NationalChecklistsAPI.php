@@ -76,7 +76,7 @@ class NationalChecklistsAPI
     private function download_extract_gbif_zip_file()
     {
         echo "\ndownload_extract_gbif_zip_file...\n";
-        /* main operation - works OK
+        // /* main operation - works OK
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $ret = $func->download_extract_zip_file($this->zip_file, $this->destination); // echo "\n[$ret]\n";
@@ -86,8 +86,8 @@ class NationalChecklistsAPI
             return $csv_path;
         }
         return false;
-        */
-        return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/0036064-241126133413365.csv"; //during dev only
+        // */
+        // return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/0036064-241126133413365.csv"; //during dev only
 
 
         /* un-comment in real operation
