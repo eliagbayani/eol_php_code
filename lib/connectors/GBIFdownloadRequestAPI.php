@@ -351,12 +351,12 @@ class GBIFdownloadRequestAPI
         return json_encode($param);
         /* from GBIF API Downloads: Country_checklists
             {
-            "sendNotification": true,
-            "notificationAddresses": [
-                "eagbayani@eol.org" 
-            ],
-            "format": "SQL_TSV_ZIP", 
-            "sql": "SELECT..." 
+                "sendNotification": true,
+                "notificationAddresses": [
+                    "eagbayani@eol.org" 
+                ],
+                "format": "SQL_TSV_ZIP", 
+                "sql": "SELECT..." 
             }        
         */
     }
