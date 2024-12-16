@@ -71,7 +71,7 @@ class NationalChecklistsAPI
         
 
             }
-            if($i >= 25) break;
+            // if($i >= 25) break;
         }
     }
     private function download_extract_gbif_zip_file()
