@@ -25,6 +25,8 @@ class NationalChecklistsAPI
             $this->destination = "/Volumes/AKiTiO4/other_files/GBIF_occurrence/";
             $this->zip_file    = $this->destination.$what."_DwCA.zip"; //manualy created, zip copied from editors.eol.org
         }
+        $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
+        $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
     }
     function start()
     {
@@ -33,24 +35,50 @@ class NationalChecklistsAPI
         $func = new GBIFdownloadRequestAPI('Country_checklists');
         $key = $func->retrieve_key_for_taxon('Country_checklists');
         echo "\nkey is: [$key]\n";
-        exit("\nstop muna\n");
         */
-        $csv_path = self::download_extract_gbif_zip_file();
+        $tsv_path = self::download_extract_gbif_zip_file();
+        echo "\ncsv_path: [$tsv_path]\n";
+        self::parse_tsv_file($tsv_path);
+
+        exit("\n-stop muna-\n");
+    }
+    private function parse_tsv_file($file)
+    {   echo "\nReading file: [$file]\n";
+        $i = 0; $final = array();
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(($i % 200000) == 0) echo "\n $i ";
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); print_r($rec); //exit("\nstop muna\n");
+                /*Array(
+                    [specieskey] => 1000148
+                    [countrycode] => JP
+                )*/
+                $options = $this->download_options;
+                $options['expire_seconds'] = false;
+                if($json = Functions::lookup_with_cache($this->service['country'].$rec['countrycode'], $options)) {
+                    print_r(json_decode($json, true));
+                }
+                if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
+                    print_r(json_decode($json, true));
+                }
+                break;
         
 
+            }
+            if($i >= 3) break;
+        }
     }
     private function download_extract_gbif_zip_file()
     {
         echo "\ndownload_extract_gbif_zip_file...\n";
-        // /* un-comment in real operation
+        /* main operation - works OK
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
-        // $options = $this->download_options;
-        // $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
-        // $paths = $func->extract_zip_file($this->zip_file, $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        // print_r($paths); exit; //good debug
-
-        /* main operation - works OK
         $ret = $func->download_extract_zip_file($this->zip_file, $this->destination); // echo "\n[$ret]\n";
         if(preg_match("/inflating:(.*?)elix/ims", $ret.'elix', $arr)) {
             $csv_path = trim($arr[1]); echo "\n[$csv_path]\n";
@@ -59,10 +87,17 @@ class NationalChecklistsAPI
         }
         return false;
         */
-        return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/0036064-241126133413365.csv";
+        return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/0036064-241126133413365.csv"; //during dev only
 
 
-        // */
+        /* un-comment in real operation
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        // $options = $this->download_options;
+        // $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
+        // $paths = $func->extract_zip_file($this->zip_file, $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+        // print_r($paths); exit; //good debug
+        */
 
         /* sample output:
         Array(
