@@ -29,9 +29,6 @@ class GBIFdownloadRequestAPI
     function __construct($resource_id)
     {
         $this->resource_id = $resource_id;
-        $this->gbif_username = 'eli_agbayani';
-        $this->gbif_pw = 'ile173';
-        $this->gbif_email = 'eagbayani@eol.org';
         
         // /* for resource_id equals 'GBIF_map_harvest'
         $this->taxon['Gadus ogac'] = 2415827;
@@ -48,6 +45,9 @@ class GBIFdownloadRequestAPI
         
         if($this->resource_id == 'GBIF_map_harvest') $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF';
         elseif($this->resource_id == 'NMNH_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/NMNH_images';
+        elseif($this->resource_id == 'Country_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Country_checklists';
+
+        
         elseif($this->resource_id == 'iNat_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/iNat_images';
         elseif($this->resource_id == 'Data_coverage')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Data_coverage';
         elseif($this->resource_id == 'GBIF_Netherlands')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_Netherlands';
@@ -75,7 +75,7 @@ class GBIFdownloadRequestAPI
         curl --include --user userName:PASSWORD --header "Content-Type: application/json" --data @query.json https://api.gbif.org/v1/occurrence/download/request
         */
         $filename = $this->destination_path.'/query.json';
-        $cmd = 'curl --insecure --include --user '.$this->gbif_username.':'.$this->gbif_pw.' --header "Content-Type: application/json" --data @'.$filename.' -s https://api.gbif.org/v1/occurrence/download/request';
+        $cmd = 'curl --insecure --include --user '.GBIF_USERNAME.':'.GBIF_PW.' --header "Content-Type: application/json" --data @'.$filename.' -s https://api.gbif.org/v1/occurrence/download/request';
         echo "\ncmd:\n[$cmd]\n";
         $output = shell_exec($cmd);
         echo "\nRequest output:\n[$output]\n";
@@ -118,7 +118,7 @@ class GBIFdownloadRequestAPI
             if(!self::generate_sh_file($taxon_group)) return false;
         }
         */
-        else { //for NMNH_images and the 6 GBIF countries and iNat_images and Data_coverage
+        else { //for NMNH_images and the 6 GBIF countries and iNat_images and Data_coverage and Country_checklists
             $taxon_group = $this->resource_id;
             if(!self::generate_sh_file($taxon_group)) return false;
         }
@@ -157,8 +157,8 @@ class GBIFdownloadRequestAPI
 
             else $taxon_array = Array("type" => "equals", "key" => "TAXON_KEY", "value" => $taxon[$taxon_group]);
             
-            $param = Array( 'creator' => $this->gbif_username,
-                            'notificationAddresses' => Array(0 => $this->gbif_email),
+            $param = Array( 'creator' => GBIF_USERNAME,
+                            'notificationAddresses' => Array(0 => GBIF_EMAIL),
                             'sendNotification' => 1,
                             'format' => 'DWCA',
                             'predicate' => Array(
@@ -238,6 +238,7 @@ class GBIFdownloadRequestAPI
         From the 2nd box. Click 'API' to get the json format of the request. Then in php run below, to get the array value.
         $arr = json_decode($json, true);
         */
+        //==================================================================================================================================
         
         //==================================================================================================================================
         $gbif_countries = array("GBIF_Netherlands", "GBIF_France", "GBIF_Germany", "GBIF_Brazil", "GBIF_Sweden", "GBIF_UnitedKingdom");
@@ -318,11 +319,12 @@ class GBIFdownloadRequestAPI
         //==================================================================================================================================
 
         /* For all except $this->resource_id == 'GBIF_map_harvest' */
-        $format = 'DWCA';
+        
         if($this->resource_id == 'Data_coverage') $format = 'SPECIES_LIST'; //'SPECIESLIST';
+        else                                      $format = 'DWCA';
 
-        $param = Array( 'creator' => $this->gbif_username,
-                        'notificationAddresses' => Array(0 => $this->gbif_email),
+        $param = Array( 'creator' => GBIF_USERNAME,
+                        'notificationAddresses' => Array(0 => GBIF_EMAIL),
                         'sendNotification' => 1,
                         'format' => $format,
                         'predicate' => $predicate);
