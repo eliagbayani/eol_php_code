@@ -310,7 +310,7 @@ class GBIFdownloadRequestAPI
                 'value' => 'present',
                 'matchCase' => ''
             );
-        } //end NMNH_images
+        } //end Data_coverage
         /* from its download DOI: https://doi.org/10.15468/dl.y5bevt
         From the 2nd box. Click 'API' to get the json format of the request. Then in php run below, to get the array value.
         $arr = json_decode($json, true);
