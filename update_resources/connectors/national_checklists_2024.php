@@ -16,7 +16,7 @@ $timestart = time_elapsed();
 $params['jenkins_or_cron']   = @$argv[1]; //irrelevant here
 $params['json']              = @$argv[2]; //useful here
 $fields = json_decode($params['json'], true);
-$counter = $fields['counter'];
+$counter = @$fields['counter'];
 
 // /* //main operation
 $what = 'Country_checklists';

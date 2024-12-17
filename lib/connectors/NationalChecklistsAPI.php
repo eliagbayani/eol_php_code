@@ -38,11 +38,41 @@ class NationalChecklistsAPI
         */
         $tsv_path = self::download_extract_gbif_zip_file();
         echo "\ncsv_path: [$tsv_path]\n";
-        self::parse_tsv_file($tsv_path, $counter);
+        // self::parse_tsv_file_caching($tsv_path, $counter); //when caching
+        self::parse_tsv_file($tsv_path, "divide_into_country_files");
 
         exit("\n-stop muna-\n");
     }
-    private function parse_tsv_file($file, $counter = false)
+    private function parse_tsv_file($file, $task)
+    {   echo "\nTask: [$task]\n";
+        $i = 0; $final = array();
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(($i % 1000) == 0) echo "\n $i ";
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
+                // ---------------------------------------start
+                if($task == "divide_into_country_files") {
+                    self::save_to_files($rec);
+                }
+                // ---------------------------------------end
+            }
+            if($i > 100) break; //debug only
+        }
+    }
+    private function save_to_files($rec)
+    {   /*Array(
+            [specieskey] => 2508277
+            [countrycode] => FR
+        )*/
+        
+
+    }
+    private function parse_tsv_file_caching($file, $counter = false)
     {   echo "\nReading file: [$file]\n";
         $i = 0; $final = array();
 
@@ -99,7 +129,7 @@ class NationalChecklistsAPI
     private function download_extract_gbif_zip_file()
     {
         echo "\ndownload_extract_gbif_zip_file...\n";
-        // /* main operation - works OK
+        /* main operation - works OK
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $ret = $func->download_extract_zip_file($this->zip_file, $this->destination); // echo "\n[$ret]\n";
@@ -109,8 +139,10 @@ class NationalChecklistsAPI
             return $csv_path;
         }
         return false;
+        */
+        // /* during dev only
+        return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/0036064-241126133413365.csv";
         // */
-        // return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/0036064-241126133413365.csv"; //during dev only
 
 
         /* un-comment in real operation
