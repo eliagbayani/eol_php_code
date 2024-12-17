@@ -41,6 +41,8 @@ class NationalChecklistsAPI
         echo "\nkey is: [$key]\n";
         */
 
+        $this->country_code_name_info = self::initialize_countries_from_csv(); //print_r($this->country_code_name_info); exit;
+
         /* main operation
         $tsv_path = self::download_extract_gbif_zip_file();
         echo "\ncsv_path: [$tsv_path]\n";
@@ -90,9 +92,34 @@ class NationalChecklistsAPI
         }
     }
     private function process_country_file($rec)
-    {
-        print_r($rec);
+    {   /*Array(
+            [specieskey] => 1710962
+            [countrycode] => AD
+        )*/
+        $species_info = self::assemble_species($rec); print_r($species_info); exit;
+        
+
+
     }
+    private function assemble_species($rec)
+    {
+        $options = $this->download_options;
+        $options['expire_seconds'] = false;
+        if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
+            $rek = json_decode($json, true); print_r($rek); exit;
+            $save = array();
+            $save['taxonID']                    = $rek['key'];
+            $save['scientificName']             = $rek['scientificName'];
+            $save['canonicalName']              = $rek['canonicalName'];
+            $save['scientificNameAuthorship']   = $rek['authorship'];
+            $save['taxonRank']                  = strtolower($rek['rank']);
+            $save['parentNameUsageID']          = $rek['parentKey'];
+            $save['taxonomicStatus']            = strtolower($rek['taxonomicStatus']);
+            $save['furtherInformationURL']      = "https://www.gbif.org/species/".$rek['key'];
+            return $save;
+        }
+        exit("\nSpecies Key not found: [".$rec['specieskey']."]\n");
+}
     private function save_to_files($rec)
     {   /*Array(
             [specieskey] => 2508277
@@ -212,6 +239,33 @@ class NationalChecklistsAPI
         // $temp_dir = $paths['temp_dir'];
         // $this->local_csv = $paths['extracted_file'].".csv";     //orig
         // return $temp_dir;
+    }
+    private function initialize_countries_from_csv()
+    {
+        $final = array();
+        $options = $this->download_options;
+        $options['expire_seconds'] = false;
+        $options['cache'] = 1;
+        if($filename = Functions::save_remote_file_to_local($this->service['country_codes'], $options)) {
+            $i = 0;
+            foreach(new FileIterator($filename) as $line_number => $row) { $i++;
+                if($i == 1) $fields = explode("\t", $row);
+                else {
+                    if(!$row) continue;
+                    $tmp = explode("\t", $row);
+                    $rec = array(); $k = 0;
+                    foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                    $rec = array_map('trim', $rec); //print_r($rec); exit("\nstopx\n");
+                    /*Array(
+                        [Name] => Afghanistan
+                        [Code] => AF
+                    )*/
+                    $final[$rec['Code']] = str_replace('"', '', $rec['Name']);
+                }    
+            } //end foreach()
+            unlink($filename);
+        }
+        return $final;
     }
     // ======================================= below copied template
     function start_z()
