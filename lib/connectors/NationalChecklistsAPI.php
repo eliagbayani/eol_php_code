@@ -127,9 +127,9 @@ class NationalChecklistsAPI
                 )*/
                 $options = $this->download_options;
                 $options['expire_seconds'] = false;
-                if($json = Functions::lookup_with_cache($this->service['country'].$rec['countrycode'], $options)) {
+                // if($json = Functions::lookup_with_cache($this->service['country'].$rec['countrycode'], $options)) {
                     // print_r(json_decode($json, true));
-                }
+                // }
                 if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
                     // print_r(json_decode($json, true));
                 }
