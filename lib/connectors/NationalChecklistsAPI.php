@@ -54,19 +54,21 @@ class NationalChecklistsAPI
         // self::parse_tsv_file_caching($tsv_path, $counter); //when caching
         self::parse_tsv_file($tsv_path, "divide_into_country_files"); //main operation
         */
-        self::create_individual_country_checklist_resources();
+        self::create_individual_country_checklist_resource();
 
         exit("\n-stop muna-\n");
         unlink($tsv_path);
     }
-    private function create_individual_country_checklist_resources()
+    private function create_individual_country_checklist_resource()
     {
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
         foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
 
+            // /*
             $ret = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
             $country_name_lower = $ret['lower_case'];
             $this->country_name = $ret['orig'];
+            // */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             $folder = "SC_".$country_name_lower;
@@ -75,9 +77,10 @@ class NationalChecklistsAPI
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
             // */ // ----------- end -----------
 
+            // /*
             require_library('connectors/TraitGeneric');
             $this->func = new TraitGeneric($resource_id, $this->archive_builder);
-    
+            // */
 
             self::parse_tsv_file($file, "process_country_file");
             $this->archive_builder->finalize(TRUE);
