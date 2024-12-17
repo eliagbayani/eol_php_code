@@ -97,7 +97,7 @@ class NationalChecklistsAPI
             [countrycode] => AD
         )*/
         $species_info = self::assemble_species($rec); print_r($species_info); exit;
-        
+        self::write_taxon($species_info);
 
 
     }
@@ -106,7 +106,7 @@ class NationalChecklistsAPI
         $options = $this->download_options;
         $options['expire_seconds'] = false;
         if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
-            $rek = json_decode($json, true); print_r($rek); exit;
+            $rek = json_decode($json, true); //print_r($rek); exit;
             $save = array();
             $save['taxonID']                    = $rek['key'];
             $save['scientificName']             = $rek['scientificName'];
@@ -307,20 +307,18 @@ class NationalChecklistsAPI
     private function write_taxon($rek)
     {   
         $taxon = new \eol_schema\Taxon();
-        $taxon->taxonID         = strtolower(str_replace(' ','_',$rek['sciname']));
-        $taxon->scientificName  = $rek['sciname'];
-        $taxon->phylum  = $rek['ancestry']['phylum'];
-        $taxon->class   = $rek['ancestry']['class'];
-        $taxon->order   = $rek['ancestry']['order'];
-        $taxon->family  = $rek['ancestry']['family'];
-        $taxon->furtherInformationURL = $rek['source_url'];
-        /* copied template
-        $taxon->kingdom         = $t['dwc_Kingdom'];
-        $taxon->genus           = $t['dwc_Genus'];
-        if($reference_ids = @$this->taxa_reference_ids[$t['int_id']]) $taxon->referenceID = implode("; ", $reference_ids);
-        */
-        $this->taxon_ids[$taxon->taxonID] = '';
-        $this->archive_builder->write_object_to_file($taxon);
+        $taxon->taxonID                    = $rek['taxonID'];
+        $taxon->scientificName             = $rek['scientificName'];
+        $taxon->canonicalName              = $rek['canonicalName'];
+        $taxon->scientificNameAuthorship   = $rek['scientificNameAuthorship'];
+        $taxon->taxonRank                  = $rek['taxonRank'];
+        $taxon->parentNameUsageID          = $rek['parentNameUsageID'];
+        $taxon->taxonomicStatus            = $rek['taxonomicStatus'];
+        $taxon->furtherInformationURL      = $rek['furtherInformationURL'];
+        if(!isset($this->taxon_ids[$taxon->taxonID])) {
+            $this->taxon_ids[$taxon->taxonID] = '';
+            $this->archive_builder->write_object_to_file($taxon);    
+        }
         return $taxon->taxonID;
     }
     private function write_traits($rek, $taxonID)
