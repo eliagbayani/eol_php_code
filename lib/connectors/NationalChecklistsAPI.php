@@ -30,24 +30,41 @@ class NationalChecklistsAPI
 
         $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
+        $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
     }
     function start($counter = false) //$counter is only for caching
     {   //exit("\n[$counter]\n");
-        /*
+        /* may not need this anymore...
         require_library('connectors/GBIFdownloadRequestAPI');
         $func = new GBIFdownloadRequestAPI('Country_checklists');
         $key = $func->retrieve_key_for_taxon('Country_checklists');
         echo "\nkey is: [$key]\n";
         */
+
+        /* main operation
         $tsv_path = self::download_extract_gbif_zip_file();
         echo "\ncsv_path: [$tsv_path]\n";
-        self::parse_tsv_file_caching($tsv_path, $counter); //when caching
-        // self::parse_tsv_file($tsv_path, "divide_into_country_files");
+        // self::parse_tsv_file_caching($tsv_path, $counter); //when caching
+        self::parse_tsv_file($tsv_path, "divide_into_country_files"); //main operation
+        */
+        self::create_individual_country_checklist_resources();
 
         exit("\n-stop muna-\n");
+        unlink($tsv_path);
+    }
+    private function create_individual_country_checklist_resources()
+    {
+        $files = $this->country_path . "/*.tsv";
+        echo "\n[$files]\n";
+        foreach(glob($files) as $file) {
+            echo "\n$file\n";
+            self::parse_tsv_file($file, "process_country_file");
+
+            break; //debug only | process just 1 country
+        }
     }
     private function parse_tsv_file($file, $task)
-    {   echo "\nTask: [$task]\n";
+    {   echo "\nTask: [$task] [$file]\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % 100000) == 0) echo "\n $i ";
@@ -63,9 +80,18 @@ class NationalChecklistsAPI
                     self::save_to_files($rec);
                 }
                 // ---------------------------------------end
+                if($task == "process_country_file") {
+                    self::process_country_file($rec);
+                    break; //debug only | process just 1 species
+                }
+
             }
             // if($i > 1000) break; //debug only
         }
+    }
+    private function process_country_file($rec)
+    {
+        print_r($rec);
     }
     private function save_to_files($rec)
     {   /*Array(
