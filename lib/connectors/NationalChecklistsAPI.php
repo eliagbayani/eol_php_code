@@ -51,9 +51,9 @@ class NationalChecklistsAPI
         // */
 
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 1000) == 0) sleep(30);
+            // if(($i % 1000) == 0) sleep(30);
             // if(($i % 1000) == 0) echo "\n $i ";
-            echo " [$i $counter]";
+            // echo " [$i $counter]";
             if($i == 1) $fields = explode("\t", $row);
             else {
 
@@ -70,6 +70,9 @@ class NationalChecklistsAPI
                 // */
 
                 if(!$row) continue;
+                echo " [$i $counter]";
+                if(($i % 1000) == 0) sleep(30);
+                
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
