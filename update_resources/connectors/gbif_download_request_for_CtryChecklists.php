@@ -2,6 +2,8 @@
 namespace php_active_record;
 /* This is a library that handles GBIF download requests using their API 
 Copied template from original: gbif_download_request.php
+
+Works with: NationalChecklist_2024.code-workspace
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/GBIFdownloadRequestAPI');

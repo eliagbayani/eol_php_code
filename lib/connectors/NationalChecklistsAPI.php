@@ -57,9 +57,12 @@ class NationalChecklistsAPI
     private function create_individual_country_checklist_resources()
     {
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
-        foreach(glob($files) as $file) { echo "\n$file\n";
+        foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
             
-            // /* ----------- initialize country archive -----------
+            $country_name = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
+
+
+            // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             $this->resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
@@ -270,6 +273,15 @@ class NationalChecklistsAPI
             unlink($filename);
         }
         return $final;
+    }
+    private function get_country_name_from_file($file) //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
+    {
+        $abbrev = pathinfo($file, PATHINFO_FILENAME); //e.g. "PH"
+        if($country_name = @$this->country_code_name_info[$abbrev]) {
+            echo "\n[$country_name]\n";
+        }
+        exit("\nxxx\n");
+
     }
     // ======================================= below copied template
     function start_z()

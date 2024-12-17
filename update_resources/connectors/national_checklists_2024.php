@@ -1,6 +1,8 @@
 <?php
 namespace php_active_record;
 /*
+works with: GBIF_SQL_DownloadsAPI.code-workspace
+
 regular operation:
     php update_resources/connectors/national_checklists_2024.php
 when caching:
