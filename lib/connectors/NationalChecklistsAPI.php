@@ -32,6 +32,11 @@ class NationalChecklistsAPI
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
     }
+    private function initialize()
+    {
+        $this->country_code_name_info = self::initialize_countries_from_csv(); //print_r($this->country_code_name_info); exit;
+        self::assemble_terms_yml(); //generates $this->uri_values
+    }
     function start($counter = false) //$counter is only for caching
     {   //exit("\n[$counter]\n");
         /* may not need this anymore...
@@ -41,7 +46,7 @@ class NationalChecklistsAPI
         echo "\nkey is: [$key]\n";
         */
 
-        $this->country_code_name_info = self::initialize_countries_from_csv(); //print_r($this->country_code_name_info); exit;
+        self::initialize();
 
         /* main operation
         $tsv_path = self::download_extract_gbif_zip_file();
@@ -58,17 +63,25 @@ class NationalChecklistsAPI
     {
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
         foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
-            
-            $country_name = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
 
+            $ret = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
+            $country_name_lower = $ret['lower_case'];
+            $this->country_name = $ret['orig'];
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
-            $this->resource_id = $folder;
+            $folder = "SC_".$country_name_lower;
+            $resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
             // */ // ----------- end -----------
 
+            require_library('connectors/TraitGeneric');
+            $this->func = new TraitGeneric($resource_id, $this->archive_builder);
+    
+
             self::parse_tsv_file($file, "process_country_file");
+            $this->archive_builder->finalize(TRUE);
+            Functions::finalize_dwca_resource($resource_id, false, true, ""); //3rd param if false it will not remove working folder
             break; //debug only | process just 1 country
         }
     }
@@ -103,9 +116,9 @@ class NationalChecklistsAPI
             [specieskey] => 1710962
             [countrycode] => AD
         )*/
-        $species_info = self::assemble_species($rec); print_r($species_info); exit;
-        self::write_taxon($species_info);
-
+        $species_info = self::assemble_species($rec); print_r($species_info); //exit;
+        $taxonID = self::write_taxon($species_info);
+        self::write_traits($species_info, $taxonID);
 
     }
     private function assemble_species($rec)
@@ -115,7 +128,7 @@ class NationalChecklistsAPI
         if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
             $rek = json_decode($json, true); //print_r($rek); exit;
             $save = array();
-            $save['taxonID']                    = $rek['key'];
+            $save['taxonID']                    = $rek['key']; //same as $rec['specieskey']
             $save['scientificName']             = $rek['scientificName'];
             $save['canonicalName']              = $rek['canonicalName'];
             $save['scientificNameAuthorship']   = $rek['authorship'];
@@ -278,10 +291,11 @@ class NationalChecklistsAPI
     {
         $abbrev = pathinfo($file, PATHINFO_FILENAME); //e.g. "PH"
         if($country_name = @$this->country_code_name_info[$abbrev]) {
-            echo "\n[$country_name]\n";
+            $lower = strtolower(str_replace(" ", "", $country_name));
+            echo "\nCountry: [$abbrev] [$country_name] [$lower]\n";
+            return array('lower_case' => $lower, 'orig' => $country_name);
         }
-        exit("\nxxx\n");
-
+        exit("\nCountry abbrev. not found [$abbrev]\n");
     }
     // ======================================= below copied template
     function start_z()
@@ -315,11 +329,6 @@ class NationalChecklistsAPI
         $this->archive_builder->finalize(true);
         print_r($this->debug);
     }
-    private function write_archive($rek)
-    {
-        $taxonID = self::write_taxon($rek);
-        self::write_traits($rek, $taxonID);
-    }
     private function write_taxon($rek)
     {   
         $taxon = new \eol_schema\Taxon();
@@ -341,25 +350,22 @@ class NationalChecklistsAPI
     {
         $save = array();
         $save['taxon_id'] = $taxonID;
-        $save['source'] = $rek['source_url'];
+        $save['source'] = $rek['furtherInformationURL'];
         $save['bibliographicCitation'] = $this->bibliographicCitation;        
-        if($loop = @$rek['country_habitat']) {
-            foreach($loop as $t) {
-                if($country = @$t['country']) { $mType = 'http://eol.org/schema/terms/Present';
-                    if($mValue = self::get_country_uri($country)) {
-                        $save['measurementRemarks'] = $country;
-                        $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
-                        if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
-                        $this->func->add_string_types($save, $mValue, $mType, "true");
-                    }
-                    else $this->debug['undefined country'][$country] = '';
-                }
-            } //end loop
+
+        $mType = 'http://eol.org/schema/terms/Present';
+        if($mValue = self::get_country_uri($this->country_name)) {
+            $save['measurementRemarks'] = $this->country_name;
+            $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
+            // if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
+            $this->func->add_string_types($save, $mValue, $mType, "true");
         }
+        else $this->debug['undefined country'][$country] = '';
+
+
     }
     private function get_country_uri($country)
     {
-        // print_r($this->uri_values); exit("\ntotal: ".count($this->uri_values)."\n"); //debug only
         if($country_uri = @$this->uri_values[$country]) return $country_uri;
         else {
             /*
@@ -371,6 +377,17 @@ class NationalChecklistsAPI
             }
             */
         }
+        exit("\nNo URI for [$country]\n");
     }
+    private function assemble_terms_yml()
+    {
+        require_library('connectors/EOLterms_ymlAPI');
+        $func = new EOLterms_ymlAPI(false, false);
+        $ret = $func->get_terms_yml('value'); //sought_type is 'value' --- REMINDER: labels can have the same value but different uri
+        foreach($ret as $label => $uri) $this->uri_values[$label] = $uri;
+        // print_r($this->uri_values); 
+        echo("\nEOL Terms: ".count($this->uri_values)."\n"); //debug only
+    }
+
 }
 ?>
