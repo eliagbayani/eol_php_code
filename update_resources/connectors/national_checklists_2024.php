@@ -1,10 +1,11 @@
 <?php
 namespace php_active_record;
 /*
-php update_resources/connectors/national_checklists_2024.php
+regular operation:
+    php update_resources/connectors/national_checklists_2024.php
 when caching:
-php update_resources/connectors/national_checklists_2024.php _ '{"counter":"1"}'
-php update_resources/connectors/national_checklists_2024.php _ '{"counter":"2"}'
+    php update_resources/connectors/national_checklists_2024.php _ '{"counter":"1"}'
+    php update_resources/connectors/national_checklists_2024.php _ '{"counter":"2"}'
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/NationalChecklistsAPI');
