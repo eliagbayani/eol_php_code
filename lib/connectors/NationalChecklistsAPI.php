@@ -37,7 +37,7 @@ class NationalChecklistsAPI
         $this->country_code_name_info = self::initialize_countries_from_csv(); //print_r($this->country_code_name_info); exit;
         self::assemble_terms_yml(); //generates $this->uri_values
     }
-    function start($counter = false) //$counter is only for caching
+    function start($counter = false, $task) //$counter is only for caching
     {   //exit("\n[$counter]\n");
         /* may not need this anymore...
         require_library('connectors/GBIFdownloadRequestAPI');
@@ -48,15 +48,15 @@ class NationalChecklistsAPI
 
         self::initialize();
 
-        /* main operation
+        // /* main operation
         $tsv_path = self::download_extract_gbif_zip_file();
         echo "\ncsv_path: [$tsv_path]\n";
         // self::parse_tsv_file_caching($tsv_path, $counter); //when caching
-        self::parse_tsv_file($tsv_path, "divide_into_country_files"); //main operation
-        */
-        self::create_individual_country_checklist_resource();
-
-        exit("\n-stop muna-\n");
+        if($task == 'divide_into_country_files') self::parse_tsv_file($tsv_path, $task);
+        elseif($task == 'generate_country_checklists') self::create_individual_country_checklist_resource();
+        else exit("\nNo task to do. Will terminate.\n");
+        // */
+        
         unlink($tsv_path);
     }
     private function create_individual_country_checklist_resource()

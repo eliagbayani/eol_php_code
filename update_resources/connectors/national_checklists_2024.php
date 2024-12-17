@@ -4,7 +4,8 @@ namespace php_active_record;
 works with: GBIF_SQL_DownloadsAPI.code-workspace
 
 regular operation:
-    php update_resources/connectors/national_checklists_2024.php
+    php update_resources/connectors/national_checklists_2024.php _ '{"task":"divide_into_country_files"}'
+    php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists"}'
 when caching:
     php update_resources/connectors/national_checklists_2024.php _ '{"counter":"1"}'
     php update_resources/connectors/national_checklists_2024.php _ '{"counter":"2"}'
@@ -20,16 +21,15 @@ $params['jenkins_or_cron']   = @$argv[1]; //irrelevant here
 $params['json']              = @$argv[2]; //useful here
 $fields = json_decode($params['json'], true);
 $counter = @$fields['counter'];
+$task = @$fields['task'];
 
-// /* //main operation
+
 $what = 'Country_checklists';
 $func = new NationalChecklistsAPI($what);
-$func->start($counter);
-exit("\nstop elix\n");
-/* copied template
+$func->start($counter, $task);
+/* copied template, not used here.
 Functions::finalize_dwca_resource($resource_id, false, true, $timestart); //3rd param if false it will not remove working folder
 */
-// */
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
