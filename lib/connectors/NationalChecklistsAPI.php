@@ -11,7 +11,7 @@ class NationalChecklistsAPI
         $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));
         */
 
-        $this->download_options = array('resource_id' => "gbif_ctry_checklists", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
+        $this->download_options = array('resource_id' => "gbif_ctry_checklists", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000/2, 'timeout' => 10800*2, 'download_attempts' => 1); //3 months to expire
         $this->download_options['expire_seconds'] = false; //doesn't expire
 
         $this->debug = array();
@@ -28,8 +28,8 @@ class NationalChecklistsAPI
         $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
     }
-    function start()
-    {
+    function start($counter = false) //$counter is only for caching
+    {   //exit("\n[$counter]\n");
         /*
         require_library('connectors/GBIFdownloadRequestAPI');
         $func = new GBIFdownloadRequestAPI('Country_checklists');
@@ -38,18 +38,37 @@ class NationalChecklistsAPI
         */
         $tsv_path = self::download_extract_gbif_zip_file();
         echo "\ncsv_path: [$tsv_path]\n";
-        self::parse_tsv_file($tsv_path);
+        self::parse_tsv_file($tsv_path, $counter);
 
         exit("\n-stop muna-\n");
     }
-    private function parse_tsv_file($file)
+    private function parse_tsv_file($file, $counter = false)
     {   echo "\nReading file: [$file]\n";
         $i = 0; $final = array();
+
+        // /* caching
+        $m = 2634653/6;
+        // */
+
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % 1000) == 0) sleep(30);
-            if(($i % 1000) == 0) echo "\n $i ";
+            // if(($i % 1000) == 0) echo "\n $i ";
+            echo " [$i $counter]";
             if($i == 1) $fields = explode("\t", $row);
             else {
+
+                // /* breakdown when caching
+                $cont = false;
+                if($counter == 1)       {if($i >= 1    && $i < $m)    $cont = true;}
+                elseif($counter == 2)   {if($i >= $m   && $i < $m*2)  $cont = true;}
+                elseif($counter == 3)   {if($i >= $m*2 && $i < $m*3)  $cont = true;}
+                elseif($counter == 4)   {if($i >= $m*3 && $i < $m*4)  $cont = true;}
+                elseif($counter == 5)   {if($i >= $m*4 && $i < $m*5)  $cont = true;}
+                elseif($counter == 6)   {if($i >= $m*5 && $i < $m*6)  $cont = true;}
+                else exit("\ncounter not defined...\n");                
+                if(!$cont) continue;
+                // */
+
                 if(!$row) continue;
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
