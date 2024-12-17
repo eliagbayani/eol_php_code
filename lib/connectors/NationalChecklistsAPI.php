@@ -19,12 +19,15 @@ class NationalChecklistsAPI
 
         if(Functions::is_production()) {
             $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
-            $this->zip_file    = $this->destination.$what."_DwCA.zip";
         }
         else {
-            $this->destination = "/Volumes/AKiTiO4/other_files/GBIF_occurrence/";
-            $this->zip_file    = $this->destination.$what."_DwCA.zip"; //manualy created, zip copied from editors.eol.org
+            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
         }
+        if(!is_dir($this->destination)) mkdir($this->destination);
+        $this->country_path = $this->destination.'countries';
+        if(!is_dir($this->country_path)) mkdir($this->country_path);
+        $this->zip_file    = $this->destination.$what."_DwCA.zip"; //manualy created, zip copied from editors.eol.org
+
         $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
     }
@@ -47,7 +50,7 @@ class NationalChecklistsAPI
     {   echo "\nTask: [$task]\n";
         $i = 0; $final = array();
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 1000) == 0) echo "\n $i ";
+            if(($i % 100000) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
             else {
                 if(!$row) continue;
@@ -61,7 +64,7 @@ class NationalChecklistsAPI
                 }
                 // ---------------------------------------end
             }
-            if($i > 100) break; //debug only
+            // if($i > 1000) break; //debug only
         }
     }
     private function save_to_files($rec)
@@ -69,7 +72,18 @@ class NationalChecklistsAPI
             [specieskey] => 2508277
             [countrycode] => FR
         )*/
-        
+        $country_code = $rec['countrycode'];
+        $file = $this->country_path.'/'.$country_code.'.tsv';
+        if(!isset($this->country['encountered'][$country_code])) {
+            $this->country['encountered'][$country_code] = '';
+            $f = Functions::file_open($file, "w");
+            $headers = array_keys($rec);
+            fwrite($f, implode("\t", $headers)."\n");
+            fclose($f);
+        }
+        $f = Functions::file_open($file, "a");
+        fwrite($f, implode("\t", $rec)."\n");
+        fclose($f);
 
     }
     private function parse_tsv_file_caching($file, $counter = false)
@@ -129,7 +143,7 @@ class NationalChecklistsAPI
     private function download_extract_gbif_zip_file()
     {
         echo "\ndownload_extract_gbif_zip_file...\n";
-        /* main operation - works OK
+        // /* main operation - works OK
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $ret = $func->download_extract_zip_file($this->zip_file, $this->destination); // echo "\n[$ret]\n";
@@ -139,10 +153,10 @@ class NationalChecklistsAPI
             return $csv_path;
         }
         return false;
-        */
-        // /* during dev only
-        return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/0036064-241126133413365.csv";
         // */
+        /* during dev only
+        return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/Country_checklists/0036064-241126133413365.csv";
+        */
 
 
         /* un-comment in real operation
