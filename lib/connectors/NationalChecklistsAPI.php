@@ -115,7 +115,7 @@ class NationalChecklistsAPI
 
                 if(!$row) continue;
                 echo " [$i $counter]";
-                if(($i % 1000) == 0) sleep(10);
+                if(($i % 2000) == 0) sleep(5);
 
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
