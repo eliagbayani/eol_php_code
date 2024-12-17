@@ -41,8 +41,8 @@ class NationalChecklistsAPI
         */
         $tsv_path = self::download_extract_gbif_zip_file();
         echo "\ncsv_path: [$tsv_path]\n";
-        // self::parse_tsv_file_caching($tsv_path, $counter); //when caching
-        self::parse_tsv_file($tsv_path, "divide_into_country_files");
+        self::parse_tsv_file_caching($tsv_path, $counter); //when caching
+        // self::parse_tsv_file($tsv_path, "divide_into_country_files");
 
         exit("\n-stop muna-\n");
     }

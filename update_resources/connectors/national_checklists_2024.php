@@ -9,6 +9,7 @@ when caching:
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/NationalChecklistsAPI');
+$GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 // ini_set('memory_limit','7096M'); //required
 
