@@ -121,7 +121,7 @@ class NationalChecklistsAPI
             [specieskey] => 1710962
             [countrycode] => AD
         )*/
-        $species_info = self::assemble_species($rec); print_r($species_info); //exit;
+        $species_info = self::assemble_species($rec); //print_r($species_info); //exit;
         $taxonID = self::write_taxon($species_info);
         self::write_traits($species_info, $taxonID);
 
