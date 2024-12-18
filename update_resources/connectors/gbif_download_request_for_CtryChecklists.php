@@ -48,7 +48,7 @@ $taxon = @$fields['taxon'];
 $download_key = @$fields['download_key'];
 
 //############################################################ start main
-$resource_id = "Country_checklists";
+$resource_id = $taxon; //e.g. "Country_checklists" or "WaterBody_checklists"
 $func = new GBIFdownloadRequestAPI($resource_id);
 // exit("\nstop muna...\n");
 if($task == 'send_download_request') $func->send_download_request($taxon);
