@@ -26,7 +26,8 @@ class NationalChecklistsAPI
         if(!is_dir($this->destination)) mkdir($this->destination);
         $this->country_path = $this->destination.'countries';
         if(!is_dir($this->country_path)) mkdir($this->country_path);
-        $this->zip_file    = $this->destination.$what."_DwCA.zip"; //manualy created, zip copied from editors.eol.org
+        $this->zip_file    = $this->destination.$what."_DwCA.zip";  //for development it was manually put here, it was copied from editors.eol.org
+                                                                    //for production it was downloaded from GBIF during "step: 03 Initialize and download dumps"
 
         $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
@@ -102,7 +103,7 @@ class NationalChecklistsAPI
                 $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
                 // ---------------------------------------start
                 if($task == "divide_into_country_files") {
-                    self::save_to_files($rec);
+                    self::save_to_different_country_files($rec);
                 }
                 // ---------------------------------------end
                 if($task == "process_country_file") {
@@ -143,7 +144,7 @@ class NationalChecklistsAPI
         }
         exit("\nSpecies Key not found: [".$rec['specieskey']."]\n");
 }
-    private function save_to_files($rec)
+    private function save_to_different_country_files($rec)
     {   /*Array(
             [specieskey] => 2508277
             [countrycode] => FR
