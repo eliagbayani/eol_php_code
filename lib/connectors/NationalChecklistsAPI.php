@@ -109,7 +109,7 @@ class NationalChecklistsAPI
                 // ---------------------------------------end
                 if($task == "process_country_file") {
                     self::process_country_file($rec);
-                    break; //debug only | process just 1 species
+                    // break; //debug only | process just 1 species
                 }
 
             }
