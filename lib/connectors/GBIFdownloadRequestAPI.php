@@ -367,8 +367,10 @@ class GBIFdownloadRequestAPI
             )
             AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
             AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')
-            AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH')
             GROUP BY specieskey, waterbody";
+            /* removed: pertains to country not water body
+            AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH')
+            */
         }
         return json_encode($param);
         /* from GBIF API Downloads: Country_checklists or WaterBody_checklists

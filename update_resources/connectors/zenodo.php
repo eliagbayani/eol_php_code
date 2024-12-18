@@ -58,7 +58,7 @@ exit("\n -end test- \n");
 */
 
 $func = new ZenodoAPI();
-$func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
+// $func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
 
 /* all these four (4) done already:
 $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
@@ -80,19 +80,19 @@ print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
 // /* -------------------------------------------------------------------------------------------- very good query results
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
 $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
-$q = "+title:checklists +title:2019"; //set 'geography', remove 'deprecated', add isDerivedFrom
+// $q = "+title:checklists +title:2019"; //set 'geography', remove 'deprecated', add isDerivedFrom
 // $q = "+title:FishBase";
 // $q = "related.relation:isSourceOf";
-$q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
+// $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
 // $q = "+related.relation:issourceof +keywords:deprecated"; //very accurate query - OK!
 
-$q = "+related.relation:issupplementto = %LD_%.tar.gz"; //doesn't work
+// $q = "+related.relation:issupplementto = %LD_%.tar.gz"; //doesn't work
 // $q = "+contributors.type:datamanager";
 // $q = "+title:Life";
 // $q = "+title:LifeDesk";
 // $q = "+title:LD_";
-$q = "+related.relation:issupplementto";
-$q = "+title:Scratchpad";
+// $q = "+related.relation:issupplementto";
+// $q = "+title:Scratchpad";
 
 if($obj = $func->get_depositions_by_part_title($q)) {
   // print_r($obj); exit("\n-found-\n");
