@@ -135,7 +135,7 @@ class NationalChecklistsAPI
             $save = array();
             $save['taxonID']                    = $rek['key']; //same as $rec['specieskey']
             $save['scientificName']             = $rek['scientificName'];
-            $save['canonicalName']              = $rek['canonicalName'];
+            $save['canonicalName']              = @$rek['canonicalName'];
             $save['scientificNameAuthorship']   = $rek['authorship'];
             $save['taxonRank']                  = strtolower($rek['rank']);
             $save['parentNameUsageID']          = $rek['parentKey'];
