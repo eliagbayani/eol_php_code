@@ -17,12 +17,9 @@ class NationalChecklistsAPI
         $this->debug = array();
         $this->bibliographicCitation = "GBIF.org (16 December 2024) GBIF Occurrence Download https://doi.org/10.15468/dl.h62wur"; //"Accessed ".date("d F Y").".";
 
-        if(Functions::is_production()) {
-            $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
-        }
-        else {
-            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
-        }
+        if(Functions::is_production())  $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
+        else                            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
+        
         if(!is_dir($this->destination)) mkdir($this->destination);
         $this->country_path = $this->destination.'countries';
         if(!is_dir($this->country_path)) mkdir($this->country_path);
@@ -111,7 +108,6 @@ class NationalChecklistsAPI
                     self::process_country_file($rec);
                     // break; //debug only | process just 1 species
                 }
-
             }
             // if($i > 1000) break; //debug only
         }
@@ -161,7 +157,6 @@ class NationalChecklistsAPI
         $f = Functions::file_open($file, "a");
         fwrite($f, implode("\t", $rec)."\n");
         fclose($f);
-
     }
     private function parse_tsv_file_caching($file, $counter = false)
     {   echo "\nReading file: [$file]\n";
@@ -211,8 +206,6 @@ class NationalChecklistsAPI
                     // print_r(json_decode($json, true));
                 }
                 // break;
-        
-
             }
             // if($i >= 25) break;
         }
@@ -231,38 +224,10 @@ class NationalChecklistsAPI
         }
         return false;
         // */
+
         /* during dev only
         return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/Country_checklists/0036064-241126133413365.csv";
         */
-
-
-        /* un-comment in real operation
-        require_library('connectors/INBioAPI');
-        $func = new INBioAPI();
-        // $options = $this->download_options;
-        // $options['expire_seconds'] = 60*60*24*30*3; //3 months cache
-        // $paths = $func->extract_zip_file($this->zip_file, $options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        // print_r($paths); exit; //good debug
-        */
-
-        /* sample output:
-        Array(
-            [extracted_file] => /Volumes/AKiTiO4/other_files/GBIF_occurrence/Country_checklists_DwCA
-            [temp_dir] => /Volumes/AKiTiO4/eol_php_code_tmp/dir_87237/
-            [temp_file_path] => /Volumes/AKiTiO4/other_files/GBIF_occurrence/Country_checklists_DwCA.zip
-        )*/
-
-        /* development only
-        $paths = Array(
-            // 'extracted_file' => '/Volumes/AKiTiO4/other_files/GBIF_occurrence/Country_checklists_DwCA', //not needed
-            'temp_dir'       => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_87237/',
-            // 'temp_file_path' => '/Volumes/AKiTiO4/other_files/GBIF_occurrence/Country_checklists_DwCA.zip' //not needed
-        );
-        */
-
-        // $temp_dir = $paths['temp_dir'];
-        // $this->local_csv = $paths['extracted_file'].".csv";     //orig
-        // return $temp_dir;
     }
     private function initialize_countries_from_csv()
     {
@@ -301,38 +266,7 @@ class NationalChecklistsAPI
         }
         exit("\nCountry abbrev. not found [$abbrev]\n");
     }
-    // ======================================= below copied template
-    function start_z()
-    {        
-        require_library('connectors/TraitGeneric'); 
-        $this->func = new TraitGeneric($this->resource_id, $this->archive_builder);
-        /* START DATA-1841 terms remapping */
-        $this->func->initialize_terms_remapping(60*60*24); //param is $expire_seconds. 0 means expire now.
-        /* END DATA-1841 terms remapping */        
-        $options = $this->download_options;
-        $options['expire_seconds'] = false;
-        if($html = Functions::lookup_with_cache($this->page['all_taxa'], $options)) {
-            $html = str_replace("&nbsp;", ' ', $html);
-            if(preg_match_all("/<div class=\"sd_data\">(.*?)<div class=\"clear\"><\/div>/ims", $html, $arr)) {
-                $eli = 0;
-                foreach($arr[1] as $str) {
-                    if(preg_match_all("/<div (.*?)<\/div>/ims", $str, $arr2)) {
-                        $rec = array_map('trim', $arr2[1]);
-                        if(stripos($rec[0], "Valid name") !== false) { //string is found
-                            $rek = array();
-                            if(preg_match("/allantwebants\">(.*?)<\/a>/ims", $rec[0], $arr3)) $rek['sciname'] = str_replace(array('&dagger;'), '', $arr3[1]);
-                            $rek['rank'] = 'species';
-                            if(preg_match("/description\.do\?(.*?)\">/ims", $rec[0], $arr3)) $rek['source_url'] = 'https://www.antweb.org/description.do?'.$arr3[1];
-                            $eli++;
-                            if(($eli % 1000) == 0) echo "\n".number_format($eli)." ";
-                        }                        
-                    }
-                }
-            }
-        }
-        $this->archive_builder->finalize(true);
-        print_r($this->debug);
-    }
+    // ======================================= below copied template    
     private function write_taxon($rek)
     {   
         $taxon = new \eol_schema\Taxon();
@@ -365,8 +299,6 @@ class NationalChecklistsAPI
             $this->func->add_string_types($save, $mValue, $mType, "true");
         }
         else $this->debug['undefined country'][$country] = '';
-
-
     }
     private function get_country_uri($country)
     {
@@ -392,6 +324,5 @@ class NationalChecklistsAPI
         // print_r($this->uri_values); 
         echo("\nEOL Terms: ".count($this->uri_values)."\n"); //debug only
     }
-
 }
 ?>
