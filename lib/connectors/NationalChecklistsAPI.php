@@ -123,10 +123,9 @@ class NationalChecklistsAPI
         )*/
         $species_info = self::assemble_species($rec); //print_r($species_info); //exit;
         $taxonID = self::write_taxon($species_info);
-        self::write_traits($species_info, $taxonID);
-
+        if(@$rec['countrycode']) self::write_traits($species_info, $taxonID);
     }
-    private function assemble_species($rec)
+    function assemble_species($rec)
     {
         $options = $this->download_options;
         $options['expire_seconds'] = false;
@@ -138,7 +137,7 @@ class NationalChecklistsAPI
             $save['canonicalName']              = @$rek['canonicalName'];
             $save['scientificNameAuthorship']   = $rek['authorship'];
             $save['taxonRank']                  = strtolower($rek['rank']);
-            $save['parentNameUsageID']          = $rek['parentKey'];
+            $save['parentNameUsageID']          = @$rek['parentKey'];
             $save['taxonomicStatus']            = strtolower($rek['taxonomicStatus']);
             $save['furtherInformationURL']      = "https://www.gbif.org/species/".$rek['key'];
             return $save;

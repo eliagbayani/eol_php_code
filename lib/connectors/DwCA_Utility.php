@@ -112,6 +112,7 @@ class DwCA_Utility
             if(Functions::is_production()) $info = self::start(false, array("timeout" => 172800, 'expire_seconds' => 0)); //expires now
             else                           $info = self::start(false, array("timeout" => 172800, 'expire_seconds' => 60*60*1)); //1 hour expire
         }
+        elseif(@$this->params['resource'] == "fillup_missing_parents_GBIFChecklists") $info = self::start(false, array("timeout" => 172800, 'expire_seconds' => 0)); //expires now
         elseif(substr($this->resource_id,0,3) == 'SC_' || substr($this->resource_id,0,2) == 'c_') $info = self::start(false, array("timeout" => 172800, 'expire_seconds' => 60*60*24*1)); //1 day expire
         elseif(stripos($this->resource_id, "_meta_recoded") !== false) $info = self::start(false, array("timeout" => 172800, 'expire_seconds' => 0)); //0 orig expires now | during dev false
         elseif($annotateYes) $info = self::start(false, array("timeout" => 172800, 'expire_seconds' => 0)); //expires now
@@ -160,6 +161,9 @@ class DwCA_Utility
             /* not used
             if($this->resource_id == 'globi_associations_refuted') break; //all extensions will be processed elsewhere IN real operation.
             */
+
+            if(@$this->params['resource'] == "fillup_missing_parents_GBIFChecklists") break; //all extensions will be processed elsewhere.
+
                 if(in_array($this->resource_id, array("368_removed_aves", "wiki_en_report"))) break; //all extensions will be processed elsewhere.
             elseif(in_array($this->resource_id, array("BF", "gbif_classification", "gbif_classification_without_ancestry", "gbif_classification_final", 
                                                       "708", "Brazilian_Flora_with_canonical"))) break; //all extensions will be processed elsewhere.
@@ -276,7 +280,13 @@ class DwCA_Utility
             }
         }
         */
-        if(substr($this->resource_id,0,3) == 'SC_' || substr($this->resource_id,0,2) == 'c_') { //for DATA-1841 terms remapping. "c_" resources (3) came from DATA-1840.
+
+        if(@$this->params['resource'] == "fillup_missing_parents_GBIFChecklists") { //this block also processes SC_ DwCA files.
+            require_library('connectors/FillUpMissingParents_GBIFChecklistsAPI');
+            $func = new FillUpMissingParents_GBIFChecklistsAPI($this->archive_builder, $this->resource_id, $this->archive_path);
+            $func->start($info);
+        }
+        elseif(substr($this->resource_id,0,3) == 'SC_' || substr($this->resource_id,0,2) == 'c_') { //for DATA-1841 terms remapping. "c_" resources (3) came from DATA-1840.
             require_library('connectors/SpeciesChecklistAPI');
             $func = new SpeciesChecklistAPI($this->archive_builder, $this->resource_id);
             $func->start_terms_remap($info, $this->resource_id);
@@ -487,7 +497,7 @@ class DwCA_Utility
             exit("\n[$sciname] [$canonical]\n");
             */
         }
-        
+
         if(@$this->params['resource'] == "Deltas_4hashing") {
             require_library('connectors/DeltasHashIDsAPI');
             $func = new DeltasHashIDsAPI($this->archive_builder, $this->resource_id, $this->archive_path);
