@@ -434,12 +434,12 @@ class Functions
         //added 14-Nov-2017: decided to remove folders xxx_previous for all resources
         if(is_dir($ContResLocPath . $resource_id . "_previous")) recursive_rmdir($ContResLocPath . $resource_id . "_previous");
 
-        /* as of Jul 18, 2023: snippet to update CKAN "Life updated" metadata in opendata.eol.org
+        // /* as of Jul 18, 2023: snippet to update CKAN "Life updated" metadata in opendata.eol.org
         require_library('connectors/CKAN_API_AccessAPI');
         $forced_date = "";
         $func = new CKAN_API_AccessAPI('EOL resource', $forced_date); //other values: "EOL dump" or "EOL file"
         $func->update_CKAN_resource_using_EOL_resourceID($resource_id);
-        */
+        // */
 
         $msg = "\n[$resource_id] will not go to Zenodo at this time.\n";
         if(stripos($resource_id, "wikipedia-") !== false) { echo $msg; } //wikipedia lang resources will go to Zenodo in FillUpMissingParentsAPI.php, not here. //string is found
@@ -451,7 +451,7 @@ class Functions
             -> there is a final 201_meta_recoded_2.tar.gz resource that is in Zenodo. 201.tar.gz is just a step. 202 should be deleted in CKAN actually.
         */
         elseif(@$end_options['go_zenodo']) {
-            /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
+            // /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
             // $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign, dev only
             $EOL_resource_id = $resource_id;
             require_library('connectors/ZenodoConnectorAPI');
@@ -459,7 +459,7 @@ class Functions
             $func = new ZenodoAPI();
             $func->update_Zenodo_record_using_EOL_resourceID($EOL_resource_id);
             // $func->new_description_for_zenodo = ""; //initialize again
-            */
+            // */
         }
         else echo "\nDesigned not to proceed to Zenodo at this time [$resource_id].\n";
     }

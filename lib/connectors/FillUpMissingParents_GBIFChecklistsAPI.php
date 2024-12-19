@@ -55,9 +55,6 @@ class FillUpMissingParents_GBIFChecklistsAPI
 
         if($meta_doc = @$tables['http://rs.tdwg.org/dwc/terms/occurrence'][0]) self::carry_over($meta_doc, 'occurrence');
         if($meta_doc = @$tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0]) self::carry_over($meta_doc, 'measurementorfact');
-
-
-        
     }
     private function get_undefined_parents_v2() //working OK
     {
@@ -91,12 +88,12 @@ class FillUpMissingParents_GBIFChecklistsAPI
         $taxon = new \eol_schema\Taxon();
         $taxon->taxonID                    = $rek['taxonID'];
         $taxon->scientificName             = $rek['scientificName'];
-        // $taxon->canonicalName              = $rek['canonicalName'];
-        // $taxon->scientificNameAuthorship   = $rek['scientificNameAuthorship'];
-        // $taxon->taxonRank                  = $rek['taxonRank'];
+        $taxon->canonicalName              = $rek['canonicalName'];
+        $taxon->scientificNameAuthorship   = $rek['scientificNameAuthorship'];
+        $taxon->taxonRank                  = $rek['taxonRank'];
         $taxon->parentNameUsageID          = $rek['parentNameUsageID'];
-        // $taxon->taxonomicStatus            = $rek['taxonomicStatus'];
-        // $taxon->furtherInformationURL      = $rek['furtherInformationURL'];
+        $taxon->taxonomicStatus            = $rek['taxonomicStatus'];
+        $taxon->furtherInformationURL      = $rek['furtherInformationURL'];
         if(!isset($this->taxon_ids[$taxon->taxonID])) {
             $this->taxon_ids[$taxon->taxonID] = '';
             $this->archive_builder->write_object_to_file($taxon);    

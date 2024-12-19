@@ -2,7 +2,7 @@
 namespace php_active_record;
 /* This can be a template for any resource, a means to enter taxon rows for the undefined parentNameUsageIDs
 
-The first 3 clients is in: fill_up_undefined_parents_real.php
+The first 3 clients (Wiki resources) with similar function is in: fill_up_undefined_parents_real.php
 
 ------------------------------------ 4th client: GBIF checklists
 php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_andorra", "source_dwca": "SC_andorra", "resource": "fillup_missing_parents_GBIFChecklists"}'
