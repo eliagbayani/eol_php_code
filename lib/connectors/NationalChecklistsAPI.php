@@ -83,7 +83,8 @@ class NationalChecklistsAPI
 
             self::parse_tsv_file($file, "process_country_file");
             $this->archive_builder->finalize(TRUE);
-            Functions::finalize_dwca_resource($resource_id, false, true, ""); //3rd param if false it will not remove working folder
+            Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
+
             break; //debug only | process just 1 country
         }
     }
