@@ -37,7 +37,7 @@ else                           $dwca_file = 'http://localhost/eol_php_code/appli
 
 $ctr = 1;
 $undefined = process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param);
-exit("\n-exit muna-\n");
+// exit("\n-exit muna-\n");
 
 while($undefined) { $ctr++;
     if(Functions::is_production()) $dwca_file = 'https://editors.eol.org/eol_php_code/applications/content_server/resources/'.$resource_id.'.tar.gz';
@@ -66,7 +66,6 @@ function process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param
 
     $excluded_rowtypes[] = 'http://rs.tdwg.org/dwc/terms/occurrence';
     $excluded_rowtypes[] = 'http://rs.tdwg.org/dwc/terms/measurementorfact';
-
 
     /* This will be processed in FillUpMissingParentsAPI.php which will be called from DwCA_Utility.php */
     $func->convert_archive($preferred_rowtypes, $excluded_rowtypes);
