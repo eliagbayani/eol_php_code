@@ -31,8 +31,12 @@ php5.6 fill_up_undefined_parents.php jenkins '{"resource_id": "wikipedia_en_trai
 ------------------------------------ 3rd client: same as 2nd client. For all text wikipedia languages (es, de, etc.)
 php fill_up_undefined_parents.php _ '{"resource_id": "80",           "source_dwca": "80",           "resource": "fillup_missing_parents"}'
 php fill_up_undefined_parents.php _ '{"resource_id": "wikipedia-sv", "source_dwca": "wikipedia-sv", "resource": "fillup_missing_parents"}'
+-> generates 80.tar.gz | wikipedia-sv.tar.gz
 
-# generates 80.tar.gz
+------------------------------------ 4th client: GBIF checklists
+php fill_up_undefined_parents.php _ '{"resource_id": "SC_andorra", "source_dwca": "SC_andorra", "resource": "fillup_missing_parents"}'
+
+------------------------------------ end ------------------------------------
 
 For diagnostics:
     ps --help simple
