@@ -75,9 +75,10 @@ class NationalChecklistsAPI
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             $folder = "SC_".$country_name_lower;
-            if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) {
-                echo "\nAlready recently generated ($folder)\n"; continue;
-            }
+
+            if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
+            else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
+
             $resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
