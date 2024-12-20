@@ -95,8 +95,11 @@ class NationalChecklistsAPI
     private function parse_tsv_file($file, $task)
     {   echo "\nTask: [$task] [$file]\n";
         $i = 0; $final = array();
+        if($task == "divide_into_country_files") $mod = 100000;
+        elseif($task == "process_country_file")  $mod = 1000;
+        else                                     $mod = 1000;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
-            if(($i % 100000) == 0) echo "\n $i ";
+            if(($i % $mod) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
             else {
                 if(!$row) continue;
