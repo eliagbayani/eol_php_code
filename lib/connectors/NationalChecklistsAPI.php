@@ -311,7 +311,7 @@ class NationalChecklistsAPI
             // if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
             $this->func->add_string_types($save, $mValue, $mType, "true");
         }
-        else $this->debug['undefined country'][$country] = '';
+        else $this->debug['undefined country'][$this->country_name] = '';
     }
     private function get_country_uri($country)
     {   //Antigua and Barbuda; what is saved in EOL terms file is: "Antigua And Barbuda"
@@ -331,7 +331,7 @@ class NationalChecklistsAPI
             // */
         }
         // print_r($this->uri_values); //debug only
-        echo ("\nNo URI for [$country]\n");
+        echo ("\nNo URI for [$country]");
         return false;
     }
     private function assemble_terms_yml()
