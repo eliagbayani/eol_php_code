@@ -30,7 +30,51 @@ class NationalChecklistsAPI
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
         $this->AnneT_water_bodies = array("Kattegat", "Skagerrak", "Solomon Sea", "Chukchi Sea", "Red Sea", "Molukka Sea", "Halmahera Sea", "Timor Sea", "Bali Sea", "Davis Strait", "Hudson Strait", "Alboran Sea", "Labrador Sea", "Greenland Sea", "Beaufort Sea", "Celtic Sea", "Singapore Strait", "Kara Sea", "Sulu Sea", "Flores Sea", "North Atlantic", "Java Sea", "Mozambique Channel", "Tasman Sea", "Hudson Bay", "Bering Sea", "Laccadive Sea", "Banda Sea", "Norwegian Sea", "North Sea", "Arafura Sea", "Ligurian Sea", "Baffin Bay", "Bismarck Sea", "Java Sea", "Ceram Sea", "Tasman Sea", "Arctic Ocean", "North Atlantic", "Mozambique Channel", "Hudson Bay", "Aegean Sea", "Barents Sea", "Northwestern Passages", "Indian Ocean", "Malacca Strait", "Adriatic Sea", "Ionian Sea", "English Channel", "Savu Sea", "Laptev Sea", "Bristol Channel", "South Atlantic", "Balearic Sea", "Celebes Sea", "Coral Sea", "Tyrrhenian Sea", "Yellow Sea", "Lincoln Sea", "White Sea", "Aegean Sea", "Makassar Strait", "Barents Sea", "Black Sea", "Northwestern Passages", "Southern Ocean", "Caribbean Sea", "Gulf of Riga", "Gulf of Bothnia", "Gulf of Finland", "Seto Inland Sea", "Eastern China Sea", "Bay of Bengal", "Gulf of Tomini", "Great Australian Bight", "South China Sea", "Gulf of Oman", "Strait of Gibraltar", "Gulf of Boni", "Gulf of Mexico", "East Siberian Sea", "Gulf of Alaska", "Bay of Biscay", "Sea of Marmara", "Sea of Okhostk", "Gulf of Guinea", "Sea of Azov", "Bay of Fundy", "Sea of Japan", "Gulf of Aden", "Gulf of Thailand", "Gulf of Aqaba", "Gulf of California", "Gulf of Suez", "Gulf of St Lawrence", "Rio de la Plata", "Inner Seas off the West Coast of Scotland");
-        $this->AnneT_natl_checklists = array("Turkmenistan", "Niue", "Mexico", "Cocos Islands", "Dominica", "Timor-Leste", "Iceland", "Nepal", "Philippines", "Cameroon", "Niger", "Mongolia", "Spain", "Italy", "Egypt", "Kenya", "Uganda", "Barbados", "Oceania", "Honduras", "Palestine", "Laos", "Sweden", "Kiribati", "Croatia", "Cyprus", "Slovenia", "Qatar", "Bulgaria", "Macedonia", "Nicaragua", "Cuba", "Guam", "Grenada", "Iran", "Martinique", "Guinea", "Djibouti", "Curacao", "Kazakhstan", "Eswatini", "China", "Maldives", "Myanmar", "Bahrain", "Guernsey", "Ukraine", "Kuwait", "Bermuda", "Nigeria", "Tokelau", "France", "Panama", "Armenia", "Russia", "Slovakia", "Asia", "Eritrea", "Fiji", "Malaysia", "Andorra", "Togo", "Tunisia", "Anguilla", "Vanuatu", "Georgia", "Vietnam", "Albania", "Zambia", "Europe", "Denmark", "Germany", "Sudan", "Samoa", "Burundi", "Indonesia", "Seychelles", "Ethiopia", "Syria", "Mozambique", "Ghana", "Malta", "Tajikistan", "Pakistan", "Tanzania", "Colombia", "Singapore", "Austria", "Paraguay", "Angola", "Guyana", "Kosovo", "Aruba", "Chile", "Uzbekistan", "Finland", "Hungary", "Poland", "Africa", "Suriname", "Israel", "Morocco", "Palau", "Bhutan", "Liberia", "Somalia", "Cambodia", "Moldova", "Botswana", "Mauritius", "Comoros", "Belgium", "Afghanistan", "Romania", "India", "Kyrgyzstan", "Jordan", "Greece", "Tuvalu", "Australia", "Canada", "Mali", "Gabon", "Norway", "Lesotho", "Mauritania", "Japan", "Uruguay", "Chad", "Ecuador", "Yemen", "Portugal", "Serbia", "Tonga", "Guadeloupe", "Montserrat", "Bangladesh", "Gibraltar", "Thailand", "Lithuania", "Montenegro", "Namibia", "Mayotte", "Azerbaijan", "Taiwan", "Lebanon", "Macau", "Estonia", "Zimbabwe", "Switzerland", "Algeria", "Belarus", "Turkey", "Oman", "Luxembourg", "Rwanda", "Bolivia", "Brunei", "Peru", "Monaco", "Nauru", "Libya", "Benin", "Madagascar", "Senegal", "Belize", "Ireland", "Jamaica", "Tibet", "Brazil", "Liechtenstein", "Argentina", "Iraq", "Haiti", "Greenland", "Réunion", "Latvia", "Guatemala", "Malawi", "Venezuela", "Czech Republic", "Costa Rica", "Solomon Islands", "New Zealand", "South Sudan", "Saudi Arabia", "Bouvet Island", "North Korean", "US Minor Outlying Islands", "South Korea", "Saint Martin", "Christmas Island", "Saint Barthelemy", "French Polynesia", "The Gambia", "Dominican Republic", "North America", "Sri Lanka", "New Caledonia", "Cape Verde", "Guinea Bissau", "The Netherlands", "Marshall Islands", "Sint Maarten", "Saint Lucia", "Republic of the Congo", "Equatorial Guinea", "The Bahamas", "San Marino", "South Africa", "Mariana Islands", "Ivory Coast", "Puerto Rico", "Sierra Leone", "French Guiana", "Cayman Islands", "Falkland Islands", "Norfolk Island", "South America", "United Kingdom", "Hong Kong", "El Salvador", "Vatican City", "Faroe Islands", "United States", "Burkina Faso", "Saint-Pierre et Miquelon", "Antigua and Barbuda", "United Arab Emirates", "Central African Republic", "Isle of Man", "US Virgin Islands", "British Virgin Islands", "Bosnia and Herzegovina", "Papua New Guinea", "Wallis et Futuna", "Bailiwick of Jersey", "Trinidad and Tobago", "Federated States of Micronesia", "São Tomé and Príncipe", "Turks and Caicos Islands", "Saint Kitts and Nevis", "Democratic Republic of the Congo", "Bonaire, Saint Eustatius, and Saba", "Saint Vincent and the Grenadines", "Pitcairn, Henderson, Ducie, and, Oeno Islands", "Territory of Heard Island and McDonald Islands", "South Georgia and the South Sandwich Islands", "Saint Helena Ascension and Tristan da Cunha", "Territory of the French Southern and Antarctic Lands");
+
+        $this->AnneT_natl_checklists = array("Turkmenistan", "Niue", "Mexico", "Cocos Islands", "Dominica", "Timor-Leste", "Iceland", "Nepal", "Philippines", "Cameroon", "Niger", "Mongolia", "Spain", "Italy", "Egypt", "Kenya", "Uganda", "Barbados", "Oceania", "Honduras", "Palestine", "Laos", "Sweden", "Kiribati", "Croatia", "Cyprus", "Slovenia", "Qatar", "Bulgaria", "Macedonia", "Nicaragua", "Cuba", "Guam", "Grenada", "Iran", "Martinique", "Guinea", "Djibouti", "Curacao", "Kazakhstan", "Eswatini", "China", "Maldives", "Myanmar", "Bahrain", "Guernsey", "Ukraine", "Kuwait", "Bermuda", "Nigeria", "Tokelau", "France", "Panama", "Armenia", "Russia", "Slovakia", "Asia", "Eritrea", "Fiji", "Malaysia", "Andorra", "Togo", "Tunisia", "Anguilla", "Vanuatu", "Georgia", "Vietnam", "Albania", "Zambia", "Europe", "Denmark", "Germany", "Sudan", "Samoa", "Burundi", "Indonesia", "Seychelles", "Ethiopia", "Syria", "Mozambique", "Ghana", "Malta", "Tajikistan", "Pakistan", "Tanzania", "Colombia", "Singapore", "Austria", "Paraguay", "Angola", "Guyana", "Kosovo", "Aruba", "Chile", "Uzbekistan", "Finland", "Hungary", "Poland", "Africa", "Suriname", "Israel", "Morocco", "Palau", "Bhutan", "Liberia", "Somalia", "Cambodia", "Moldova", "Botswana", "Mauritius", "Comoros", "Belgium", "Afghanistan", "Romania", "India", "Kyrgyzstan", "Jordan", "Greece", "Tuvalu", "Australia", "Canada", "Mali", "Gabon", "Norway", "Lesotho", "Mauritania", "Japan", "Uruguay", "Chad", "Ecuador", "Yemen", "Portugal", "Serbia", "Tonga", "Guadeloupe", "Montserrat", "Bangladesh", "Gibraltar", "Thailand", "Lithuania", "Montenegro", "Namibia", "Mayotte", "Azerbaijan", "Taiwan", "Lebanon", "Macau", "Estonia", "Zimbabwe", "Switzerland", "Algeria", "Belarus", "Turkey", "Oman", "Luxembourg", "Rwanda", "Bolivia", "Brunei", "Peru", "Monaco", "Nauru", "Libya", "Benin", "Madagascar", "Senegal", "Belize", "Ireland", "Jamaica", "Tibet", "Brazil", "Liechtenstein", "Argentina", "Iraq", "Haiti", "Greenland", "Réunion", "Latvia", "Guatemala", "Malawi", "Venezuela", "Czech Republic", "Costa Rica", "Solomon Islands", "New Zealand", "South Sudan", "Saudi Arabia", "Bouvet Island", "North Korea", "US Minor Outlying Islands", "South Korea", "Saint Martin", "Christmas Island", "Saint Barthelemy", "French Polynesia", "The Gambia", "Dominican Republic", "North America", "Sri Lanka", "New Caledonia", "Cape Verde", "Guinea Bissau", "The Netherlands", "Marshall Islands", "Sint Maarten", "Saint Lucia", "Republic of the Congo", "Equatorial Guinea", "The Bahamas", "San Marino", "South Africa", "Mariana Islands", "Ivory Coast", "Puerto Rico", "Sierra Leone", "French Guiana", "Cayman Islands", "Falkland Islands", "Norfolk Island", "South America", "United Kingdom", "Hong Kong", "El Salvador", "Vatican City", "Faroe Islands", "United States", "Burkina Faso", "Saint-Pierre et Miquelon", "Antigua and Barbuda", "United Arab Emirates", "Central African Republic", "Isle of Man", "US Virgin Islands", "British Virgin Islands", "Bosnia and Herzegovina", "Papua New Guinea", "Wallis et Futuna", "Bailiwick of Jersey", "Trinidad and Tobago", "Federated States of Micronesia", "São Tomé and Príncipe", "Turks and Caicos Islands", "Saint Kitts and Nevis", "Democratic Republic of the Congo", "Bonaire, Saint Eustatius, and Saba", "Saint Vincent and the Grenadines", "Pitcairn, Henderson, Ducie, and, Oeno Islands", "Territory of Heard Island and McDonald Islands", "South Georgia and the South Sandwich Islands", "Saint Helena Ascension and Tristan da Cunha", "Territory of the French Southern and Antarctic Lands");
+        // $this->ctry_map['Pitcairn'] = "Pitcairn, Henderson, Ducie, and, Oeno Islands";
+        $this->ctry_map['Palestine, State of'] = "Palestine";
+        $this->ctry_map['Russian Federation'] = "Russia";
+        $this->ctry_map['Saint Helena, Ascension and Tristan da Cunha'] = "Saint Helena Ascension and Tristan da Cunha";
+        // $this->ctry_map['Svalbard and Jan Mayen'] = "yyy";
+        // [Sao Tome and Principe]
+        $this->ctry_map['Brunei Darussalam'] = "Brunei";
+        $this->ctry_map['Bolivia, Plurinational State of'] = "Bolivia";
+        $this->ctry_map['Bonaire, Sint Eustatius and Saba'] = "Bonaire, Saint Eustatius, and Saba";
+        $this->ctry_map['Bahamas'] = "The Bahamas"; //SC_bahamas.tar.gz
+        $this->ctry_map['Cocos (Keeling) Islands'] = "Cocos Islands"; //SC_cocosislands.tar.gz
+        $this->ctry_map['Congo'] = "Republic of the Congo";
+        $this->ctry_map['Congo, the Democratic Republic of the'] = "Democratic Republic of the Congo";
+        $this->ctry_map['Curaçao'] = "Curacao";
+        $this->ctry_map['Falkland Islands (Malvinas)'] = "Falkland Islands";
+        $this->ctry_map['Micronesia, Federated States of'] = "Federated States of Micronesia";
+        $this->ctry_map['Gambia'] = "The Gambia";
+        $this->ctry_map['Guinea-Bissau'] = "Guinea Bissau";
+        $this->ctry_map['Heard Island and McDonald Islands'] = "Territory of Heard Island and McDonald Islands"; //SC_territoryofheardislandandmcdonaldislands.tar.gz
+        $this->ctry_map['Iran, Islamic Republic of'] = "Iran";
+        $this->ctry_map['Jersey'] = "Bailiwick of Jersey"; //SC_jersey.tar.gz
+        $this->ctry_map["Korea, Democratic People's Republic of"] = "North Korea"; //SC_northkorea.tar.gz
+        $this->ctry_map['Korea, Republic of'] = "South Korea";
+        $this->ctry_map["Lao People's Democratic Republic"] = "Laos";
+        $this->ctry_map['Moldova, Republic of'] = "Moldova";
+        $this->ctry_map['Saint Martin (French part)'] = "Saint Martin";
+        $this->ctry_map['Macedonia, the Former Yugoslav Republic of'] = "Macedonia";
+        $this->ctry_map['Macao'] = "Macau";
+        $this->ctry_map['Northern Mariana Islands'] = "Mariana Islands";
+        $this->ctry_map['Netherlands'] = "The Netherlands"; //SC_netherlands.tar.gz
+        $this->ctry_map['Saint Pierre and Miquelon'] = "Saint-Pierre et Miquelon";
+        $this->ctry_map['Sint Maarten (Dutch part)'] = "Sint Maarten";
+        $this->ctry_map['Syrian Arab Republic'] = "Syria";
+        $this->ctry_map['French Southern Territories'] = "Territory of the French Southern and Antarctic Lands";
+        $this->ctry_map['Taiwan, Province of China'] = "Taiwan";
+        $this->ctry_map['Tanzania, United Republic of'] = "Tanzania";
+        $this->ctry_map['United States Minor Outlying Islands'] = "US Minor Outlying Islands";
+        $this->ctry_map['Holy See (Vatican City State)'] = "Vatican City";
+        $this->ctry_map['Venezuela, Bolivarian Republic of'] = "Venezuela";
+        $this->ctry_map['Virgin Islands, U.S.'] = "US Virgin Islands";
+        $this->ctry_map['Virgin Islands, British'] = "British Virgin Islands";
+        $this->ctry_map['Viet Nam'] = "Vietnam";
+        $this->ctry_map['Wallis and Futuna'] = "Wallis et Futuna";
     }
     private function initialize()
     {
@@ -69,11 +113,28 @@ class NationalChecklistsAPI
             $ret = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
             $country_name_lower = $ret['lower_case'];
             $this->country_name = $ret['orig'];
+            // print_r($ret); exit;
+            if(!in_array($this->country_name, $this->AnneT_natl_checklists)) {
+                if($val = @$this->ctry_map[$this->country_name]) {
+                    $this->country_name = $val;
+                    if(!in_array($this->country_name, $this->AnneT_natl_checklists)) {
+                        echo "\nNot mapped* [$this->country_name]";
+                        $this->debug['Not mapped*'][$this->country_name] = '';
+                        continue; //not mapped to Anne's checklists    
+                    }
+                }
+                else {
+                    echo "\nNot mapped** [$this->country_name]";
+                    $this->debug['Not mapped**'][$this->country_name] = '';
+                    continue; //not mapped to Anne's checklists
+                }
+            }
             // */
+            // continue; //debug only
 
-            // /* manual filter - not needed anymore
+            /* manual filter - not needed anymore
             if(in_array($country_name_lower, array('andorra', 'Ålandislands'))) continue; //already processed, no need to repeat again.
-            // */
+            */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             $folder = "SC_".$country_name_lower;
@@ -95,7 +156,7 @@ class NationalChecklistsAPI
             $this->archive_builder->finalize(TRUE);
             Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
 
-            // break; //debug only | process just 1 country
+            break; //debug only | process just 1 country
         }
     }
     private function parse_tsv_file($file, $task)
@@ -281,7 +342,8 @@ class NationalChecklistsAPI
             echo "\nCountry: [$abbrev] [$country_name] [$lower]\n";
             return array('lower_case' => $lower, 'orig' => $country_name);
         }
-        exit("\nCountry abbrev. not found [$abbrev]\n");
+        echo("\nCountry abbrev. not found [$abbrev]\n");
+        $this->debug['Country abbrev. not found'][$abbrev] = '';
     }
     // ======================================= below copied template    
     private function write_taxon($rek)
