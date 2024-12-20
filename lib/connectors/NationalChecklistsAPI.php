@@ -70,9 +70,9 @@ class NationalChecklistsAPI
             $this->country_name = $ret['orig'];
             // */
 
-            /* manual filter - not needed anymore
-            if(in_array($country_name_lower, array('andorra'))) continue; //already processed, no need to repeat again.
-            */
+            // /* manual filter - not needed anymore
+            if(in_array($country_name_lower, array('andorra', 'Ålandislands'))) continue; //already processed, no need to repeat again.
+            // */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             $folder = "SC_".$country_name_lower;
