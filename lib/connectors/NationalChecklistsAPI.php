@@ -157,7 +157,7 @@ class NationalChecklistsAPI
             $this->archive_builder->finalize(TRUE);
             Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
 
-            break; //debug only | process just 1 country
+            // break; //debug only | process just 1 country
         }
     }
     private function parse_tsv_file($file, $task)
