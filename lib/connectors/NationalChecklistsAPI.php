@@ -318,14 +318,15 @@ class NationalChecklistsAPI
 
         if($country_uri = @$this->uri_values[$country]) return $country_uri;
         else {
-            /*
+            // /*
             switch ($country) { //put here customized mapping
-                // case "Port of Entry":   return false; //"DO NOT USE";
-                // just examples below. Real entries here were already added to /cp_new/GISD/mapped_location_strings.txt
-                // case "United States of America":        return "http://www.wikidata.org/entity/Q30";
-                // case "Dutch West Indies":               return "http://www.wikidata.org/entity/Q25227";
+                case "ÅLand Islands":        return "https://www.geonames.org/661883";
+                /* copied template
+                case "United States of America":        return "http://www.wikidata.org/entity/Q30";
+                case "Dutch West Indies":               return "http://www.wikidata.org/entity/Q25227";
+                */
             }
-            */
+            // */
         }
         print_r($this->uri_values); //debug only
         exit("\nNo URI for [$country]\n");
