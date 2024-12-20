@@ -400,7 +400,7 @@ class Functions
                                                   $timestart = false, 
                                                   $ContResLocPath = CONTENT_RESOURCE_LOCAL_PATH,
                                                   $end_options = array('go_zenodo' => true))
-    {
+    {   echo "\n---------------\nStart finalize_dwca_resource()...\n---------------\n";
         if(!$resource_id) return;
         if(stripos($resource_id, ".") !== false) return; //string is found
         if(stripos($resource_id, "*") !== false) return; //string is found
