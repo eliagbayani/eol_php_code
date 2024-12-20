@@ -75,7 +75,7 @@ class NationalChecklistsAPI
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             $folder = "SC_".$country_name_lower;
-            if(self::is_this_DwCA_old_YN($folder.".tar.gz")) {
+            if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) {
                 echo "\nAlready recently generated ($folder)\n"; continue;
             }
             $resource_id = $folder;
