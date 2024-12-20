@@ -57,6 +57,7 @@ class NationalChecklistsAPI
         // */
         
         unlink($tsv_path);
+        print_r($this->debug);
     }
     private function create_individual_country_checklist_resource()
     {
@@ -329,8 +330,9 @@ class NationalChecklistsAPI
             }
             // */
         }
-        print_r($this->uri_values); //debug only
-        exit("\nNo URI for [$country]\n");
+        // print_r($this->uri_values); //debug only
+        echo ("\nNo URI for [$country]\n");
+        return false;
     }
     private function assemble_terms_yml()
     {
