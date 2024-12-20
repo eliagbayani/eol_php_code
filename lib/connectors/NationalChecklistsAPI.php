@@ -69,12 +69,15 @@ class NationalChecklistsAPI
             $this->country_name = $ret['orig'];
             // */
 
-            // /* manual filter
+            /* manual filter - not needed anymore
             if(in_array($country_name_lower, array('andorra'))) continue; //already processed, no need to repeat again.
-            // */
+            */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             $folder = "SC_".$country_name_lower;
+            if(self::is_this_DwCA_old_YN($folder.".tar.gz")) {
+                echo "\nAlready recently generated ($folder)\n"; continue;
+            }
             $resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
@@ -321,6 +324,7 @@ class NationalChecklistsAPI
             }
             */
         }
+        print_r($this->uri_values); //debug only
         exit("\nNo URI for [$country]\n");
     }
     private function assemble_terms_yml()
@@ -332,5 +336,35 @@ class NationalChecklistsAPI
         // print_r($this->uri_values); 
         echo("\nEOL Terms: ".count($this->uri_values)."\n"); //debug only
     }
+    function is_this_DwCA_old_YN($filename) //SC_andorra.tar.gz
+    {
+        $filename_date = self::get_date_of_this_DwCA($filename);
+        echo "\ndate of $filename: $filename_date\n";
+        // get date today minus 2 months
+        $date = date("Y-m-d");
+        $today = date_create($date);
+        echo "\n-------new...\ntoday: ".date_format($today, 'Y-m-d')."\n";
+        date_sub($today, date_interval_create_from_date_string('2 month')); //previously '2 months'
+        $minus_2_months = date_format($today, 'Y-m-d');
+        // compare
+        echo "minus 1 month: " .$minus_2_months. "\n";
+        echo "\n$filename_date < $minus_2_months \n";
+        if($filename_date < $minus_2_months) return true;
+        else return false;
+    }
+    private function get_date_of_this_DwCA($filename)
+    {
+        // /* NEW:
+        $file = CONTENT_RESOURCE_LOCAL_PATH . $filename;
+        if(file_exists($file)) return date("Y-m-d", filemtime($file));
+        else                   return date("Y-m-d", false);
+        // */
+        /* OLD:
+        $file = CONTENT_RESOURCE_LOCAL_PATH.'wikipedia-'.$filename.'.tar.gz';
+        if(file_exists($file)) return date("Y-m-d", filemtime($file));
+        else                   return date("Y-m-d", false);
+        */
+    }
+
 }
 ?>
