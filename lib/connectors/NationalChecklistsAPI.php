@@ -69,6 +69,10 @@ class NationalChecklistsAPI
             $this->country_name = $ret['orig'];
             // */
 
+            // /* manual filter
+            // if(in_array($country_name_lower, array('andorra'))) continue;
+            // */
+
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             $folder = "SC_".$country_name_lower;
             $resource_id = $folder;
