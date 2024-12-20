@@ -312,7 +312,9 @@ class NationalChecklistsAPI
         else $this->debug['undefined country'][$country] = '';
     }
     private function get_country_uri($country)
-    {
+    {   //Antigua and Barbuda; what is saved in EOL terms file is: "Antigua And Barbuda"
+        $country = str_replace(" and ", " And ", $country);
+
         if($country_uri = @$this->uri_values[$country]) return $country_uri;
         else {
             /*
