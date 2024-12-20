@@ -130,9 +130,12 @@ class NationalChecklistsAPI
             [specieskey] => 1710962
             [countrycode] => AD
         )*/
-        $species_info = self::assemble_species($rec); //print_r($species_info); //exit;
-        $taxonID = self::write_taxon($species_info);
-        if(@$rec['countrycode']) self::write_traits($species_info, $taxonID);
+        if($species_info = self::assemble_species($rec)) { //print_r($species_info); //exit;
+            if(!in_array($species_info['taxonomicStatus'], array('doubtful'))) {
+                $taxonID = self::write_taxon($species_info);
+                if(@$rec['countrycode']) self::write_traits($species_info, $taxonID);    
+            }
+        }
     }
     function assemble_species($rec)
     {
@@ -322,10 +325,22 @@ class NationalChecklistsAPI
             // /*
             if($country == "ÅLand Islands") return "https://www.geonames.org/661883";
             switch ($country) { //put here customized mapping
-                case "ÅLand Islands":        return "https://www.geonames.org/661883";
+                case "ÅLand Islands":                       return "https://www.geonames.org/661883";
+                case "Bonaire, Sint Eustatius And Saba":    return "http://www.geonames.org/7626844";
+                case "Saint Barthélemy":                    return "http://www.geonames.org/3578475";
+                // case "Brunei Darussalam"
+
                 /* copied template
                 case "United States of America":        return "http://www.wikidata.org/entity/Q30";
                 case "Dutch West Indies":               return "http://www.wikidata.org/entity/Q25227";
+
+                name: Bonaire, Saint Eustatius And Saba
+                type: value
+                uri: http://www.geonames.org/7626844             
+                
+                name: Saint Barthelemy
+                type: value
+                uri: http://www.geonames.org/3578475                
                 */
             }
             // */
