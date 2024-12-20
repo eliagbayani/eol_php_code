@@ -92,8 +92,8 @@ class FillUpMissingParents_GBIFChecklistsAPI
         $taxon->scientificNameAuthorship   = $rek['scientificNameAuthorship'];
         $taxon->taxonRank                  = $rek['taxonRank'];
         $taxon->parentNameUsageID          = $rek['parentNameUsageID'];
-        $taxon->taxonomicStatus            = $rek['taxonomicStatus'];
-        $taxon->furtherInformationURL      = $rek['furtherInformationURL'];
+        // $taxon->taxonomicStatus            = $rek['taxonomicStatus']; //commented because these taxa are for parents, where status is irrelevant in a way.
+        // $taxon->furtherInformationURL      = $rek['furtherInformationURL'];
         if(!isset($this->taxon_ids[$taxon->taxonID])) {
             $this->taxon_ids[$taxon->taxonID] = '';
             $this->archive_builder->write_object_to_file($taxon);    
