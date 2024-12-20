@@ -319,6 +319,7 @@ class NationalChecklistsAPI
         if($country_uri = @$this->uri_values[$country]) return $country_uri;
         else {
             // /*
+            if($country == "ÅLand Islands") return "https://www.geonames.org/661883";
             switch ($country) { //put here customized mapping
                 case "ÅLand Islands":        return "https://www.geonames.org/661883";
                 /* copied template
