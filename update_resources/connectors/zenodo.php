@@ -79,7 +79,7 @@ print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
 
 // /* -------------------------------------------------------------------------------------------- very good query results
 $q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
-$q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
+// $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
 // $q = "+title:checklists +title:2019"; //set 'geography', remove 'deprecated', add isDerivedFrom
 // $q = "+title:FishBase";
 // $q = "related.relation:isSourceOf";
