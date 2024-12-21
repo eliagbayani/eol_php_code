@@ -502,7 +502,7 @@ class NationalChecklistsAPI
     private function get_dwca_filename($str)
     {
         $q = '+title:"'.$str.'" +title:2019 +title:National +title:Checklists';
-        if($obj = $this->zenodo->get_depositions_by_part_title($q)) { // print_r($obj); 
+        if($obj = $this->zenodo->get_depositions_by_part_title($q)) { print_r($obj[0]); 
             $f1 = $obj[0]['files'][0]['filename'];
             $path = $obj[0]['metadata']['related_identifiers'][0]['identifier'];
             $f2 = pathinfo($path, PATHINFO_BASENAME);
