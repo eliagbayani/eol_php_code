@@ -152,7 +152,7 @@ class NationalChecklistsAPI
             }
             else continue;
             // break; //debug only | process just 1 record
-            if($i > 5) break; //debug only
+            // if($i > 5) break; //debug only
         } //end foreach()
         fclose($f);
         print_r($this->debug);
