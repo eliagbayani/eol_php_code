@@ -26,8 +26,8 @@ $task = @$fields['task'];
 
 $what = 'Country_checklists';
 $func = new NationalChecklistsAPI($what);
-// $func->start($counter, $task); //main operation
-$func->show_countries_metadata(); //utility
+$func->start($counter, $task); //main operation
+// $func->show_countries_metadata(); //utility --- works OK
 /* copied template, not used here.
 Functions::finalize_dwca_resource($resource_id, false, true, $timestart); //3rd param if false it will not remove working folder
 */

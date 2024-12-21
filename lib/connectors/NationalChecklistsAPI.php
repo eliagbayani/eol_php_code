@@ -110,7 +110,7 @@ class NationalChecklistsAPI
         print_r($this->debug);
     }
     function show_countries_metadata() //utility
-    {   $cont = false; //dev only
+    {   $cont = false; //debug only
 
         self::initialize();
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
@@ -123,18 +123,19 @@ class NationalChecklistsAPI
                     [abbrev] => AD
                 )*/
 
-                if($ret['orig'] == 'United States') $cont = true;
+                if($ret['orig'] == 'United States') $cont = true; //debug only
 
-                if($cont) {
+                // if($cont) {
                     if($val = $ret['orig']) {
                         if($val == 'United States') $dwca_filename = 'SC_unitedstates.tar.gz';
                         else {
                             if($dwca_filename = self::get_dwca_filename($val)) {
                                 echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
+                                exit("\nstopx\n");
                             }    
                         }
                     }    
-                }
+                // }
             }
             else continue;
             // break; //debug only | process just 1 record
@@ -175,6 +176,14 @@ class NationalChecklistsAPI
             if($ret = self::evaluate_country_file($file)) {
                 $country_name_lower = $ret['lower_case'];
                 $this->country_name = $ret['orig'];        
+                // /*
+                if($val = $ret['orig']) {
+                    if($val == 'United States') $dwca_filename = 'SC_unitedstates';
+                    else {
+                        if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
+                    }
+                }    
+                // */
             }
             else continue;
             
@@ -187,7 +196,8 @@ class NationalChecklistsAPI
             elseif(strtolower($this->country_name) == strtolower("Democratic Republic of the Congo"))   $country_name_lower = "congo";
             elseif(strtolower($this->country_name) == strtolower("Republic of the Congo"))              $country_name_lower = "repubcongo";
 
-            $folder = "SC_".$country_name_lower;
+            $folder = "SC_".$country_name_lower; //obsolete
+            $folder = $dwca_filename;            //latest
 
             if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
             else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
@@ -511,7 +521,7 @@ class NationalChecklistsAPI
             $f2 = pathinfo($path, PATHINFO_BASENAME);
             if(file_exists(CONTENT_RESOURCE_LOCAL_PATH.$f1)) echo "\nDwCA exists.\n";
             else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
-            if($f1 == $f2) return $f1;
+            if($f1 == $f2) return str_ireplace(".tar.gz", "", $f1);
             else {
                 exit("\nERROR: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
