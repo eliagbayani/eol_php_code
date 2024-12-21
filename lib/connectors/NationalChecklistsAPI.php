@@ -43,7 +43,7 @@ class NationalChecklistsAPI
         $this->ctry_map['Bonaire, Sint Eustatius and Saba'] = "Bonaire, Saint Eustatius, and Saba";
         $this->ctry_map['Bahamas'] = "The Bahamas"; //SC_bahamas.tar.gz
         $this->ctry_map['Cocos (Keeling) Islands'] = "Cocos Islands"; //SC_cocosislands.tar.gz
-        $this->ctry_map['Congo'] = "Republic of the Congo";
+        $this->ctry_map['Congo'] = "Republic of the Congo"; //https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_repubcongo.tar.gz
         $this->ctry_map['Congo, the Democratic Republic of the'] = "Democratic Republic of the Congo";
         $this->ctry_map['Curaçao'] = "Curacao";
         $this->ctry_map['Falkland Islands (Malvinas)'] = "Falkland Islands";
@@ -104,40 +104,62 @@ class NationalChecklistsAPI
         unlink($tsv_path);
         print_r($this->debug);
     }
+    function show_countries_metadata() //utility
+    {
+        self::initialize();
+        $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
+        foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
+            if($ret = self::evaluate_country_file($file)) print_r($ret);
+            else continue;
+        }
+        print_r($this->debug);
+    }
+    private function evaluate_country_file($file)
+    {
+        $ret = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
+        $country_name_lower = $ret['lower_case'];
+        $this->country_name = $ret['orig'];
+        // print_r($ret); exit;
+        if(!in_array($this->country_name, $this->AnneT_natl_checklists)) {
+            if($val = @$this->ctry_map[$this->country_name]) {
+                $this->country_name = $val;
+                if(!in_array($this->country_name, $this->AnneT_natl_checklists)) {
+                    echo "\nNot mapped* [$this->country_name]";
+                    $this->debug['Not mapped*'][$this->country_name] = '';
+                    return false;
+                    continue; //not mapped to Anne's checklists    
+                }
+            }
+            else {
+                echo "\nNot mapped** [$this->country_name]";
+                $this->debug['Not mapped**'][$this->country_name] = '';
+                return false;
+                continue; //not mapped to Anne's checklists
+            }
+        }
+        $ret['orig'] = $this->country_name;
+        return $ret;
+    }
     private function create_individual_country_checklist_resource()
     {
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
         foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
 
-            // /*
-            $ret = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
-            $country_name_lower = $ret['lower_case'];
-            $this->country_name = $ret['orig'];
-            // print_r($ret); exit;
-            if(!in_array($this->country_name, $this->AnneT_natl_checklists)) {
-                if($val = @$this->ctry_map[$this->country_name]) {
-                    $this->country_name = $val;
-                    if(!in_array($this->country_name, $this->AnneT_natl_checklists)) {
-                        echo "\nNot mapped* [$this->country_name]";
-                        $this->debug['Not mapped*'][$this->country_name] = '';
-                        continue; //not mapped to Anne's checklists    
-                    }
-                }
-                else {
-                    echo "\nNot mapped** [$this->country_name]";
-                    $this->debug['Not mapped**'][$this->country_name] = '';
-                    continue; //not mapped to Anne's checklists
-                }
+            if($ret = self::evaluate_country_file($file)) {
+                $country_name_lower = $ret['lower_case'];
+                $this->country_name = $ret['orig'];        
             }
-            // */
-            // continue; //debug only
-
+            else continue;
+            
             /* manual filter - not needed anymore
             if(in_array($country_name_lower, array('andorra', 'Ålandislands'))) continue; //already processed, no need to repeat again.
             */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
-            $country_name_lower = str_ireplace("the ", "", $country_name_lower); //The Bahamas => SC_bahamas.tar.gz
+            if(substr($country_name_lower,0,4) == "the ")                                               $country_name_lower = str_ireplace("the ", "", $country_name_lower); //The Bahamas => SC_bahamas.tar.gz
+            elseif(strtolower($this->country_name) == strtolower("Democratic Republic of the Congo"))   $country_name_lower = "congo";
+            elseif(strtolower($this->country_name) == strtolower("Republic of the Congo"))              $country_name_lower = "repubcongo";
+
             $folder = "SC_".$country_name_lower;
 
             if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
@@ -341,7 +363,7 @@ class NationalChecklistsAPI
         if($country_name = @$this->country_code_name_info[$abbrev]) {
             $lower = strtolower(str_replace(" ", "", $country_name));
             echo "\nCountry: [$abbrev] [$country_name] [$lower]\n";
-            return array('lower_case' => $lower, 'orig' => $country_name);
+            return array('lower_case' => $lower, 'orig' => $country_name, 'abbrev' => $abbrev);
         }
         echo("\nCountry abbrev. not found [$abbrev]\n");
         $this->debug['Country abbrev. not found'][$abbrev] = '';
@@ -383,6 +405,8 @@ class NationalChecklistsAPI
     private function get_country_uri($country)
     {   //Antigua and Barbuda; what is saved in EOL terms file is: "Antigua And Barbuda"
         $country = str_replace(" and ", " And ", $country);
+        $country = str_replace(" of ", " Of ", $country);
+        $country = str_replace(" the ", " The ", $country);
 
         if($country_uri = @$this->uri_values[$country]) return $country_uri;
         else {
