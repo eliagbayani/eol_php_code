@@ -80,6 +80,11 @@ class NationalChecklistsAPI
     {
         $this->country_code_name_info = self::initialize_countries_from_csv(); //print_r($this->country_code_name_info); exit;
         self::assemble_terms_yml(); //generates $this->uri_values
+        // /*
+        require_library('connectors/ZenodoConnectorAPI');
+        require_library('connectors/ZenodoAPI');
+        $this->zenodo = new ZenodoAPI();
+        // */
     }
     function start($counter = false, $task) //$counter is only for caching
     {   //exit("\n[$counter]\n");
@@ -109,8 +114,21 @@ class NationalChecklistsAPI
         self::initialize();
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
         foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
-            if($ret = self::evaluate_country_file($file)) print_r($ret);
+            if($ret = self::evaluate_country_file($file)) {
+                print_r($ret);
+                /*Array(
+                    [lower_case] => andorra
+                    [orig] => Andorra
+                    [abbrev] => AD
+                )*/
+                if($val = $ret['orig']) {
+                    if($dwca_filename = self::get_dwca_filename($val)) {
+                        echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
+                    }
+                }
+            }
             else continue;
+            // break; //debug only | process just 1 record
         }
         print_r($this->debug);
     }
@@ -475,6 +493,20 @@ class NationalChecklistsAPI
         else                   return date("Y-m-d", false);
         */
     }
-
+    private function get_dwca_filename($str)
+    {
+        $q = '+title:"'.$str.'" +title:2019 +title:National +title:Checklists';
+        if($obj = $this->zenodo->get_depositions_by_part_title($q)) { // print_r($obj); 
+            $f1 = $obj[0]['files'][0]['filename'];
+            $path = $obj[0]['metadata']['related_identifiers'][0]['identifier'];
+            $f2 = pathinfo($path, PATHINFO_BASENAME);
+            if(file_exists(CONTENT_RESOURCE_LOCAL_PATH.$f1)) echo "\nDwCA exists.\n";
+            else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f]\n[$f2]\n[$path]\n");
+            if($f1 == $f2) return $f1;
+            else {
+                exit("\nERROR: Cannot find DwCA\n[$str]\n[$f]\n[$f2]\n[$path]\n");
+            }
+        }
+    }
 }
 ?>

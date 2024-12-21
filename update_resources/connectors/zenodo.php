@@ -93,9 +93,11 @@ $q = "+title:national +title:checklists -title:2019 -title:water"; //works splen
 // $q = "+title:LD_";
 // $q = "+related.relation:issupplementto";
 // $q = "+title:Scratchpad";
+$q = "+title:Democratic Republic of the Congo +title:2019";
+$q = '+title:"Territory of the French Southern and Antarctic Lands" +title:2019 +title:Checklists';
 
 if($obj = $func->get_depositions_by_part_title($q)) {
-  // print_r($obj); exit("\n-found-\n");
+  print_r($obj); exit("\n-found-\n");
 }
 exit("\n-not found-\n");
 // -------------------------------------------------------------------------------------------- */
