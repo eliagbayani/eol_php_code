@@ -123,7 +123,7 @@ class NationalChecklistsAPI
                     [abbrev] => AD
                 )*/
 
-                if($ret['orig'] == 'Guatemala') $cont = true;
+                if($ret['orig'] == 'Luxembourg') $cont = true;
 
                 if($cont) {
                     if($val = $ret['orig']) {
@@ -507,10 +507,10 @@ class NationalChecklistsAPI
             $path = $obj[0]['metadata']['related_identifiers'][0]['identifier'];
             $f2 = pathinfo($path, PATHINFO_BASENAME);
             if(file_exists(CONTENT_RESOURCE_LOCAL_PATH.$f1)) echo "\nDwCA exists.\n";
-            else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f]\n[$f2]\n[$path]\n");
+            else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             if($f1 == $f2) return $f1;
             else {
-                exit("\nERROR: Cannot find DwCA\n[$str]\n[$f]\n[$f2]\n[$path]\n");
+                exit("\nERROR: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
         }
     }
