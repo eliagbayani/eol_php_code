@@ -434,6 +434,8 @@ class Functions
         //added 14-Nov-2017: decided to remove folders xxx_previous for all resources
         if(is_dir($ContResLocPath . $resource_id . "_previous")) recursive_rmdir($ContResLocPath . $resource_id . "_previous");
 
+        if($status = chmod(CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz", 0775)) echo "\nFile permission update: [$status] OK\n";    
+
         // /* as of Jul 18, 2023: snippet to update CKAN "Life updated" metadata in opendata.eol.org
         require_library('connectors/CKAN_API_AccessAPI');
         $forced_date = "";

@@ -72,8 +72,7 @@ function process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param
     // echo "\n===Ready to finalize...\n";
     Functions::finalize_dwca_resource($resource_id, false, false, $timestart, CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false));
     
-    $status = chmod(CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz", 0775);
-    echo "\nFile permission update: [$status]\n";
+    if($status = chmod(CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz", 0775)) echo "\nFile permission update: [$status] OK\n";
     
     require_library('connectors/DWCADiagnoseAPI');
     $func = new DWCADiagnoseAPI();
