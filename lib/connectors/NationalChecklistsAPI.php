@@ -110,7 +110,8 @@ class NationalChecklistsAPI
         print_r($this->debug);
     }
     function show_countries_metadata() //utility
-    {
+    {   $cont = false; //dev only
+
         self::initialize();
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
         foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
@@ -121,10 +122,15 @@ class NationalChecklistsAPI
                     [orig] => Andorra
                     [abbrev] => AD
                 )*/
-                if($val = $ret['orig']) {
-                    if($dwca_filename = self::get_dwca_filename($val)) {
-                        echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
-                    }
+
+                if($ret['orig'] == 'Guatemala') $cont = true;
+
+                if($cont) {
+                    if($val = $ret['orig']) {
+                        if($dwca_filename = self::get_dwca_filename($val)) {
+                            echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
+                        }
+                    }    
                 }
             }
             else continue;
