@@ -362,7 +362,7 @@ class DWCADiagnoseAPI
         $suggested_fields = explode("\t", "taxonID	scientificName	taxonRank	parentNameUsageID"); //from BOLDS_DumpsServiceAPI.php */
         if(!$url) $url = CONTENT_RESOURCE_LOCAL_PATH . $resource_id . "/".$tab_file;
         if(!file_exists($url)) {
-            echo "\nFile does not exist: [$url]\n";
+            echo "\nFile does not exist: [$url]\nProcess failed!\n";
             return;
         }
         else echo "\nProcessing file ($url)\n";
