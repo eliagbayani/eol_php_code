@@ -123,12 +123,15 @@ class NationalChecklistsAPI
                     [abbrev] => AD
                 )*/
 
-                if($ret['orig'] == 'Luxembourg') $cont = true;
+                if($ret['orig'] == 'United States') $cont = true;
 
                 if($cont) {
                     if($val = $ret['orig']) {
-                        if($dwca_filename = self::get_dwca_filename($val)) {
-                            echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
+                        if($val == 'United States') $dwca_filename = 'SC_unitedstates.tar.gz';
+                        else {
+                            if($dwca_filename = self::get_dwca_filename($val)) {
+                                echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
+                            }    
                         }
                     }    
                 }
