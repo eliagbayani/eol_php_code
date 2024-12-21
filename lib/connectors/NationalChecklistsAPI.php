@@ -20,6 +20,8 @@ class NationalChecklistsAPI
         if(Functions::is_production())  $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
         else                            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
         
+        $this->report_1 = $this->destination . "countries.tsv";
+
         if(!is_dir($this->destination)) mkdir($this->destination);
         $this->country_path = $this->destination.'countries';
         if(!is_dir($this->country_path)) mkdir($this->country_path);
@@ -43,8 +45,8 @@ class NationalChecklistsAPI
         $this->ctry_map['Bonaire, Sint Eustatius and Saba'] = "Bonaire, Saint Eustatius, and Saba";
         $this->ctry_map['Bahamas'] = "The Bahamas"; //SC_bahamas.tar.gz
         $this->ctry_map['Cocos (Keeling) Islands'] = "Cocos Islands"; //SC_cocosislands.tar.gz
-        $this->ctry_map['Congo'] = "Republic of the Congo"; //https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_repubcongo.tar.gz
-        $this->ctry_map['Congo, the Democratic Republic of the'] = "Democratic Republic of the Congo";
+        $this->ctry_map['Congo'] = "Republic of the Congo"; //https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_repubcongo.tar.gz | https://www.geonames.org/2260494
+        $this->ctry_map['Congo, the Democratic Republic of the'] = "Democratic Republic of the Congo"; //http://www.geonames.org/203312
         $this->ctry_map['Curaçao'] = "Curacao";
         $this->ctry_map['Falkland Islands (Malvinas)'] = "Falkland Islands";
         $this->ctry_map['Micronesia, Federated States of'] = "Federated States of Micronesia";
@@ -112,10 +114,12 @@ class NationalChecklistsAPI
     function show_countries_metadata() //utility
     {   $cont = false; //debug only
 
+        if(file_exists($this->report_1)) unlink($this->report_1);
+
         self::initialize();
-        $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
+        $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n"; $i = 0;
         foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
-            if($ret = self::evaluate_country_file($file)) {
+            if($ret = self::evaluate_country_file($file)) { $i++;
                 print_r($ret);
                 /*Array(
                     [lower_case] => andorra
@@ -131,17 +135,29 @@ class NationalChecklistsAPI
                         else {
                             if($dwca_filename = self::get_dwca_filename($val)) {
                                 echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
-                                exit("\nstopx\n");
+                                // exit("\nstopx\n");
                             }    
                         }
+                        $ret['dwca'] = $dwca_filename;
                     }    
                 // }
+                if(!file_exists($this->report_1)) {
+                    $f = Functions::file_open($this->report_1, "w");
+                    fwrite($f, implode("\t", array_keys($ret))."\n");
+                }
+                else {
+                    $f = Functions::file_open($this->report_1, "a");
+                    fwrite($f, implode("\t", $ret)."\n");    
+                }
             }
             else continue;
             // break; //debug only | process just 1 record
-        }
+            if($i > 5) break; //debug only
+        } //end foreach()
+        fclose($f);
         print_r($this->debug);
     }
+
     private function evaluate_country_file($file)
     {
         $ret = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
@@ -453,6 +469,7 @@ class NationalChecklistsAPI
                 case "ÅLand Islands":                       return "https://www.geonames.org/661883";
                 case "Bonaire, Sint Eustatius And Saba":    return "http://www.geonames.org/7626844";
                 case "Saint Barthélemy":                    return "http://www.geonames.org/3578475";
+                case "Republic Of The Congo":               return "https://www.geonames.org/2260494";
                 // case "Brunei Darussalam"
 
                 /* copied template
