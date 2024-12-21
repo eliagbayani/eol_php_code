@@ -73,7 +73,8 @@ function process_resource_url($dwca_file, $resource_id, $timestart, $ctr, $param
     Functions::finalize_dwca_resource($resource_id, false, false, $timestart, CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false));
     
     if($status = chmod(CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz", 0775)) echo "\nFile permission update: [$status] OK\n";
-    
+    else echo "\nFile permission update: failed!\n";
+
     require_library('connectors/DWCADiagnoseAPI');
     $func = new DWCADiagnoseAPI();
     $undefined = $func->check_if_all_parents_have_entries($resource_id, true); //true means output will write to text file
