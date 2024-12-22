@@ -6,7 +6,7 @@ https://editors.eol.org/eol_php_code/update_resources/connectors/monitor_dwca_re
 
 php update_resources/connectors/protisten_v2.php _ '{"expire_seconds": "1"}'       --- expires now, expires in 1 sec.
 php update_resources/connectors/protisten_v2.php _ '{"expire_seconds": "false"}'   --- doesn't expire
-php update_resources/connectors/protisten_v2.php _ '{"expire_seconds": "86400"}'   --- 60*60*24    = 1 day   = expires in 86400 seconds
+php update_resources/connectors/protisten_v2.php _ '{"expire_seconds": "86400"}'   --- 60*60*24    = 1 day   = expires in 86400 seconds | 864000 10 days
 php update_resources/connectors/protisten_v2.php _ '{"expire_seconds": "2592000"}' --- 60*60*24*30 = 30 days = expires in 2592000 seconds
 
 php5.6 protisten_v2.php jenkins '{"expire_seconds": "1"}'       #--- expires now, expires in 1 sec.
