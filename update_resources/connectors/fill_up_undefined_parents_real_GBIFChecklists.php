@@ -6,6 +6,19 @@ The first 3 clients (Wiki resources) with similar function is in: fill_up_undefi
 
 ------------------------------------ 4th client: GBIF checklists
 php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_andorra", "source_dwca": "SC_andorra", "resource": "fillup_missing_parents_GBIFChecklists"}'
+
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_germany", "source_dwca": "SC_germany", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_unitedstates", "source_dwca": "SC_unitedstates", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_trinidadtobago", "source_dwca": "SC_trinidadtobago", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_philippines", "source_dwca": "SC_philippines", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_australia", "source_dwca": "SC_australia", "resource": "fillup_missing_parents_GBIFChecklists"}'
+
+SC_germany
+SC_unitedstates
+SC_trinidadtobago
+SC_philippines
+SC_australia
+
 ------------------------------------ end ------------------------------------
 */
 
