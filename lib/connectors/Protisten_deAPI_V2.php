@@ -247,7 +247,7 @@ class Protisten_deAPI_V2
                 }
             }
         }
-        print_r($rec); print_r($this->debug); exit("\nhuli 4 - should not go here.\n"); //return //un-comment in real operation. Let there be exit()
+        print_r($rec); print_r($this->debug); echo("\nhuli 4 - should not go here.\n"); //return //un-comment in real operation. Let there be exit()
     }
     private function get_EOLid_from_HTML($html, $sciname, $rec)
     {
