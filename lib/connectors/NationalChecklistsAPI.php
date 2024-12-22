@@ -21,6 +21,8 @@ class NationalChecklistsAPI
         else                            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
         
         $this->report_1 = $this->destination . "countries.tsv";
+        $this->report_2 = $this->destination . "run_countries.tsv";
+
 
         if(!is_dir($this->destination)) mkdir($this->destination);
         $this->country_path = $this->destination.'countries';
@@ -115,6 +117,7 @@ class NationalChecklistsAPI
     {   $cont = false; //debug only
 
         if(file_exists($this->report_1)) unlink($this->report_1);
+        if(file_exists($this->report_2)) unlink($this->report_2);
 
         self::initialize();
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n"; $i = 0;
@@ -146,12 +149,16 @@ class NationalChecklistsAPI
                     $f = Functions::file_open($this->report_1, "a");
                     fwrite($f, implode("\t", $ret)."\n");    
                 }
+
+                $f2 = Functions::file_open($this->report_2, "a");
+                fwrite($f2, "php fill_up_undefined_parents_real_GBIFChecklists.php _ '{\"resource_id\": \"$dwca_filename\", \"source_dwca\": \"$dwca_filename\", \"resource\": \"fillup_missing_parents_GBIFChecklists\"}'"."\n");
             }
             else continue;
             // break; //debug only | process just 1 record
             // if($i > 5) break; //debug only
         } //end foreach()
         fclose($f);
+        fclose($f2);
         print_r($this->debug);
     }
 

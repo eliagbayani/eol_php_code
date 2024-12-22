@@ -19,6 +19,16 @@ SC_trinidadtobago
 SC_philippines
 SC_australia
 
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "c_AI", "source_dwca": "c_AI", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "c_AW", "source_dwca": "c_AW", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "c_BH", "source_dwca": "c_BH", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "c_MZ", "source_dwca": "c_MZ", "resource": "fillup_missing_parents_GBIFChecklists"}'
+
+c_AI
+c_AW
+c_BH
+c_MZ
+
 ------------------------------------ end ------------------------------------
 */
 
