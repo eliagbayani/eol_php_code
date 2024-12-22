@@ -55,7 +55,7 @@ class NationalChecklistsAPI
         $this->ctry_map['Heard Island and McDonald Islands'] = "Territory of Heard Island and McDonald Islands"; //SC_territoryofheardislandandmcdonaldislands.tar.gz
         $this->ctry_map['Iran, Islamic Republic of'] = "Iran";
         $this->ctry_map['Jersey'] = "Bailiwick of Jersey"; //SC_jersey.tar.gz
-        $this->ctry_map["Korea, Democratic People's Republic of"] = "North Korea"; //SC_northkorea.tar.gz
+        $this->ctry_map["Korea, Democratic People's Republic of"] = "North Korean"; //SC_northkorea.tar.gz
         $this->ctry_map['Korea, Republic of'] = "South Korea";
         $this->ctry_map["Lao People's Democratic Republic"] = "Laos";
         $this->ctry_map['Moldova, Republic of'] = "Moldova";
