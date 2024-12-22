@@ -133,10 +133,7 @@ class NationalChecklistsAPI
                     if($val = $ret['orig']) {
                         if($val == 'United States') $dwca_filename = 'SC_unitedstates';
                         else {
-                            if($dwca_filename = self::get_dwca_filename($val)) {
-                                echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
-                                // exit("\nstopx\n");
-                            }    
+                            if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
                         }
                         $ret['dwca'] = $dwca_filename;
                     }    
