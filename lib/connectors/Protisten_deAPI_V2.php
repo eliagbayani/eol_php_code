@@ -240,14 +240,14 @@ class Protisten_deAPI_V2
                             if(stripos($str, $genus_name) !== false) $final[] = $str; //string is found    
                         }
                         if(count($final) == 0) { 
-                            print_r($rec); print_r($this->debug); exit("\nhuli 3 [$genus_name]\n"); 
+                            print_r($rec); print_r($this->debug); echo("\nhuli 3 [$genus_name]\n"); //un-comment in real operation. Let there be exit()
                         }
                         else { print_r($final); echo(" 111\n"); $rec['images'] = $final; return $rec; }        
                     }
                 }
             }
         }
-        print_r($rec); print_r($this->debug); exit("\nhuli 4 - should not go here.\n"); //return
+        print_r($rec); print_r($this->debug); exit("\nhuli 4 - should not go here.\n"); //return //un-comment in real operation. Let there be exit()
     }
     private function get_EOLid_from_HTML($html, $sciname, $rec)
     {
