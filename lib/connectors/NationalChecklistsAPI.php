@@ -55,7 +55,7 @@ class NationalChecklistsAPI
         $this->ctry_map['Heard Island and McDonald Islands'] = "Territory of Heard Island and McDonald Islands"; //SC_territoryofheardislandandmcdonaldislands.tar.gz
         $this->ctry_map['Iran, Islamic Republic of'] = "Iran";
         $this->ctry_map['Jersey'] = "Bailiwick of Jersey"; //SC_jersey.tar.gz
-        $this->ctry_map["Korea, Democratic People's Republic of"] = "North Korean"; //SC_northkorea.tar.gz
+        $this->ctry_map["Korea, Democratic People's Republic of"] = "North Korea"; //SC_northkorea.tar.gz
         $this->ctry_map['Korea, Republic of'] = "South Korea";
         $this->ctry_map["Lao People's Democratic Republic"] = "Laos";
         $this->ctry_map['Moldova, Republic of'] = "Moldova";
@@ -531,6 +531,9 @@ class NationalChecklistsAPI
     }
     private function get_dwca_filename($str)
     {
+        // /* manual adjustment
+        if($str == "North Korea") $str = "North Korean";
+        // */
         $q = '+title:"'.$str.'" +title:2019 +title:National +title:Checklists';
         if($obj = $this->zenodo->get_depositions_by_part_title($q)) { //print_r($obj[0]); 
             $f1 = $obj[0]['files'][0]['filename'];
