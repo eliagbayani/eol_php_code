@@ -25,9 +25,9 @@ $task = @$fields['task'];
 
 $what = 'Country_checklists';
 $func = new NationalChecklistsAPI($what);
-// $func->start($counter, $task); //main operation
+$func->start($counter, $task); //main operation
 // /*
-$func->show_countries_metadata(); //utility, generates https://editors.eol.org/other_files/GBIF_occurrence/Country_checklists/countries.tsv --- works OK | ran already
+// $func->show_countries_metadata(); //utility, generates https://editors.eol.org/other_files/GBIF_occurrence/Country_checklists/countries.tsv --- works OK | ran already
 // */
 
 /* copied template, not used here.

@@ -195,7 +195,12 @@ class NationalChecklistsAPI
 
             if($ret = self::evaluate_country_file($file)) {
                 $country_name_lower = $ret['lower_case'];
-                $this->country_name = $ret['orig'];        
+                $this->country_name = $ret['orig'];
+
+                // /* manual filter, dev only
+                if(!in_array($this->country_name, array('Trinidad and Tobago', 'Philippines', 'United States'))) continue;
+                // */
+
                 // /*
                 if($val = $ret['orig']) {
                     if($val == 'United States') $dwca_filename = 'SC_unitedstates';
