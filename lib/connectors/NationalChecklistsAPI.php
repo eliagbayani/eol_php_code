@@ -112,7 +112,7 @@ class NationalChecklistsAPI
         echo "\ncsv_path: [$tsv_path]\n";
         // self::parse_tsv_file_caching($tsv_path, $counter); //during caching only; not part of main operation
             if($task == 'divide_into_country_files')    self::parse_tsv_file($tsv_path, $task);
-        elseif($task == 'generate_country_checklists')  self::create_individual_country_checklist_resource();
+        elseif($task == 'generate_country_checklists')  self::create_individual_country_checklist_resource($counter);
         else exit("\nNo task to do. Will terminate.\n");
         // */
         
@@ -194,10 +194,29 @@ class NationalChecklistsAPI
         $ret['orig'] = $this->country_name;
         return $ret;
     }
-    private function create_individual_country_checklist_resource()
+    private function create_individual_country_checklist_resource($counter = false)
     {
+        // /* caching
+        $m = 252/6; //252 countries
+        $i = 0;
+        // */
+        
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
-        foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
+        foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
+
+            // /* breakdown when caching
+            if($counter) {
+                $cont = false;
+                if($counter == 1)       {if($i >= 1    && $i < $m)    $cont = true;}
+                elseif($counter == 2)   {if($i >= $m   && $i < $m*2)  $cont = true;}
+                elseif($counter == 3)   {if($i >= $m*2 && $i < $m*3)  $cont = true;}
+                elseif($counter == 4)   {if($i >= $m*3 && $i < $m*4)  $cont = true;}
+                elseif($counter == 5)   {if($i >= $m*4 && $i < $m*5)  $cont = true;}
+                elseif($counter == 6)   {if($i >= $m*5 && $i < $m*6)  $cont = true;}
+                else exit("\ncounter not defined...\n");                
+                if(!$cont) continue;    
+            }
+            // */
 
             if($ret = self::evaluate_country_file($file)) {
                 $country_name_lower = $ret['lower_case'];
@@ -207,7 +226,7 @@ class NationalChecklistsAPI
                 // if(!in_array($this->country_name, array('United States'))) continue;
                 // if(!in_array($this->country_name, array('Australia'))) continue;
                 // if(!in_array($this->country_name, array('Philippines'))) continue;
-                if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad And Tobago'))) continue;
+                if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad And Tobago', 'Andorra'))) continue;
                 // */
 
                 // /*

@@ -6,6 +6,10 @@ works with: GBIF_SQL_DownloadsAPI.code-workspace
 regular operation:
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"divide_into_country_files"}'
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists"}'
+    OR 
+    php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists", "counter":"1"}'
+    php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists", "counter":"2"}'
+
 when caching the species info: ran already
     php update_resources/connectors/national_checklists_2024.php _ '{"counter":"1"}'
     php update_resources/connectors/national_checklists_2024.php _ '{"counter":"2"}'
