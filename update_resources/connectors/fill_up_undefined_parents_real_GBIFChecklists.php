@@ -19,6 +19,13 @@ SC_trinidadtobago
 SC_philippines
 SC_australia
 
+wget https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_germany.tar.gz
+wget https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_unitedstates.tar.gz
+wget https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_trinidadtobago.tar.gz
+wget https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_philippines.tar.gz
+wget https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_australia.tar.gz
+
+
 php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "c_AI", "source_dwca": "c_AI", "resource": "fillup_missing_parents_GBIFChecklists"}'
 php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "c_AW", "source_dwca": "c_AW", "resource": "fillup_missing_parents_GBIFChecklists"}'
 php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "c_BH", "source_dwca": "c_BH", "resource": "fillup_missing_parents_GBIFChecklists"}'

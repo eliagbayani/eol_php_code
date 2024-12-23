@@ -469,6 +469,14 @@ class NationalChecklistsAPI
         else {
             // /*
             if($country == "ÅLand Islands") return "https://www.geonames.org/661883";
+            
+            // Germany http://www.geonames.org/2921044
+            // Trinidad Tobago http://www.geonames.org/3573591
+
+            if($country == "Philippines") return "http://www.geonames.org/1694008";
+            if($country == "Autralia") return "http://www.geonames.org/2077456";
+            if($country == "United States") return "http://www.geonames.org/6252001";
+
             switch ($country) { //put here customized mapping
                 case "ÅLand Islands":                       return "https://www.geonames.org/661883";
                 case "Bonaire, Sint Eustatius And Saba":    return "http://www.geonames.org/7626844";
