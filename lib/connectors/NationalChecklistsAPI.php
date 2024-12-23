@@ -83,7 +83,13 @@ class NationalChecklistsAPI
     private function initialize()
     {
         $this->country_code_name_info = self::initialize_countries_from_csv(); //print_r($this->country_code_name_info); exit;
-        self::assemble_terms_yml(); //generates $this->uri_values
+        self::assemble_terms_yml(); //generates $this->value_uris
+        if(self::get_country_uri('Trinidad And Tobago') == 'http://www.geonames.org/3573591') echo "\nTrinidad And Tobago: OK";     else exit("\nERROR: Investigate country URI.\n");
+        if(self::get_country_uri('Germany')             == 'http://www.geonames.org/2921044') echo "\nGermany: OK";                 else exit("\nERROR: Investigate country URI.\n");
+        if(self::get_country_uri('Philippines')         == 'http://www.geonames.org/1694008') echo "\nPhilippines: OK";             else exit("\nERROR: Investigate country URI.\n");
+        if(self::get_country_uri('Australia')           == 'http://www.geonames.org/2077456') echo "\nAustralia: OK";               else exit("\nERROR: Investigate country URI.\n");
+        if(self::get_country_uri('United States')       == 'http://www.geonames.org/6252001') echo "\nUnited States: OK\n";         else exit("\nERROR: Investigate country URI.\n");
+
         // /*
         require_library('connectors/ZenodoConnectorAPI');
         require_library('connectors/ZenodoAPI');
@@ -198,8 +204,9 @@ class NationalChecklistsAPI
                 $this->country_name = $ret['orig'];
 
                 // /* manual filter, dev only
-                // if(!in_array($this->country_name, array('Philippines', 'United States'))) continue;
-                if(!in_array($this->country_name, array('Australia'))) continue;
+                // if(!in_array($this->country_name, array('United States'))) continue;
+                // if(!in_array($this->country_name, array('Australia'))) continue;
+                if(!in_array($this->country_name, array('Philippines'))) continue;
                 // */
 
                 // /*
@@ -471,29 +478,24 @@ class NationalChecklistsAPI
         $country = str_replace(" of ", " Of ", $country);
         $country = str_replace(" the ", " The ", $country);
 
-        if($country_uri = @$this->uri_values[$country]) return $country_uri;
+        if($uris = @$this->value_uris[$country]) {
+            if(count($uris) == 1) return $uris[0];
+            else {
+                foreach($uris as $uri) {                    
+                    if(stripos($uri, "geonames.org") !== false) return $uri; //string is found
+                }
+                return $uris[0];
+            }
+        }
         else {
             // /*
-            if($country == "ÅLand Islands") return "https://www.geonames.org/661883";
-            
-            // Germany http://www.geonames.org/2921044
-            // Trinidad Tobago http://www.geonames.org/3573591
-
-            if($country == "Philippines") return "http://www.geonames.org/1694008";
-            if($country == "Autralia") return "http://www.geonames.org/2077456";
-            if($country == "United States") return "http://www.geonames.org/6252001";
-
             switch ($country) { //put here customized mapping
                 case "ÅLand Islands":                       return "https://www.geonames.org/661883";
                 case "Bonaire, Sint Eustatius And Saba":    return "http://www.geonames.org/7626844";
                 case "Saint Barthélemy":                    return "http://www.geonames.org/3578475";
                 case "Republic Of The Congo":               return "https://www.geonames.org/2260494";
-                // case "Brunei Darussalam"
 
                 /* copied template
-                case "United States of America":        return "http://www.wikidata.org/entity/Q30";
-                case "Dutch West Indies":               return "http://www.wikidata.org/entity/Q25227";
-
                 name: Bonaire, Saint Eustatius And Saba
                 type: value
                 uri: http://www.geonames.org/7626844             
@@ -505,7 +507,7 @@ class NationalChecklistsAPI
             }
             // */
         }
-        // print_r($this->uri_values); //debug only
+        // print_r($this->values_uri); //debug only
         echo ("\nNo URI for [$country]");
         return false;
     }
@@ -513,10 +515,16 @@ class NationalChecklistsAPI
     {
         require_library('connectors/EOLterms_ymlAPI');
         $func = new EOLterms_ymlAPI(false, false);
+
+        /* doesn't work well, it gets the http://marineregions.org/xxx
         $ret = $func->get_terms_yml('value'); //sought_type is 'value' --- REMINDER: labels can have the same value but different uri
         foreach($ret as $label => $uri) $this->uri_values[$label] = $uri;
-        // print_r($this->uri_values); 
         echo("\nEOL Terms: ".count($this->uri_values)."\n"); //debug only
+        */
+
+        // /* ideal for country nanes
+        $this->value_uris = $func->get_terms_yml('ONE_TO_MANY'); // $ret[name][] = uri
+        // */
     }
     function is_this_DwCA_old_YN($filename) //SC_andorra.tar.gz
     {

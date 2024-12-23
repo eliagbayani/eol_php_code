@@ -52,6 +52,10 @@ class EOLterms_ymlAPI
                     elseif($sought_type == 'WoRMS value') {
                         if(@$rek['type'] == 'value') $final[$rek['uri']] = $name;
                     }
+                    elseif($sought_type == 'ONE_TO_MANY') { //ideal for country names
+                        if(substr(strtolower($name),0,4) == 'the ') $name = trim(substr($name, 4, strlen($name)));
+                        $final[$name][] = $rek['uri'];
+                    }
                     elseif(@$rek['type'] == $sought_type)   $final[$name] = $rek['uri'];
                     @$this->debug['EOL terms type'][@$rek['type']]++; //just for stats
                     /*
