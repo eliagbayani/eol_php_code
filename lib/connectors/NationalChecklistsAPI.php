@@ -205,8 +205,8 @@ class NationalChecklistsAPI
 
                 // /* manual filter, dev only
                 // if(!in_array($this->country_name, array('United States'))) continue;
-                // if(!in_array($this->country_name, array('Australia'))) continue;
-                if(!in_array($this->country_name, array('Philippines'))) continue;
+                if(!in_array($this->country_name, array('Australia'))) continue;
+                // if(!in_array($this->country_name, array('Philippines'))) continue;
                 // */
 
                 // /*
