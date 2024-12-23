@@ -198,7 +198,8 @@ class NationalChecklistsAPI
                 $this->country_name = $ret['orig'];
 
                 // /* manual filter, dev only
-                if(!in_array($this->country_name, array('Trinidad and Tobago', 'Philippines', 'United States'))) continue;
+                // if(!in_array($this->country_name, array('Philippines', 'United States'))) continue;
+                if(!in_array($this->country_name, array('Australia'))) continue;
                 // */
 
                 // /*
