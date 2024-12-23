@@ -556,8 +556,10 @@ class NationalChecklistsAPI
             $f1 = $obj[0]['files'][0]['filename'];
             $path = $obj[0]['metadata']['related_identifiers'][0]['identifier'];
             $f2 = pathinfo($path, PATHINFO_BASENAME);
-            if(file_exists(CONTENT_RESOURCE_LOCAL_PATH.$f1)) echo "\nDwCA exists.\n";
-            else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+            
+            // if(file_exists(CONTENT_RESOURCE_LOCAL_PATH.$f1)) echo "\nDwCA exists.\n";
+            // else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+
             if($f1 == $f2) return str_ireplace(".tar.gz", "", $f1);
             else {
                 exit("\nERROR: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
