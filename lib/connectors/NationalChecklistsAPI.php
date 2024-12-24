@@ -228,7 +228,7 @@ class NationalChecklistsAPI
                 // if(!in_array($this->country_name, array('United States'))) continue;
                 // if(!in_array($this->country_name, array('Australia'))) continue;
                 // if(!in_array($this->country_name, array('Philippines'))) continue;
-                // if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad And Tobago', 'Andorra'))) continue;
+                // if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Andorra'))) continue;
                 // */
 
                 // /*
@@ -259,6 +259,7 @@ class NationalChecklistsAPI
             else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
             */
 
+            if(!$folder) exit("\nfolder not defined [$folder]\n");
             $resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
             $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                

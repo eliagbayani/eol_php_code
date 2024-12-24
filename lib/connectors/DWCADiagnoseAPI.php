@@ -132,10 +132,10 @@ class DWCADiagnoseAPI
                 // print_r($meta); exit;
                 self::process_fields_V2($meta, pathinfo($table, PATHINFO_BASENAME));
             }
-            // /* new
+            /* new
             $dir = CONTENT_RESOURCE_LOCAL_PATH . "_working";
-            if(is_dir($dir)) rmdir($dir);
-            // */
+            if(is_dir($dir)) recursive_rmdir($dir);
+            */
         }
         echo "\n----------end Checking unique IDs----------\n";
     }

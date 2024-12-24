@@ -99,20 +99,6 @@ class FillUpMissingParents_GBIFChecklistsAPI
         }
         return $taxon->taxonID;
     }
-    /* working OK - an option to get a taxon.tab that is a "taxon_working.tab"
-    private function get_undefined_parents()
-    {
-        require_library('connectors/DWCADiagnoseAPI');
-        $func = new DWCADiagnoseAPI();
-        $url = CONTENT_RESOURCE_LOCAL_PATH . $this->resource_id."_working" . "/taxon_working.tab";
-        $suggested_fields = explode("\t", "taxonID	source	parentNameUsageID	scientificName	taxonRank	scientificNameAuthorship");
-        if($undefined = $func->check_if_all_parents_have_entries($this->resource_id, true, $url, $suggested_fields)) { //2nd param True means write to text file
-            print_r($undefined);
-            echo("\nUndefined: ".count($undefined)."\n");
-            return $undefined;
-        }
-        // exit("\ndid not detect undefined parents\n");
-    } */
     private function process_table($meta, $what, $no_label_defined = array())
     {   //print_r($meta);
         echo "\nprocess_table: [$what] [$meta->file_uri]...\n"; $i = 0;
