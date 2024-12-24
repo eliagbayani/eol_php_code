@@ -223,10 +223,11 @@ class NationalChecklistsAPI
                 $this->country_name = $ret['orig'];
 
                 // /* manual filter, dev only
+                if(!in_array($this->country_name, array('Germany'))) continue;
                 // if(!in_array($this->country_name, array('United States'))) continue;
                 // if(!in_array($this->country_name, array('Australia'))) continue;
                 // if(!in_array($this->country_name, array('Philippines'))) continue;
-                if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad And Tobago', 'Andorra'))) continue;
+                // if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad And Tobago', 'Andorra'))) continue;
                 // */
 
                 // /*
@@ -252,10 +253,10 @@ class NationalChecklistsAPI
             $folder = "SC_".$country_name_lower; //obsolete
             $folder = $dwca_filename;            //latest
 
-            /* main operation | uncomment in real operation
+            // /* main operation | uncomment in real operation
             if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
             else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
-            */
+            // */
 
             $resource_id = $folder;
             $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
