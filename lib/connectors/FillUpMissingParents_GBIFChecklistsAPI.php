@@ -9,7 +9,6 @@ class FillUpMissingParents_GBIFChecklistsAPI
         $this->archive_builder = $archive_builder;
         $this->archive_path = $archive_path;
         // $this->download_options = array('cache' => 1, 'resource_id' => $resource_id, 'expire_seconds' => 60*60*24*30*1, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1, 'delay_in_minutes' => 1);
-        $this->redirected_IDs = array();
         // /* for gnfinder
         if(Functions::is_production()) $this->json_path = '/var/www/html/gnfinder/'; //--- for terminal //'/html/gnfinder/'; --- for Jenkins
         else                           $this->json_path = '/Volumes/AKiTiO4/other_files/gnfinder/';
@@ -72,7 +71,7 @@ class FillUpMissingParents_GBIFChecklistsAPI
     }
     private function append_undefined_parents($undefined_parents)
     {
-        $to_be_added = array('Q21032607', 'Q68334453', 'Q14476748', 'Q21032613', 'Q2116552'); //last remaining undefined parents. Added here to save one entire loop
+        $to_be_added = array('someID_1', 'someID_2'); //last remaining undefined parents. Added here to save one entire loop
         $to_be_added = array();
         $undefined_parents = array_merge($undefined_parents, $to_be_added);
         $no_label_defined = array();
@@ -136,8 +135,6 @@ class FillUpMissingParents_GBIFChecklistsAPI
                 // /* implement redirect ID
                 $taxonID           = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
                 $parentNameUsageID = $rec['http://rs.tdwg.org/dwc/terms/parentNameUsageID'];
-                if($val = @$this->redirected_IDs[$taxonID])           $rec['http://rs.tdwg.org/dwc/terms/taxonID'] = $val;
-                if($val = @$this->redirected_IDs[$parentNameUsageID]) $rec['http://rs.tdwg.org/dwc/terms/parentNameUsageID'] = $val;
                 // */
                 
                 // /* temporary fix until wikidata dump has reflected my edits in wikidata
