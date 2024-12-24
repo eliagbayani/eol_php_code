@@ -223,12 +223,12 @@ class NationalChecklistsAPI
                 $this->country_name = $ret['orig'];
 
                 // /* manual filter, dev only
-                if(!in_array($this->country_name, array('Trinidad and Tobago'))) continue;
+                // if(!in_array($this->country_name, array('Trinidad and Tobago'))) continue;
                 // if(!in_array($this->country_name, array('Germany'))) continue;
                 // if(!in_array($this->country_name, array('United States'))) continue;
                 // if(!in_array($this->country_name, array('Australia'))) continue;
                 // if(!in_array($this->country_name, array('Philippines'))) continue;
-                // if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Andorra'))) continue;
+                if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago'))) continue;
                 // */
 
                 // /*
