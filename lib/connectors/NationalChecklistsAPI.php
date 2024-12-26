@@ -563,7 +563,7 @@ class NationalChecklistsAPI
         if(substr($country, 0, 4) == 'The ') {
             $country = trim(substr($country, 3, strlen($country)));
             echo "\n----------------------------try again ($country)\n";
-            self::get_country_uri($country);
+            if($uri = self::get_country_uri($country)) return $uri;
         }
         // */
 
