@@ -230,7 +230,7 @@ class NationalChecklistsAPI
                 // if(!in_array($this->country_name, array('Philippines'))) continue;
                 if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago'))) continue;
 
-                if(!in_array($this->country_name, array('The Bahamas'))) continue;
+                // if(!in_array($this->country_name, array('The Bahamas'))) continue;
 
                 // */
 
@@ -257,10 +257,10 @@ class NationalChecklistsAPI
             $folder = "SC_".$country_name_lower; //obsolete
             $folder = $dwca_filename;            //latest
 
-            /* main operation | uncomment in real operation
+            // /* main operation | uncomment in real operation
             if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
             else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
-            */
+            // */
 
             if(!$folder) exit("\nfolder not defined [$folder]\n");
             $resource_id = $folder;
@@ -508,7 +508,20 @@ class NationalChecklistsAPI
 
         // /* manual mapping
         if($country == 'Bonaire, Saint Eustatius, And Saba') $country = 'Bonaire, Saint Eustatius And Saba';
-
+        if($country == 'Cocos Islands') $country = 'Cocos [Keeling] Islands';
+        if($country == 'Federated States Of Micronesia') $country = 'Micronesia';
+        if($country == 'South Georgia And The South Sandwich Islands') $country = 'South Georgia And South Sandwich Islands';
+        if($country == 'Guinea Bissau') $country = 'Guinea-Bissau';
+        if($country == 'Bailiwick Of Jersey') return 'http://www.geonames.org/3042142';
+        if($country == 'Mariana Islands') $country = 'Northern Mariana Islands'; //uri: http://www.geonames.org/4041468
+        if($country == 'Saint-Pierre et Miquelon') $country = 'Saint-Pierre Et Miquelon';
+        if($country == 'Saint Helena Ascension And Tristan da Cunha') $country = 'http://www.geonames.org/3370751';
+        if($country == 'Territory Of The French Southern And Antarctic Lands') $country = 'French Southern Territories';
+        if($country == 'Timor-Leste') $country = 'East Timor';
+        if($country == 'US Virgin Islands') $country = 'U.S. Virgin Islands';
+        if($country == 'Wallis et Futuna') $country = 'Wallis Et Futuna Islands';
+        if($country == 'xxx') $country = 'yyy';
+        if($country == 'xxx') $country = 'yyy';
         // */
 
         if($uris = @$this->value_uris[$country]) {
@@ -523,27 +536,12 @@ class NationalChecklistsAPI
         else {
             /*
             [No URI for country] => Array(
-                    [The Bahamas] => http://www.geonames.org/3572887
-                    [Cocos Islands] => 
-                    [Federated States Of Micronesia] => 
                     [The Gambia] => 
-                    [South Georgia And The South Sandwich Islands] => 
-                    [Guinea Bissau] => 
-                    [Territory Of Heard Island And McDonald Islands] => 
-                    [Bailiwick Of Jersey] => 
-                    [Mariana Islands] => 
+                    [Territory Of Heard Island And McDonald Islands] => Territory Of Heard Island And Mcdonald Islands
                     [The Netherlands] => 
-                    [Saint-Pierre et Miquelon] => 
-                    [Saint Helena Ascension And Tristan da Cunha] => 
-                    [Territory Of The French Southern And Antarctic Lands] => 
-                    [Timor-Leste] => 
-                    [US Virgin Islands] => 
-                    [Wallis et Futuna] =>             
             */
             // /*
             switch ($country) { //put here customized mapping
-                case "ÅLand Islands":                       return "https://www.geonames.org/661883";
-                case "Bonaire, Sint Eustatius And Saba":    return "http://www.geonames.org/7626844";
                 case "Saint Barthélemy":                    return "http://www.geonames.org/3578475";
                 case "Republic Of The Congo":               return "https://www.geonames.org/2260494";
 
@@ -563,7 +561,7 @@ class NationalChecklistsAPI
         // /* next iteration e.g. "The Bahamas"
         if(substr($country, 0, 4) == 'The ') {
             $country = trim(substr($country, 3, strlen($country)));
-            echo "\n----------------------------try again ($country)\n";
+            // echo "\n----------------------------try again ($country)\n";
             if($uri = self::get_country_uri($country)) return $uri;
         }
         // */
