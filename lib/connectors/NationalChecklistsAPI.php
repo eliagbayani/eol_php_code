@@ -559,7 +559,7 @@ class NationalChecklistsAPI
             // */
         }
         // print_r($this->values_uri); //debug only
-        echo ("\nNo URI for [$country]");
+        echo ("\nNo URI for [$country]"); print_r($this->value_uris); exit("\nstop munax\n");
         $this->debug['No URI for country'][$country] = '';
         return false;
     }
