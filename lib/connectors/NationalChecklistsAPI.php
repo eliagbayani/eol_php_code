@@ -522,7 +522,7 @@ class NationalChecklistsAPI
         else {
             /*
             [No URI for country] => Array(
-                    [The Bahamas] => 
+                    [The Bahamas] => http://www.geonames.org/3572887
                     [Cocos Islands] => 
                     [Federated States Of Micronesia] => 
                     [The Gambia] => 
@@ -562,13 +562,14 @@ class NationalChecklistsAPI
         // /* next iteration e.g. "The Bahamas"
         if(substr($country, 0, 4) == 'The ') {
             $country = trim(substr($country, 3, strlen($country)));
+            echo "\n----------------------------try again ($country)\n";
             self::get_country_uri($country);
         }
         // */
 
 
         // print_r($this->values_uri); //debug only
-        echo ("\nNo URI for [$country]"); print_r($this->value_uris); exit("\nstop munax\n");
+        echo ("\nNo URI for [$country]"); print_r($this->value_uris); print_r($this->value_uris[$country]);  exit("\nstop munax\n");
         $this->debug['No URI for country'][$country] = '';
         return false;
     }
