@@ -189,6 +189,7 @@ class GBIFdownloadRequestAPI
           ]
         }*/
 
+        $predicate = array();
         //==================================================================================================================================
         if($this->resource_id == 'NMNH_images') {
             $predicate = Array(
