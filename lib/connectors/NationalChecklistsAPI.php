@@ -229,6 +229,9 @@ class NationalChecklistsAPI
                 // if(!in_array($this->country_name, array('Australia'))) continue;
                 // if(!in_array($this->country_name, array('Philippines'))) continue;
                 if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago'))) continue;
+
+                if(!in_array($this->country_name, array('The Bahamas'))) continue;
+
                 // */
 
                 // /*
@@ -502,6 +505,11 @@ class NationalChecklistsAPI
         $country = str_replace(" of ", " Of ", $country);
         $country = str_replace(" the ", " The ", $country);
 
+        // /* manual mapping
+        if($country == 'Bonaire, Saint Eustatius, And Saba') $country = 'Bonaire, Saint Eustatius And Saba';
+
+        // */
+
         if($uris = @$this->value_uris[$country]) {
             if(count($uris) == 1) return $uris[0];
             else {
@@ -512,6 +520,25 @@ class NationalChecklistsAPI
             }
         }
         else {
+            /*
+            [No URI for country] => Array(
+                    [The Bahamas] => 
+                    [Cocos Islands] => 
+                    [Federated States Of Micronesia] => 
+                    [The Gambia] => 
+                    [South Georgia And The South Sandwich Islands] => 
+                    [Guinea Bissau] => 
+                    [Territory Of Heard Island And McDonald Islands] => 
+                    [Bailiwick Of Jersey] => 
+                    [Mariana Islands] => 
+                    [The Netherlands] => 
+                    [Saint-Pierre et Miquelon] => 
+                    [Saint Helena Ascension And Tristan da Cunha] => 
+                    [Territory Of The French Southern And Antarctic Lands] => 
+                    [Timor-Leste] => 
+                    [US Virgin Islands] => 
+                    [Wallis et Futuna] =>             
+            */
             // /*
             switch ($country) { //put here customized mapping
                 case "ÅLand Islands":                       return "https://www.geonames.org/661883";
