@@ -238,12 +238,14 @@ class NationalChecklistsAPI
                     if($val == 'United States') $dwca_filename = 'SC_unitedstates';
                     else {
                         if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
+                        // /* major file deletion
                         $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
                         if(file_exists($delete_file)) {
                             // if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
                             // else                     echo "\nFile not deleted [$delete_file]\n";
                             echo "\nFile detected [$delete_file]";
                         }
+                        // */
                     }
                 }    
                 // */
@@ -253,10 +255,6 @@ class NationalChecklistsAPI
             // /* during major file deletion
             continue;
             // */
-
-            /* manual filter - not needed anymore
-            if(in_array($country_name_lower, array('andorra', 'Ålandislands'))) continue; //already processed, no need to repeat again.
-            */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             if(substr($country_name_lower,0,4) == "the ")                                               $country_name_lower = str_ireplace("the ", "", $country_name_lower); //The Bahamas => SC_bahamas.tar.gz
