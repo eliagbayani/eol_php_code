@@ -558,8 +558,17 @@ class NationalChecklistsAPI
             }
             // */
         }
+
+        // /* next iteration e.g. "The Bahamas"
+        if(substr($country, 0, 4) == 'The ') {
+            $country = trim(substr($country, 3, strlen($country)));
+            self::get_country_uri($country);
+        }
+        // */
+
+
         // print_r($this->values_uri); //debug only
-        echo ("\nNo URI for [$country]"); print_r($this->value_uris); exit("\nstop munax\n");
+        echo ("\nNo URI for [$country]"); //print_r($this->value_uris); exit("\nstop munax\n");
         $this->debug['No URI for country'][$country] = '';
         return false;
     }
