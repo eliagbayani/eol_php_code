@@ -492,6 +492,7 @@ class NationalChecklistsAPI
         $save['bibliographicCitation'] = $this->bibliographicCitation;        
 
         $mType = 'http://eol.org/schema/terms/Present';
+
         if($mValue = self::get_country_uri($this->country_name)) {
             $save['measurementRemarks'] = $this->country_name;
             $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
@@ -569,7 +570,7 @@ class NationalChecklistsAPI
 
 
         // print_r($this->values_uri); //debug only
-        echo ("\nNo URI for [$country]"); print_r($this->value_uris); print_r($this->value_uris[$country]);  exit("\nstop munax\n");
+        echo ("\nNo URI for [$country]"); //print_r($this->value_uris); print_r($this->value_uris[$country]);  exit("\nstop munax\n");
         $this->debug['No URI for country'][$country] = '';
         return false;
     }
