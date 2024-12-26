@@ -332,11 +332,12 @@ class GBIFdownloadRequestAPI
 
         if($this->resource_id == 'Country_checklists') {
             unset($param['predicate']);
-            $param['sql'] = "SELECT specieskey, countrycode
+            $param['sql'] = "SELECT specieskey, COUNT(specieskey), countrycode
             FROM occurrence
             WHERE
             specieskey IS NOT NULL
             AND countrycode IS NOT NULL
+            -- AND countrycode = 'CA'
             AND occurrencestatus = 'PRESENT'
             AND (
                 basisofrecord = 'HUMAN_OBSERVATION'
@@ -352,7 +353,7 @@ class GBIFdownloadRequestAPI
         }
         elseif($this->resource_id == 'WaterBody_checklists') {
             unset($param['predicate']);
-            $param['sql'] = "SELECT specieskey, waterbody
+            $param['sql'] = "SELECT specieskey, COUNT(specieskey), waterbody
             FROM occurrence
             WHERE
             specieskey IS NOT NULL
