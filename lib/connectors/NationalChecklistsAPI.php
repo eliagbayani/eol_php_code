@@ -241,9 +241,9 @@ class NationalChecklistsAPI
                         // /* major file deletion
                         $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
                         if(file_exists($delete_file)) {
-                            // if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
-                            // else                     echo "\nFile not deleted [$delete_file]\n";
-                            echo "\nFile detected [$delete_file]";
+                            if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
+                            else                     echo "\nFile not deleted [$delete_file]\n";
+                            // echo "\nFile detected [$delete_file]";
                         }
                         // */
                     }
