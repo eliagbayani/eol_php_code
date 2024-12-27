@@ -112,7 +112,13 @@ class NationalChecklistsAPI
         $tsv_path = self::download_extract_gbif_zip_file();
         echo "\ncsv_path: [$tsv_path]\n";
         // self::parse_tsv_file_caching($tsv_path, $counter); //during caching only; not part of main operation
-            if($task == 'divide_into_country_files')    self::parse_tsv_file($tsv_path, $task);
+        if($task == 'divide_into_country_files') {
+            // /* remove current /countries/ folder
+            recursive_rmdir($this->country_path); echo ("\nFolder removed: " . $this->country_path);
+            if(!is_dir($this->country_path)) mkdir($this->country_path);
+            // */
+            self::parse_tsv_file($tsv_path, $task);            
+        }
         elseif($task == 'generate_country_checklists')  self::create_individual_country_checklist_resource($counter);
         else exit("\nNo task to do. Will terminate.\n");
         // */
