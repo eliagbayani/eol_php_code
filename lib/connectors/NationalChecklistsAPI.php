@@ -309,7 +309,7 @@ class NationalChecklistsAPI
                     self::save_to_different_country_files($rec);
                 }
                 // ---------------------------------------end
-                if($task == "process_country_file") {
+                if($task == "process_country_file") { //print_r($rec); exit("\nelix 1\n");
                     self::process_country_file($rec);
                     // break; //debug only | process just 1 species
                 }
@@ -320,11 +320,13 @@ class NationalChecklistsAPI
     private function process_country_file($rec)
     {   /*Array(
             [specieskey] => 1710962
+            [SampleSize] => 16
             [countrycode] => AD
         )*/
         if($species_info = self::assemble_species($rec)) { //print_r($species_info); //exit;
             if(!in_array($species_info['taxonomicStatus'], array('doubtful'))) {
                 $taxonID = self::write_taxon($species_info);
+                $species_info['SampleSize'] = $rec['SampleSize'];
                 if(@$rec['countrycode']) self::write_traits($species_info, $taxonID);    
             }
         }
@@ -359,6 +361,7 @@ class NationalChecklistsAPI
             $this->country['encountered'][$country_code] = '';
             $f = Functions::file_open($file, "w");
             $headers = array_keys($rec);
+            $headers = self::use_label_SampleSize_forCount($headers);
             fwrite($f, implode("\t", $headers)."\n");
             fclose($f);
         }
@@ -506,7 +509,44 @@ class NationalChecklistsAPI
             $save['measurementRemarks'] = $this->country_name;
             $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
             // if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
-            $this->func->add_string_types($save, $mValue, $mType, "true");
+            $ret = $this->func->add_string_types($save, $mValue, $mType, "true");
+        }
+        // ---------------- write child record in MoF: SampleSize
+        /*
+        child record in MoF:
+            - doesn't have: occurrenceID | measurementOfTaxon
+            - has parentMeasurementID
+            - has also a unique measurementID, as expected.
+        minimum cols on a child record in MoF
+            - measurementID
+            - measurementType
+            - measurementValue
+            - parentMeasurementID
+        */
+        if($measurementID = $ret['measurementID']) {
+            if($measurementValue = @$rek['SampleSize']) {
+                $measurementType = "http://eol.org/schema/terms/SampleSize";
+                $parentMeasurementID = $measurementID;
+                self::write_child($measurementType, $measurementValue, $parentMeasurementID);
+            }    
+        }
+    }
+    private function write_child($measurementType, $measurementValue, $parentMeasurementID) //func was copied from: Move_col_inMoF_2child_inMoF_API.php
+    {
+        $m2 = new \eol_schema\MeasurementOrFact_specific();
+        $rek = array();
+        $rek['http://rs.tdwg.org/dwc/terms/measurementID'] = md5("$measurementType|$measurementValue|$parentMeasurementID");
+        $rek['http://rs.tdwg.org/dwc/terms/measurementType'] = $measurementType;
+        $rek['http://rs.tdwg.org/dwc/terms/measurementValue'] = $measurementValue;
+        $rek['http://eol.org/schema/parentMeasurementID'] = $parentMeasurementID;
+        $uris = array_keys($rek);
+        foreach($uris as $uri) {
+            $field = pathinfo($uri, PATHINFO_BASENAME);
+            $m2->$field = $rek[$uri];
+        }
+        if(!isset($this->measurementIDs[$m2->measurementID])) {
+            $this->measurementIDs[$m2->measurementID] = '';
+            $this->archive_builder->write_object_to_file($m2);
         }
     }
     private function get_country_uri($country)
@@ -646,6 +686,15 @@ class NationalChecklistsAPI
                 exit("\nERROR: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
         }
+    }
+    private function use_label_SampleSize_forCount($headers)
+    {
+        $final = array();
+        foreach($headers as $h) {
+            if(substr($h,0,5) == 'COUNT') $h = 'SampleSize';
+            $final[] = $h;
+        }
+        return $final;
     }
 }
 ?>
