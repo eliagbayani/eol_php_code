@@ -272,10 +272,10 @@ class NationalChecklistsAPI
             $folder = "SC_".$country_name_lower; //obsolete
             $folder = $dwca_filename;            //latest
 
-            // /* main operation | uncomment in real operation
+            /* main operation | uncomment in real operation
             if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
             else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
-            // */
+            */
 
             if(!$folder) exit("\nfolder not defined [$folder]\n");
             $resource_id = $folder;
