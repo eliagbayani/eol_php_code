@@ -150,6 +150,7 @@ class NationalChecklistsAPI
                         if($val == 'United States') $dwca_filename = 'SC_unitedstates';
                         else {
                             if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
+                            else exit("\nTerminated: should not go here 01.\n");
                         }
                         $ret['dwca'] = $dwca_filename;
                     }    
@@ -230,12 +231,12 @@ class NationalChecklistsAPI
                 $this->country_name = $ret['orig'];
 
                 // /* manual filter, dev only
-                // if(!in_array($this->country_name, array('Trinidad and Tobago'))) continue;
+                if(!in_array($this->country_name, array('Trinidad and Tobago'))) continue;
                 // if(!in_array($this->country_name, array('Germany'))) continue;
                 // if(!in_array($this->country_name, array('United States'))) continue;
                 // if(!in_array($this->country_name, array('Australia'))) continue;
                 // if(!in_array($this->country_name, array('Philippines'))) continue;
-                if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue;
+                // if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue;
                 // if(!in_array($this->country_name, array("The Bahamas", "Cocos Islands", "Federated States Of Micronesia", "The Gambia", "South Georgia And The South Sandwich Islands", "Guinea Bissau", "Territory Of Heard Island And McDonald Islands", "Bailiwick Of Jersey", "Mariana Islands", "Territory Of Heard Island And McDonald Islands", "The Netherlands", "Saint-Pierre et Miquelon", "Saint Helena Ascension And Tristan da Cunha", "Territory Of The French Southern And Antarctic Lands", "Timor-Leste", "US Virgin Islands", "Wallis et Futuna"))) continue;
                 // if(!in_array($this->country_name, array('Canada'))) continue;                
                 // if(!in_array($this->country_name, array('North Korea'))) continue;
@@ -246,30 +247,31 @@ class NationalChecklistsAPI
                     if($val == 'United States') $dwca_filename = 'SC_unitedstates';
                     else {
                         if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
-                        // /* major file deletion
+                        else exit("\nTerminated: should not go here 02.\n");
+                        /* major file deletion
                         $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
                         if(file_exists($delete_file)) {
                             if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
                             else                     echo "\nFile not deleted [$delete_file]\n";
                             // echo "\nFile detected [$delete_file]";
                         }
-                        // */
+                        */
                     }
                 }    
                 // */
             }
             else continue;
             
-            // /* during major file deletion
+            /* during major file deletion
             continue;
-            // */
+            */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             if(substr($country_name_lower,0,4) == "the ")                                               $country_name_lower = str_ireplace("the ", "", $country_name_lower); //The Bahamas => SC_bahamas.tar.gz
             elseif(strtolower($this->country_name) == strtolower("Democratic Republic of the Congo"))   $country_name_lower = "congo";
             elseif(strtolower($this->country_name) == strtolower("Republic of the Congo"))              $country_name_lower = "repubcongo";
 
-            $folder = "SC_".$country_name_lower; //obsolete
+            // $folder = "SC_".$country_name_lower; //obsolete
             $folder = $dwca_filename;            //latest
 
             // /* main operation | uncomment in real operation
@@ -687,11 +689,12 @@ class NationalChecklistsAPI
             // if(file_exists(CONTENT_RESOURCE_LOCAL_PATH.$f1)) echo "\nDwCA exists.\n";
             // else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
 
-            if($f1 == $f2) return str_ireplace(".tar.gz", "", $f1);
+            if($f1 == $f2 && $f1) return str_ireplace(".tar.gz", "", $f1);
             else {
-                exit("\nERROR: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+                exit("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
         }
+        exit("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
     }
     private function use_label_SampleSize_forCount($headers)
     {
