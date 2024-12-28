@@ -234,8 +234,8 @@ class NationalChecklistsAPI
                 // if(!in_array($this->country_name, array('Germany'))) continue;
                 // if(!in_array($this->country_name, array('United States'))) continue;
                 // if(!in_array($this->country_name, array('Australia'))) continue;
-                if(!in_array($this->country_name, array('Philippines'))) continue;
-                // if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue;
+                // if(!in_array($this->country_name, array('Philippines'))) continue;
+                if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue;
                 // if(!in_array($this->country_name, array("The Bahamas", "Cocos Islands", "Federated States Of Micronesia", "The Gambia", "South Georgia And The South Sandwich Islands", "Guinea Bissau", "Territory Of Heard Island And McDonald Islands", "Bailiwick Of Jersey", "Mariana Islands", "Territory Of Heard Island And McDonald Islands", "The Netherlands", "Saint-Pierre et Miquelon", "Saint Helena Ascension And Tristan da Cunha", "Territory Of The French Southern And Antarctic Lands", "Timor-Leste", "US Virgin Islands", "Wallis et Futuna"))) continue;
                 // if(!in_array($this->country_name, array('Canada'))) continue;                
                 // if(!in_array($this->country_name, array('North Korea'))) continue;
@@ -246,23 +246,23 @@ class NationalChecklistsAPI
                     if($val == 'United States') $dwca_filename = 'SC_unitedstates';
                     else {
                         if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
-                        /* major file deletion
+                        // /* major file deletion
                         $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
                         if(file_exists($delete_file)) {
                             if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
                             else                     echo "\nFile not deleted [$delete_file]\n";
                             // echo "\nFile detected [$delete_file]";
                         }
-                        */
+                        // */
                     }
                 }    
                 // */
             }
             else continue;
             
-            /* during major file deletion
+            // /* during major file deletion
             continue;
-            */
+            // */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             if(substr($country_name_lower,0,4) == "the ")                                               $country_name_lower = str_ireplace("the ", "", $country_name_lower); //The Bahamas => SC_bahamas.tar.gz
