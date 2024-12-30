@@ -68,6 +68,8 @@ class DwCA_Utility
             'temp_dir' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_99493/'
         );
         */
+
+        if(!$paths) return false;
         
         $this->archive_path = $paths['archive_path'];
         $temp_dir = $paths['temp_dir'];
