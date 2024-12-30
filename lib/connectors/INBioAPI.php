@@ -121,6 +121,7 @@ class INBioAPI
         if(@$ret['contents'] || @$ret['path']) {}
         else {
             debug("Connector terminated. Remote/local file is not ready.");
+            recursive_rmdir($temp_dir); echo "\ntemp. dir removed: [$temp_dir]\n";
             return;
         }
         if($temp_file_path = @$ret['path']) {}
@@ -128,7 +129,10 @@ class INBioAPI
             $temp_file_path = $temp_dir . "" . $filename;
             debug("temp_dir: $temp_dir");
             debug("Extracting... $temp_file_path");
-            if(!($TMP = Functions::file_open($temp_file_path, "w"))) return;
+            if(!($TMP = Functions::file_open($temp_file_path, "w"))) {
+                recursive_rmdir($temp_dir); echo "\ntemp. dir removed: [$temp_dir]\n";
+                return;
+            }
             fwrite($TMP, $file_contents);
             fclose($TMP);
             sleep(1); //orig 5 secs.
@@ -157,6 +161,7 @@ class INBioAPI
             } 
             else {
                 debug("-- archive not gzip or zip. [$dwca_file]");
+                recursive_rmdir($temp_dir); echo "\ntemp. dir removed: [$temp_dir]\n";
                 return;
             }
         }
@@ -182,8 +187,7 @@ class INBioAPI
             echo "\n4. ".$temp_dir ."EOL_dynamic_hierarchy/". $check_file_or_folder_name."\n";
             echo "\n5. ".$temp_dir ."$tmpfolder/". $check_file_or_folder_name."\n";
             debug("Can't find check_file_or_folder_name [$check_file_or_folder_name].");
-            recursive_rmdir($temp_dir);
-            echo "\ntemp. dir removed: [$temp_dir]\n";
+            recursive_rmdir($temp_dir); echo "\ntemp. dir removed: [$temp_dir]\n";
             return false;
             // return array('archive_path' => $temp_dir, 'temp_dir' => $temp_dir);
         }
