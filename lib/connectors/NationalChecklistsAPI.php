@@ -97,7 +97,7 @@ class NationalChecklistsAPI
         $this->zenodo = new ZenodoAPI();
         // */
     }
-    function start($counter = false, $task) //$counter is only for caching
+    function start($fields) //start($counter = false, $task, $sought_ctry = false) //$counter is only for caching
     {   //exit("\n[$counter]\n");
         /* may not need this anymore...
         require_library('connectors/GBIFdownloadRequestAPI');
@@ -105,6 +105,10 @@ class NationalChecklistsAPI
         $key = $func->retrieve_key_for_taxon('Country_checklists');
         echo "\nkey is: [$key]\n";
         */
+
+        $counter     = @$fields['counter'];
+        $task        = @$fields['task'];
+        $sought_ctry = @$fields['sought_ctry'];
 
         self::initialize();
 
@@ -119,7 +123,9 @@ class NationalChecklistsAPI
             // */
             self::parse_tsv_file($tsv_path, $task);            
         }
-        elseif($task == 'generate_country_checklists')  self::create_individual_country_checklist_resource($counter);
+        elseif($task == 'generate_country_checklists')  self::create_individual_country_checklist_resource($counter, $task, $sought_ctry);
+        elseif($task == 'major_deletion')               self::create_individual_country_checklist_resource($counter, $task);
+
         else exit("\nNo task to do. Will terminate.\n");
         // */
         
@@ -202,7 +208,7 @@ class NationalChecklistsAPI
         $ret['orig'] = $this->country_name;
         return $ret;
     }
-    private function create_individual_country_checklist_resource($counter = false)
+    private function create_individual_country_checklist_resource($counter = false, $task, $sought_ctry = false)
     {
         // /* caching
         $m = 252/6; //252 countries
@@ -231,7 +237,7 @@ class NationalChecklistsAPI
                 $this->country_name = $ret['orig'];
 
                 // /* manual filter, dev only
-                if(!in_array($this->country_name, array('Trinidad and Tobago'))) continue;
+                // if(!in_array($this->country_name, array('Trinidad and Tobago'))) continue;
                 // if(!in_array($this->country_name, array('Germany'))) continue;
                 // if(!in_array($this->country_name, array('United States'))) continue;
                 // if(!in_array($this->country_name, array('Australia'))) continue;
@@ -242,29 +248,34 @@ class NationalChecklistsAPI
                 // if(!in_array($this->country_name, array('North Korea'))) continue;
                 // */
 
+                if($sought_ctry) {
+                    if(!in_array($this->country_name, array($sought_ctry))) continue;
+                }
+
                 // /*
                 if($val = $ret['orig']) {
                     if($val == 'United States') $dwca_filename = 'SC_unitedstates';
                     else {
                         if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
                         else exit("\nTerminated: should not go here 02.\n");
-                        /* major file deletion
-                        $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
-                        if(file_exists($delete_file)) {
-                            if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
-                            else                     echo "\nFile not deleted [$delete_file]\n";
-                            // echo "\nFile detected [$delete_file]";
+                        // /* major file deletion
+                        if($task == 'major_deletion') {
+                            $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
+                            if(file_exists($delete_file)) {
+                                if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
+                                else                     echo "\nFile NOT deleted [$delete_file]\n";
+                            }    
                         }
-                        */
+                        // */
                     }
                 }    
                 // */
             }
             else continue;
             
-            /* during major file deletion
-            continue;
-            */
+            // /* during major file deletion
+            if($task == 'major_deletion') continue;
+            // */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
             if(substr($country_name_lower,0,4) == "the ")                                               $country_name_lower = str_ireplace("the ", "", $country_name_lower); //The Bahamas => SC_bahamas.tar.gz

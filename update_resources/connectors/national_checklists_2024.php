@@ -6,6 +6,8 @@ works with: GBIF_SQL_DownloadsAPI.code-workspace
 regular operation:
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"divide_into_country_files"}'
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists"}'
+    php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists", "sought_ctry":"Philippines"}'
+    php update_resources/connectors/national_checklists_2024.php _ '{"task":"major_deletion"}'
     OR 
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists", "counter":"1"}'
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists", "counter":"2"}'
@@ -24,12 +26,15 @@ $timestart = time_elapsed();
 $params['jenkins_or_cron']   = @$argv[1]; //irrelevant here
 $params['json']              = @$argv[2]; //useful here
 $fields = json_decode($params['json'], true);
-$counter = @$fields['counter'];
-$task = @$fields['task'];
+// $counter = @$fields['counter'];
+// $task = @$fields['task'];
+// $sought_ctry = @$fields['sought_ctry'];
 
 $what = 'Country_checklists';
 $func = new NationalChecklistsAPI($what);
-$func->start($counter, $task); //main operation
+// $func->start($counter, $task, $sought_ctry); //main operation
+$func->start($fields); //main operation
+
 // /*
 // $func->show_countries_metadata(); //utility, generates https://editors.eol.org/other_files/GBIF_occurrence/Country_checklists/countries.tsv --- works OK | ran already
 // */
