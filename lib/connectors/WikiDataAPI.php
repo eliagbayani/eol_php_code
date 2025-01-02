@@ -665,22 +665,28 @@ class WikiDataAPI extends WikipediaAPI
             $instance_of = trim((string) @$arr->claims->P31[0]->mainsnak->datavalue->value->id); //should be of 'taxon' Q16521
             $taxon_name  = trim((string) @$arr->claims->P225[0]->mainsnak->datavalue->value); //has a taxon name
             
+            $old_Q_id = '';
+            $old_arr = array();
+
             // /* New: Feb 16, 2022 - use get_object for some taxon names since dump is not reflective of website and API
             if(self::needs_get_object_func($taxon_name)) {
                 $arr = self::get_object($Q_id); $old_Q_id = $Q_id; $old_arr = $arr;
                 $arr = $arr->entities->$Q_id; $Q_id = $arr->id;
                 $instance_of = trim((string) @$arr->claims->P31[0]->mainsnak->datavalue->value->id); //should be of 'taxon' Q16521
                 $taxon_name  = trim((string) @$arr->claims->P225[0]->mainsnak->datavalue->value); //has a taxon name
-                // /* debug Jan 2, 2025
-                if($Q_id == "Q19486") {
-                    echo "\n===================================================================\n";
-                    print_r($old_arr);
-                    print_r($arr);
-                    exit("\nhuli ka...[$old_Q_id][$Q_id]\n");
-                }
-                // */
             }
             // */
+
+            // /* debug Jan 2, 2025
+            if($Q_id == "Q19486" || $old_Q_id == "Q19486") {
+                echo "\n===================================================================\n";
+                print_r($old_arr);
+                print_r($arr);
+                exit("\nhuli ka...[$old_Q_id][$Q_id]\n");
+            }
+            else continue;
+            // */
+
 
             /* force use of API - March 12, 2023 --- customize
             if($Q_id == 'Q1130386') {
