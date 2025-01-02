@@ -661,16 +661,17 @@ class WikiDataAPI extends WikipediaAPI
 
             $row = self::remove_last_char_if_comma($row); //remove the last char if it is "," a comma
             $arr = json_decode($row); //print_r($arr); exit;
+            $old_arr = $arr;
             $Q_id = @$arr->id; //use @ bec. needed for last rec
+            $old_Q_id = $Q_id;
             $instance_of = trim((string) @$arr->claims->P31[0]->mainsnak->datavalue->value->id); //should be of 'taxon' Q16521
             $taxon_name  = trim((string) @$arr->claims->P225[0]->mainsnak->datavalue->value); //has a taxon name
             
-            $old_Q_id = '';
-            $old_arr = array();
+            $old_arr2 = array();
 
             // /* New: Feb 16, 2022 - use get_object for some taxon names since dump is not reflective of website and API
             if(self::needs_get_object_func($taxon_name)) {
-                $arr = self::get_object($Q_id); $old_Q_id = $Q_id; $old_arr = $arr;
+                $arr = self::get_object($Q_id); $old_arr2 = $arr;
                 $arr = $arr->entities->$Q_id; $Q_id = $arr->id;
                 $instance_of = trim((string) @$arr->claims->P31[0]->mainsnak->datavalue->value->id); //should be of 'taxon' Q16521
                 $taxon_name  = trim((string) @$arr->claims->P225[0]->mainsnak->datavalue->value); //has a taxon name
@@ -681,6 +682,7 @@ class WikiDataAPI extends WikipediaAPI
             if($Q_id == "Q19486" || $old_Q_id == "Q19486") {
                 echo "\n===================================================================\n";
                 print_r($old_arr);
+                print_r($old_arr2);
                 print_r($arr);
                 exit("\nhuli ka...[$old_Q_id][$Q_id]\n");
             }
