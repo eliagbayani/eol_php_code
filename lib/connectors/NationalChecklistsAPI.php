@@ -287,28 +287,32 @@ class NationalChecklistsAPI
             // $folder = "SC_".$country_name_lower; //obsolete
             $folder = $dwca_filename;            //latest
 
-            /* main operation | uncomment in real operation
+            // /* main operation | uncomment in real operation
             if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
             else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
-            */
-
-            if(!$folder) exit("\nfolder not defined [$folder]\n");
-            $resource_id = $folder;
-            $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
-            $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
-            // */ // ----------- end -----------
-
-            // /*
-            require_library('connectors/TraitGeneric');
-            $this->func = new TraitGeneric($resource_id, $this->archive_builder);
             // */
 
-            self::parse_tsv_file($file, "process_country_file");
-            $this->archive_builder->finalize(TRUE);
-            Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
-
+            if(!$folder) exit("\nfolder not defined [$folder]\n");
+            self::proc_country($folder, $file);
             // break; //debug only | process just 1 country
         }
+    }
+    private function proc_country($folder, $file)
+    {
+        $this->taxon_ids = array(); //very important
+        $resource_id = $folder;
+        $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
+        $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
+        // */ // ----------- end -----------
+
+        // /*
+        require_library('connectors/TraitGeneric');
+        $this->func = new TraitGeneric($resource_id, $this->archive_builder);
+        // */
+
+        self::parse_tsv_file($file, "process_country_file");
+        $this->archive_builder->finalize(TRUE);
+        Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
     }
     private function parse_tsv_file($file, $task)
     {   echo "\nTask: [$task] [$file]\n";
@@ -585,7 +589,7 @@ class NationalChecklistsAPI
         if($country == 'Bailiwick Of Jersey') return 'http://www.geonames.org/3042142';
         if($country == 'Mariana Islands') $country = 'Northern Mariana Islands'; //uri: http://www.geonames.org/4041468
         if($country == 'Saint-Pierre et Miquelon') $country = 'Saint-Pierre Et Miquelon';
-        if($country == 'Saint Helena Ascension And Tristan da Cunha') $country = 'http://www.geonames.org/3370751';
+        if($country == 'Saint Helena Ascension And Tristan da Cunha') $country = 'Saint Helena'; //'http://www.geonames.org/3370751';
         if($country == 'Territory Of The French Southern And Antarctic Lands') $country = 'French Southern Territories';
         if($country == 'Timor-Leste') $country = 'East Timor';
         if($country == 'US Virgin Islands') $country = 'U.S. Virgin Islands';
@@ -614,8 +618,9 @@ class NationalChecklistsAPI
                     */
             // /*
             switch ($country) { //put here customized mapping
-                case "Saint Barthélemy":                    return "http://www.geonames.org/3578475";
+                // case "Saint Barthélemy":                    return "http://www.geonames.org/3578475";
                 case "Republic Of The Congo":               return "https://www.geonames.org/2260494";
+                case "Territory Of Heard Island And McDonald Islands": return "http://www.geonames.org/1547314";
 
                 /* copied template
                 name: Bonaire, Saint Eustatius And Saba
@@ -704,10 +709,10 @@ class NationalChecklistsAPI
 
             if($f1 == $f2 && $f1) return str_ireplace(".tar.gz", "", $f1);
             else {
-                exit("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+                echo("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
         }
-        exit("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+        echo("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
     }
     private function use_label_SampleSize_forCount($headers)
     {
