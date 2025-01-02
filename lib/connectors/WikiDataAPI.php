@@ -667,10 +667,18 @@ class WikiDataAPI extends WikipediaAPI
             
             // /* New: Feb 16, 2022 - use get_object for some taxon names since dump is not reflective of website and API
             if(self::needs_get_object_func($taxon_name)) {
-                $arr = self::get_object($Q_id);
+                $arr = self::get_object($Q_id); $old_Q_id = $Q_id; $old_arr = $arr;
                 $arr = $arr->entities->$Q_id; $Q_id = $arr->id;
                 $instance_of = trim((string) @$arr->claims->P31[0]->mainsnak->datavalue->value->id); //should be of 'taxon' Q16521
                 $taxon_name  = trim((string) @$arr->claims->P225[0]->mainsnak->datavalue->value); //has a taxon name
+                // /* debug Jan 2, 2025
+                if($Q_id == "Q19486") {
+                    echo "\n===================================================================\n";
+                    print_r($old_arr);
+                    print_r($arr);
+                    exit("\nhuli ka...[$old_Q_id][$Q_id]\n");
+                }
+                // */
             }
             // */
 
@@ -2706,10 +2714,10 @@ class WikiDataAPI extends WikipediaAPI
     }
     function get_taxon_name($arr, $option = "OPTIONAL") //other value aside from OPTIONAL is REQUIRED.
     {
-        // /* new block: to be used until the dump is fixed --- just temporary
+        /* new block: to be used until the dump is fixed --- just temporary
         if(@$arr->id == "Q107694904") return "Trachipleistophora";
         if(@$arr->id == "Q15657618") return "Hemaris thetis";
-        // */
+        */
         
         $claims = @$arr->claims;
         if($val = @$claims->P225[0]->mainsnak->datavalue->value) return (string) $val;
