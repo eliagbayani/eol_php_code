@@ -608,7 +608,7 @@ class WikiDataAPI extends WikipediaAPI
         // */
         
         foreach(new FileIterator($this->path['wiki_data_json']) as $line_number => $row) {
-            $k++; if(($k % 5000) == 0) echo " AAA ".number_format($k)." ";
+            $k++; if(($k % 5000) == 0) echo " A1A2A3 ".number_format($k)." ";
             $this->k = $k;
             /* debug only, during dev only*
             if($k >= 50000) break;
@@ -679,7 +679,7 @@ class WikiDataAPI extends WikipediaAPI
             // */
 
             // /* debug Jan 2, 2025
-            if($Q_id == "Q199788" || $old_Q_id == "Q199788") {
+            if($Q_id == "Q19486" || $old_Q_id == "Q19486") {
                 echo "\n===================================================================\n";
                 print_r($old_arr);
                 print_r($old_arr2);
