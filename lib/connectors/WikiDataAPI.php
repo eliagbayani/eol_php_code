@@ -679,7 +679,7 @@ class WikiDataAPI extends WikipediaAPI
             // */
 
             // /* debug Jan 2, 2025
-            if($Q_id == "Q19486" || $old_Q_id == "Q19486") {
+            if($Q_id == "Q199788" || $old_Q_id == "Q199788") {
                 echo "\n===================================================================\n";
                 print_r($old_arr);
                 print_r($old_arr2);
