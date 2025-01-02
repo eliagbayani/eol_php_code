@@ -194,15 +194,13 @@ class NationalChecklistsAPI
                 if(!in_array($this->country_name, $this->AnneT_natl_checklists)) {
                     echo "\nNot mapped* [$this->country_name]";
                     $this->debug['Not mapped*'][$this->country_name] = '';
-                    return false;
-                    continue; //not mapped to Anne's checklists    
+                    return false; //not mapped to Anne's checklists    
                 }
             }
             else {
                 echo "\nNot mapped** [$this->country_name]";
                 $this->debug['Not mapped**'][$this->country_name] = '';
-                return false;
-                continue; //not mapped to Anne's checklists
+                return false; //not mapped to Anne's checklists
             }
         }
         $ret['orig'] = $this->country_name;
@@ -244,7 +242,7 @@ class NationalChecklistsAPI
                 
                 // if(in_array($this->country_name, array('Philippines'))) continue;
 
-                // if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue;
+                if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue;
                 // if(!in_array($this->country_name, array("The Bahamas", "Cocos Islands", "Federated States Of Micronesia", "The Gambia", "South Georgia And The South Sandwich Islands", "Guinea Bissau", "Territory Of Heard Island And McDonald Islands", "Bailiwick Of Jersey", "Mariana Islands", "Territory Of Heard Island And McDonald Islands", "The Netherlands", "Saint-Pierre et Miquelon", "Saint Helena Ascension And Tristan da Cunha", "Territory Of The French Southern And Antarctic Lands", "Timor-Leste", "US Virgin Islands", "Wallis et Futuna"))) continue;
                 // if(!in_array($this->country_name, array('Canada'))) continue;                
                 // if(!in_array($this->country_name, array('North Korea'))) continue;
@@ -709,10 +707,10 @@ class NationalChecklistsAPI
 
             if($f1 == $f2 && $f1) return str_ireplace(".tar.gz", "", $f1);
             else {
-                echo("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+                exit("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
         }
-        echo("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+        exit("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
     }
     private function use_label_SampleSize_forCount($headers)
     {
