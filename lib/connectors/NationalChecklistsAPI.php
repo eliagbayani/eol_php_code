@@ -129,7 +129,7 @@ class NationalChecklistsAPI
         else exit("\nNo task to do. Will terminate.\n");
         // */
         
-        unlink($tsv_path);
+        if(file_exists($tsv_path)) unlink($tsv_path);
         print_r($this->debug);
     }
     function show_countries_metadata() //utility
