@@ -242,7 +242,7 @@ class NationalChecklistsAPI
                 
                 // if(in_array($this->country_name, array('Philippines'))) continue;
 
-                if(in_array($this->country_name, array('United States', 'Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue;
+                if(in_array($this->country_name, array('Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue; //'United States'
                 // if(!in_array($this->country_name, array("The Bahamas", "Cocos Islands", "Federated States Of Micronesia", "The Gambia", "South Georgia And The South Sandwich Islands", "Guinea Bissau", "Territory Of Heard Island And McDonald Islands", "Bailiwick Of Jersey", "Mariana Islands", "Territory Of Heard Island And McDonald Islands", "The Netherlands", "Saint-Pierre et Miquelon", "Saint Helena Ascension And Tristan da Cunha", "Territory Of The French Southern And Antarctic Lands", "Timor-Leste", "US Virgin Islands", "Wallis et Futuna"))) continue;
                 // if(!in_array($this->country_name, array('Canada'))) continue;                
                 // if(!in_array($this->country_name, array('North Korea'))) continue;
