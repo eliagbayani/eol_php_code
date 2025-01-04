@@ -669,6 +669,7 @@ class WikiDataAPI extends WikipediaAPI
 
             
             // /* debug Jan 2, 2025
+            if($Q_id == "Q199788") print_r($arr); //Gadus morhua
             if($Q_id == "Q19486") {
                 echo "\n===================================================================\n";
                 print_r($arr);
