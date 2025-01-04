@@ -666,7 +666,19 @@ class WikiDataAPI extends WikipediaAPI
             $old_Q_id = $Q_id;
             $instance_of = trim((string) @$arr->claims->P31[0]->mainsnak->datavalue->value->id); //should be of 'taxon' Q16521
             $taxon_name  = trim((string) @$arr->claims->P225[0]->mainsnak->datavalue->value); //has a taxon name
+
             
+            // /* debug Jan 2, 2025
+            if($Q_id == "Q19486") {
+                echo "\n===================================================================\n";
+                print_r($arr);
+                exit("\nhuli ka 01...[$Q_id]\n");
+            }
+            else continue;
+            // */
+
+
+
             $old_arr2 = array();
 
             // /* New: Feb 16, 2022 - use get_object for some taxon names since dump is not reflective of website and API
@@ -678,7 +690,7 @@ class WikiDataAPI extends WikipediaAPI
             }
             // */
 
-            // /* debug Jan 2, 2025
+            /* debug Jan 2, 2025
             if($Q_id == "Q19486" || $old_Q_id == "Q19486") {
                 echo "\n===================================================================\n";
                 print_r($old_arr);
@@ -687,7 +699,7 @@ class WikiDataAPI extends WikipediaAPI
                 exit("\nhuli ka...[$old_Q_id][$Q_id]\n");
             }
             else continue;
-            // */
+            */
 
 
             /* force use of API - March 12, 2023 --- customize
