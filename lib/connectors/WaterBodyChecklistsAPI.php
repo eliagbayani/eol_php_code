@@ -200,10 +200,16 @@ class WaterBodyChecklistsAPI
         $m = 252/6; //252 waterbodies
         $i = 0;
         // */
-        
-        $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n";
-        foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
 
+        // foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++;
+        //     if(!$row) continue;
+        //     echo "\n$row";
+        // }//foreach()
+        // exit("\nend 2\n");
+        
+        // $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n";
+        // foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
+        foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++;
             // /* breakdown when caching
             if($counter) {
                 $cont = false;
@@ -218,9 +224,9 @@ class WaterBodyChecklistsAPI
             }
             // */
 
-            if($ret = self::evaluate_waterbody_file($file)) {
-                $waterbody_name_lower = $ret['lower_case'];
-                $this->waterbody_name = $ret['orig'];
+            if($this->waterbody_name = $row) {
+                // $waterbody_name_lower = $ret['lower_case'];
+                // $this->waterbody_name = $ret['orig'];
 
                 /* manual filter, dev only
                 if(in_array($this->waterbody_name, array('Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue; //'United States'
@@ -230,27 +236,23 @@ class WaterBodyChecklistsAPI
                     if(!in_array($this->waterbody_name, array($sought_waterbdy))) continue;
                 }
 
-                // /*
-                if($val = $ret['orig']) {
-                    if($val == 'United States') $dwca_filename = 'SC_unitedstates';
-                    else {
-                        if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
-                        else exit("\nTerminated: should not go here 02.\n");
-                        // /* major file deletion
-                        if($task == 'major_deletion') {
-                            $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
-                            if(file_exists($delete_file)) {
-                                if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
-                                else                     echo "\nFile NOT deleted [$delete_file]\n";
-                            }    
-                        }
-                        // */
+                if($row == 'United States') $dwca_filename = 'SC_unitedstates';
+                else {
+                    if($dwca_filename = self::get_dwca_filename($row)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
+                    else exit("\nTerminated: should not go here 02.\n");
+                    // /* major file deletion
+                    if($task == 'major_deletion') {
+                        $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
+                        if(file_exists($delete_file)) {
+                            if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
+                            else                     echo "\nFile NOT deleted [$delete_file]\n";
+                        }    
                     }
-                }    
-                // */
+                    // */
+                }                
             }
             else continue;
-            
+            exit("\nstop muna\n");
             // /* during major file deletion
             if($task == 'major_deletion') continue;
             // */
@@ -295,7 +297,7 @@ class WaterBodyChecklistsAPI
         $i = 0; $final = array();
         if($task == "divide_into_waterbody_files") $mod = 100000;
         elseif($task == "process_waterbody_file")  $mod = 1000;
-        else                                     $mod = 1000;
+        else                                       $mod = 1000;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % $mod) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
@@ -690,7 +692,7 @@ class WaterBodyChecklistsAPI
         // /* manual adjustment
         if($str == "North Korea") $str = "North Korean";
         // */
-        $q = '+title:"'.$str.'" +title:2019 +title:National +title:Checklists';
+        $q = '+title:"'.$str.'" +title:2019 +title:Water Body +title:Checklists';
         if($obj = $this->zenodo->get_depositions_by_part_title($q)) { //print_r($obj[0]); 
             $f1 = $obj[0]['files'][0]['filename'];
             $path = $obj[0]['metadata']['related_identifiers'][0]['identifier'];
@@ -699,7 +701,14 @@ class WaterBodyChecklistsAPI
             // if(file_exists(CONTENT_RESOURCE_LOCAL_PATH.$f1)) echo "\nDwCA exists.\n";
             // else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
 
-            if($f1 == $f2 && $f1) return str_ireplace(".tar.gz", "", $f1);
+            if($f1 == $f2 && $f1) {
+                $ext = pathinfo($f1, PATHINFO_EXTENSION);
+                if($ext == 'gz') return str_ireplace(".tar.gz", "", $f1);
+                else { //zip or whatever
+                    exit("\nInvestigate: [$str][$f1] wrong extension [$ext]\n");
+                }
+
+            }
             else {
                 exit("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
