@@ -110,10 +110,15 @@ class WaterBodyChecklistsAPI
             [Sea of Okhostk] => 
         )
         - AnneT waterbodies not found in GBIF */
+
+        // print_r($this->debug['waterbody in AnneT']); exit("\nelix 2\n");
+        $f = Functions::file_open($this->destination."waterbodies_main.tsv", "w");
+        foreach(array_keys($this->debug['waterbody in AnneT']) as $waterbody) fwrite($f, $waterbody."\n");
+        fclose($f);
+
         unset($this->debug['GBIF waterbodies']);
         unset($this->debug['waterbody in AnneT']);
         unset($this->debug['waterbody not in AnneT']);
-        // exit("\nstop muna 3\n");
     }
     function show_waterbodies_metadata() //utility
     {   $cont = false; //debug only
