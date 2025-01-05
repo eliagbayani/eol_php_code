@@ -100,7 +100,7 @@ class WaterBodyChecklistsAPI
             if(!isset($this->debug['waterbody in AnneT'][$wb])) $not_found[$wb] = '';
         }
         // print_r($this->debug['GBIF waterbodies']); //good debug and if u want to investigate
-        print_r($not_found); echo " - AnneT waterbodies not found in GBIF";
+        print_r($not_found); echo " - AnneT waterbodies not found in GBIF: [".count($not_found)."]";
         echo "\nTotal AnneT waterbodies: [".count($this->AnneT_water_bodies)."]";
         $diff = count($this->AnneT_water_bodies) - count($not_found);
         echo "\nTotal TSV generated should be: [".$diff."]\n";
@@ -170,7 +170,7 @@ class WaterBodyChecklistsAPI
         $ret = self::get_waterbody_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/WaterBody_checklists/waterbodies/AD.tsv"
         $waterbody_name_lower = $ret['lower_case'];
         $this->waterbody_name = $ret['orig'];
-        // print_r($ret); exit;
+        print_r($ret); exit;
         if(!in_array($this->waterbody_name, $this->AnneT_water_bodies)) {
             if($val = @$this->waterbdy_map[$this->waterbody_name]) {
                 $this->waterbody_name = $val;
@@ -355,8 +355,9 @@ class WaterBodyChecklistsAPI
     {   /*Array(
             [specieskey] => 1000607
             [COUNT(specieskey)] => 2
-            [waterbody] => Pardo
+            [waterbody] => Pardo, sssyy of sss, xxx, sss of yyy
         )*/
+        $orig = $rec['waterbody'];
         $waterbodies = explode(",", $rec['waterbody']);
         $waterbodies = array_map('trim', $waterbodies);
         foreach($waterbodies as $waterbody) {
@@ -380,6 +381,8 @@ class WaterBodyChecklistsAPI
             // print_r($rec);
             $waterbody_code = str_replace(" ", "_", strtolower($waterbody));
             $file = $this->waterbody_path.'/'.$waterbody_code.'.tsv';
+            $rec['remark'] = $orig;
+            $rec['waterbody'] = $waterbody;
             if(!isset($this->waterbody['encountered'][$waterbody_code])) {
                 $this->waterbody['encountered'][$waterbody_code] = '';
                 $f = Functions::file_open($file, "w");
@@ -390,6 +393,7 @@ class WaterBodyChecklistsAPI
             }
             $f = Functions::file_open($file, "a");
             fwrite($f, implode("\t", $rec)."\n");
+            // print_r($rec); exit;
             fclose($f);    
         } //foreach()
 
