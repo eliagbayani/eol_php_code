@@ -77,7 +77,10 @@ class WaterBodyChecklistsAPI
             recursive_rmdir($this->waterbody_path); echo ("\nFolder removed: " . $this->waterbody_path);
             if(!is_dir($this->waterbody_path)) mkdir($this->waterbody_path);
             // */
-            self::parse_tsv_file($tsv_path, $task);            
+            self::parse_tsv_file($tsv_path, $task);
+            // /* utility: check what waterbodies in AnneT that were not found in GBIF
+            self::compare_waterbodies();
+            // */
         }
         elseif($task == 'generate_waterbody_checklists')  self::create_individual_waterbody_checklist_resource($counter, $task, $sought_waterbdy);
         elseif($task == 'major_deletion')                 self::create_individual_waterbody_checklist_resource($counter, $task);
@@ -87,6 +90,17 @@ class WaterBodyChecklistsAPI
         
         if(file_exists($tsv_path)) unlink($tsv_path);
         print_r($this->debug);
+    }
+    private function compare_waterbodies()
+    {
+        // print_r($this->debug['waterbody not in AnneT']);
+        // $this->debug['waterbody in AnneT'][$waterbody] = '';
+        // $this->AnneT_water_bodies
+        foreach($this->AnneT_water_bodies as $wb) {
+            if(!isset($this->debug['waterbody in AnneT'][$wb])) $not_found[$wb] = '';
+        }
+        print_r($this->debug['GBIF waterbodies']);
+        print_r($not_found); echo " - AnneT waterbodies not found in GBIF\n"; exit("\nstop muna 3\n");
     }
     function show_waterbodies_metadata() //utility
     {   $cont = false; //debug only
@@ -333,10 +347,22 @@ class WaterBodyChecklistsAPI
         $waterbodies = explode(",", $rec['waterbody']);
         $waterbodies = array_map('trim', $waterbodies);
         foreach($waterbodies as $waterbody) {
+            // /* massage
+            $waterbody = str_replace(' Of ', ' of ', $waterbody);
+            if($waterbody == 'Azov Sea')                    $waterbody = 'Sea of Azov';
+            if($waterbody == 'The Northwestern Passages')   $waterbody = 'Northwestern Passages';
+            if($waterbody == 'Northwest Passages')          $waterbody = 'Northwestern Passages';
+            if($waterbody == 'East-Siberian Sea')           $waterbody = 'East Siberian Sea';
+            if($waterbody == 'Gulf of St. Lawrence')        $waterbody = 'Gulf of St Lawrence';
+            if($waterbody == 'Gulf of Saint Lawrence')      $waterbody = 'Gulf of St Lawrence';
+            if($waterbody == 'Marmara Sea')                    $waterbody = 'Sea of Marmara';
+            // */
+            $this->debug['GBIF waterbodies'][$waterbody] = '';
             if(!in_array($waterbody, $this->AnneT_water_bodies)) {
                 $this->debug['waterbody not in AnneT'][$waterbody] = '';
                 continue;
             }
+            else $this->debug['waterbody in AnneT'][$waterbody] = '';
             // print_r($rec);
             $waterbody_code = str_replace(" ", "_", strtolower($waterbody));
             $file = $this->waterbody_path.'/'.$waterbody_code.'.tsv';
