@@ -32,12 +32,11 @@ $fields = json_decode($params['json'], true);
 
 $what = 'WaterBody_checklists';
 $func = new WaterBodyChecklistsAPI($what);
-// $func->start($counter, $task, $sought_waterbdy); //main operation
 $func->start($fields); //main operation
 
-// /*
-// $func->show_waterbodies_metadata(); //utility, generates https://editors.eol.org/other_files/GBIF_occurrence/WaterBody_checklists/waterbodies.tsv --- works OK | ran already
-// */
+/*
+$func->show_waterbodies_metadata(); //utility, generates https://editors.eol.org/other_files/GBIF_occurrence/WaterBody_checklists/waterbodies.tsv --- works OK | ran already
+*/
 
 /* copied template, not used here.
 Functions::finalize_dwca_resource($resource_id, false, true, $timestart); //3rd param if false it will not remove working folder

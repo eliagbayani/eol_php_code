@@ -26,8 +26,8 @@ class WaterBodyChecklistsAPI
         $this->report_2 = $this->destination . "run_waterbodies.tsv";
 
         if(!is_dir($this->destination)) mkdir($this->destination);
-        $this->country_path = $this->destination.'waterbodies';
-        if(!is_dir($this->country_path)) mkdir($this->country_path);
+        $this->waterbody_path = $this->destination.'waterbodies';
+        if(!is_dir($this->waterbody_path)) mkdir($this->waterbody_path);
         $this->zip_file    = $this->destination.$what."_DwCA.zip";  //for development it was manually put here, it was copied from editors.eol.org
                                                                     //for production it was downloaded from GBIF during "step: 03 Initialize and download dumps"
 
@@ -40,14 +40,13 @@ class WaterBodyChecklistsAPI
     }
     private function initialize()
     {
+        /* not applicable
         $this->country_code_name_info = self::initialize_waterbodies_from_csv(); //print_r($this->country_code_name_info); exit;
+        */
         self::assemble_terms_yml(); //generates $this->value_uris
-        if(self::get_waterbody_uri('Trinidad And Tobago') == 'http://www.geonames.org/3573591') echo "\nTrinidad And Tobago: OK";     else exit("\nERROR: Investigate country URI.\n");
-        if(self::get_waterbody_uri('Germany')             == 'http://www.geonames.org/2921044') echo "\nGermany: OK";                 else exit("\nERROR: Investigate country URI.\n");
-        if(self::get_waterbody_uri('Philippines')         == 'http://www.geonames.org/1694008') echo "\nPhilippines: OK";             else exit("\nERROR: Investigate country URI.\n");
-        if(self::get_waterbody_uri('Australia')           == 'http://www.geonames.org/2077456') echo "\nAustralia: OK";               else exit("\nERROR: Investigate country URI.\n");
-        if(self::get_waterbody_uri('United States')       == 'http://www.geonames.org/6252001') echo "\nUnited States: OK\n";         else exit("\nERROR: Investigate country URI.\n");
-
+        if(self::get_waterbody_uri('Adriatic Sea')  == 'http://www.marineregions.org/mrgid/3314') echo "\nAdriatic Sea: OK";        else exit("\nERROR: Investigate country URI.\n");
+        if(self::get_waterbody_uri('Aegean Sea')    == 'http://www.marineregions.org/mrgid/3315') echo "\nAegean Sea: OK";          else exit("\nERROR: Investigate country URI.\n");
+        // exit("\n--- stop muna...\n");
         // /*
         require_library('connectors/ZenodoConnectorAPI');
         require_library('connectors/ZenodoAPI');
@@ -75,8 +74,8 @@ class WaterBodyChecklistsAPI
         // self::parse_tsv_file_caching($tsv_path, $counter); //during caching only; not part of main operation
         if($task == 'divide_into_waterbody_files') {
             // /* remove current /waterbodies/ folder
-            recursive_rmdir($this->country_path); echo ("\nFolder removed: " . $this->country_path);
-            if(!is_dir($this->country_path)) mkdir($this->country_path);
+            recursive_rmdir($this->waterbody_path); echo ("\nFolder removed: " . $this->waterbody_path);
+            if(!is_dir($this->waterbody_path)) mkdir($this->waterbody_path);
             // */
             self::parse_tsv_file($tsv_path, $task);            
         }
@@ -96,7 +95,7 @@ class WaterBodyChecklistsAPI
         if(file_exists($this->report_2)) unlink($this->report_2);
 
         self::initialize();
-        $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n"; $i = 0;
+        $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n"; $i = 0;
         foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
             if($ret = self::evaluate_waterbody_file($file)) { $i++;
                 print_r($ret);
@@ -142,25 +141,25 @@ class WaterBodyChecklistsAPI
     private function evaluate_waterbody_file($file)
     {
         $ret = self::get_waterbody_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/WaterBody_checklists/waterbodies/AD.tsv"
-        $country_name_lower = $ret['lower_case'];
-        $this->country_name = $ret['orig'];
+        $waterbody_name_lower = $ret['lower_case'];
+        $this->waterbody_name = $ret['orig'];
         // print_r($ret); exit;
-        if(!in_array($this->country_name, $this->AnneT_water_bodies)) {
-            if($val = @$this->waterbdy_map[$this->country_name]) {
-                $this->country_name = $val;
-                if(!in_array($this->country_name, $this->AnneT_water_bodies)) {
-                    echo "\nNot mapped* [$this->country_name]";
-                    $this->debug['Not mapped*'][$this->country_name] = '';
+        if(!in_array($this->waterbody_name, $this->AnneT_water_bodies)) {
+            if($val = @$this->waterbdy_map[$this->waterbody_name]) {
+                $this->waterbody_name = $val;
+                if(!in_array($this->waterbody_name, $this->AnneT_water_bodies)) {
+                    echo "\nNot mapped* [$this->waterbody_name]";
+                    $this->debug['Not mapped*'][$this->waterbody_name] = '';
                     return false; //not mapped to Anne's checklists    
                 }
             }
             else {
-                echo "\nNot mapped** [$this->country_name]";
-                $this->debug['Not mapped**'][$this->country_name] = '';
+                echo "\nNot mapped** [$this->waterbody_name]";
+                $this->debug['Not mapped**'][$this->waterbody_name] = '';
                 return false; //not mapped to Anne's checklists
             }
         }
-        $ret['orig'] = $this->country_name;
+        $ret['orig'] = $this->waterbody_name;
         return $ret;
     }
     private function create_individual_waterbody_checklist_resource($counter = false, $task, $sought_waterbdy = false)
@@ -170,7 +169,7 @@ class WaterBodyChecklistsAPI
         $i = 0;
         // */
         
-        $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
+        $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n";
         foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
 
             // /* breakdown when caching
@@ -188,15 +187,15 @@ class WaterBodyChecklistsAPI
             // */
 
             if($ret = self::evaluate_waterbody_file($file)) {
-                $country_name_lower = $ret['lower_case'];
-                $this->country_name = $ret['orig'];
+                $waterbody_name_lower = $ret['lower_case'];
+                $this->waterbody_name = $ret['orig'];
 
                 /* manual filter, dev only
-                if(in_array($this->country_name, array('Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue; //'United States'
+                if(in_array($this->waterbody_name, array('Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue; //'United States'
                 */
 
                 if($sought_waterbdy) {
-                    if(!in_array($this->country_name, array($sought_waterbdy))) continue;
+                    if(!in_array($this->waterbody_name, array($sought_waterbdy))) continue;
                 }
 
                 // /*
@@ -225,11 +224,11 @@ class WaterBodyChecklistsAPI
             // */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
-            if(substr($country_name_lower,0,4) == "the ")                                               $country_name_lower = str_ireplace("the ", "", $country_name_lower); //The Bahamas => SC_bahamas.tar.gz
-            elseif(strtolower($this->country_name) == strtolower("Democratic Republic of the Congo"))   $country_name_lower = "congo";
-            elseif(strtolower($this->country_name) == strtolower("Republic of the Congo"))              $country_name_lower = "repubcongo";
+            if(substr($waterbody_name_lower,0,4) == "the ")                                               $waterbody_name_lower = str_ireplace("the ", "", $waterbody_name_lower); //The Bahamas => SC_bahamas.tar.gz
+            elseif(strtolower($this->waterbody_name) == strtolower("Democratic Republic of the Congo"))   $waterbody_name_lower = "congo";
+            elseif(strtolower($this->waterbody_name) == strtolower("Republic of the Congo"))              $waterbody_name_lower = "repubcongo";
 
-            // $folder = "SC_".$country_name_lower; //obsolete
+            // $folder = "SC_".$waterbody_name_lower; //obsolete
             $folder = $dwca_filename;            //latest
 
             // /* main operation | uncomment in real operation
@@ -273,9 +272,14 @@ class WaterBodyChecklistsAPI
                 $tmp = explode("\t", $row);
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
-                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
+                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
                 // ---------------------------------------start
                 if($task == "divide_into_waterbody_files") {
+                    /*Array(
+                        [specieskey] => 1000607
+                        [COUNT(specieskey)] => 2
+                        [waterbody] => Pardo
+                    )*/
                     self::save_to_different_waterbody_files($rec);
                 }
                 // ---------------------------------------end
@@ -322,22 +326,34 @@ class WaterBodyChecklistsAPI
 }
     private function save_to_different_waterbody_files($rec)
     {   /*Array(
-            [specieskey] => 2508277
-            [countrycode] => FR
+            [specieskey] => 1000607
+            [COUNT(specieskey)] => 2
+            [waterbody] => Pardo
         )*/
-        $country_code = $rec['countrycode'];
-        $file = $this->country_path.'/'.$country_code.'.tsv';
-        if(!isset($this->country['encountered'][$country_code])) {
-            $this->country['encountered'][$country_code] = '';
-            $f = Functions::file_open($file, "w");
-            $headers = array_keys($rec);
-            $headers = self::use_label_SampleSize_forCount($headers);
-            fwrite($f, implode("\t", $headers)."\n");
-            fclose($f);
-        }
-        $f = Functions::file_open($file, "a");
-        fwrite($f, implode("\t", $rec)."\n");
-        fclose($f);
+        $waterbodies = explode(",", $rec['waterbody']);
+        $waterbodies = array_map('trim', $waterbodies);
+        foreach($waterbodies as $waterbody) {
+            if(!in_array($waterbody, $this->AnneT_water_bodies)) {
+                $this->debug['waterbody not in AnneT'][$waterbody] = '';
+                continue;
+            }
+            // print_r($rec);
+            $waterbody_code = str_replace(" ", "_", strtolower($waterbody));
+            $file = $this->waterbody_path.'/'.$waterbody_code.'.tsv';
+            if(!isset($this->waterbody['encountered'][$waterbody_code])) {
+                $this->waterbody['encountered'][$waterbody_code] = '';
+                $f = Functions::file_open($file, "w");
+                $headers = array_keys($rec);
+                $headers = self::use_label_SampleSize_forCount($headers);
+                fwrite($f, implode("\t", $headers)."\n");
+                fclose($f);
+            }
+            $f = Functions::file_open($file, "a");
+            fwrite($f, implode("\t", $rec)."\n");
+            fclose($f);    
+        } //foreach()
+
+        // exit;
     }
     private function parse_tsv_file_caching($file, $counter = false)
     {   echo "\nReading file: [$file]\n";
@@ -410,7 +426,7 @@ class WaterBodyChecklistsAPI
         return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/WaterBody_checklists/0036064-241126133413365.csv";
         */
     }
-    
+
     private function initialize_waterbodies_from_csv()
     {
         $final = array();
@@ -441,10 +457,10 @@ class WaterBodyChecklistsAPI
     private function get_waterbody_name_from_file($file) //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/WaterBody_checklists/waterbodies/AD.tsv"
     {
         $abbrev = pathinfo($file, PATHINFO_FILENAME); //e.g. "PH"
-        if($country_name = @$this->country_code_name_info[$abbrev]) {
-            $lower = strtolower(str_replace(" ", "", $country_name));
-            echo "\nCountry: [$abbrev] [$country_name] [$lower]\n";
-            return array('lower_case' => $lower, 'orig' => $country_name, 'abbrev' => $abbrev);
+        if($waterbody_name = @$this->country_code_name_info[$abbrev]) {
+            $lower = strtolower(str_replace(" ", "", $waterbody_name));
+            echo "\nCountry: [$abbrev] [$waterbody_name] [$lower]\n";
+            return array('lower_case' => $lower, 'orig' => $waterbody_name, 'abbrev' => $abbrev);
         }
         echo("\nCountry abbrev. not found [$abbrev]\n");
         $this->debug['Country abbrev. not found'][$abbrev] = '';
@@ -476,8 +492,8 @@ class WaterBodyChecklistsAPI
 
         $mType = 'http://eol.org/schema/terms/Present';
 
-        if($mValue = self::get_waterbody_uri($this->country_name)) {
-            $save['measurementRemarks'] = $this->country_name;
+        if($mValue = self::get_waterbody_uri($this->waterbody_name)) {
+            $save['measurementRemarks'] = $this->waterbody_name;
             $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
             // if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
             $ret = $this->func->add_string_types($save, $mValue, $mType, "true");
@@ -520,35 +536,24 @@ class WaterBodyChecklistsAPI
             $this->archive_builder->write_object_to_file($m2);
         }
     }
-    private function get_waterbody_uri($country)
+    private function get_waterbody_uri($waterbody)
     {   //Antigua and Barbuda; what is saved in EOL terms file is: "Antigua And Barbuda"
-        $country = str_replace(" and ", " And ", $country);
-        $country = str_replace(" of ", " Of ", $country);
-        $country = str_replace(" the ", " The ", $country);
+        $waterbody = str_replace(" and ", " And ", $waterbody);
+        $waterbody = str_replace(" of ", " Of ", $waterbody);
+        $waterbody = str_replace(" the ", " The ", $waterbody);
 
         // /* manual mapping
-        if($country == 'Bonaire, Saint Eustatius, And Saba') $country = 'Bonaire, Saint Eustatius And Saba';
-        if($country == 'Cocos Islands') $country = 'Cocos [Keeling] Islands';
-        if($country == 'Federated States Of Micronesia') $country = 'Micronesia';
-        if($country == 'South Georgia And The South Sandwich Islands') $country = 'South Georgia And South Sandwich Islands';
-        if($country == 'Guinea Bissau') $country = 'Guinea-Bissau';
-        if($country == 'Bailiwick Of Jersey') return 'http://www.geonames.org/3042142';
-        if($country == 'Mariana Islands') $country = 'Northern Mariana Islands'; //uri: http://www.geonames.org/4041468
-        if($country == 'Saint-Pierre et Miquelon') $country = 'Saint-Pierre Et Miquelon';
-        if($country == 'Saint Helena Ascension And Tristan da Cunha') $country = 'Saint Helena'; //'http://www.geonames.org/3370751';
-        if($country == 'Territory Of The French Southern And Antarctic Lands') $country = 'French Southern Territories';
-        if($country == 'Timor-Leste') $country = 'East Timor';
-        if($country == 'US Virgin Islands') $country = 'U.S. Virgin Islands';
-        if($country == 'Wallis et Futuna') $country = 'Wallis Et Futuna Islands';
-        if($country == 'xxx') $country = 'yyy';
-        if($country == 'xxx') $country = 'yyy';
+        if($waterbody == 'Cocos Islands') $waterbody = 'Cocos [Keeling] Islands';
+        if($waterbody == 'Federated States Of Micronesia') $waterbody = 'Micronesia';
+        if($waterbody == 'xxx') $waterbody = 'yyy';
+        if($waterbody == 'xxx') $waterbody = 'yyy';
         // */
 
-        if($uris = @$this->value_uris[$country]) {
+        if($uris = @$this->value_uris[$waterbody]) {
             if(count($uris) == 1) return $uris[0];
             else {
                 foreach($uris as $uri) {                    
-                    if(stripos($uri, "geonames.org") !== false) return $uri; //string is found
+                    if(stripos($uri, "marineregions.org") !== false) return $uri; //string is found
                 }
                 return $uris[0];
             }
@@ -557,42 +562,34 @@ class WaterBodyChecklistsAPI
             /*
             [No URI for country] => Array(
                     [The Gambia] => 
-                    [Territory Of Heard Island And McDonald Islands] => Territory Of Heard Island And Mcdonald Islands
                     [The Netherlands] => 
-
-
-                    */
+            */
             // /*
-            switch ($country) { //put here customized mapping
-                // case "Saint Barthélemy":                    return "http://www.geonames.org/3578475";
-                case "Republic Of The Congo":               return "https://www.geonames.org/2260494";
+            switch ($waterbody) { //put here customized mapping
+                case "Republic Of The Congo":                          return "https://www.geonames.org/2260494";
                 case "Territory Of Heard Island And McDonald Islands": return "http://www.geonames.org/1547314";
 
                 /* copied template
                 name: Bonaire, Saint Eustatius And Saba
                 type: value
-                uri: http://www.geonames.org/7626844             
-                
-                name: Saint Barthelemy
-                type: value
-                uri: http://www.geonames.org/3578475                
+                uri: http://www.geonames.org/7626844                             
                 */
             }
             // */
         }
 
         // /* next iteration e.g. "The Bahamas"
-        if(substr($country, 0, 4) == 'The ') {
-            $country = trim(substr($country, 3, strlen($country)));
-            // echo "\n----------------------------try again ($country)\n";
-            if($uri = self::get_waterbody_uri($country)) return $uri;
+        if(substr($waterbody, 0, 4) == 'The ') {
+            $waterbody = trim(substr($waterbody, 3, strlen($waterbody)));
+            // echo "\n----------------------------try again ($waterbody)\n";
+            if($uri = self::get_waterbody_uri($waterbody)) return $uri;
         }
         // */
 
 
         // print_r($this->values_uri); //debug only
-        echo ("\nNo URI for [$country]"); //print_r($this->value_uris); print_r($this->value_uris[$country]);  exit("\nstop munax\n");
-        $this->debug['No URI for country'][$country] = '';
+        echo ("\nNo URI for [$waterbody]"); //print_r($this->value_uris); print_r($this->value_uris[$waterbody]);  exit("\nstop munax\n");
+        $this->debug['No URI for country'][$waterbody] = '';
         return false;
     }
     private function assemble_terms_yml()
