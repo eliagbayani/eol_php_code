@@ -34,7 +34,7 @@ class WaterBodyChecklistsAPI
         $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
-        $this->AnneT_water_bodies = array("Kattegat", "Skagerrak", "Solomon Sea", "Chukchi Sea", "Red Sea", "Molukka Sea", "Halmahera Sea", "Timor Sea", "Bali Sea", "Davis Strait", "Hudson Strait", "Alboran Sea", "Labrador Sea", "Greenland Sea", "Beaufort Sea", "Celtic Sea", "Singapore Strait", "Kara Sea", "Sulu Sea", "Flores Sea", "North Atlantic", "Java Sea", "Mozambique Channel", "Tasman Sea", "Hudson Bay", "Bering Sea", "Laccadive Sea", "Banda Sea", "Norwegian Sea", "North Sea", "Arafura Sea", "Ligurian Sea", "Baffin Bay", "Bismarck Sea", "Java Sea", "Ceram Sea", "Tasman Sea", "Arctic Ocean", "North Atlantic", "Mozambique Channel", "Hudson Bay", "Aegean Sea", "Barents Sea", "Northwestern Passages", "Indian Ocean", "Malacca Strait", "Adriatic Sea", "Ionian Sea", "English Channel", "Savu Sea", "Laptev Sea", "Bristol Channel", "South Atlantic", "Balearic Sea", "Celebes Sea", "Coral Sea", "Tyrrhenian Sea", "Yellow Sea", "Lincoln Sea", "White Sea", "Aegean Sea", "Makassar Strait", "Barents Sea", "Black Sea", "Northwestern Passages", "Southern Ocean", "Caribbean Sea", "Gulf of Riga", "Gulf of Bothnia", "Gulf of Finland", "Seto Inland Sea", "Eastern China Sea", "Bay of Bengal", "Gulf of Tomini", "Great Australian Bight", "South China Sea", "Gulf of Oman", "Strait of Gibraltar", "Gulf of Boni", "Gulf of Mexico", "East Siberian Sea", "Gulf of Alaska", "Bay of Biscay", "Sea of Marmara", "Sea of Okhostk", "Gulf of Guinea", "Sea of Azov", "Bay of Fundy", "Sea of Japan", "Gulf of Aden", "Gulf of Thailand", "Gulf of Aqaba", "Gulf of California", "Gulf of Suez", "Gulf of St Lawrence", "Rio de la Plata", "Inner Seas off the West Coast of Scotland");
+        $this->AnneT_water_bodies = array('Kattegat', 'Skagerrak', 'Solomon Sea', 'Chukchi Sea', 'Red Sea', 'Molukka Sea', 'Halmahera Sea', 'Timor Sea', 'Bali Sea', 'Davis Strait', 'Hudson Strait', 'Alboran Sea', 'Labrador Sea', 'Greenland Sea', 'Beaufort Sea', 'Celtic Sea', 'Singapore Strait', 'Kara Sea', 'Sulu Sea', 'Flores Sea', 'North Atlantic', 'Java Sea', 'Mozambique Channel', 'Tasman Sea', 'Hudson Bay', 'Bering Sea', 'Laccadive Sea', 'Banda Sea', 'Norwegian Sea', 'North Sea', 'Arafura Sea', 'Ligurian Sea', 'Baffin Bay', 'Bismarck Sea', 'Ceram Sea', 'Arctic Ocean', 'Aegean Sea', 'Barents Sea', 'Northwestern Passages', 'Indian Ocean', 'Malacca Strait', 'Adriatic Sea', 'Ionian Sea', 'English Channel', 'Savu Sea', 'Laptev Sea', 'Bristol Channel', 'South Atlantic', 'Balearic Sea', 'Celebes Sea', 'Coral Sea', 'Tyrrhenian Sea', 'Yellow Sea', 'Lincoln Sea', 'White Sea', 'Makassar Strait', 'Black Sea', 'Southern Ocean', 'Caribbean Sea', 'Gulf of Riga', 'Gulf of Bothnia', 'Gulf of Finland', 'Seto Inland Sea', 'Eastern China Sea', 'Bay of Bengal', 'Gulf of Tomini', 'Great Australian Bight', 'South China Sea', 'Gulf of Oman', 'Strait of Gibraltar', 'Gulf of Boni', 'Gulf of Mexico', 'East Siberian Sea', 'Gulf of Alaska', 'Bay of Biscay', 'Sea of Marmara', 'Sea of Okhostk', 'Gulf of Guinea', 'Sea of Azov', 'Bay of Fundy', 'Sea of Japan', 'Gulf of Aden', 'Gulf of Thailand', 'Gulf of Aqaba', 'Gulf of California', 'Gulf of Suez', 'Gulf of St Lawrence', 'Rio de la Plata', 'Inner Seas off the West Coast of Scotland');
         $this->waterbdy_map['Palestine, State of'] = "Palestine";
         $this->waterbdy_map['Russian Federation'] = "Russia";
     }
@@ -99,8 +99,21 @@ class WaterBodyChecklistsAPI
         foreach($this->AnneT_water_bodies as $wb) {
             if(!isset($this->debug['waterbody in AnneT'][$wb])) $not_found[$wb] = '';
         }
-        print_r($this->debug['GBIF waterbodies']);
-        print_r($not_found); echo " - AnneT waterbodies not found in GBIF\n"; exit("\nstop muna 3\n");
+        // print_r($this->debug['GBIF waterbodies']); //good debug and if u want to investigate
+        print_r($not_found); echo " - AnneT waterbodies not found in GBIF";
+        echo "\nTotal AnneT waterbodies: [".count($this->AnneT_water_bodies)."]";
+        $diff = count($this->AnneT_water_bodies) - count($not_found);
+        echo "\nTotal TSV generated should be: [".$diff."]\n";
+        /*Array(
+            [Lincoln Sea] => 
+            [Gulf of Riga] => 
+            [Sea of Okhostk] => 
+        )
+        - AnneT waterbodies not found in GBIF */
+        unset($this->debug['GBIF waterbodies']);
+        unset($this->debug['waterbody in AnneT']);
+        unset($this->debug['waterbody not in AnneT']);
+        // exit("\nstop muna 3\n");
     }
     function show_waterbodies_metadata() //utility
     {   $cont = false; //debug only
@@ -355,7 +368,8 @@ class WaterBodyChecklistsAPI
             if($waterbody == 'East-Siberian Sea')           $waterbody = 'East Siberian Sea';
             if($waterbody == 'Gulf of St. Lawrence')        $waterbody = 'Gulf of St Lawrence';
             if($waterbody == 'Gulf of Saint Lawrence')      $waterbody = 'Gulf of St Lawrence';
-            if($waterbody == 'Marmara Sea')                    $waterbody = 'Sea of Marmara';
+            if($waterbody == 'Marmara Sea')                 $waterbody = 'Sea of Marmara';
+            if($waterbody == 'Arabian Sea - Gulf of Aden')  $waterbody = 'Gulf of Aden';
             // */
             $this->debug['GBIF waterbodies'][$waterbody] = '';
             if(!in_array($waterbody, $this->AnneT_water_bodies)) {
