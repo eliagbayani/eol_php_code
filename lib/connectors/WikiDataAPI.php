@@ -608,7 +608,7 @@ class WikiDataAPI extends WikipediaAPI
         // */
         
         foreach(new FileIterator($this->path['wiki_data_json']) as $line_number => $row) {
-            $k++; if(($k % 5000) == 0) echo " A1A2A3 ".number_format($k)." ";
+            $k++; if(($k % 5000) == 0) echo " EEE ".number_format($k)." ";
             $this->k = $k;
             /* debug only, during dev only*
             if($k >= 50000) break;
