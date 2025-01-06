@@ -125,7 +125,7 @@ class WaterBodyChecklistsAPI
         - AnneT waterbodies not found in GBIF */
 
         // print_r($this->debug['waterbody in AnneT']); exit("\nelix 2\n");
-        $f = Functions::file_open($this->destination."waterbodies_main.tsv", "w");
+        $f = Functions::file_open($this->destination."waterbodies_AnneThessen.tsv", "w");
         foreach(array_keys($this->debug['waterbody in AnneT']) as $waterbody) fwrite($f, $waterbody."\n");
         fclose($f);
 
@@ -142,7 +142,7 @@ class WaterBodyChecklistsAPI
         self::initialize();
         $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n"; $i = 0;
         // foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
-        foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
+        foreach(new FileIterator($this->destination.'waterbodies_AnneThessen.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
 
             if($dwca_filename = self::get_dwca_filename($row)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
             else exit("\nTerminated: should not go here 02.\n");
@@ -206,7 +206,7 @@ class WaterBodyChecklistsAPI
         $i = 0;
         // */
 
-        // foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++;
+        // foreach(new FileIterator($this->destination.'waterbodies_AnneThessen.tsv') as $line => $row) { $i++;
         //     if(!$row) continue;
         //     echo "\n$row";
         // }//foreach()
@@ -214,7 +214,7 @@ class WaterBodyChecklistsAPI
         
         // $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n";
         // foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
-        foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
+        foreach(new FileIterator($this->destination.'waterbodies_AnneThessen.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
             /* good debug: if u want to start processing at this record --- works OK
             if($row == 'Inner Seas off the West Coast of Scotland') $this->proceed = true;
             if(!$this->proceed) continue;
