@@ -375,7 +375,7 @@ class WaterBodyChecklistsAPI
             return $save;
         }
         exit("\nSpecies Key not found: [".$rec['specieskey']."]\n");
-}
+    }
     private function save_to_different_waterbody_files($rec)
     {   /*Array(
             [specieskey] => 1000607
