@@ -80,19 +80,19 @@ class WaterBodyChecklistsAPI
             // */
             self::parse_tsv_file($tsv_path, $task);
 
-            /* good debug: investigated: adriatic_sea.tsv AND indian_ocean.tsv
-            echo "\n[2440447][Adriatic Sea]:9 ".$this->save['2440447']['Adriatic Sea']."\n";
-            echo "\n[2440718][Adriatic Sea]:4 ".$this->save['2440718']['Adriatic Sea']."\n";
-            echo "\n[2509716][Adriatic Sea]:15 ".$this->save['2509716']['Adriatic Sea']."\n";
-            echo "\n[2333135][Indian Ocean]:5 ".$this->save['2333135']['Indian Ocean']."\n";
-            echo "\n[2391929][Indian Ocean]:11 ".$this->save['2391929']['Indian Ocean']."\n";
-            echo "\n[2391811][Indian Ocean]:2 ".$this->save['2391811']['Indian Ocean']."\n";
-            echo "\n[2392074][Indian Ocean]:2 ".$this->save['2392074']['Indian Ocean']."\n"; exit;
-            */
-
+            // /* good debug: investigated: adriatic_sea.tsv AND indian_ocean.tsv
+            echo "\n[2440447][Adriatic Sea]:9 ".$this->save['Adriatic Sea']['2440447']."\n";
+            echo "\n[2440718][Adriatic Sea]:4 ".$this->save['Adriatic Sea']['2440718']."\n";
+            echo "\n[2509716][Adriatic Sea]:15 ".$this->save['Adriatic Sea']['2509716']."\n";
+            echo "\n[2333135][Indian Ocean]:5 ".$this->save['Indian Ocean']['2333135']."\n";
+            echo "\n[2391929][Indian Ocean]:11 ".$this->save['Indian Ocean']['2391929']."\n";
+            echo "\n[2391811][Indian Ocean]:2 ".$this->save['Indian Ocean']['2391811']."\n";
+            echo "\n[2392074][Indian Ocean]:2 ".$this->save['Indian Ocean']['2392074']."\n"; //exit;
+            // */
             // /* utility: check what waterbodies in AnneT that were not found in GBIF
             self::compare_waterbodies();
             // */
+            self::write_waterbody_tsv_files();
             exit("\nstop 5\n");
         }
         elseif($task == 'generate_waterbody_checklists')  self::create_individual_waterbody_checklist_resource($counter, $task, $sought_waterbdy);
@@ -337,7 +337,9 @@ class WaterBodyChecklistsAPI
                         [COUNT(specieskey)] => 2
                         [waterbody] => Pardo
                     )*/
+                    self::save_to_different_waterbody_files_v1($rec); //for stats only
                     self::save_to_different_waterbody_files($rec);
+
                 }
                 // ---------------------------------------end
                 if($task == "process_waterbody_file") { print_r($rec); //exit("\nelix 1\n");
@@ -364,7 +366,7 @@ class WaterBodyChecklistsAPI
             if(!in_array($species_info['taxonomicStatus'], array('doubtful'))) {
                 $taxonID = self::write_taxon($species_info);
                 $species_info['SampleSize'] = $rec['SampleSize'];
-                $species_info['measurementRemarks'] = $rec['remark'];
+                $species_info['measurementRemarks'] = $rec['waterbody']; //$rec['remark'];
                 if(@$rec['waterbody']) self::write_traits($species_info, $taxonID);    
             }
         }
@@ -400,7 +402,37 @@ class WaterBodyChecklistsAPI
         foreach($waterbodies as $waterbody) {
             $specieskey = $rec['specieskey'];
             $count = $rec['COUNT(specieskey)'];
-            @$this->save[$specieskey][$waterbody] += $count;
+            $waterbody = self::massage_waterbody($waterbody);
+            @$this->save[$waterbody][$specieskey] += $count;
+        }
+    }
+    private function write_waterbody_tsv_files()
+    {
+        $exclude = Array('Lincoln Sea', 'Gulf of Riga', 'Sea of Okhostk');
+        foreach($this->AnneT_water_bodies as $waterbody) {
+            if(in_array($waterbody, $exclude)) continue;
+            foreach($this->save[$waterbody] as $specieskey => $count) { // echo "\n[$waterbody] [$specieskey] [$count]";
+                // /* start writing OK
+                $waterbody_code = str_replace(" ", "_", strtolower($waterbody));
+                $file = $this->waterbody_path.'/'.$waterbody_code.'.tsv';
+                $rec = array();
+                $rec['specieskey'] = $specieskey;
+                $rec['SampleSize'] = $count;
+                $rec['waterbody'] = $waterbody;
+                if(!isset($this->waterbody['encountered'][$waterbody_code])) {
+                    $this->waterbody['encountered'][$waterbody_code] = '';
+                    $f = Functions::file_open($file, "w");
+                    $headers = array_keys($rec);
+                    $headers = self::use_label_SampleSize_forCount($headers);
+                    fwrite($f, implode("\t", $headers)."\n");
+                    fclose($f);
+                }
+                $f = Functions::file_open($file, "a");
+                fwrite($f, implode("\t", $rec)."\n");
+                fclose($f);
+                // */
+            }
+            // break; //dev only | process just 1 waterbody
         }
     }
     private function save_to_different_waterbody_files_v1($rec)
@@ -414,15 +446,7 @@ class WaterBodyChecklistsAPI
         $waterbodies = array_map('trim', $waterbodies);
         foreach($waterbodies as $waterbody) {
             // /* massage
-            $waterbody = str_replace(' Of ', ' of ', $waterbody);
-            if($waterbody == 'Azov Sea')                    $waterbody = 'Sea of Azov';
-            if($waterbody == 'The Northwestern Passages')   $waterbody = 'Northwestern Passages';
-            if($waterbody == 'Northwest Passages')          $waterbody = 'Northwestern Passages';
-            if($waterbody == 'East-Siberian Sea')           $waterbody = 'East Siberian Sea';
-            if($waterbody == 'Gulf of St. Lawrence')        $waterbody = 'Gulf of St Lawrence';
-            if($waterbody == 'Gulf of Saint Lawrence')      $waterbody = 'Gulf of St Lawrence';
-            if($waterbody == 'Marmara Sea')                 $waterbody = 'Sea of Marmara';
-            if($waterbody == 'Arabian Sea - Gulf of Aden')  $waterbody = 'Gulf of Aden';
+            $waterbody = self::massage_waterbody($waterbody);
             // */
             $this->debug['GBIF waterbodies'][$waterbody] = '';
             if(!in_array($waterbody, $this->AnneT_water_bodies)) {
@@ -431,6 +455,7 @@ class WaterBodyChecklistsAPI
             }
             else $this->debug['waterbody in AnneT'][$waterbody] = '';
             // print_r($rec);
+            /* start writing OK
             $waterbody_code = str_replace(" ", "_", strtolower($waterbody));
             $file = $this->waterbody_path.'/'.$waterbody_code.'.tsv';
             $rec['remark'] = $orig;
@@ -445,9 +470,22 @@ class WaterBodyChecklistsAPI
             }
             $f = Functions::file_open($file, "a");
             fwrite($f, implode("\t", $rec)."\n");
-            // print_r($rec); exit;
-            fclose($f);    
+            fclose($f);
+            */
         } //foreach()
+    }
+    private function massage_waterbody($waterbody)
+    {
+        $waterbody = str_replace(' Of ', ' of ', $waterbody);
+        if($waterbody == 'Azov Sea')                    $waterbody = 'Sea of Azov';
+        if($waterbody == 'The Northwestern Passages')   $waterbody = 'Northwestern Passages';
+        if($waterbody == 'Northwest Passages')          $waterbody = 'Northwestern Passages';
+        if($waterbody == 'East-Siberian Sea')           $waterbody = 'East Siberian Sea';
+        if($waterbody == 'Gulf of St. Lawrence')        $waterbody = 'Gulf of St Lawrence';
+        if($waterbody == 'Gulf of Saint Lawrence')      $waterbody = 'Gulf of St Lawrence';
+        if($waterbody == 'Marmara Sea')                 $waterbody = 'Sea of Marmara';
+        if($waterbody == 'Arabian Sea - Gulf of Aden')  $waterbody = 'Gulf of Aden';
+        return $waterbody;
     }
     private function parse_tsv_file_caching($file, $counter = false)
     {   echo "\nReading file: [$file]\n";
@@ -520,7 +558,7 @@ class WaterBodyChecklistsAPI
         return "/Volumes/AKiTiO4/other_files/GBIF_occurrence/WaterBody_checklists/0036064-241126133413365.csv";
         */
     }
-
+    /* not applicable
     private function initialize_waterbodies_from_csv()
     {
         $final = array();
@@ -537,17 +575,17 @@ class WaterBodyChecklistsAPI
                     $rec = array(); $k = 0;
                     foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                     $rec = array_map('trim', $rec); //print_r($rec); exit("\nstopx\n");
-                    /*Array(
-                        [Name] => Afghanistan
-                        [Code] => AF
-                    )*/
+                    // Array(
+                    //     [Name] => Afghanistan
+                    //     [Code] => AF
+                    // )
                     $final[$rec['Code']] = str_replace('"', '', $rec['Name']);
                 }    
             } //end foreach()
             unlink($filename);
         }
         return $final;
-    }
+    }*/
     private function get_waterbody_name_from_file($file) //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/WaterBody_checklists/waterbodies/AD.tsv"
     {
         $abbrev = pathinfo($file, PATHINFO_FILENAME); //e.g. "PH"
