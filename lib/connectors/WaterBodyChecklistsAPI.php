@@ -141,41 +141,29 @@ class WaterBodyChecklistsAPI
 
         self::initialize();
         $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n"; $i = 0;
-        foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
-        
-            if($ret = self::evaluate_waterbody_file($file)) { $i++;
-                print_r($ret);
-                /*Array(
-                    [lower_case] => andorra
-                    [orig] => Andorra
-                    [abbrev] => AD
-                )*/
+        // foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
+        foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
 
-                if($ret['orig'] == 'United States') $cont = true; //debug only
+            if($dwca_filename = self::get_dwca_filename($row)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
+            else exit("\nTerminated: should not go here 02.\n");
 
-                // if($cont) {
-                    if($val = $ret['orig']) {
-                        if($val == 'United States') $dwca_filename = 'SC_unitedstates';
-                        else {
-                            if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra.tar.gz
-                            else exit("\nTerminated: should not go here 01.\n");
-                        }
-                        $ret['dwca'] = $dwca_filename;
-                    }    
-                // }
-                if(!file_exists($this->report_1)) {
-                    $f = Functions::file_open($this->report_1, "w");
-                    fwrite($f, implode("\t", array_keys($ret))."\n");
-                }
-                else {
-                    $f = Functions::file_open($this->report_1, "a");
-                    fwrite($f, implode("\t", $ret)."\n");    
-                }
+            $ret = array();
+            $ret['orig'] = $row;
+            $ret['dwca'] = $dwca_filename;
 
-                $f2 = Functions::file_open($this->report_2, "a");
-                fwrite($f2, "php fill_up_undefined_parents_real_GBIFChecklists.php _ '{\"resource_id\": \"$dwca_filename\", \"source_dwca\": \"$dwca_filename\", \"resource\": \"fillup_missing_parents_GBIFChecklists\"}'"."\n");
+            if(!file_exists($this->report_1)) {
+                $f = Functions::file_open($this->report_1, "w");
+                fwrite($f, implode("\t", array_keys($ret))."\n");
+                fwrite($f, implode("\t", $ret)."\n");    
             }
-            else continue;
+            else {
+                $f = Functions::file_open($this->report_1, "a");
+                fwrite($f, implode("\t", $ret)."\n");    
+            }
+
+            $f2 = Functions::file_open($this->report_2, "a");
+            fwrite($f2, "php fill_up_undefined_parents_real_GBIFChecklists.php _ '{\"resource_id\": \"$dwca_filename\", \"source_dwca\": \"$dwca_filename\", \"resource\": \"fillup_missing_parents_GBIFChecklists\"}'"."\n");
+
             // break; //debug only | process just 1 record
             // if($i > 5) break; //debug only
         } //end foreach()
