@@ -342,7 +342,7 @@ class WaterBodyChecklistsAPI
 
                 }
                 // ---------------------------------------end
-                if($task == "process_waterbody_file") { print_r($rec); //exit("\nelix 1\n");
+                if($task == "process_waterbody_file") { //print_r($rec); //exit("\nelix 1\n");
                     self::process_waterbody_file($rec);
                     // break; //debug only | process just 1 species
                 }
