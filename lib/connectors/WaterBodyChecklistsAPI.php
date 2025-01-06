@@ -79,9 +79,21 @@ class WaterBodyChecklistsAPI
             if(!is_dir($this->waterbody_path)) mkdir($this->waterbody_path);
             // */
             self::parse_tsv_file($tsv_path, $task);
+
+            /* good debug: investigated: adriatic_sea.tsv AND indian_ocean.tsv
+            echo "\n[2440447][Adriatic Sea]:9 ".$this->save['2440447']['Adriatic Sea']."\n";
+            echo "\n[2440718][Adriatic Sea]:4 ".$this->save['2440718']['Adriatic Sea']."\n";
+            echo "\n[2509716][Adriatic Sea]:15 ".$this->save['2509716']['Adriatic Sea']."\n";
+            echo "\n[2333135][Indian Ocean]:5 ".$this->save['2333135']['Indian Ocean']."\n";
+            echo "\n[2391929][Indian Ocean]:11 ".$this->save['2391929']['Indian Ocean']."\n";
+            echo "\n[2391811][Indian Ocean]:2 ".$this->save['2391811']['Indian Ocean']."\n";
+            echo "\n[2392074][Indian Ocean]:2 ".$this->save['2392074']['Indian Ocean']."\n"; exit;
+            */
+
             // /* utility: check what waterbodies in AnneT that were not found in GBIF
             self::compare_waterbodies();
             // */
+            exit("\nstop 5\n");
         }
         elseif($task == 'generate_waterbody_checklists')  self::create_individual_waterbody_checklist_resource($counter, $task, $sought_waterbdy);
         elseif($task == 'major_deletion')                 self::create_individual_waterbody_checklist_resource($counter, $task);
@@ -377,6 +389,21 @@ class WaterBodyChecklistsAPI
         exit("\nSpecies Key not found: [".$rec['specieskey']."]\n");
     }
     private function save_to_different_waterbody_files($rec)
+    {   /*Array(
+            [specieskey] => 1000607
+            [COUNT(specieskey)] => 2
+            [waterbody] => Pardo, sssyy of sss, xxx, sss of yyy
+        )*/
+        $orig = $rec['waterbody'];
+        $waterbodies = explode(",", $rec['waterbody']);
+        $waterbodies = array_map('trim', $waterbodies);
+        foreach($waterbodies as $waterbody) {
+            $specieskey = $rec['specieskey'];
+            $count = $rec['COUNT(specieskey)'];
+            @$this->save[$specieskey][$waterbody] += $count;
+        }
+    }
+    private function save_to_different_waterbody_files_v1($rec)
     {   /*Array(
             [specieskey] => 1000607
             [COUNT(specieskey)] => 2
