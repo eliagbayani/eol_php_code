@@ -276,10 +276,10 @@ class WaterBodyChecklistsAPI
             // $folder = "SC_".$waterbody_name_lower; //obsolete
             $folder = $dwca_filename;            //latest
 
-            // /* main operation | uncomment in real operation
+            /* main operation | uncomment in real operation
             if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
             else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
-            // */
+            */
 
             if(!$folder) exit("\nfolder not defined [$folder]\n");
             self::proc_waterbody($folder, $file);
@@ -328,7 +328,7 @@ class WaterBodyChecklistsAPI
                     self::save_to_different_waterbody_files($rec);
                 }
                 // ---------------------------------------end
-                if($task == "process_waterbody_file") { //print_r($rec); exit("\nelix 1\n");
+                if($task == "process_waterbody_file") { print_r($rec); //exit("\nelix 1\n");
                     self::process_waterbody_file($rec);
                     // break; //debug only | process just 1 species
                 }
@@ -341,12 +341,19 @@ class WaterBodyChecklistsAPI
             [specieskey] => 1710962
             [SampleSize] => 16
             [countrycode] => AD
+        )
+        Array(
+            [specieskey] => 5962668
+            [SampleSize] => 41
+            [waterbody] => Adriatic Sea
+            [remark] => Adriatic Sea
         )*/
         if($species_info = self::assemble_species($rec)) { //print_r($species_info); //exit;
             if(!in_array($species_info['taxonomicStatus'], array('doubtful'))) {
                 $taxonID = self::write_taxon($species_info);
                 $species_info['SampleSize'] = $rec['SampleSize'];
-                if(@$rec['countrycode']) self::write_traits($species_info, $taxonID);    
+                $species_info['measurementRemarks'] = $rec['remark'];
+                if(@$rec['waterbody']) self::write_traits($species_info, $taxonID);    
             }
         }
     }
@@ -414,8 +421,6 @@ class WaterBodyChecklistsAPI
             // print_r($rec); exit;
             fclose($f);    
         } //foreach()
-
-        // exit;
     }
     private function parse_tsv_file_caching($file, $counter = false)
     {   echo "\nReading file: [$file]\n";
@@ -555,7 +560,7 @@ class WaterBodyChecklistsAPI
         $mType = 'http://eol.org/schema/terms/Present';
 
         if($mValue = self::get_waterbody_uri($this->waterbody_name)) {
-            $save['measurementRemarks'] = $this->waterbody_name;
+            $save['measurementRemarks'] = $rek['measurementRemarks'];
             $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
             // if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
             $ret = $this->func->add_string_types($save, $mValue, $mType, "true");
