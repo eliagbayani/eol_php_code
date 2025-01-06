@@ -227,14 +227,10 @@ class WaterBodyChecklistsAPI
         // $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n";
         // foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
         foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
-
-            // /* good debug: if u want to start processing at this record --- works OK
+            /* good debug: if u want to start processing at this record --- works OK
             if($row == 'Inner Seas off the West Coast of Scotland') $this->proceed = true;
             if(!$this->proceed) continue;
-            // */
-
-
-
+            */
 
             $waterbody_name_lower = str_replace(" ", "_", strtolower($row)); //e.g. "adriatic_sea"
             $file = $this->waterbody_path . "/".$waterbody_name_lower.".tsv";
