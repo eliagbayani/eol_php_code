@@ -30,6 +30,14 @@ $fields = json_decode($params['json'], true);
 // $task = @$fields['task'];
 // $sought_waterbdy = @$fields['sought_waterbdy'];
 
+/*
+$resource_id = 'SC_ceramsea';
+$command_line = "tar -czf " . CONTENT_RESOURCE_LOCAL_PATH . $resource_id . ".tar.gz --directory=" . CONTENT_RESOURCE_LOCAL_PATH . $resource_id . " .";
+$output = shell_exec($command_line);
+exit("\n-end utility-\n");
+It seems SC_ceramsea.tar.gz already exists in editors.eol.org all along.
+*/
+
 $what = 'WaterBody_checklists';
 $func = new WaterBodyChecklistsAPI($what);
 $func->start($fields); //main operation

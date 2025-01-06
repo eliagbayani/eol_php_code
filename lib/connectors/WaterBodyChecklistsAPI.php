@@ -37,6 +37,7 @@ class WaterBodyChecklistsAPI
         $this->AnneT_water_bodies = array('Kattegat', 'Skagerrak', 'Solomon Sea', 'Chukchi Sea', 'Red Sea', 'Molukka Sea', 'Halmahera Sea', 'Timor Sea', 'Bali Sea', 'Davis Strait', 'Hudson Strait', 'Alboran Sea', 'Labrador Sea', 'Greenland Sea', 'Beaufort Sea', 'Celtic Sea', 'Singapore Strait', 'Kara Sea', 'Sulu Sea', 'Flores Sea', 'North Atlantic', 'Java Sea', 'Mozambique Channel', 'Tasman Sea', 'Hudson Bay', 'Bering Sea', 'Laccadive Sea', 'Banda Sea', 'Norwegian Sea', 'North Sea', 'Arafura Sea', 'Ligurian Sea', 'Baffin Bay', 'Bismarck Sea', 'Ceram Sea', 'Arctic Ocean', 'Aegean Sea', 'Barents Sea', 'Northwestern Passages', 'Indian Ocean', 'Malacca Strait', 'Adriatic Sea', 'Ionian Sea', 'English Channel', 'Savu Sea', 'Laptev Sea', 'Bristol Channel', 'South Atlantic', 'Balearic Sea', 'Celebes Sea', 'Coral Sea', 'Tyrrhenian Sea', 'Yellow Sea', 'Lincoln Sea', 'White Sea', 'Makassar Strait', 'Black Sea', 'Southern Ocean', 'Caribbean Sea', 'Gulf of Riga', 'Gulf of Bothnia', 'Gulf of Finland', 'Seto Inland Sea', 'Eastern China Sea', 'Bay of Bengal', 'Gulf of Tomini', 'Great Australian Bight', 'South China Sea', 'Gulf of Oman', 'Strait of Gibraltar', 'Gulf of Boni', 'Gulf of Mexico', 'East Siberian Sea', 'Gulf of Alaska', 'Bay of Biscay', 'Sea of Marmara', 'Sea of Okhostk', 'Gulf of Guinea', 'Sea of Azov', 'Bay of Fundy', 'Sea of Japan', 'Gulf of Aden', 'Gulf of Thailand', 'Gulf of Aqaba', 'Gulf of California', 'Gulf of Suez', 'Gulf of St Lawrence', 'Rio de la Plata', 'Inner Seas off the West Coast of Scotland');
         $this->waterbdy_map['Palestine, State of'] = "Palestine";
         $this->waterbdy_map['Russian Federation'] = "Russia";
+        $this->proceed = false;
     }
     private function initialize()
     {
@@ -209,7 +210,10 @@ class WaterBodyChecklistsAPI
         
         // $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n";
         // foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
-        foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++;
+        foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
+            $waterbody_name_lower = str_replace(" ", "_", strtolower($row)); //e.g. "adriatic_sea"
+            $file = $this->waterbody_path . "/".$waterbody_name_lower.".tsv";
+
             // /* breakdown when caching
             if($counter) {
                 $cont = false;
@@ -229,7 +233,7 @@ class WaterBodyChecklistsAPI
                 // $this->waterbody_name = $ret['orig'];
 
                 /* manual filter, dev only
-                if(in_array($this->waterbody_name, array('Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue; //'United States'
+                if(in_array($this->waterbody_name, array('Philippines'))) continue;
                 */
 
                 if($sought_waterbdy) {
@@ -252,14 +256,21 @@ class WaterBodyChecklistsAPI
                 }                
             }
             else continue;
-            exit("\nstop muna\n");
+
+            if(file_exists($file)) echo("\nFile exists: [$file]\n");
+            else exit("\nFile does not exist: [$file]\n");
+
+            // exit("\nstop muna\n"); //dev only
+            // break; //dev only
+            // continue; //dev only
+
             // /* during major file deletion
             if($task == 'major_deletion') continue;
             // */
 
             // /* ----------- initialize country archive ----------- e.g. DwCA "SC_philippines.tar.gz"
-            if(substr($waterbody_name_lower,0,4) == "the ")                                               $waterbody_name_lower = str_ireplace("the ", "", $waterbody_name_lower); //The Bahamas => SC_bahamas.tar.gz
-            elseif(strtolower($this->waterbody_name) == strtolower("Democratic Republic of the Congo"))   $waterbody_name_lower = "congo";
+            // if(substr($waterbody_name_lower,0,4) == "the ")                                               $waterbody_name_lower = str_ireplace("the ", "", $waterbody_name_lower); //The Bahamas => SC_bahamas.tar.gz
+                if(strtolower($this->waterbody_name) == strtolower("Democratic Republic of the Congo"))   $waterbody_name_lower = "congo";
             elseif(strtolower($this->waterbody_name) == strtolower("Republic of the Congo"))              $waterbody_name_lower = "repubcongo";
 
             // $folder = "SC_".$waterbody_name_lower; //obsolete
@@ -271,11 +282,11 @@ class WaterBodyChecklistsAPI
             // */
 
             if(!$folder) exit("\nfolder not defined [$folder]\n");
-            self::proc_country($folder, $file);
+            self::proc_waterbody($folder, $file);
             // break; //debug only | process just 1 country
         }
     }
-    private function proc_country($folder, $file)
+    private function proc_waterbody($folder, $file)
     {
         $this->taxon_ids = array(); //very important
         $resource_id = $folder;
@@ -688,7 +699,11 @@ class WaterBodyChecklistsAPI
         */
     }
     private function get_dwca_filename($str)
-    {
+    {   /* good debug: if u want to start processing at this record
+        if($str == 'Solomon Sea') $this->proceed = true;
+        if(!$this->proceed) return true;
+        */
+
         // /* manual adjustment
         if($str == "North Korea") $str = "North Korean";
         // */
@@ -704,16 +719,17 @@ class WaterBodyChecklistsAPI
             if($f1 == $f2 && $f1) {
                 $ext = pathinfo($f1, PATHINFO_EXTENSION);
                 if($ext == 'gz') return str_ireplace(".tar.gz", "", $f1);
-                else { //zip or whatever
-                    exit("\nInvestigate: [$str][$f1] wrong extension [$ext]\n");
+                else { //zip or whatever e.g. Adriatic Sea
+                    // exit("\nInvestigate: [$str][$f1] wrong extension [$ext]\n");
+                    $this->debug['wrong extension'][$str] = '';
+                    // return true; //to be used with $this->proceed
                 }
-
             }
             else {
                 exit("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
         }
-        exit("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+        else exit("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
     }
     private function use_label_SampleSize_forCount($headers)
     {
