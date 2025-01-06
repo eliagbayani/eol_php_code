@@ -142,6 +142,7 @@ class WaterBodyChecklistsAPI
         self::initialize();
         $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n"; $i = 0;
         foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
+        
             if($ret = self::evaluate_waterbody_file($file)) { $i++;
                 print_r($ret);
                 /*Array(
@@ -184,7 +185,9 @@ class WaterBodyChecklistsAPI
     }
 
     private function evaluate_waterbody_file($file)
-    {
+    {   
+        exit("\nnot applicable 1\n");
+        /* not applicable
         $ret = self::get_waterbody_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/WaterBody_checklists/waterbodies/AD.tsv"
         $waterbody_name_lower = $ret['lower_case'];
         $this->waterbody_name = $ret['orig'];
@@ -206,6 +209,7 @@ class WaterBodyChecklistsAPI
         }
         $ret['orig'] = $this->waterbody_name;
         return $ret;
+        */
     }
     private function create_individual_waterbody_checklist_resource($counter = false, $task, $sought_waterbdy = false)
     {
@@ -223,6 +227,15 @@ class WaterBodyChecklistsAPI
         // $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n";
         // foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
         foreach(new FileIterator($this->destination.'waterbodies_main.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
+
+            // /* good debug: if u want to start processing at this record --- works OK
+            if($row == 'Inner Seas off the West Coast of Scotland') $this->proceed = true;
+            if(!$this->proceed) continue;
+            // */
+
+
+
+
             $waterbody_name_lower = str_replace(" ", "_", strtolower($row)); //e.g. "adriatic_sea"
             $file = $this->waterbody_path . "/".$waterbody_name_lower.".tsv";
 
@@ -624,7 +637,7 @@ class WaterBodyChecklistsAPI
 
         $mType = 'http://eol.org/schema/terms/Present';
 
-        if($mValue = self::get_waterbody_uri($this->waterbody_name)) {
+        if($mValue = self::get_waterbody_uri($this->waterbody_name, 1)) {
             $save['measurementRemarks'] = $rek['measurementRemarks'];
             $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
             // if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
@@ -668,16 +681,17 @@ class WaterBodyChecklistsAPI
             $this->archive_builder->write_object_to_file($m2);
         }
     }
-    private function get_waterbody_uri($waterbody)
+    private function get_waterbody_uri($waterbody, $what = 173)
     {   //Antigua and Barbuda; what is saved in EOL terms file is: "Antigua And Barbuda"
         $waterbody = str_replace(" and ", " And ", $waterbody);
         $waterbody = str_replace(" of ", " Of ", $waterbody);
         $waterbody = str_replace(" the ", " The ", $waterbody);
+        $waterbody = str_replace(" off ", " Off ", $waterbody);
+
 
         // /* manual mapping
         if($waterbody == 'Cocos Islands') $waterbody = 'Cocos [Keeling] Islands';
         if($waterbody == 'Federated States Of Micronesia') $waterbody = 'Micronesia';
-        if($waterbody == 'xxx') $waterbody = 'yyy';
         if($waterbody == 'xxx') $waterbody = 'yyy';
         // */
 
@@ -698,8 +712,9 @@ class WaterBodyChecklistsAPI
             */
             // /*
             switch ($waterbody) { //put here customized mapping
-                case "Republic Of The Congo":                          return "https://www.geonames.org/2260494";
-                case "Territory Of Heard Island And McDonald Islands": return "http://www.geonames.org/1547314";
+                case "Gulf Of St Lawrence":     return "http://www.marineregions.org/mrgid/4290";
+                case "Rio de la Plata":         return "http://www.marineregions.org/mrgid/4325";
+                case "Eastern China Sea":       return "http://www.marineregions.org/mrgid/4302";                
 
                 /* copied template
                 name: Bonaire, Saint Eustatius And Saba
@@ -714,14 +729,14 @@ class WaterBodyChecklistsAPI
         if(substr($waterbody, 0, 4) == 'The ') {
             $waterbody = trim(substr($waterbody, 3, strlen($waterbody)));
             // echo "\n----------------------------try again ($waterbody)\n";
-            if($uri = self::get_waterbody_uri($waterbody)) return $uri;
+            if($uri = self::get_waterbody_uri($waterbody, 2)) return $uri;
         }
         // */
 
 
         // print_r($this->values_uri); //debug only
-        echo ("\nNo URI for [$waterbody]"); //print_r($this->value_uris); print_r($this->value_uris[$waterbody]);  exit("\nstop munax\n");
-        $this->debug['No URI for country'][$waterbody] = '';
+        echo ("\nNo URI for [$what] [$waterbody]"); //print_r($this->value_uris); print_r($this->value_uris[$waterbody]);  exit("\nstop munax\n");
+        $this->debug['No URI for country'][$waterbody][$what] = '';
         return false;
     }
     private function assemble_terms_yml()
@@ -769,8 +784,9 @@ class WaterBodyChecklistsAPI
         */
     }
     private function get_dwca_filename($str)
-    {   /* good debug: if u want to start processing at this record
-        if($str == 'Solomon Sea') $this->proceed = true;
+    {   
+        /* good debug: if u want to start processing at this record
+        if($str == 'Malacca Strait') $this->proceed = true;
         if(!$this->proceed) return true;
         */
 
