@@ -39,12 +39,18 @@ class NationalChecklistsAPI
         $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
 
         $this->AnneT_natl_checklists = array("Turkmenistan", "Niue", "Mexico", "Cocos Islands", "Dominica", "Timor-Leste", "Iceland", "Nepal", "Philippines", "Cameroon", "Niger", "Mongolia", "Spain", "Italy", "Egypt", "Kenya", "Uganda", "Barbados", "Oceania", "Honduras", "Palestine", "Laos", "Sweden", "Kiribati", "Croatia", "Cyprus", "Slovenia", "Qatar", "Bulgaria", "Macedonia", "Nicaragua", "Cuba", "Guam", "Grenada", "Iran", "Martinique", "Guinea", "Djibouti", "Curacao", "Kazakhstan", "Eswatini", "China", "Maldives", "Myanmar", "Bahrain", "Guernsey", "Ukraine", "Kuwait", "Bermuda", "Nigeria", "Tokelau", "France", "Panama", "Armenia", "Russia", "Slovakia", "Asia", "Eritrea", "Fiji", "Malaysia", "Andorra", "Togo", "Tunisia", "Anguilla", "Vanuatu", "Georgia", "Vietnam", "Albania", "Zambia", "Europe", "Denmark", "Germany", "Sudan", "Samoa", "Burundi", "Indonesia", "Seychelles", "Ethiopia", "Syria", "Mozambique", "Ghana", "Malta", "Tajikistan", "Pakistan", "Tanzania", "Colombia", "Singapore", "Austria", "Paraguay", "Angola", "Guyana", "Kosovo", "Aruba", "Chile", "Uzbekistan", "Finland", "Hungary", "Poland", "Africa", "Suriname", "Israel", "Morocco", "Palau", "Bhutan", "Liberia", "Somalia", "Cambodia", "Moldova", "Botswana", "Mauritius", "Comoros", "Belgium", "Afghanistan", "Romania", "India", "Kyrgyzstan", "Jordan", "Greece", "Tuvalu", "Australia", "Canada", "Mali", "Gabon", "Norway", "Lesotho", "Mauritania", "Japan", "Uruguay", "Chad", "Ecuador", "Yemen", "Portugal", "Serbia", "Tonga", "Guadeloupe", "Montserrat", "Bangladesh", "Gibraltar", "Thailand", "Lithuania", "Montenegro", "Namibia", "Mayotte", "Azerbaijan", "Taiwan", "Lebanon", "Macau", "Estonia", "Zimbabwe", "Switzerland", "Algeria", "Belarus", "Turkey", "Oman", "Luxembourg", "Rwanda", "Bolivia", "Brunei", "Peru", "Monaco", "Nauru", "Libya", "Benin", "Madagascar", "Senegal", "Belize", "Ireland", "Jamaica", "Tibet", "Brazil", "Liechtenstein", "Argentina", "Iraq", "Haiti", "Greenland", "Réunion", "Latvia", "Guatemala", "Malawi", "Venezuela", "Czech Republic", "Costa Rica", "Solomon Islands", "New Zealand", "South Sudan", "Saudi Arabia", "Bouvet Island", "North Korea", "US Minor Outlying Islands", "South Korea", "Saint Martin", "Christmas Island", "Saint Barthelemy", "French Polynesia", "The Gambia", "Dominican Republic", "North America", "Sri Lanka", "New Caledonia", "Cape Verde", "Guinea Bissau", "The Netherlands", "Marshall Islands", "Sint Maarten", "Saint Lucia", "Republic of the Congo", "Equatorial Guinea", "The Bahamas", "San Marino", "South Africa", "Mariana Islands", "Ivory Coast", "Puerto Rico", "Sierra Leone", "French Guiana", "Cayman Islands", "Falkland Islands", "Norfolk Island", "South America", "United Kingdom", "Hong Kong", "El Salvador", "Vatican City", "Faroe Islands", "United States", "Burkina Faso", "Saint-Pierre et Miquelon", "Antigua and Barbuda", "United Arab Emirates", "Central African Republic", "Isle of Man", "US Virgin Islands", "British Virgin Islands", "Bosnia and Herzegovina", "Papua New Guinea", "Wallis et Futuna", "Bailiwick of Jersey", "Trinidad and Tobago", "Federated States of Micronesia", "São Tomé and Príncipe", "Turks and Caicos Islands", "Saint Kitts and Nevis", "Democratic Republic of the Congo", "Bonaire, Saint Eustatius, and Saba", "Saint Vincent and the Grenadines", "Pitcairn, Henderson, Ducie, and, Oeno Islands", "Territory of Heard Island and McDonald Islands", "South Georgia and the South Sandwich Islands", "Saint Helena Ascension and Tristan da Cunha", "Territory of the French Southern and Antarctic Lands");
+        $this->AnneT_natl_checklists[] = 'Sao Tome and Principe';
+        $this->AnneT_natl_checklists[] = 'São Tomé and Príncipe';
+
         // $this->ctry_map['Pitcairn'] = "Pitcairn, Henderson, Ducie, and, Oeno Islands";
         $this->ctry_map['Palestine, State of'] = "Palestine";
         $this->ctry_map['Russian Federation'] = "Russia";
         $this->ctry_map['Saint Helena, Ascension and Tristan da Cunha'] = "Saint Helena Ascension and Tristan da Cunha";
         // $this->ctry_map['Svalbard and Jan Mayen'] = "yyy";
-        // [Sao Tome and Principe]
+
+        // Sao Tome and Principe	ST
+        // $this->ctry_map['Sao Tome and Principe'] = "São Tomé and Príncipe";
+
         $this->ctry_map['Brunei Darussalam'] = "Brunei";
         $this->ctry_map['Bolivia, Plurinational State of'] = "Bolivia";
         $this->ctry_map['Bonaire, Sint Eustatius and Saba'] = "Bonaire, Saint Eustatius, and Saba";
@@ -83,6 +89,10 @@ class NationalChecklistsAPI
         $this->ctry_map['Viet Nam'] = "Vietnam";
         $this->ctry_map['Wallis and Futuna'] = "Wallis et Futuna";
         // ---------------------
+        // Saint Barthélemy	BL
+        $this->ctry_map['Saint Barthélemy'] = "Saint Barthelemy";
+
+
         /*
         found in waterbody
         $this->ctry_map['SOUTH AMERICA {LakeID}'] = "South America";
@@ -613,9 +623,10 @@ class NationalChecklistsAPI
                     */
             // /*
             switch ($country) { //put here customized mapping
-                // case "Saint Barthélemy":                    return "http://www.geonames.org/3578475";
-                case "Republic Of The Congo":               return "https://www.geonames.org/2260494";
-                case "Territory Of Heard Island And McDonald Islands": return "http://www.geonames.org/1547314";
+                case "Saint Barthélemy":                                return "http://www.geonames.org/3578475";
+                case "Saint Barthelemy":                                return "http://www.geonames.org/3578475";
+                case "Republic Of The Congo":                           return "https://www.geonames.org/2260494";
+                case "Territory Of Heard Island And McDonald Islands":  return "http://www.geonames.org/1547314";
 
                 /* copied template
                 name: Bonaire, Saint Eustatius And Saba
