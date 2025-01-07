@@ -17,6 +17,9 @@ class NationalChecklistsAPI
 
         $this->debug = array();
         $this->bibliographicCitation = "GBIF.org (26 December 2024) GBIF Occurrence Download https://doi.org/10.15468/dl.uf735k";
+            // https://www.gbif.org/occurrence/download/0049350-241126133413365
+            // https://api.gbif.org/v1/occurrence/download/0049350-241126133413365
+            
             // "GBIF.org (16 December 2024) GBIF Occurrence Download https://doi.org/10.15468/dl.h62wur"; //"Accessed ".date("d F Y").".";
 
         if(Functions::is_production())  $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
@@ -80,6 +83,11 @@ class NationalChecklistsAPI
         $this->ctry_map['Virgin Islands, British'] = "British Virgin Islands";
         $this->ctry_map['Viet Nam'] = "Vietnam";
         $this->ctry_map['Wallis and Futuna'] = "Wallis et Futuna";
+        // ---------------------
+        /*
+        found in waterbody
+        $this->ctry_map['SOUTH AMERICA {LakeID}'] = "South America";
+        */
     }
     private function initialize()
     {
