@@ -91,6 +91,9 @@ class NationalChecklistsAPI
         // ---------------------
         // Saint Barthélemy	BL
         $this->ctry_map['Saint Barthélemy'] = "Saint Barthelemy";
+        // Côte d'Ivoire	CI
+        $this->ctry_map["Côte d'Ivoire"] = "Ivory Coast";
+
 
 
         /*
@@ -474,7 +477,7 @@ class NationalChecklistsAPI
     {
         $final = array();
         $options = $this->download_options;
-        $options['expire_seconds'] = false;
+        $options['expire_seconds'] = 60*60*24; //1 day
         $options['cache'] = 1;
         if($filename = Functions::save_remote_file_to_local($this->service['country_codes'], $options)) {
             $i = 0;
