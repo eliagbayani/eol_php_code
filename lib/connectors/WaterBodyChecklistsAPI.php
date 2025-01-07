@@ -17,7 +17,7 @@ class WaterBodyChecklistsAPI
 
         $this->debug = array();
         $this->bibliographicCitation = "GBIF.org (5 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.7hzepx"; //todo: get it dynamically
-                                    // "GBIF.org (16 December 2024) GBIF Occurrence Download https://doi.org/10.15468/dl.h62wur"; //"Accessed ".date("d F Y").".";
+            // https://api.gbif.org/v1/occurrence/download/0056704-241126133413365
 
         if(Functions::is_production())  $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
         else                            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
@@ -34,7 +34,10 @@ class WaterBodyChecklistsAPI
         $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
-        $this->AnneT_water_bodies = array('Kattegat', 'Skagerrak', 'Solomon Sea', 'Chukchi Sea', 'Red Sea', 'Molukka Sea', 'Halmahera Sea', 'Timor Sea', 'Bali Sea', 'Davis Strait', 'Hudson Strait', 'Alboran Sea', 'Labrador Sea', 'Greenland Sea', 'Beaufort Sea', 'Celtic Sea', 'Singapore Strait', 'Kara Sea', 'Sulu Sea', 'Flores Sea', 'North Atlantic', 'Java Sea', 'Mozambique Channel', 'Tasman Sea', 'Hudson Bay', 'Bering Sea', 'Laccadive Sea', 'Banda Sea', 'Norwegian Sea', 'North Sea', 'Arafura Sea', 'Ligurian Sea', 'Baffin Bay', 'Bismarck Sea', 'Ceram Sea', 'Arctic Ocean', 'Aegean Sea', 'Barents Sea', 'Northwestern Passages', 'Indian Ocean', 'Malacca Strait', 'Adriatic Sea', 'Ionian Sea', 'English Channel', 'Savu Sea', 'Laptev Sea', 'Bristol Channel', 'South Atlantic', 'Balearic Sea', 'Celebes Sea', 'Coral Sea', 'Tyrrhenian Sea', 'Yellow Sea', 'Lincoln Sea', 'White Sea', 'Makassar Strait', 'Black Sea', 'Southern Ocean', 'Caribbean Sea', 'Gulf of Riga', 'Gulf of Bothnia', 'Gulf of Finland', 'Seto Inland Sea', 'Eastern China Sea', 'Bay of Bengal', 'Gulf of Tomini', 'Great Australian Bight', 'South China Sea', 'Gulf of Oman', 'Strait of Gibraltar', 'Gulf of Boni', 'Gulf of Mexico', 'East Siberian Sea', 'Gulf of Alaska', 'Bay of Biscay', 'Sea of Marmara', 'Sea of Okhostk', 'Gulf of Guinea', 'Sea of Azov', 'Bay of Fundy', 'Sea of Japan', 'Gulf of Aden', 'Gulf of Thailand', 'Gulf of Aqaba', 'Gulf of California', 'Gulf of Suez', 'Gulf of St Lawrence', 'Rio de la Plata', 'Inner Seas off the West Coast of Scotland');
+        $arr1 = array('Kattegat', 'Skagerrak', 'Solomon Sea', 'Chukchi Sea', 'Red Sea', 'Molukka Sea', 'Halmahera Sea', 'Timor Sea', 'Bali Sea', 'Davis Strait', 'Hudson Strait', 'Alboran Sea', 'Labrador Sea', 'Greenland Sea', 'Beaufort Sea', 'Celtic Sea', 'Singapore Strait', 'Kara Sea', 'Sulu Sea', 'Flores Sea', 'North Atlantic', 'Java Sea', 'Mozambique Channel', 'Tasman Sea', 'Hudson Bay', 'Bering Sea', 'Laccadive Sea', 'Banda Sea', 'Norwegian Sea', 'North Sea', 'Arafura Sea', 'Ligurian Sea', 'Baffin Bay', 'Bismarck Sea', 'Ceram Sea', 'Arctic Ocean', 'Aegean Sea', 'Barents Sea', 'Northwestern Passages', 'Indian Ocean', 'Malacca Strait', 'Adriatic Sea', 'Ionian Sea', 'English Channel', 'Savu Sea', 'Laptev Sea', 'Bristol Channel', 'South Atlantic', 'Balearic Sea', 'Celebes Sea', 'Coral Sea', 'Tyrrhenian Sea', 'Yellow Sea', 'Lincoln Sea', 'White Sea', 'Makassar Strait', 'Black Sea', 'Southern Ocean', 'Caribbean Sea', 'Gulf of Riga', 'Gulf of Bothnia', 'Gulf of Finland', 'Seto Inland Sea', 'Eastern China Sea', 'Bay of Bengal', 'Gulf of Tomini', 'Great Australian Bight', 'South China Sea', 'Gulf of Oman', 'Strait of Gibraltar', 'Gulf of Boni', 'Gulf of Mexico', 'East Siberian Sea', 'Gulf of Alaska', 'Bay of Biscay', 'Sea of Marmara', 'Sea of Okhostk', 'Gulf of Guinea', 'Sea of Azov', 'Bay of Fundy', 'Sea of Japan', 'Gulf of Aden', 'Gulf of Thailand', 'Gulf of Aqaba', 'Gulf of California', 'Gulf of Suez', 'Gulf of St Lawrence', 'Rio de la Plata', 'Inner Seas off the West Coast of Scotland');
+        $arr2 = array('South Pacific', 'North Pacific', 'Philippine Sea', 'Persian Gulf', 'Irish Sea', 'Bass Strait', 'Arabian Sea', 'Andaman Sea');
+        $this->AnneT_water_bodies = array_merge($arr1, $arr2);
+
         $this->waterbdy_map['Palestine, State of'] = "Palestine";
         $this->waterbdy_map['Russian Federation'] = "Russia";
         $this->proceed = false;
@@ -285,10 +288,10 @@ class WaterBodyChecklistsAPI
             // $folder = "SC_".$waterbody_name_lower; //obsolete
             $folder = $dwca_filename;            //latest
 
-            /* main operation | uncomment in real operation
+            // /* main operation | uncomment in real operation
             if(!self::is_this_DwCA_old_YN($folder.".tar.gz")) { echo "\nAlready recently generated ($folder)\n"; continue; }
             else                                                echo "\nHas not been generated in 2 months ($folder). Will proceed.\n";
-            */
+            // */
 
             if(!$folder) exit("\nfolder not defined [$folder]\n");
             self::proc_waterbody($folder, $file);
@@ -482,6 +485,11 @@ class WaterBodyChecklistsAPI
         if($waterbody == 'Gulf of Saint Lawrence')      $waterbody = 'Gulf of St Lawrence';
         if($waterbody == 'Marmara Sea')                 $waterbody = 'Sea of Marmara';
         if($waterbody == 'Arabian Sea - Gulf of Aden')  $waterbody = 'Gulf of Aden';
+        // ---------------------------
+        if($waterbody == 'South Pacific Ocean')         $waterbody = 'South Pacific';
+        if($waterbody == 'North Pacific Ocean')         $waterbody = 'North Pacific';
+        if($waterbody == 'Arabian Sea - Gulf of Aden')  $waterbody = 'Arabian Sea';
+
         return $waterbody;
     }
     private function parse_tsv_file_caching($file, $counter = false)
