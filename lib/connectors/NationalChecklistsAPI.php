@@ -94,7 +94,8 @@ class NationalChecklistsAPI
         // Côte d'Ivoire	CI
         $this->ctry_map["Côte d'Ivoire"] = "Ivory Coast";
 
-
+        $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
+        if(!is_dir($tmp)) mkdir($tmp);
 
         /*
         found in waterbody

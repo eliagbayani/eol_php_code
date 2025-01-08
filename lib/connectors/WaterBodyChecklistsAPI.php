@@ -41,6 +41,9 @@ class WaterBodyChecklistsAPI
         $this->waterbdy_map['Palestine, State of'] = "Palestine";
         $this->waterbdy_map['Russian Federation'] = "Russia";
         $this->proceed = false;
+
+        $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
+        if(!is_dir($tmp)) mkdir($tmp);
     }
     private function initialize()
     {
