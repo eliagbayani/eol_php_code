@@ -18,12 +18,16 @@ $download_options = array("timeout" => 172800, 'expire_seconds' => 60*60*24*1); 
 // */
 
 // /* 2. 2nd client
-$dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_philippines.tar.gz";
-$dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_afganistan.tar.gz';
-$resource_id = "nothing here";
+$dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_andorra.tar.gz";
+$dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_unitedarabemirates.tar.gz";
+
+// $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_afganistan.tar.gz';
+// $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_unitedarabemirates.tar.gz';
+// $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_andorra.tar.gz';
+$resource_id = "";
 $params['row_type'] = 'http://rs.tdwg.org/dwc/terms/measurementorfact';
 $params['column'] = 'http://rs.tdwg.org/dwc/terms/measurementValue';
-$download_options = array("timeout" => 172800, 'expire_seconds' => 60*60*24*1); //1 day cache
+$download_options = array("timeout" => 172800, 'expire_seconds' => 0); //60*60*24*1 = 1 day cache
 // 2 new params - for a new feature
 $params['sought_field']       = 'http://rs.tdwg.org/dwc/terms/measurementType';
 $params['sought_field_value'] = 'http://eol.org/schema/terms/Present';

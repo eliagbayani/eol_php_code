@@ -1241,6 +1241,10 @@ class DwCA_Utility
             else $unique[$rec[$column]] = ''; //orig
         }
 
+        if(self::if_dwca_is_national_or_waterbody_checklist($this->dwca_file)) {
+            $unique['taxa total'] = self::count_taxa_in_checklist($tables['http://rs.tdwg.org/dwc/terms/taxon'][0]);
+        }
+
         // /* un-comment in real operation
         // remove temp dir
         recursive_rmdir($temp_dir);
@@ -1250,7 +1254,42 @@ class DwCA_Utility
         // print_r($unique);
         return $unique;
     }
-
+    private function count_taxa_in_checklist($meta)
+    {
+        $i = 0; $final = 0;
+        foreach(new FileIterator($meta->file_uri) as $line => $row) {
+            $i++; if(($i % 200000) == 0) echo "\n".number_format($i);
+            if($meta->ignore_header_lines && $i == 1) continue;
+            if(!$row) continue;
+            $row = Functions::conv_to_utf8($row); //possibly to fix special chars
+            $tmp = explode("\t", $row);
+            $rec = array(); $k = 0;
+            foreach($meta->fields as $field) {
+                if(!$field['term']) continue;
+                $rec[$field['term']] = $tmp[$k];
+                $k++;
+            }
+            // print_r($rec); exit("\nelix 1\n");
+            /*Array(
+                [http://rs.tdwg.org/dwc/terms/taxonID] => 3
+                [http://rs.tdwg.org/dwc/terms/scientificName] => Bacteria
+                [http://rs.tdwg.org/dwc/terms/taxonRank] => kingdom
+                [http://rs.tdwg.org/dwc/terms/scientificNameAuthorship] => 
+                [http://rs.gbif.org/terms/1.0/canonicalName] => Bacteria
+                [http://rs.tdwg.org/ac/terms/furtherInformationURL] => 
+                [http://rs.tdwg.org/dwc/terms/parentNameUsageID] => 
+                [http://rs.tdwg.org/dwc/terms/taxonomicStatus] => 
+            )*/
+            if($rec['http://rs.tdwg.org/ac/terms/furtherInformationURL']) $final++; //only taxa with furtherInformationURL are those with Present info.
+        }
+        return $final;
+    }
+    private function if_dwca_is_national_or_waterbody_checklist($dwca)
+    {
+        $basename = pathinfo($dwca, PATHINFO_BASENAME);
+        if(substr($basename,0,3) == "SC_" || substr($basename,0,2) == "c_") return true;
+        return false;
+    }
     function get_uri_value($raw, $uri_values) //$raw e.g. "Philippines" ---- good func but not yet used, soon...
     {
         if($uri = @$uri_values[$raw]) return $uri;
