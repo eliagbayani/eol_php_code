@@ -266,18 +266,19 @@ class NationalChecklistsAPI
                 if($val = $ret['orig']) {
                     if($val == 'United States') $dwca_filename = 'SC_unitedstates';
                     else {
-                        if($dwca_filename = self::get_dwca_filename($val)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
+                        if($dwca_filename = self::get_dwca_filename($val)) {}
                         else exit("\nTerminated: should not go here 02.\n");
-                        // /* major file deletion
-                        if($task == 'major_deletion') {
-                            $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
-                            if(file_exists($delete_file)) {
-                                if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
-                                else                     echo "\nFile NOT deleted [$delete_file]\n";
-                            }    
-                        }
-                        // */
                     }
+                    echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
+                    // /* ---------- major file deletion
+                    if($task == 'major_deletion') {
+                        $delete_file = CONTENT_RESOURCE_LOCAL_PATH . $dwca_filename . ".tar.gz";
+                        if(file_exists($delete_file)) {
+                            if(unlink($delete_file)) echo "\nFile deleted OK [$delete_file]\n";
+                            else                     echo "\nFile NOT deleted [$delete_file]\n";
+                        }    
+                    }
+                    // ---------- */                    
                 }    
                 // */
             }
@@ -303,6 +304,7 @@ class NationalChecklistsAPI
             if(!$folder) exit("\nfolder not defined [$folder]\n");
             self::proc_country($folder, $file);
             // break; //debug only | process just 1 country
+            if($i >= 3) break; //dev only
         }
     }
     private function proc_country($folder, $file)
