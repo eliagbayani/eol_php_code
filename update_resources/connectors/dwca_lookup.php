@@ -24,6 +24,15 @@ $dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/r
 // $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_afganistan.tar.gz';
 // $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_unitedarabemirates.tar.gz';
 // $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_andorra.tar.gz';
+
+// $dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_southernocean.tar.gz";
+// $dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_southpacific.tar.gz";
+// $dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_caribbeansea.tar.gz";
+
+// $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_southernocean.tar.gz';
+// $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_southpacific.tar.gz';
+// $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_caribbeansea.tar.gz';
+
 $resource_id = "";
 $params['row_type'] = 'http://rs.tdwg.org/dwc/terms/measurementorfact';
 $params['column'] = 'http://rs.tdwg.org/dwc/terms/measurementValue';

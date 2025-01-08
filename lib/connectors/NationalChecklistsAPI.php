@@ -305,7 +305,7 @@ class NationalChecklistsAPI
             if(!$folder) exit("\nfolder not defined [$folder]\n");
             self::proc_country($folder, $file);
             // break; //debug only | process just 1 country
-            if($i >= 3) break; //dev only
+            // if($i >= 3) break; //dev only
         }
     }
     private function proc_country($folder, $file)
