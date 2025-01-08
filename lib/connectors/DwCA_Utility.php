@@ -1215,6 +1215,11 @@ class DwCA_Utility
         $column = $params['column'];
         $meta = $tables[$row_type][0];
 
+        // /* new feature: for country and waterbody checklists
+        $sought_field       = @$params['sought_field'];
+        $sought_field_value = @$params['sought_field_value'];
+        // */
+
         $i = 0;
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
             $i++; if(($i % 200000) == 0) echo "\n".number_format($i);
@@ -1229,7 +1234,11 @@ class DwCA_Utility
                 $k++;
             }
             // print_r($rec); exit;
-            $unique[$rec[$column]] = '';
+
+            if($sought_field && $sought_field_value) { //new feature
+                if($rec[$sought_field] == $sought_field_value) $unique[$rec[$column]] = '';
+            }
+            else $unique[$rec[$column]] = ''; //orig
         }
 
         // /* un-comment in real operation

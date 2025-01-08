@@ -17,6 +17,19 @@ $params['column'] = 'http://rs.tdwg.org/dwc/terms/measurementType';
 $download_options = array("timeout" => 172800, 'expire_seconds' => 60*60*24*1); //1 day cache
 // */
 
+// /* 2. 2nd client
+$dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_philippines.tar.gz";
+$dwca_file = CONTENT_RESOURCE_LOCAL_PATH . 'SC_afganistan.tar.gz';
+$resource_id = "nothing here";
+$params['row_type'] = 'http://rs.tdwg.org/dwc/terms/measurementorfact';
+$params['column'] = 'http://rs.tdwg.org/dwc/terms/measurementValue';
+$download_options = array("timeout" => 172800, 'expire_seconds' => 60*60*24*1); //1 day cache
+// 2 new params - for a new feature
+$params['sought_field']       = 'http://rs.tdwg.org/dwc/terms/measurementType';
+$params['sought_field_value'] = 'http://eol.org/schema/terms/Present';
+// */
+
+
 $func = new DwCA_Utility($resource_id, $dwca_file);
 /* a utility - works OK
 $func->count_records_in_dwca($download_options); //works OK
