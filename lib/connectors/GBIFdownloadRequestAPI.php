@@ -46,7 +46,11 @@ class GBIFdownloadRequestAPI
         if($this->resource_id == 'GBIF_map_harvest') $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF';
         elseif($this->resource_id == 'NMNH_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/NMNH_images';
         elseif($this->resource_id == 'Country_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Country_checklists';
+        
         elseif($this->resource_id == 'WaterBody_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/WaterBody_checklists';
+        elseif($this->resource_id == 'Continent_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Continent_checklists';
+
+
         elseif($this->resource_id == 'iNat_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/iNat_images';
         elseif($this->resource_id == 'Data_coverage')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Data_coverage';
         elseif($this->resource_id == 'GBIF_Netherlands')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_Netherlands';
@@ -117,7 +121,7 @@ class GBIFdownloadRequestAPI
             if(!self::generate_sh_file($taxon_group)) return false;
         }
         */
-        else { //for NMNH_images and the 6 GBIF countries and iNat_images and Data_coverage and Country_checklists WaterBody_checklists
+        else { //for NMNH_images and the 6 GBIF countries and iNat_images and Data_coverage and Country_checklists WaterBody_checklists Continent_checklists
             $taxon_group = $this->resource_id;
             if(!self::generate_sh_file($taxon_group)) return false;
         }
@@ -323,6 +327,7 @@ class GBIFdownloadRequestAPI
         if($this->resource_id == 'Data_coverage')               $format = 'SPECIES_LIST'; //'SPECIESLIST';
         elseif($this->resource_id == 'Country_checklists')      $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'WaterBody_checklists')    $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'Continent_checklists')    $format = 'SQL_TSV_ZIP';
         else                                                    $format = 'DWCA';
 
         $param = Array( 'creator' => GBIF_USERNAME,
@@ -374,8 +379,27 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH')
             */
         }
+        elseif($this->resource_id == 'Continent_checklists') {
+            unset($param['predicate']);
+            $param['sql'] = "SELECT specieskey, COUNT(specieskey), continent
+            FROM occurrence
+            WHERE
+            continent IS NOT NULL
+            AND continent IS NOT NULL
+            AND occurrencestatus = 'PRESENT'
+            AND (
+                basisofrecord = 'HUMAN_OBSERVATION'
+                OR basisofrecord = 'MACHINE_OBSERVATION'
+                OR basisofrecord = 'OCCURRENCE'
+                OR basisofrecord = 'LIVING_SPECIMEN'
+                OR basisofrecord = 'MATERIAL_SAMPLE'
+            )
+            AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
+            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')
+            GROUP BY specieskey, continent";
+        }
         return json_encode($param);
-        /* from GBIF API Downloads: Country_checklists or WaterBody_checklists
+        /* from GBIF API Downloads: Country_checklists or WaterBody_checklists Continent_checklists
             {
                 "sendNotification": true,
                 "notificationAddresses": [
