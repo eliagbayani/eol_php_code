@@ -147,6 +147,10 @@ class WaterBodyChecklistsAPI
             self::generate_report($report_name); //'waterbodies' or 'countries'
             return;
         }
+        elseif($task == 'show_waterbodies_metadata') {
+            self::show_waterbodies_metadata();
+            return;
+        }
 
         self::initialize();
 

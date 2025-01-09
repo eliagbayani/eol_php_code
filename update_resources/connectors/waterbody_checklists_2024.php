@@ -10,6 +10,9 @@ regular operation:
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"major_deletion"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_report", "report_name":"waterbodies"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_report", "report_name":"countries"}'
+
+    php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"show_waterbodies_metadata"}'
+
     OR 
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_waterbody_checklists", "counter":"1"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_waterbody_checklists", "counter":"2"}'
