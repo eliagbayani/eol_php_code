@@ -102,7 +102,7 @@ class WaterBodyChecklistsAPI
                 $f = Functions::file_open($report, "a");
                 fwrite($f, implode("\t", $rek)."\n");    
             }
-            if($i >= 3) break; //debug only
+            // if($i >= 3) break; //debug only
         } //foreach()
         fclose($f);
     }
