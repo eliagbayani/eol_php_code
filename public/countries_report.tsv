@@ -11,7 +11,7 @@ Total Taxa	Trait URI	Country	Abbreviation	DwCA
 76901	http://www.geonames.org/2077456	Australia	AU	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_australia.tar.gz
 1207	http://www.geonames.org/3577279	Aruba	AW	https://editors.eol.org/eol_php_code/applications/content_server/resources/c_AW.tar.gz
 2534	http://www.geonames.org/587116	Azerbaijan	AZ	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_azerbaijan.tar.gz
-4416	http://marineregions.org/mrgid/2136	Bosnia and Herzegovina	BA	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bosniaherzegovina.tar.gz
+4416	http://www.geonames.org/3277605	Bosnia and Herzegovina	BA	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bosniaherzegovina.tar.gz
 1510	http://www.geonames.org/3374084	Barbados	BB	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_barbados.tar.gz
 4045	http://www.geonames.org/1210997	Bangladesh	BD	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bangladesh.tar.gz
 30936	http://www.geonames.org/2802361	Belgium	BE	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_belgium.tar.gz
@@ -135,7 +135,7 @@ Total Taxa	Trait URI	Country	Abbreviation	DwCA
 3219	http://www.geonames.org/2080185	Marshall Islands	MH	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_marshallislands.tar.gz
 4354	http://www.geonames.org/718075	Macedonia	MK	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_macedonia.tar.gz
 2447	http://www.geonames.org/2453866	Mali	ML	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_mali.tar.gz
-5757	http://marineregions.org/mrgid/2219	Myanmar	MM	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_myanmar.tar.gz
+5757	http://www.geonames.org/1327865	Myanmar	MM	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_myanmar.tar.gz
 8168	http://www.geonames.org/2029969	Mongolia	MN	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_mongolia.tar.gz
 1782	http://www.geonames.org/1821275	Macau	MO	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_macau.tar.gz
 1971	http://www.geonames.org/4041468	Mariana Islands	MP	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_mariana.tar.gz
@@ -199,7 +199,7 @@ Total Taxa	Trait URI	Country	Abbreviation	DwCA
 3596	http://www.geonames.org/3585968	El Salvador	SV	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_elsalvador.tar.gz
 1042	http://www.geonames.org/7609695	Sint Maarten	SX	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_sintmaarten.tar.gz
 3785	http://www.geonames.org/163843	Syria	SY	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_syria.tar.gz
-4206	https://www.wikidata.org/entity/Q1050	Eswatini	SZ	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_swaziland.tar.gz
+4206	http://www.geonames.org/934841	Eswatini	SZ	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_swaziland.tar.gz
 983	http://www.geonames.org/3576916	Turks and Caicos Islands	TC	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_turkscaicos.tar.gz
 1887	http://www.geonames.org/2434508	Chad	TD	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_chad.tar.gz
 6544	http://www.geonames.org/1546748	Territory of the French Southern and Antarctic Lands	TF	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_terrfrenchantarc.tar.gz
