@@ -1,87 +1,87 @@
 Total Taxa	Trait URI	Waterbody	DwCA
-4086	http://www.marineregions.org/mrgid/4287	Caribbean Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_caribbeansea.tar.gz
-3218	http://www.marineregions.org/mrgid/1907	Southern Ocean	http://localhost/eol_php_code/applications/content_server/resources/SC_southernocean.tar.gz
-2285	http://www.marineregions.org/mrgid/4289	Bay of Fundy	http://localhost/eol_php_code/applications/content_server/resources/SC_bayoffundy.tar.gz
-1133	http://www.marineregions.org/mrgid/4288	Gulf of Mexico	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofmexico.tar.gz
-237	http://www.marineregions.org/mrgid/4340	Bali Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_balisea.tar.gz
-418	http://www.marineregions.org/mrgid/4256	Beaufort Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_beaufortsea.tar.gz
-2042	http://www.marineregions.org/mrgid/2353	Norwegian Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_norwegiansea.tar.gz
-49	http://www.marineregions.org/mrgid/4312	Gulf of Alaska	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofalaska.tar.gz
-40	http://www.marineregions.org/mrgid/4275	Malacca Strait	http://localhost/eol_php_code/applications/content_server/resources/SC_malaccastrait.tar.gz
-1533	http://www.marineregions.org/mrgid/4247	Barents Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_barentssea.tar.gz
-3872	http://www.marineregions.org/mrgid/1904	Indian Ocean	http://localhost/eol_php_code/applications/content_server/resources/SC_indianocean.tar.gz
-1049	http://www.marineregions.org/mrgid/1906	Arctic Ocean	http://localhost/eol_php_code/applications/content_server/resources/SC_arcticocean.tar.gz
-1476	http://www.marineregions.org/mrgid/2350	North Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_northsea.tar.gz
-370	http://www.marineregions.org/mrgid/4334	Gulf of Thailand	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofthailand.tar.gz
-281	http://www.marineregions.org/mrgid/3319	Black Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_blacksea.tar.gz
-391	http://www.marineregions.org/mrgid/4358	Sulu Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_sulusea.tar.gz
-856	http://www.marineregions.org/mrgid/4264	Red Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_redsea.tar.gz
-453	http://www.marineregions.org/mrgid/4263	Gulf of Aqaba	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofaqaba.tar.gz
-855	http://www.marineregions.org/mrgid/4332	South China Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_southchinasea.tar.gz
-465	http://www.marineregions.org/mrgid/4365	Tasman Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_tasmansea.tar.gz
-127	http://www.marineregions.org/mrgid/3322	Balearic Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_balearicsea.tar.gz
-204	http://www.marineregions.org/mrgid/4314	Gulf of California	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofcalifornia.tar.gz
-387	http://www.marineregions.org/mrgid/4349	Banda Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_bandasea.tar.gz
-920	http://www.marineregions.org/mrgid/4364	Coral Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_coralsea.tar.gz
-167	http://www.marineregions.org/mrgid/1912	North Atlantic	http://localhost/eol_php_code/applications/content_server/resources/SC_northatlantic.tar.gz
-159	http://www.marineregions.org/mrgid/4310	Bering Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_beringsea.tar.gz
-169	http://www.marineregions.org/mrgid/4245	Laptev Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_laptevsea.tar.gz
-1123	http://www.marineregions.org/mrgid/3314	Adriatic Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_adriaticsea.tar.gz
-100	http://www.marineregions.org/mrgid/2351	Celtic Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_celticsea.tar.gz
-12	http://www.marineregions.org/mrgid/4306	Seto Inland Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_setoinlandsea.tar.gz
-13	http://www.marineregions.org/mrgid/4265	Gulf of Aden	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofaden.tar.gz
-444	http://www.marineregions.org/mrgid/4359	Celebes Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_celebessea.tar.gz
-227	http://www.marineregions.org/mrgid/2389	English Channel	http://localhost/eol_php_code/applications/content_server/resources/SC_englishchannel.tar.gz
-223	http://www.marineregions.org/mrgid/4269	Laccadive Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_laccadivesea.tar.gz
-57	http://www.marineregions.org/mrgid/2374	Kattegat	http://localhost/eol_php_code/applications/content_server/resources/SC_kattegat.tar.gz
-10	http://www.marineregions.org/mrgid/4291	Labrador Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_labradorsea.tar.gz
-12	http://marineregions.org/mrgid/4248	White Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_whitesea.tar.gz
-8	http://www.marineregions.org/mrgid/4360	Bismarck Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_bismarcksea.tar.gz
-76	http://www.marineregions.org/mrgid/4353	Halmahera Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_halmaherasea.tar.gz
-58	http://www.marineregions.org/mrgid/3351	Ionian Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_ioniansea.tar.gz
-101	http://www.marineregions.org/mrgid/2379	Skagerrak	http://localhost/eol_php_code/applications/content_server/resources/SC_skagerrak.tar.gz
-43	http://www.marineregions.org/mrgid/3386	Tyrrhenian Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_tyrrheniansea.tar.gz
-169	http://www.marineregions.org/mrgid/4252	Hudson Bay	http://localhost/eol_php_code/applications/content_server/resources/SC_hudsonbay.tar.gz
-173	http://www.marineregions.org/mrgid/4290	Gulf of St Lawrence	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofstlawrence.tar.gz
-113	http://www.marineregions.org/mrgid/4341	Flores Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_floressea.tar.gz
-58	http://www.marineregions.org/mrgid/4344	Timor Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_timorsea.tar.gz
-14	http://www.marineregions.org/mrgid/4250	Davis Strait	http://localhost/eol_php_code/applications/content_server/resources/SC_davisstrait.tar.gz
-250	http://www.marineregions.org/mrgid/4261	Mozambique Channel	http://localhost/eol_php_code/applications/content_server/resources/SC_mozambiquechannel.tar.gz
-12	http://www.marineregions.org/mrgid/4347	Arafura Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_arafurasea.tar.gz
-118	http://www.marineregions.org/mrgid/4267	Gulf of Oman	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofoman.tar.gz
-110	http://www.marineregions.org/mrgid/4253	Baffin Bay	http://localhost/eol_php_code/applications/content_server/resources/SC_baffinbay.tar.gz
-66	http://www.marineregions.org/mrgid/4343	Savu Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_savusea.tar.gz
-34	http://www.marineregions.org/mrgid/4257	Chukchi Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_chukchisea.tar.gz
-18	http://www.marineregions.org/mrgid/3141	Bristol Channel	http://localhost/eol_php_code/applications/content_server/resources/SC_bristolchannel.tar.gz
-37	http://www.marineregions.org/mrgid/3324	Alboran Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_alboransea.tar.gz
-169	http://www.marineregions.org/mrgid/3315	Aegean Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_aegeansea.tar.gz
-7	http://www.marineregions.org/mrgid/4325	Rio de la Plata	http://localhost/eol_php_code/applications/content_server/resources/SC_riodelaplata.tar.gz
-18	http://www.marineregions.org/mrgid/1914	South Atlantic	http://localhost/eol_php_code/applications/content_server/resources/SC_southatlantic.tar.gz
-80	http://www.marineregions.org/mrgid/4338	Java Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_javasea.tar.gz
-17	http://www.marineregions.org/mrgid/4276	Great Australian Bight	http://localhost/eol_php_code/applications/content_server/resources/SC_greataustralianbight.tar.gz
-26	http://www.marineregions.org/mrgid/4286	Gulf of Guinea	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofguinea.tar.gz
-16	http://www.marineregions.org/mrgid/4339	Makassar Strait	http://localhost/eol_php_code/applications/content_server/resources/SC_makassarstrait.tar.gz
-41	http://www.marineregions.org/mrgid/4262	Gulf of Suez	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofsuez.tar.gz
-41	http://www.marineregions.org/mrgid/2359	Bay of Biscay	http://localhost/eol_php_code/applications/content_server/resources/SC_bayofbiscay.tar.gz
-39	http://marineregions.org/mrgid/4307	Sea of Japan	http://localhost/eol_php_code/applications/content_server/resources/SC_seaofjapan.tar.gz
-8	http://www.marineregions.org/mrgid/4361	Solomon Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_solomonsea.tar.gz
-67	http://www.marineregions.org/mrgid/4351	Ceram Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_ceramsea.tar.gz
-25	http://www.marineregions.org/mrgid/2356	Greenland Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_greenlandsea.tar.gz
-25	http://www.marineregions.org/mrgid/3363	Ligurian Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_liguriansea.tar.gz
-28	http://www.marineregions.org/mrgid/4355	Gulf of Tomini	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfoftomini.tar.gz
-13	http://www.marineregions.org/mrgid/4350	Gulf of Boni	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofboni.tar.gz
-36	http://www.marineregions.org/mrgid/4273	Bay of Bengal	http://localhost/eol_php_code/applications/content_server/resources/SC_bayofbengal.tar.gz
-19	http://www.marineregions.org/mrgid/4303	Yellow Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_yellowsea.tar.gz
-7	http://www.marineregions.org/mrgid/5698	Northwestern Passages	http://localhost/eol_php_code/applications/content_server/resources/SC_northwesternpassages.tar.gz
-26	http://www.marineregions.org/mrgid/3346	Strait of Gibraltar	http://localhost/eol_php_code/applications/content_server/resources/SC_straitofgibraltar.tar.gz
-5	http://www.marineregions.org/mrgid/2407	Gulf of Finland	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfoffinland.tar.gz
-10	http://www.marineregions.org/mrgid/4354	Molukka Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_molukkasea.tar.gz
-7	http://www.marineregions.org/mrgid/4283	Inner Seas off the West Coast of Scotland	http://localhost/eol_php_code/applications/content_server/resources/SC_innerseasoffthewestcoastofscotland.tar.gz
-5	http://www.marineregions.org/mrgid/4336	Singapore Strait	http://localhost/eol_php_code/applications/content_server/resources/SC_singaporestrait.tar.gz
-6	http://www.marineregions.org/mrgid/4246	Kara Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_karasea.tar.gz
-1	http://www.marineregions.org/mrgid/4244	East Siberian Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_eastsiberiansea.tar.gz
-1	http://www.marineregions.org/mrgid/3369	Sea of Marmara	http://localhost/eol_php_code/applications/content_server/resources/SC_seaofmarmara.tar.gz
-1	http://www.marineregions.org/mrgid/4302	Eastern China Sea	http://localhost/eol_php_code/applications/content_server/resources/SC_easternchinasea.tar.gz
-1	http://www.marineregions.org/mrgid/2402	Gulf of Bothnia	http://localhost/eol_php_code/applications/content_server/resources/SC_gulfofbothnia.tar.gz
-1	http://www.marineregions.org/mrgid/3320	Sea of Azov	http://localhost/eol_php_code/applications/content_server/resources/SC_seaofazov.tar.gz
-1	http://www.marineregions.org/mrgid/4251	Hudson Strait	http://localhost/eol_php_code/applications/content_server/resources/SC_hudsonstrait.tar.gz
+4086	http://www.marineregions.org/mrgid/4287	Caribbean Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_caribbeansea.tar.gz
+3218	http://www.marineregions.org/mrgid/1907	Southern Ocean	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_southernocean.tar.gz
+2285	http://www.marineregions.org/mrgid/4289	Bay of Fundy	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bayoffundy.tar.gz
+1133	http://www.marineregions.org/mrgid/4288	Gulf of Mexico	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofmexico.tar.gz
+237	http://www.marineregions.org/mrgid/4340	Bali Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_balisea.tar.gz
+418	http://www.marineregions.org/mrgid/4256	Beaufort Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_beaufortsea.tar.gz
+2042	http://www.marineregions.org/mrgid/2353	Norwegian Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_norwegiansea.tar.gz
+49	http://www.marineregions.org/mrgid/4312	Gulf of Alaska	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofalaska.tar.gz
+40	http://www.marineregions.org/mrgid/4275	Malacca Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_malaccastrait.tar.gz
+1533	http://www.marineregions.org/mrgid/4247	Barents Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_barentssea.tar.gz
+3872	http://www.marineregions.org/mrgid/1904	Indian Ocean	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_indianocean.tar.gz
+1049	http://www.marineregions.org/mrgid/1906	Arctic Ocean	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_arcticocean.tar.gz
+1476	http://www.marineregions.org/mrgid/2350	North Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_northsea.tar.gz
+370	http://www.marineregions.org/mrgid/4334	Gulf of Thailand	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofthailand.tar.gz
+281	http://www.marineregions.org/mrgid/3319	Black Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_blacksea.tar.gz
+391	http://www.marineregions.org/mrgid/4358	Sulu Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_sulusea.tar.gz
+856	http://www.marineregions.org/mrgid/4264	Red Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_redsea.tar.gz
+453	http://www.marineregions.org/mrgid/4263	Gulf of Aqaba	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofaqaba.tar.gz
+855	http://www.marineregions.org/mrgid/4332	South China Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_southchinasea.tar.gz
+465	http://www.marineregions.org/mrgid/4365	Tasman Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_tasmansea.tar.gz
+127	http://www.marineregions.org/mrgid/3322	Balearic Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_balearicsea.tar.gz
+204	http://www.marineregions.org/mrgid/4314	Gulf of California	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofcalifornia.tar.gz
+387	http://www.marineregions.org/mrgid/4349	Banda Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bandasea.tar.gz
+920	http://www.marineregions.org/mrgid/4364	Coral Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_coralsea.tar.gz
+167	http://www.marineregions.org/mrgid/1912	North Atlantic	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_northatlantic.tar.gz
+159	http://www.marineregions.org/mrgid/4310	Bering Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_beringsea.tar.gz
+169	http://www.marineregions.org/mrgid/4245	Laptev Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_laptevsea.tar.gz
+1123	http://www.marineregions.org/mrgid/3314	Adriatic Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_adriaticsea.tar.gz
+100	http://www.marineregions.org/mrgid/2351	Celtic Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_celticsea.tar.gz
+12	http://www.marineregions.org/mrgid/4306	Seto Inland Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_setoinlandsea.tar.gz
+13	http://www.marineregions.org/mrgid/4265	Gulf of Aden	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofaden.tar.gz
+444	http://www.marineregions.org/mrgid/4359	Celebes Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_celebessea.tar.gz
+227	http://www.marineregions.org/mrgid/2389	English Channel	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_englishchannel.tar.gz
+223	http://www.marineregions.org/mrgid/4269	Laccadive Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_laccadivesea.tar.gz
+57	http://www.marineregions.org/mrgid/2374	Kattegat	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_kattegat.tar.gz
+10	http://www.marineregions.org/mrgid/4291	Labrador Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_labradorsea.tar.gz
+12	http://marineregions.org/mrgid/4248	White Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_whitesea.tar.gz
+8	http://www.marineregions.org/mrgid/4360	Bismarck Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bismarcksea.tar.gz
+76	http://www.marineregions.org/mrgid/4353	Halmahera Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_halmaherasea.tar.gz
+58	http://www.marineregions.org/mrgid/3351	Ionian Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_ioniansea.tar.gz
+101	http://www.marineregions.org/mrgid/2379	Skagerrak	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_skagerrak.tar.gz
+43	http://www.marineregions.org/mrgid/3386	Tyrrhenian Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_tyrrheniansea.tar.gz
+169	http://www.marineregions.org/mrgid/4252	Hudson Bay	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_hudsonbay.tar.gz
+173	http://www.marineregions.org/mrgid/4290	Gulf of St Lawrence	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofstlawrence.tar.gz
+113	http://www.marineregions.org/mrgid/4341	Flores Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_floressea.tar.gz
+58	http://www.marineregions.org/mrgid/4344	Timor Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_timorsea.tar.gz
+14	http://www.marineregions.org/mrgid/4250	Davis Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_davisstrait.tar.gz
+250	http://www.marineregions.org/mrgid/4261	Mozambique Channel	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_mozambiquechannel.tar.gz
+12	http://www.marineregions.org/mrgid/4347	Arafura Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_arafurasea.tar.gz
+118	http://www.marineregions.org/mrgid/4267	Gulf of Oman	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofoman.tar.gz
+110	http://www.marineregions.org/mrgid/4253	Baffin Bay	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_baffinbay.tar.gz
+66	http://www.marineregions.org/mrgid/4343	Savu Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_savusea.tar.gz
+34	http://www.marineregions.org/mrgid/4257	Chukchi Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_chukchisea.tar.gz
+18	http://www.marineregions.org/mrgid/3141	Bristol Channel	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bristolchannel.tar.gz
+37	http://www.marineregions.org/mrgid/3324	Alboran Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_alboransea.tar.gz
+169	http://www.marineregions.org/mrgid/3315	Aegean Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_aegeansea.tar.gz
+7	http://www.marineregions.org/mrgid/4325	Rio de la Plata	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_riodelaplata.tar.gz
+18	http://www.marineregions.org/mrgid/1914	South Atlantic	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_southatlantic.tar.gz
+80	http://www.marineregions.org/mrgid/4338	Java Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_javasea.tar.gz
+17	http://www.marineregions.org/mrgid/4276	Great Australian Bight	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_greataustralianbight.tar.gz
+26	http://www.marineregions.org/mrgid/4286	Gulf of Guinea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofguinea.tar.gz
+16	http://www.marineregions.org/mrgid/4339	Makassar Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_makassarstrait.tar.gz
+41	http://www.marineregions.org/mrgid/4262	Gulf of Suez	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofsuez.tar.gz
+41	http://www.marineregions.org/mrgid/2359	Bay of Biscay	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bayofbiscay.tar.gz
+39	http://marineregions.org/mrgid/4307	Sea of Japan	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_seaofjapan.tar.gz
+8	http://www.marineregions.org/mrgid/4361	Solomon Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_solomonsea.tar.gz
+67	http://www.marineregions.org/mrgid/4351	Ceram Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_ceramsea.tar.gz
+25	http://www.marineregions.org/mrgid/2356	Greenland Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_greenlandsea.tar.gz
+25	http://www.marineregions.org/mrgid/3363	Ligurian Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_liguriansea.tar.gz
+28	http://www.marineregions.org/mrgid/4355	Gulf of Tomini	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfoftomini.tar.gz
+13	http://www.marineregions.org/mrgid/4350	Gulf of Boni	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofboni.tar.gz
+36	http://www.marineregions.org/mrgid/4273	Bay of Bengal	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bayofbengal.tar.gz
+19	http://www.marineregions.org/mrgid/4303	Yellow Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_yellowsea.tar.gz
+7	http://www.marineregions.org/mrgid/5698	Northwestern Passages	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_northwesternpassages.tar.gz
+26	http://www.marineregions.org/mrgid/3346	Strait of Gibraltar	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_straitofgibraltar.tar.gz
+5	http://www.marineregions.org/mrgid/2407	Gulf of Finland	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfoffinland.tar.gz
+10	http://www.marineregions.org/mrgid/4354	Molukka Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_molukkasea.tar.gz
+7	http://www.marineregions.org/mrgid/4283	Inner Seas off the West Coast of Scotland	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_innerseasoffthewestcoastofscotland.tar.gz
+5	http://www.marineregions.org/mrgid/4336	Singapore Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_singaporestrait.tar.gz
+6	http://www.marineregions.org/mrgid/4246	Kara Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_karasea.tar.gz
+1	http://www.marineregions.org/mrgid/4244	East Siberian Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_eastsiberiansea.tar.gz
+1	http://www.marineregions.org/mrgid/3369	Sea of Marmara	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_seaofmarmara.tar.gz
+1	http://www.marineregions.org/mrgid/4302	Eastern China Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_easternchinasea.tar.gz
+1	http://www.marineregions.org/mrgid/2402	Gulf of Bothnia	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofbothnia.tar.gz
+1	http://www.marineregions.org/mrgid/3320	Sea of Azov	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_seaofazov.tar.gz
+1	http://www.marineregions.org/mrgid/4251	Hudson Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_hudsonstrait.tar.gz
