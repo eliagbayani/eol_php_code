@@ -607,7 +607,7 @@ class NationalChecklistsAPI
         if($country == 'Wallis et Futuna') $country = 'Wallis Et Futuna Islands';
 
         if($country == 'Eswatini') return 'http://www.geonames.org/934841';
-        if($country == 'Bosnia and Herzegovina') return 'http://www.geonames.org/3277605';
+        if($country == 'Bosnia And Herzegovina') return 'http://www.geonames.org/3277605';
         if($country == 'Myanmar') return 'http://www.geonames.org/1327865';
 
             // */
