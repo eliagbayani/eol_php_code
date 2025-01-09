@@ -90,8 +90,14 @@ class WaterBodyChecklistsAPI
                         
             $func = new DwCA_Utility($resource_id, $dwca_file);
             $rek = $func->lookup_values_in_dwca($download_options, $params); //get unique values of a column in any table in a DwCA
-            $rek['name'] = $rec['orig'];
-            $rek['dwca'] = $dwca_remote;
+            if($what == 'countries') {
+                $rek['Country'] = $rec['orig'];
+                $rek['Abbreviation'] = $rec['abbrev'];
+            }
+            else {
+                $rek['Waterbody'] = $rec['orig'];
+            }
+            $rek['DwCA'] = $dwca_remote;
             print_r($rek); //exit;
 
             if(!file_exists($report)) {
@@ -103,7 +109,7 @@ class WaterBodyChecklistsAPI
                 $f = Functions::file_open($report, "a");
                 fwrite($f, implode("\t", $rek)."\n");    
             }
-            // if($i >= 3) break; //debug only
+            if($i >= 3) break; //debug only
         } //foreach()
         fclose($f);
     }

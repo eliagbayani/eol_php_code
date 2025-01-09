@@ -1242,8 +1242,8 @@ class DwCA_Utility
         }
 
         if(self::if_dwca_is_national_or_waterbody_checklist($this->dwca_file)) {
-            $unique['taxa total'] = self::count_taxa_in_checklist($tables['http://rs.tdwg.org/dwc/terms/taxon'][0]);
-            $unique['trait'] = $trait_value;
+            $unique['Total Taxa'] = self::count_taxa_in_checklist($tables['http://rs.tdwg.org/dwc/terms/taxon'][0]);
+            $unique['Trait URI'] = $trait_value;
         }
 
         // /* un-comment in real operation
