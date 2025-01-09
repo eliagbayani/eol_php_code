@@ -77,7 +77,8 @@ class WaterBodyChecklistsAPI
                 [dwca] => SC_unitedarabemirates
             )*/
             $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . $rec['dwca'] . '.tar.gz';
-            $dwca_remote = WEB_ROOT . $rec['dwca'] . '.tar.gz';
+            $dwca_remote = WEB_ROOT . 'applications/content_server/resources/' . $rec['dwca'] . '.tar.gz';
+
             $resource_id = "";
             $params['row_type'] = 'http://rs.tdwg.org/dwc/terms/measurementorfact';
             $params['column'] = 'http://rs.tdwg.org/dwc/terms/measurementValue';
