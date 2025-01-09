@@ -1,11 +1,13 @@
 Total Taxa	Trait URI	Waterbody	DwCA
 4086	http://www.marineregions.org/mrgid/4287	Caribbean Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_caribbeansea.tar.gz
+5123	http://www.marineregions.org/mrgid/1910	South Pacific	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_southpacific.tar.gz
 3218	http://www.marineregions.org/mrgid/1907	Southern Ocean	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_southernocean.tar.gz
 2285	http://www.marineregions.org/mrgid/4289	Bay of Fundy	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bayoffundy.tar.gz
 1133	http://www.marineregions.org/mrgid/4288	Gulf of Mexico	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofmexico.tar.gz
 237	http://www.marineregions.org/mrgid/4340	Bali Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_balisea.tar.gz
 418	http://www.marineregions.org/mrgid/4256	Beaufort Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_beaufortsea.tar.gz
 2042	http://www.marineregions.org/mrgid/2353	Norwegian Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_norwegiansea.tar.gz
+6039	http://www.marineregions.org/mrgid/1908	North Pacific	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_northpacific.tar.gz
 49	http://www.marineregions.org/mrgid/4312	Gulf of Alaska	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofalaska.tar.gz
 40	http://www.marineregions.org/mrgid/4275	Malacca Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_malaccastrait.tar.gz
 1533	http://www.marineregions.org/mrgid/4247	Barents Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_barentssea.tar.gz
@@ -17,9 +19,11 @@ Total Taxa	Trait URI	Waterbody	DwCA
 391	http://www.marineregions.org/mrgid/4358	Sulu Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_sulusea.tar.gz
 856	http://www.marineregions.org/mrgid/4264	Red Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_redsea.tar.gz
 453	http://www.marineregions.org/mrgid/4263	Gulf of Aqaba	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofaqaba.tar.gz
+597	http://www.marineregions.org/mrgid/4274	Andaman Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_andamansea.tar.gz
 855	http://www.marineregions.org/mrgid/4332	South China Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_southchinasea.tar.gz
 465	http://www.marineregions.org/mrgid/4365	Tasman Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_tasmansea.tar.gz
 127	http://www.marineregions.org/mrgid/3322	Balearic Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_balearicsea.tar.gz
+322	http://www.marineregions.org/mrgid/4300	Philippine Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_philippinesea.tar.gz
 204	http://www.marineregions.org/mrgid/4314	Gulf of California	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofcalifornia.tar.gz
 387	http://www.marineregions.org/mrgid/4349	Banda Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bandasea.tar.gz
 920	http://www.marineregions.org/mrgid/4364	Coral Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_coralsea.tar.gz
@@ -28,9 +32,12 @@ Total Taxa	Trait URI	Waterbody	DwCA
 169	http://www.marineregions.org/mrgid/4245	Laptev Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_laptevsea.tar.gz
 1123	http://www.marineregions.org/mrgid/3314	Adriatic Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_adriaticsea.tar.gz
 100	http://www.marineregions.org/mrgid/2351	Celtic Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_celticsea.tar.gz
+91	http://www.marineregions.org/mrgid/4268	Arabian Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_arabiansea.tar.gz
+326	http://www.marineregions.org/mrgid/4266	Persian Gulf	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_persiangulf.tar.gz
 12	http://www.marineregions.org/mrgid/4306	Seto Inland Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_setoinlandsea.tar.gz
 13	http://www.marineregions.org/mrgid/4265	Gulf of Aden	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofaden.tar.gz
 444	http://www.marineregions.org/mrgid/4359	Celebes Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_celebessea.tar.gz
+87	http://www.marineregions.org/mrgid/2357	Irish Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_irishsea.tar.gz
 227	http://www.marineregions.org/mrgid/2389	English Channel	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_englishchannel.tar.gz
 223	http://www.marineregions.org/mrgid/4269	Laccadive Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_laccadivesea.tar.gz
 57	http://www.marineregions.org/mrgid/2374	Kattegat	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_kattegat.tar.gz
@@ -78,6 +85,7 @@ Total Taxa	Trait URI	Waterbody	DwCA
 10	http://www.marineregions.org/mrgid/4354	Molukka Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_molukkasea.tar.gz
 7	http://www.marineregions.org/mrgid/4283	Inner Seas off the West Coast of Scotland	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_innerseasoffthewestcoastofscotland.tar.gz
 5	http://www.marineregions.org/mrgid/4336	Singapore Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_singaporestrait.tar.gz
+24	http://www.marineregions.org/mrgid/4366	Bass Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_bassstrait.tar.gz
 6	http://www.marineregions.org/mrgid/4246	Kara Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_karasea.tar.gz
 1	http://www.marineregions.org/mrgid/4244	East Siberian Sea	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_eastsiberiansea.tar.gz
 1	http://www.marineregions.org/mrgid/3369	Sea of Marmara	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_seaofmarmara.tar.gz
@@ -85,3 +93,4 @@ Total Taxa	Trait URI	Waterbody	DwCA
 1	http://www.marineregions.org/mrgid/2402	Gulf of Bothnia	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_gulfofbothnia.tar.gz
 1	http://www.marineregions.org/mrgid/3320	Sea of Azov	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_seaofazov.tar.gz
 1	http://www.marineregions.org/mrgid/4251	Hudson Strait	https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_hudsonstrait.tar.gz
+57	http://www.marineregions.org/mrgid/2374		https://editors.eol.org/eol_php_code/applications/content_server/resources/SC_kattegat.tar.gz
