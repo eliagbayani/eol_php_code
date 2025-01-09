@@ -58,6 +58,7 @@ class WaterBodyChecklistsAPI
         if(!file_exists($file)) exit("\nFile does not exist [$file]\n");
         $i = 0;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(!trim($row)) continue;
             if(($i % 2000) == 0) echo "\n $i ";
             if($i == 1) { $fields = explode("\t", $row); continue; }
             else {
@@ -212,7 +213,7 @@ class WaterBodyChecklistsAPI
 
         // print_r($this->debug['waterbody in AnneT']); exit("\nelix 2\n");
         $f = Functions::file_open($this->destination."waterbodies_AnneThessen.tsv", "w");
-        foreach(array_keys($this->debug['waterbody in AnneT']) as $waterbody) fwrite($f, $waterbody."\n");
+        foreach(array_keys($this->debug['waterbody in AnneT']) as $waterbody) if($waterbody) fwrite($f, $waterbody."\n");
         fclose($f);
 
         unset($this->debug['GBIF waterbodies']);
@@ -229,7 +230,7 @@ class WaterBodyChecklistsAPI
         $files = $this->waterbody_path . "/*.tsv"; echo "\n[$files]\n"; $i = 0;
         // foreach(glob($files) as $file) { //echo "\n$file\n"; exit;
         foreach(new FileIterator($this->destination.'waterbodies_AnneThessen.tsv') as $line => $row) { $i++; //e.g. "Adriatic Sea"
-
+            if(!trim($row)) continue;
             if($dwca_filename = self::get_dwca_filename($row)) echo "\ndwca_filename: [$dwca_filename]\n"; //SC_andorra
             else exit("\nTerminated: should not go here 02.\n");
 
