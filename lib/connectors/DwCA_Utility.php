@@ -1236,13 +1236,14 @@ class DwCA_Utility
             // print_r($rec); exit;
 
             if($sought_field && $sought_field_value) { //new feature
-                if($rec[$sought_field] == $sought_field_value) $unique[$rec[$column]] = '';
+                if($rec[$sought_field] == $sought_field_value) $trait_value = $rec[$column];
             }
             else $unique[$rec[$column]] = ''; //orig
         }
 
         if(self::if_dwca_is_national_or_waterbody_checklist($this->dwca_file)) {
             $unique['taxa total'] = self::count_taxa_in_checklist($tables['http://rs.tdwg.org/dwc/terms/taxon'][0]);
+            $unique['trait'] = $trait_value;
         }
 
         // /* un-comment in real operation

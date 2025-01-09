@@ -45,6 +45,67 @@ class WaterBodyChecklistsAPI
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
         if(!is_dir($tmp)) mkdir($tmp);
     }
+    function generate_report($what) //'waterbodies' or 'countries'
+    {
+        $report = $this->destination . $what . "_report.tsv";
+        if(file_exists($report)) unlink($report);
+        // /*
+        require_library('connectors/DwCA_Utility');
+        // */
+        $file = $this->destination . "$what.tsv";
+        if($what == 'countries') $file = str_replace('WaterBody_checklists', 'Country_checklists', $file);
+        if(!file_exists($file)) exit("\nFile does not exist [$file]\n");
+        $i = 0;
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(($i % 2000) == 0) echo "\n $i ";
+            if($i == 1) { $fields = explode("\t", $row); continue; }
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); print_r($rec); //exit("\nstop muna\n");
+            }
+            /*Array(
+                [orig] => Caribbean Sea
+                [dwca] => SC_caribbeansea
+            )
+            Array(
+                [lower_case] => unitedarabemirates
+                [orig] => United Arab Emirates
+                [abbrev] => AE
+                [dwca] => SC_unitedarabemirates
+            )*/
+            $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . $rec['dwca'] . '.tar.gz';
+            $dwca_remote = WEB_ROOT . $rec['dwca'] . '.tar.gz';
+            $resource_id = "";
+            $params['row_type'] = 'http://rs.tdwg.org/dwc/terms/measurementorfact';
+            $params['column'] = 'http://rs.tdwg.org/dwc/terms/measurementValue';
+            $download_options = array("timeout" => 172800, 'expire_seconds' => 0); //60*60*24*1 = 1 day cache
+            // 2 new params - for a new feature
+            $params['sought_field']       = 'http://rs.tdwg.org/dwc/terms/measurementType';
+            $params['sought_field_value'] = 'http://eol.org/schema/terms/Present';
+            // */
+                        
+            $func = new DwCA_Utility($resource_id, $dwca_file);
+            $rek = $func->lookup_values_in_dwca($download_options, $params); //get unique values of a column in any table in a DwCA
+            $rek['name'] = $rec['orig'];
+            $rek['dwca'] = $dwca_remote;
+            print_r($rek); //exit;
+
+            if(!file_exists($report)) {
+                $f = Functions::file_open($report, "w");
+                fwrite($f, implode("\t", array_keys($rek))."\n");
+                fwrite($f, implode("\t", $rek)."\n");    
+            }
+            else {
+                $f = Functions::file_open($report, "a");
+                fwrite($f, implode("\t", $rek)."\n");    
+            }
+            if($i >= 3) break; //debug only
+        } //foreach()
+        fclose($f);
+    }
     private function initialize()
     {
         /* not applicable
@@ -72,6 +133,13 @@ class WaterBodyChecklistsAPI
         $counter     = @$fields['counter'];
         $task        = @$fields['task'];
         $sought_waterbdy = @$fields['sought_waterbdy'];
+        $report_name        = @$fields['report_name'];
+
+
+        if($task == 'generate_report') {
+            self::generate_report($report_name); //'waterbodies' or 'countries'
+            return;
+        }
 
         self::initialize();
 
