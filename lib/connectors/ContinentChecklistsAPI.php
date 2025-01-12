@@ -1,11 +1,13 @@
 <?php
 namespace php_active_record;
-/* connector: [national_checklists_2024.php] */
+/* connector: [continent_checklists_2024.php] 
+https://dwc.tdwg.org/list/#dwc_continent 
+https://techdocs.gbif.org/en/data-use/api-sql-downloads#sql-columns 
+*/
 class ContinentChecklistsAPI
 {
     public function __construct($what) //typically param $folder is passed here.
-    {
-        /* copied template
+    {   /* copied template
         $this->resource_id = $folder;
         $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
         $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));
@@ -34,12 +36,17 @@ class ContinentChecklistsAPI
         $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
-        $arr1 = array('Kattegat', 'Skagerrak', 'Solomon Sea', 'Chukchi Sea', 'Red Sea', 'Molukka Sea', 'Halmahera Sea', 'Timor Sea', 'Bali Sea', 'Davis Strait', 'Hudson Strait', 'Alboran Sea', 'Labrador Sea', 'Greenland Sea', 'Beaufort Sea', 'Celtic Sea', 'Singapore Strait', 'Kara Sea', 'Sulu Sea', 'Flores Sea', 'North Atlantic', 'Java Sea', 'Mozambique Channel', 'Tasman Sea', 'Hudson Bay', 'Bering Sea', 'Laccadive Sea', 'Banda Sea', 'Norwegian Sea', 'North Sea', 'Arafura Sea', 'Ligurian Sea', 'Baffin Bay', 'Bismarck Sea', 'Ceram Sea', 'Arctic Ocean', 'Aegean Sea', 'Barents Sea', 'Northwestern Passages', 'Indian Ocean', 'Malacca Strait', 'Adriatic Sea', 'Ionian Sea', 'English Channel', 'Savu Sea', 'Laptev Sea', 'Bristol Channel', 'South Atlantic', 'Balearic Sea', 'Celebes Sea', 'Coral Sea', 'Tyrrhenian Sea', 'Yellow Sea', 'Lincoln Sea', 'White Sea', 'Makassar Strait', 'Black Sea', 'Southern Ocean', 'Caribbean Sea', 'Gulf of Riga', 'Gulf of Bothnia', 'Gulf of Finland', 'Seto Inland Sea', 'Eastern China Sea', 'Bay of Bengal', 'Gulf of Tomini', 'Great Australian Bight', 'South China Sea', 'Gulf of Oman', 'Strait of Gibraltar', 'Gulf of Boni', 'Gulf of Mexico', 'East Siberian Sea', 'Gulf of Alaska', 'Bay of Biscay', 'Sea of Marmara', 'Sea of Okhostk', 'Gulf of Guinea', 'Sea of Azov', 'Bay of Fundy', 'Sea of Japan', 'Gulf of Aden', 'Gulf of Thailand', 'Gulf of Aqaba', 'Gulf of California', 'Gulf of Suez', 'Gulf of St Lawrence', 'Rio de la Plata', 'Inner Seas off the West Coast of Scotland');
-        $arr2 = array('South Pacific', 'North Pacific', 'Philippine Sea', 'Persian Gulf', 'Irish Sea', 'Bass Strait', 'Arabian Sea', 'Andaman Sea'); //'South America', 'North America'
-        $this->AnneT_continents = array_merge($arr1, $arr2);
+        $this->AnneT_continents = array('Africa', 'Asia', 'Europe', 'South America', 'North America', 'Oceania'); //'Antarctica' not included
 
-        $this->continent_map['Palestine, State of'] = "Palestine";
-        $this->continent_map['Russian Federation'] = "Russia";
+        // left is what the .csv download has; and the right is what the $this->AnneT_continents has.
+        $this->continent_map['ASIA'] = "Asia";
+        $this->continent_map['AFRICA'] = "Africa";
+        $this->continent_map['SOUTH_AMERICA'] = "South America";
+        $this->continent_map['NORTH_AMERICA'] = "North America";
+        $this->continent_map['EUROPE'] = "Europe";
+        $this->continent_map['OCEANIA'] = "Oceania";
+        $this->continent_map['ANTARCTICA'] = "Antarctica";
+
         $this->proceed = false;
 
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
@@ -168,19 +175,15 @@ class ContinentChecklistsAPI
             self::parse_tsv_file($tsv_path, $task);
 
             // /* good debug: investigated: adriatic_sea.tsv AND indian_ocean.tsv
-            echo "\n[2440447][Adriatic Sea]:9 ".$this->save['Adriatic Sea']['2440447']."\n";
-            echo "\n[2440718][Adriatic Sea]:4 ".$this->save['Adriatic Sea']['2440718']."\n";
-            echo "\n[2509716][Adriatic Sea]:15 ".$this->save['Adriatic Sea']['2509716']."\n";
-            echo "\n[2333135][Indian Ocean]:5 ".$this->save['Indian Ocean']['2333135']."\n";
-            echo "\n[2391929][Indian Ocean]:11 ".$this->save['Indian Ocean']['2391929']."\n";
-            echo "\n[2391811][Indian Ocean]:2 ".$this->save['Indian Ocean']['2391811']."\n";
-            echo "\n[2392074][Indian Ocean]:2 ".$this->save['Indian Ocean']['2392074']."\n"; //exit;
+            echo "\n[2333135][Asia]:5 ".$this->save['Asia']['2333135']."\n";
+            echo "\n[2391929][Asia]:11 ".$this->save['Asia']['2391929']."\n";
+            echo "\n[2391811][Asia]:2 ".$this->save['Asia']['2391811']."\n";
             // */
             // /* utility: check what continents in AnneT that were not found in GBIF
             self::compare_continents();
             // */
             self::write_continent_tsv_files();
-            exit("\nstop 5\n");
+            exit("\nFinished: divide_into_continent_files\n");
         }
         elseif($task == 'generate_continent_checklists')  self::create_individual_continent_checklist_resource($counter, $task, $sought_continent);
         elseif($task == 'major_deletion')                 self::create_individual_continent_checklist_resource($counter, $task);
@@ -193,11 +196,12 @@ class ContinentChecklistsAPI
     }
     private function compare_continents()
     {
-        // print_r($this->debug['waterbody not in AnneT']);
-        // $this->debug['waterbody in AnneT'][$continent] = '';
+        // print_r($this->debug['continent not in AnneT']);
+        // $this->debug['continent in AnneT'][$continent] = '';
         // $this->AnneT_continents
+        $not_found = array();
         foreach($this->AnneT_continents as $wb) {
-            if(!isset($this->debug['waterbody in AnneT'][$wb])) $not_found[$wb] = '';
+            if(!isset($this->debug['continent in AnneT'][$wb])) $not_found[$wb] = '';
         }
         // print_r($this->debug['GBIF continents']); //good debug and if u want to investigate
         print_r($not_found); echo " - AnneT continents not found in GBIF: [".count($not_found)."]";
@@ -211,14 +215,14 @@ class ContinentChecklistsAPI
         )
         - AnneT continents not found in GBIF */
 
-        // print_r($this->debug['waterbody in AnneT']); exit("\nelix 2\n");
+        // print_r($this->debug['continent in AnneT']); exit("\nelix 2\n");
         $f = Functions::file_open($this->destination."continents_AnneThessen.tsv", "w");
-        foreach(array_keys($this->debug['waterbody in AnneT']) as $continent) if($continent) fwrite($f, $continent."\n");
+        foreach(array_keys($this->debug['continent in AnneT']) as $continent) if($continent) fwrite($f, $continent."\n");
         fclose($f);
 
         unset($this->debug['GBIF continents']);
-        unset($this->debug['waterbody in AnneT']);
-        unset($this->debug['waterbody not in AnneT']);
+        unset($this->debug['continent in AnneT']);
+        unset($this->debug['continent not in AnneT']);
     }
     function show_continents_metadata() //utility
     {   $cont = false; //debug only
@@ -423,7 +427,7 @@ class ContinentChecklistsAPI
                     /*Array(
                         [specieskey] => 1000607
                         [COUNT(specieskey)] => 2
-                        [waterbody] => Pardo
+                        [continent] => Pardo
                     )*/
                     self::save_to_different_continent_files_v1($rec); //for stats only
                     self::save_to_different_continent_files($rec);
@@ -447,15 +451,15 @@ class ContinentChecklistsAPI
         Array(
             [specieskey] => 5962668
             [SampleSize] => 41
-            [waterbody] => Adriatic Sea
+            [continent] => Adriatic Sea
             [remark] => Adriatic Sea
         )*/
         if($species_info = self::assemble_species($rec)) { //print_r($species_info); //exit;
             if(!in_array($species_info['taxonomicStatus'], array('doubtful'))) {
                 $taxonID = self::write_taxon($species_info);
                 $species_info['SampleSize'] = $rec['SampleSize'];
-                $species_info['measurementRemarks'] = $rec['waterbody']; //$rec['remark'];
-                if(@$rec['waterbody']) self::write_traits($species_info, $taxonID);    
+                $species_info['measurementRemarks'] = $rec['continent']; //$rec['remark'];
+                if(@$rec['continent']) self::write_traits($species_info, $taxonID);    
             }
         }
     }
@@ -482,10 +486,10 @@ class ContinentChecklistsAPI
     {   /*Array(
             [specieskey] => 1000607
             [COUNT(specieskey)] => 2
-            [waterbody] => Pardo, sssyy of sss, xxx, sss of yyy
+            [continent] => Pardo, sssyy of sss, xxx, sss of yyy
         )*/
-        $orig = $rec['waterbody'];
-        $continents = explode(",", $rec['waterbody']);
+        $orig = $rec['continent'];
+        $continents = explode(",", $rec['continent']);
         $continents = array_map('trim', $continents);
         foreach($continents as $continent) {
             $specieskey = $rec['specieskey'];
@@ -506,7 +510,7 @@ class ContinentChecklistsAPI
                 $rec = array();
                 $rec['specieskey'] = $specieskey;
                 $rec['SampleSize'] = $count;
-                $rec['waterbody'] = $continent;
+                $rec['continent'] = $continent;
                 if(!isset($this->continent['encountered'][$continent_code])) {
                     $this->continent['encountered'][$continent_code] = '';
                     $f = Functions::file_open($file, "w");
@@ -520,17 +524,17 @@ class ContinentChecklistsAPI
                 fclose($f);
                 // */
             }
-            // break; //dev only | process just 1 waterbody
+            // break; //dev only | process just 1 continent
         }
     }
     private function save_to_different_continent_files_v1($rec)
     {   /*Array(
             [specieskey] => 1000607
             [COUNT(specieskey)] => 2
-            [waterbody] => Pardo, sssyy of sss, xxx, sss of yyy
+            [continent] => Pardo, sssyy of sss, xxx, sss of yyy
         )*/
-        $orig = $rec['waterbody'];
-        $continents = explode(",", $rec['waterbody']);
+        $orig = $rec['continent'];
+        $continents = explode(",", $rec['continent']);
         $continents = array_map('trim', $continents);
         foreach($continents as $continent) {
             // /* massage
@@ -538,16 +542,16 @@ class ContinentChecklistsAPI
             // */
             $this->debug['GBIF continents'][$continent] = '';
             if(!in_array($continent, $this->AnneT_continents)) {
-                $this->debug['waterbody not in AnneT'][$continent] = '';
+                $this->debug['continent not in AnneT'][$continent] = '';
                 continue;
             }
-            else $this->debug['waterbody in AnneT'][$continent] = '';
+            else $this->debug['continent in AnneT'][$continent] = '';
             // print_r($rec);
             /* start writing OK
             $continent_code = str_replace(" ", "_", strtolower($continent));
             $file = $this->continent_path.'/'.$continent_code.'.tsv';
             $rec['remark'] = $orig;
-            $rec['waterbody'] = $continent;
+            $rec['continent'] = $continent;
             if(!isset($this->continent['encountered'][$continent_code])) {
                 $this->continent['encountered'][$continent_code] = '';
                 $f = Functions::file_open($file, "w");
@@ -565,25 +569,13 @@ class ContinentChecklistsAPI
     private function massage_continent($continent)
     {
         $continent = str_replace(' Of ', ' of ', $continent);
-        if($continent == 'Azov Sea')                    $continent = 'Sea of Azov';
-        if($continent == 'The Northwestern Passages')   $continent = 'Northwestern Passages';
-        if($continent == 'Northwest Passages')          $continent = 'Northwestern Passages';
-        if($continent == 'East-Siberian Sea')           $continent = 'East Siberian Sea';
-        if($continent == 'Gulf of St. Lawrence')        $continent = 'Gulf of St Lawrence';
-        if($continent == 'Gulf of Saint Lawrence')      $continent = 'Gulf of St Lawrence';
-        if($continent == 'Marmara Sea')                 $continent = 'Sea of Marmara';
-        if($continent == 'Arabian Sea - Gulf of Aden')  $continent = 'Gulf of Aden';
-        // ---------------------------
-        if($continent == 'South Pacific Ocean')         $continent = 'South Pacific';
-        if($continent == 'North Pacific Ocean')         $continent = 'North Pacific';
-        if($continent == 'Arabian Sea - Gulf of Aden')  $continent = 'Arabian Sea';
-        // ---------------------------
-        // if($continent == 'SOUTH AMERICA {LakeID}')      $continent = 'South America'; //originally a national checklist | no longer used
-
-        /* start special
-        if(in_array($continent, array('Oceania', 'Asia', 'Europe', 'Africa'))) {
-        }
-        */
+        if($continent == 'ASIA')            $continent = 'Asia';
+        if($continent == 'AFRICA')          $continent = 'Africa';
+        if($continent == 'SOUTH_AMERICA')   $continent = 'South America';
+        if($continent == 'NORTH_AMERICA')   $continent = 'North America';
+        if($continent == 'EUROPE')          $continent = 'Europe';
+        if($continent == 'OCEANIA')         $continent = 'Oceania';
+        // if($continent == 'ANTARCTICA')      $continent = 'Antarctica';
         return $continent;
     }
     private function parse_tsv_file_caching($file, $counter = false)
@@ -879,9 +871,7 @@ class ContinentChecklistsAPI
         // /* manual adjustment
         if($str == "North Korea") $str = "North Korean";
         // */
-        if(in_array($str, array('South America', 'North America'))) exit("\nNot intended to go here.\n"); //$q = '+title:"'.$str.'" +title:2019 +title:National +title:Checklists';
-        else $q = '+title:"'.$str.'" +title:2019 +title:Water Body +title:Checklists'; //orig rest goes here
-
+        $q = '+title:"'.$str.'" +title:2019 +title:National +title:Checklists';
         if($obj = $this->zenodo->get_depositions_by_part_title($q)) { //print_r($obj[0]); 
             $f1 = $obj[0]['files'][0]['filename'];
             $path = $obj[0]['metadata']['related_identifiers'][0]['identifier'];
