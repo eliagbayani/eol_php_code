@@ -10,16 +10,12 @@ regular operation:
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"major_deletion"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_report", "report_name":"waterbodies"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_report", "report_name":"countries"}'
-
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"show_waterbodies_metadata"}'
 
-    OR 
+when caching the species info:
+    'counter' series not used for WaterBody
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_waterbody_checklists", "counter":"1"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_waterbody_checklists", "counter":"2"}'
-
-when caching the species info: ran already
-    php update_resources/connectors/waterbody_checklists_2024.php _ '{"counter":"1"}'
-    php update_resources/connectors/waterbody_checklists_2024.php _ '{"counter":"2"}'
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/WaterBodyChecklistsAPI');
