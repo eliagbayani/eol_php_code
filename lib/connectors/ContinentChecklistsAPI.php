@@ -128,9 +128,10 @@ class ContinentChecklistsAPI
         $this->country_code_name_info = self::initialize_continents_from_csv(); //print_r($this->country_code_name_info); exit;
         */
         self::assemble_terms_yml(); //generates $this->value_uris
+        /* copied template
         if(self::get_continent_uri('Adriatic Sea')  == 'http://www.marineregions.org/mrgid/3314') echo "\nAdriatic Sea: OK";        else exit("\nERROR: Investigate country URI.\n");
         if(self::get_continent_uri('Aegean Sea')    == 'http://www.marineregions.org/mrgid/3315') echo "\nAegean Sea: OK";          else exit("\nERROR: Investigate country URI.\n");
-        // exit("\n--- stop muna...\n");
+        */
         // /*
         require_library('connectors/ZenodoConnectorAPI');
         require_library('connectors/ZenodoAPI');
@@ -150,7 +151,6 @@ class ContinentChecklistsAPI
         $task        = @$fields['task'];
         $sought_continent = @$fields['sought_continent'];
         $report_name        = @$fields['report_name'];
-
 
         if($task == 'generate_report') {
             self::generate_report($report_name); //'waterbodies' or 'countries' or 'continents'
@@ -469,6 +469,7 @@ class ContinentChecklistsAPI
         $options['expire_seconds'] = false;
         if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
             $rek = json_decode($json, true); //print_r($rek); exit;
+            if(!@$rek['key']) return false;
             $save = array();
             $save['taxonID']                    = $rek['key']; //same as $rec['specieskey']
             $save['scientificName']             = $rek['scientificName'];

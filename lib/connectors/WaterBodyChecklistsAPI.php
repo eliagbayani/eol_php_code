@@ -464,6 +464,7 @@ class WaterBodyChecklistsAPI
         $options['expire_seconds'] = false;
         if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
             $rek = json_decode($json, true); //print_r($rek); exit;
+            if(!@$rek['key']) return false;
             $save = array();
             $save['taxonID']                    = $rek['key']; //same as $rec['specieskey']
             $save['scientificName']             = $rek['scientificName'];
