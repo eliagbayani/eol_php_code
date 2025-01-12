@@ -38,6 +38,7 @@ class ContinentChecklistsAPI
         $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
         $this->AnneT_continents = array('Africa', 'Asia', 'Europe', 'South America', 'North America', 'Oceania'); //'Antarctica' not included
 
+        /* not applicable for continent checklist
         // left is what the .csv download has; and the right is what the $this->AnneT_continents has.
         $this->continent_map['ASIA'] = "Asia";
         $this->continent_map['AFRICA'] = "Africa";
@@ -46,6 +47,7 @@ class ContinentChecklistsAPI
         $this->continent_map['EUROPE'] = "Europe";
         $this->continent_map['OCEANIA'] = "Oceania";
         $this->continent_map['ANTARCTICA'] = "Antarctica";
+        */
 
         $this->proceed = false;
 

@@ -37,9 +37,10 @@ class WaterBodyChecklistsAPI
         $arr1 = array('Kattegat', 'Skagerrak', 'Solomon Sea', 'Chukchi Sea', 'Red Sea', 'Molukka Sea', 'Halmahera Sea', 'Timor Sea', 'Bali Sea', 'Davis Strait', 'Hudson Strait', 'Alboran Sea', 'Labrador Sea', 'Greenland Sea', 'Beaufort Sea', 'Celtic Sea', 'Singapore Strait', 'Kara Sea', 'Sulu Sea', 'Flores Sea', 'North Atlantic', 'Java Sea', 'Mozambique Channel', 'Tasman Sea', 'Hudson Bay', 'Bering Sea', 'Laccadive Sea', 'Banda Sea', 'Norwegian Sea', 'North Sea', 'Arafura Sea', 'Ligurian Sea', 'Baffin Bay', 'Bismarck Sea', 'Ceram Sea', 'Arctic Ocean', 'Aegean Sea', 'Barents Sea', 'Northwestern Passages', 'Indian Ocean', 'Malacca Strait', 'Adriatic Sea', 'Ionian Sea', 'English Channel', 'Savu Sea', 'Laptev Sea', 'Bristol Channel', 'South Atlantic', 'Balearic Sea', 'Celebes Sea', 'Coral Sea', 'Tyrrhenian Sea', 'Yellow Sea', 'Lincoln Sea', 'White Sea', 'Makassar Strait', 'Black Sea', 'Southern Ocean', 'Caribbean Sea', 'Gulf of Riga', 'Gulf of Bothnia', 'Gulf of Finland', 'Seto Inland Sea', 'Eastern China Sea', 'Bay of Bengal', 'Gulf of Tomini', 'Great Australian Bight', 'South China Sea', 'Gulf of Oman', 'Strait of Gibraltar', 'Gulf of Boni', 'Gulf of Mexico', 'East Siberian Sea', 'Gulf of Alaska', 'Bay of Biscay', 'Sea of Marmara', 'Sea of Okhostk', 'Gulf of Guinea', 'Sea of Azov', 'Bay of Fundy', 'Sea of Japan', 'Gulf of Aden', 'Gulf of Thailand', 'Gulf of Aqaba', 'Gulf of California', 'Gulf of Suez', 'Gulf of St Lawrence', 'Rio de la Plata', 'Inner Seas off the West Coast of Scotland');
         $arr2 = array('South Pacific', 'North Pacific', 'Philippine Sea', 'Persian Gulf', 'Irish Sea', 'Bass Strait', 'Arabian Sea', 'Andaman Sea'); //'South America', 'North America'
         $this->AnneT_water_bodies = array_merge($arr1, $arr2);
-
+        /* not applicable for waterbody checklist
         $this->waterbdy_map['Palestine, State of'] = "Palestine";
         $this->waterbdy_map['Russian Federation'] = "Russia";
+        */
         $this->proceed = false;
 
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
