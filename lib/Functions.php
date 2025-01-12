@@ -444,7 +444,7 @@ class Functions
         $func->update_CKAN_resource_using_EOL_resourceID($resource_id);
         // */
 
-        $msg = "\n[$resource_id] will not go to Zenodo at this time.\n";
+        $msg = "\nDesigned not to proceed to Zenodo at this time [$resource_id].\n";
         if(stripos($resource_id, "wikipedia-") !== false) { echo $msg; } //wikipedia lang resources will go to Zenodo in FillUpMissingParentsAPI.php, not here. //string is found
         elseif(stripos($resource_id, "wikipedia_combined") !== false) { echo $msg; }
         elseif(in_array($resource_id, array('80', '957', '201'))) { echo $msg; }
@@ -464,7 +464,7 @@ class Functions
             // $func->new_description_for_zenodo = ""; //initialize again
             // */
         }
-        else echo "\nDesigned not to proceed to Zenodo at this time [$resource_id].\n";
+        else echo $msg;
     }
     public static function get_time_elapsed($timestart)
     {
