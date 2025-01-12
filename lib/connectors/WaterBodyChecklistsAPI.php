@@ -39,10 +39,8 @@ class WaterBodyChecklistsAPI
         $this->AnneT_water_bodies = array_merge($arr1, $arr2);
         /* not applicable for waterbody checklist
         $this->waterbdy_map['Palestine, State of'] = "Palestine";
-        $this->waterbdy_map['Russian Federation'] = "Russia";
         */
         $this->proceed = false;
-
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
         if(!is_dir($tmp)) mkdir($tmp);
     }

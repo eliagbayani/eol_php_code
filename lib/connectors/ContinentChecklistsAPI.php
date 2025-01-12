@@ -48,9 +48,7 @@ class ContinentChecklistsAPI
         $this->continent_map['OCEANIA'] = "Oceania";
         $this->continent_map['ANTARCTICA'] = "Antarctica";
         */
-
         $this->proceed = false;
-
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
         if(!is_dir($tmp)) mkdir($tmp);
     }
