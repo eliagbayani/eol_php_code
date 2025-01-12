@@ -5,7 +5,7 @@ namespace php_active_record;
 class Protisten_deAPI
 {
     function __construct($folder, $param)
-    {   exit("\nThis connector is now obsolete [Protisten_deAPI.php]\n");
+    {   //exit("\nThis connector is now obsolete [Protisten_deAPI.php]\n");
         $this->resource_id = $folder;
         $this->domain = "http://www.phorid.net/diptera/";
         $this->taxa_list_url     = $this->domain . "diptera_index.html";
