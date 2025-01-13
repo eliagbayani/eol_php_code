@@ -3279,6 +3279,11 @@ class WikiDataAPI extends WikipediaAPI
         fclose($f);
         echo "\n\ntaxa  wikis: [$e]";
         echo "\nnon-taxa  wikis: [$i]\n";
+        /*
+        11Jan2025   taxa  wikis: [3740694]      non-taxa  wikis: [109801484]
+        03Jan2025   taxa  wikis: [3740260]      non-taxa  wikis: [109732025]
+        22Oct2024   taxa  wikis: [3733361]      non-taxa  wikis: [108899750]
+        */
     }
     private function save_filenames_2file($files)
     {   //save to text file
