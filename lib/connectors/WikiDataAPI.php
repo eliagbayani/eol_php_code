@@ -677,7 +677,8 @@ class WikiDataAPI extends WikipediaAPI
             }
             else continue;
             // */
-
+            // grep '"type":"item","id":"Q199788","labels":' latest-all-taxon.json
+            // grep '"type":"item","id":"Q19486","labels":' latest-all-taxon.json
 
 
             $old_arr2 = array();
