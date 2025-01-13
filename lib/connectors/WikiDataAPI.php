@@ -3277,7 +3277,7 @@ class WikiDataAPI extends WikipediaAPI
             else $i++;
         }
         fclose($f);
-        echo "\ntaxa  wikis: [$e]\n";
+        echo "\n\ntaxa  wikis: [$e]";
         echo "\nnon-taxa  wikis: [$i]\n";
     }
     private function save_filenames_2file($files)
