@@ -14,6 +14,7 @@ $param                     = json_decode(@$argv[2], true);
 require_library('connectors/GBIFTaxonomyAPI');
 $func = new GBIFTaxonomyAPI($param);
 $id = '11592253'; //Squamata
+$id = 2433451; //Ursus maritimus
 if($func->is_id_valid_waterbody_taxon($id)) echo "\nValid\n";
 else echo "\nInvalid\n";
 // */

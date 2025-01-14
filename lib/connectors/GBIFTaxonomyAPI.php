@@ -26,7 +26,7 @@ class GBIFTaxonomyAPI
     {
         $info = self::get_taxon_info($id); //print_r($info); exit;
         if(self::has_anypart_of_ancestry_tobe_removed($info)) {
-            if(self::does_it_have_an_exemption($info)) return true;
+            if(self::has_anypart_of_ancestry_tobe_retained($info)) return true;
             else return false;
         }
         else return true;
@@ -54,9 +54,13 @@ class GBIFTaxonomyAPI
         }
         return false;
     }
-    private function does_it_have_an_exemption($info)
+    private function has_anypart_of_ancestry_tobe_retained($info)
     {
-
+        foreach($this->fields as $field) {
+            $sought_id = $info[$field];
+            if(isset($this->remove_retain_IDs['retain_ids'][$sought_id])) return true;
+        }
+        return false;
     }
     function get_taxon_info($id)
     {
