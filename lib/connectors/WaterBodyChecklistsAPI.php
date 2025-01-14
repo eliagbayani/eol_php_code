@@ -128,6 +128,9 @@ class WaterBodyChecklistsAPI
         require_library('connectors/ZenodoAPI');
         $this->zenodo = new ZenodoAPI();
         // */
+
+        require_library('connectors/GBIFTaxonomyAPI');
+        $this->GBIFTaxonomy = new GBIFTaxonomyAPI();        
     }
     function start($fields) //start($counter = false, $task, $sought_waterbdy = false) //$counter is only for caching
     {   //exit("\n[$counter]\n");
@@ -464,7 +467,10 @@ class WaterBodyChecklistsAPI
         $options['expire_seconds'] = false; //should not expire; false is the right value.
         if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
             $rek = json_decode($json, true); //print_r($rek); exit;
+            
             if(!@$rek['key']) return false;
+            if(!$this->GBIFTaxonomy->is_id_valid_waterbody_taxon($rec['specieskey'])) return false;
+
             $save = array();
             $save['taxonID']                    = $rek['key']; //same as $rec['specieskey']
             $save['scientificName']             = $rek['scientificName'];
@@ -627,9 +633,6 @@ class WaterBodyChecklistsAPI
                 )*/
                 $options = $this->download_options;
                 $options['expire_seconds'] = false; //false is the right value
-                // if($json = Functions::lookup_with_cache($this->service['country'].$rec['countrycode'], $options)) {
-                    // print_r(json_decode($json, true));
-                // }
                 if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
                     // print_r(json_decode($json, true));
                 }
