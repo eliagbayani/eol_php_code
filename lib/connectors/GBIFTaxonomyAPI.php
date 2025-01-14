@@ -3,12 +3,11 @@ namespace php_active_record;
 /* connector: [gbif_taxonomy.php]
 This is about ways to access the GBIF taxonomy
 Clients are:
-- WaterBodyChecklistsAPI.php
-- CountryChecklistsAPI.php
+    - WaterBodyChecklistsAPI.php
 */
 class GBIFTaxonomyAPI
 {
-    function __construct($param)
+    function __construct()
     {
         $this->download_options = array('resource_id' => "gbif_ctry_checklists", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000/2, 
         'timeout' => 10800*2, 'download_attempts' => 3, 'delay_in_minutes' => 5); //3 months to expire
@@ -18,26 +17,22 @@ class GBIFTaxonomyAPI
         $this->GBIF_Filters_GoogleSheet_ID = '1WB8nX4gaHv0naxg6tkXxMRGaLQIU4kYiuk57KXk9EAg';
         self::taxon_mapping_from_GoogleSheet();
     }
-    function test()
-    {   
-        self::taxon_mapping_from_GoogleSheet();
-    }
     function is_id_valid_waterbody_taxon($id)
     {
         $info = self::get_taxon_info($id); //print_r($info); exit;
-        echo "\nIn question: [".$info['canonicalName']."] [$id]\n";
-        if(self::has_anypart_of_ancestry_tobe_removed($info)) { echo "\nPart of its ancestry is to be removed.\n";
+        // echo "\nIn question: [".$info['canonicalName']."] [$id]\n";
+        if(self::has_anypart_of_ancestry_tobe_removed($info)) { //echo "\nPart of its ancestry is to be removed.\n";
             if(self::has_anypart_of_ancestry_tobe_retained($info)) {
-                echo "\nPart of its ancestry is to be retained.\n";
+                // echo "\nPart of its ancestry is to be retained.\n";
                 return true;
             }
             else {
-                echo "\nNo part of its ancestry is to be retained.\n";
+                // echo "\nNo part of its ancestry is to be retained.\n";
                 return false;
             }
         }
         else {
-            echo "\nNo part of its ancestry is to be removed.\n";
+            // echo "\nNo part of its ancestry is to be removed.\n";
             return true;
         }
     }
@@ -110,8 +105,6 @@ class GBIFTaxonomyAPI
             if($val = @$rec[1]) $final['remove_ids'][$val] = '';
             if($val = @$rec[3]) $final['retain_ids'][$val] = '';
         }
-        // $final['remove_ids'] = array_keys($final['remove_ids']);
-        // $final['retain_ids'] = array_keys($final['retain_ids']);
         $this->remove_retain_IDs = $final;
     }
 }

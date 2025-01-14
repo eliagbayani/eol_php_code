@@ -3,7 +3,7 @@ namespace php_active_record;
 /* This is about ways to access the GBIF taxonomy */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 $timestart = time_elapsed();
-$resource_id = "protisten";
+$GLOBALS['ENV_DEBUG'] = false; //true;
 
 print_r($argv);
 $params['jenkins_or_cron'] = @$argv[1]; //not needed here
@@ -12,13 +12,13 @@ $param                     = json_decode(@$argv[2], true);
 
 // /* un-comment in real operation
 require_library('connectors/GBIFTaxonomyAPI');
-$func = new GBIFTaxonomyAPI($param);
+$func = new GBIFTaxonomyAPI();
 
-$id = '11592253'; //Squamata --- invalid
+// $id = '11592253'; //Squamata --- invalid
 // $id = 2433451; //Ursus maritimus -- valid
 // $id = 2433406; //Ursus -- invalid
 // $id = 3086525; //Rhizophora -- valid
-// $id = 2433737; //Lontra felina -- valid
+$id = 2433737; //Lontra felina -- valid
 // $id = 5307; //Mustelidae -- invalid
 // $id = 2433726; //Lontra -- invalid
 // $id = 8084280; //Gadus morhua -- valid
