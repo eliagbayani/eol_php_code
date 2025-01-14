@@ -83,7 +83,7 @@ class WaterBodyChecklistsAPI
             $resource_id = "";
             $params['row_type'] = 'http://rs.tdwg.org/dwc/terms/measurementorfact';
             $params['column'] = 'http://rs.tdwg.org/dwc/terms/measurementValue';
-            $download_options = array("timeout" => 172800, 'expire_seconds' => 0); //60*60*24*1 = 1 day cache
+            $download_options = array("timeout" => 172800, 'expire_seconds' => 0); //0 is the ideal value      //60*60*24*1 = 1 day cache
             // 2 new params - for a new feature
             $params['sought_field']       = 'http://rs.tdwg.org/dwc/terms/measurementType';
             $params['sought_field_value'] = 'http://eol.org/schema/terms/Present';
@@ -461,7 +461,7 @@ class WaterBodyChecklistsAPI
     function assemble_species($rec)
     {
         $options = $this->download_options;
-        $options['expire_seconds'] = false;
+        $options['expire_seconds'] = false; //should not expire; false is the right value.
         if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
             $rek = json_decode($json, true); //print_r($rek); exit;
             if(!@$rek['key']) return false;
@@ -626,7 +626,7 @@ class WaterBodyChecklistsAPI
                     [countrycode] => JP
                 )*/
                 $options = $this->download_options;
-                $options['expire_seconds'] = false;
+                $options['expire_seconds'] = false; //false is the right value
                 // if($json = Functions::lookup_with_cache($this->service['country'].$rec['countrycode'], $options)) {
                     // print_r(json_decode($json, true));
                 // }
@@ -662,7 +662,7 @@ class WaterBodyChecklistsAPI
     {
         $final = array();
         $options = $this->download_options;
-        $options['expire_seconds'] = false;
+        $options['expire_seconds'] = false; //false is the right value
         $options['cache'] = 1;
         if($filename = Functions::save_remote_file_to_local($this->service['country_codes'], $options)) {
             $i = 0;
