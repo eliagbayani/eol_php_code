@@ -701,6 +701,10 @@ class ContinentChecklistsAPI
         $taxon->parentNameUsageID          = $rek['parentNameUsageID'];
         $taxon->taxonomicStatus            = $rek['taxonomicStatus'];
         $taxon->furtherInformationURL      = $rek['furtherInformationURL'];
+        // /* stats only
+        @$this->debug['ranks'][$rek['taxonRank']]++;
+        @$this->debug['statuses'][$rek['taxonomicStatus']]++;
+        // */
         if(!isset($this->taxon_ids[$taxon->taxonID])) {
             $this->taxon_ids[$taxon->taxonID] = '';
             $this->archive_builder->write_object_to_file($taxon);    

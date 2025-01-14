@@ -13,8 +13,18 @@ $param                     = json_decode(@$argv[2], true);
 // /* un-comment in real operation
 require_library('connectors/GBIFTaxonomyAPI');
 $func = new GBIFTaxonomyAPI($param);
-$id = '11592253'; //Squamata
-$id = 2433451; //Ursus maritimus
+
+$id = '11592253'; //Squamata --- invalid
+// $id = 2433451; //Ursus maritimus -- valid
+// $id = 2433406; //Ursus -- invalid
+// $id = 3086525; //Rhizophora -- valid
+// $id = 2433737; //Lontra felina -- valid
+// $id = 5307; //Mustelidae -- invalid
+// $id = 2433726; //Lontra -- invalid
+// $id = 8084280; //Gadus morhua -- valid
+// $id = 4308837; //species Insecta -- invalid
+// $id = 8474910; //Archaeozostera aungustifolia -- valid
+
 if($func->is_id_valid_waterbody_taxon($id)) echo "\nValid\n";
 else echo "\nInvalid\n";
 // */

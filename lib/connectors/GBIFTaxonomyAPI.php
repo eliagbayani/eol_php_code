@@ -25,11 +25,21 @@ class GBIFTaxonomyAPI
     function is_id_valid_waterbody_taxon($id)
     {
         $info = self::get_taxon_info($id); //print_r($info); exit;
-        if(self::has_anypart_of_ancestry_tobe_removed($info)) {
-            if(self::has_anypart_of_ancestry_tobe_retained($info)) return true;
-            else return false;
+        echo "\nIn question: [".$info['canonicalName']."] [$id]\n";
+        if(self::has_anypart_of_ancestry_tobe_removed($info)) { echo "\nPart of its ancestry is to be removed.\n";
+            if(self::has_anypart_of_ancestry_tobe_retained($info)) {
+                echo "\nPart of its ancestry is to be retained.\n";
+                return true;
+            }
+            else {
+                echo "\nNo part of its ancestry is to be retained.\n";
+                return false;
+            }
         }
-        else return true;
+        else {
+            echo "\nNo part of its ancestry is to be removed.\n";
+            return true;
+        }
     }
     private function has_anypart_of_ancestry_tobe_removed($info)
     {   /*Array(

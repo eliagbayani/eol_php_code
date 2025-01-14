@@ -386,6 +386,10 @@ class NationalChecklistsAPI
             $save['parentNameUsageID']          = @$rek['parentKey'];
             $save['taxonomicStatus']            = strtolower($rek['taxonomicStatus']);
             $save['furtherInformationURL']      = "https://www.gbif.org/species/".$rek['key'];
+            // /* stats only
+            @$this->debug['ranks'][$save['taxonRank']]++;
+            @$this->debug['statuses'][$save['taxonomicStatus']]++;
+            // */
             return $save;
         }
         exit("\nSpecies Key not found: [".$rec['specieskey']."]\n");
