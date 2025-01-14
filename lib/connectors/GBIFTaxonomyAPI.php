@@ -14,8 +14,9 @@ class GBIFTaxonomyAPI
         'timeout' => 10800*2, 'download_attempts' => 3, 'delay_in_minutes' => 5); //3 months to expire
         // https://docs.google.com/spreadsheets/d/1WB8nX4gaHv0naxg6tkXxMRGaLQIU4kYiuk57KXk9EAg/edit?gid=0#gid=0
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
-
+        $this->fields = array('kingdomKey', 'phylumKey', 'classKey', 'orderKey', 'familyKey', 'genusKey', 'speciesKey');
         $this->GBIF_Filters_GoogleSheet_ID = '1WB8nX4gaHv0naxg6tkXxMRGaLQIU4kYiuk57KXk9EAg';
+        self::taxon_mapping_from_GoogleSheet();
     }
     function test()
     {   
@@ -23,26 +24,66 @@ class GBIFTaxonomyAPI
     }
     function is_id_valid_waterbody_taxon($id)
     {
+        $info = self::get_taxon_info($id); //print_r($info); exit;
+        if(self::has_anypart_of_ancestry_tobe_removed($info)) {
+            if(self::does_it_have_an_exemption($info)) return true;
+            else return false;
+        }
+        else return true;
     }
-    function assemble_species($rec)
+    private function has_anypart_of_ancestry_tobe_removed($info)
+    {   /*Array(
+            [key] => 11592253
+            [scientificName] => Squamata
+            [canonicalName] => Squamata
+            [vernacularName] => squamates
+            [nameType] => SCIENTIFIC
+            [taxonomicStatus] => ACCEPTED
+            [rank] => class
+            [kingdomKey] => 1
+            [phylumKey] => 44
+            [classKey] => 11592253
+            [orderKey] => 
+            [familyKey] => 
+            [genusKey] => 
+            [speciesKey] => 
+        )*/
+        foreach($this->fields as $field) {
+            $sought_id = $info[$field];
+            if(isset($this->remove_retain_IDs['remove_ids'][$sought_id])) return true;
+        }
+        return false;
+    }
+    private function does_it_have_an_exemption($info)
+    {
+
+    }
+    function get_taxon_info($id)
     {
         $options = $this->download_options;
         $options['expire_seconds'] = false; //should not expire; false is the right value.
-        if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
-            $rek = json_decode($json, true); //print_r($rek); exit;
+        if($json = Functions::lookup_with_cache($this->service['species'].$id, $options)) {
+            $rek = json_decode($json, true); //print_r($rek); //exit;
             if(!@$rek['key']) return false;
-            $save = array();
-            $save['taxonID']                    = $rek['key']; //same as $rec['specieskey']
-            $save['scientificName']             = $rek['scientificName'];
-            $save['canonicalName']              = @$rek['canonicalName'];
-            $save['scientificNameAuthorship']   = $rek['authorship'];
-            $save['taxonRank']                  = strtolower($rek['rank']);
-            $save['parentNameUsageID']          = @$rek['parentKey'];
-            $save['taxonomicStatus']            = strtolower($rek['taxonomicStatus']);
-            $save['furtherInformationURL']      = "https://www.gbif.org/species/".$rek['key'];
-            return $save;
+            if($id != @$rek['key']) exit("\nIDs do not match. Should not go here. Investigate...\n");
+            $info = array();
+            $info['key'] = @$rek['key'];
+            $info['scientificName'] = @$rek['scientificName'];
+            $info['canonicalName'] = @$rek['canonicalName'];
+            $info['vernacularName'] = @$rek['vernacularName'];
+            $info['nameType'] = @$rek['nameType'];
+            $info['taxonomicStatus'] = @$rek['taxonomicStatus'];
+            $info['rank'] = strtolower(@$rek['rank']);
+            $info['kingdomKey'] = @$rek['kingdomKey'];
+            $info['phylumKey'] = @$rek['phylumKey'];
+            $info['classKey'] = @$rek['classKey'];
+            $info['orderKey'] = @$rek['orderKey'];
+            $info['familyKey'] = @$rek['familyKey'];
+            $info['genusKey'] = @$rek['genusKey'];
+            $info['speciesKey'] = @$rek['speciesKey'];
+            return $info;
         }
-        exit("\nSpecies Key not found: [".$rec['specieskey']."]\n");
+        exit("\nTaxon Key not found: [".$rec['specieskey']."]\n");
     }
     private function taxon_mapping_from_GoogleSheet()
     {
@@ -52,12 +93,12 @@ class GBIFTaxonomyAPI
         $params['range']         = 'taxa from water bodies!A2:D30'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
         $arr = $func->access_google_sheet($params); //print_r($arr); exit;
         foreach($arr as $rec) {
-            if($val = @$rec[1]) $final['remove_id'][$val] = '';
-            if($val = @$rec[3]) $final['retain_id'][$val] = '';
+            if($val = @$rec[1]) $final['remove_ids'][$val] = '';
+            if($val = @$rec[3]) $final['retain_ids'][$val] = '';
         }
-        $final['remove_id'] = array_keys($final['remove_id']);
-        $final['retain_id'] = array_keys($final['retain_id']);
-        print_r($final);
+        // $final['remove_ids'] = array_keys($final['remove_ids']);
+        // $final['retain_ids'] = array_keys($final['retain_ids']);
+        $this->remove_retain_IDs = $final;
     }
 }
 ?>
