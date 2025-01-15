@@ -140,7 +140,7 @@ class WaterBodyChecklistsAPI
         $key = $func->retrieve_key_for_taxon('WaterBody_checklists');
         echo "\nkey is: [$key]\n";
         */
-
+        $this->task = $task;
         $counter     = @$fields['counter'];
         $task        = @$fields['task'];
         $sought_waterbdy = @$fields['sought_waterbdy'];
@@ -161,7 +161,11 @@ class WaterBodyChecklistsAPI
         // /* main operation
         $tsv_path = self::download_extract_gbif_zip_file();
         echo "\ncsv_path: [$tsv_path]\n";
-        // self::parse_tsv_file_caching($tsv_path, $counter); //during caching only; not part of main operation
+
+        /*
+        self::parse_tsv_file_caching($tsv_path, $counter); //during caching only; not part of main operation
+        */
+
         if($task == 'divide_into_waterbody_files') {
             // /* remove current /waterbodies/ folder
             recursive_rmdir($this->waterbody_path); echo ("\nFolder removed: " . $this->waterbody_path);
@@ -186,6 +190,8 @@ class WaterBodyChecklistsAPI
         }
         elseif($task == 'generate_waterbody_checklists')  self::create_individual_waterbody_checklist_resource($counter, $task, $sought_waterbdy);
         elseif($task == 'major_deletion')                 self::create_individual_waterbody_checklist_resource($counter, $task);
+        elseif($task == 'generate_waterbody_compiled')    self::proc_waterbody_compiled();
+
 
         else exit("\nNo task to do. Will terminate.\n");
         // */
@@ -405,12 +411,32 @@ class WaterBodyChecklistsAPI
         $this->archive_builder->finalize(TRUE);
         Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
     }
+    private function proc_waterbody_compiled()
+    {
+        $file = $this->waterbody_path . "/waterbody_compiled.tsv";
+        $folder = 'waterbody_compiled';
+
+        $this->taxon_ids = array(); //very important
+        $resource_id = $folder;
+        $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
+        $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
+        // */ // ----------- end -----------
+
+        // /*
+        require_library('connectors/TraitGeneric');
+        $this->func = new TraitGeneric($resource_id, $this->archive_builder);
+        // */
+
+        self::parse_tsv_file($file, "process_waterbody_file");
+        $this->archive_builder->finalize(TRUE);
+        Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
+    }
     private function parse_tsv_file($file, $task)
     {   echo "\nTask: [$task] [$file]\n";
         $i = 0; $final = array();
-        if($task == "divide_into_waterbody_files") $mod = 100000;
-        elseif($task == "process_waterbody_file")  $mod = 1000;
-        else                                       $mod = 1000;
+        if($task == "divide_into_waterbody_files")      $mod = 100000;
+        elseif($task == "process_waterbody_file")       $mod = 5000; //1000;
+        else                                            $mod = 1000;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % $mod) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
@@ -502,6 +528,11 @@ class WaterBodyChecklistsAPI
     }
     private function write_waterbody_tsv_files()
     {
+        // /* new: 1 big waterbody resource
+        $file_compiled = $this->waterbody_path.'/waterbody_compiled.tsv';
+        if(file_exists($file_compiled)) unlink($file_compiled);
+        // */
+
         $exclude = Array('Lincoln Sea', 'Gulf of Riga', 'Sea of Okhostk');
         foreach($this->AnneT_water_bodies as $waterbody) {
             if(in_array($waterbody, $exclude)) continue;
@@ -521,13 +552,26 @@ class WaterBodyChecklistsAPI
                     fwrite($f, implode("\t", $headers)."\n");
                     fclose($f);
                 }
+
+                // /* for 1 big waterbody resource
+                if(!file_exists($file_compiled)) {
+                    $f2 = Functions::file_open($file_compiled, "w");
+                    $headers = array_keys($rec);
+                    $headers = self::use_label_SampleSize_forCount($headers);
+                    fwrite($f2, implode("\t", $headers)."\n");
+                    fwrite($f2, implode("\t", $rec)."\n");
+                }
+                else fwrite($f2, implode("\t", $rec)."\n");
+                // */                
+
                 $f = Functions::file_open($file, "a");
                 fwrite($f, implode("\t", $rec)."\n");
                 fclose($f);
                 // */
-            }
+            } //foreach()
             // break; //dev only | process just 1 waterbody
-        }
+        } //foreach()
+        fclose($f2);
     }
     private function save_to_different_waterbody_files_v1($rec)
     {   /*Array(
@@ -718,7 +762,19 @@ class WaterBodyChecklistsAPI
         return $taxon->taxonID;
     }
     private function write_traits($rek, $taxonID)
-    {
+    {   //print_r($rek); exit("\nelix\n");
+        /*Array(
+            [taxonID] => 2418684
+            [scientificName] => Scyliorhinus canicula (Linnaeus, 1758)
+            [canonicalName] => Scyliorhinus canicula
+            [scientificNameAuthorship] => (Linnaeus, 1758) 
+            [taxonRank] => species
+            [parentNameUsageID] => 9171444
+            [taxonomicStatus] => accepted
+            [furtherInformationURL] => https://www.gbif.org/species/2418684
+            [SampleSize] => 1
+            [measurementRemarks] => Kattegat
+        )*/
         $save = array();
         $save['taxon_id'] = $taxonID;
         $save['source'] = $rek['furtherInformationURL'];
@@ -726,7 +782,10 @@ class WaterBodyChecklistsAPI
 
         $mType = 'http://eol.org/schema/terms/Present';
 
-        if($mValue = self::get_waterbody_uri($this->waterbody_name, 1)) {
+        if($this->task == 'generate_waterbody_compiled') $tmp_waterbody = $rek['measurementRemarks'];   //for 1 big resource
+        else                                             $tmp_waterbody = $this->waterbody_name;        //orig 
+
+        if($mValue = self::get_waterbody_uri($tmp_waterbody, 1)) {
             $save['measurementRemarks'] = $rek['measurementRemarks'];
             $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
             // if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
