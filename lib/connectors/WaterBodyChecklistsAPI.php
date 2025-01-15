@@ -140,13 +140,12 @@ class WaterBodyChecklistsAPI
         $key = $func->retrieve_key_for_taxon('WaterBody_checklists');
         echo "\nkey is: [$key]\n";
         */
-        $this->task = $task;
         $counter     = @$fields['counter'];
         $task        = @$fields['task'];
         $sought_waterbdy = @$fields['sought_waterbdy'];
         $report_name        = @$fields['report_name'];
 
-
+        $this->task = $task;
         if($task == 'generate_report') {
             self::generate_report($report_name); //'waterbodies' or 'countries'
             return;
