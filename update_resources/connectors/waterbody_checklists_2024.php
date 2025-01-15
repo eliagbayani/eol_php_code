@@ -6,6 +6,7 @@ works with: GBIF_SQL_DownloadsAPI.code-workspace
 regular operation:
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"divide_into_waterbody_files"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_waterbody_checklists"}'
+    php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_waterbody_compiled"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_waterbody_checklists", "sought_waterbdy":"Adriatic Sea"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"major_deletion"}'
     php update_resources/connectors/waterbody_checklists_2024.php _ '{"task":"generate_report", "report_name":"waterbodies"}'
