@@ -97,6 +97,22 @@ class NationalChecklistsAPI
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
         if(!is_dir($tmp)) mkdir($tmp);
 
+        // /* Proposed country-taxon pair for manual (removal) curation.
+        $tmp = array();
+        $tmp[] = array("1780705", 'Philippines');
+        $tmp[] = array("12171927", 'Philippines');
+        $tmp[] = array("1780705", 'Indonesia');
+        foreach($tmp as $t) $this->exclude_country_taxon_pair[$t[1]][$t[0]] = '';
+        // print_r($this->exclude_country_taxon_pair); exit;
+        // Array(
+        //     [Philippines] => Array(
+        //             [1780705] => 
+        //             [12171927] => 
+        //         )
+        // )
+        $this->check_species_exclusion_for_this_ctry = false;
+        // */
+
         /*
         found in waterbody
         $this->ctry_map['SOUTH AMERICA {LakeID}'] = "South America";
@@ -233,9 +249,13 @@ class NationalChecklistsAPI
         $m = 252/6; //252 countries
         $i = 0;
         // */
+
+        require_library('connectors/GBIFTaxonomyAPI');
         
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
         foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
+
+            $this->check_species_exclusion_for_this_ctry = false;
 
             // /* breakdown when caching
             if($counter) {
@@ -262,6 +282,15 @@ class NationalChecklistsAPI
                 if($sought_ctry) {
                     if(!in_array($this->country_name, array($sought_ctry))) continue;
                 }
+
+                // /* country taxon exclusions
+                if($val = @$this->exclude_country_taxon_pair[$this->country_name]) { // means it has species for removal for this country - manual curation from spreadsheet
+                    $this->check_species_exclusion_for_this_ctry = true;
+                    // require_library('connectors/GBIFTaxonomyAPI'); //moved up seems better
+                    $this->GBIFTaxonomy = new GBIFTaxonomyAPI();        
+                    $this->GBIFTaxonomy->load_taxon_keys_for_removal(array_keys($val));
+                }
+                // */
 
                 // /*
                 if($val = $ret['orig']) {
@@ -376,7 +405,12 @@ class NationalChecklistsAPI
         $options['expire_seconds'] = false;
         if($json = Functions::lookup_with_cache($this->service['species'].$rec['specieskey'], $options)) {
             $rek = json_decode($json, true); //print_r($rek); exit;
+
             if(!@$rek['key']) return false;
+            if($this->check_species_exclusion_for_this_ctry) {
+                if(!$this->GBIFTaxonomy->is_id_valid_waterbody_taxon($rec['specieskey'])) return false;
+            }
+
             $save = array();
             $save['taxonID']                    = $rek['key']; //same as $rec['specieskey']
             $save['scientificName']             = $rek['scientificName'];

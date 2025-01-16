@@ -15,7 +15,7 @@ class GBIFTaxonomyAPI
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->fields = array('kingdomKey', 'phylumKey', 'classKey', 'orderKey', 'familyKey', 'genusKey', 'speciesKey');
         $this->GBIF_Filters_GoogleSheet_ID = '1WB8nX4gaHv0naxg6tkXxMRGaLQIU4kYiuk57KXk9EAg';
-        self::taxon_mapping_from_GoogleSheet();
+        self::GBIF_filters_from_GoogleSheet();
     }
     function is_id_valid_waterbody_taxon($id)
     {
@@ -94,7 +94,7 @@ class GBIFTaxonomyAPI
         }
         exit("\nTaxon Key not found: [".$rec['specieskey']."]\n");
     }
-    private function taxon_mapping_from_GoogleSheet()
+    private function GBIF_filters_from_GoogleSheet()
     {
         require_library('connectors/GoogleClientAPI');
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
@@ -105,6 +105,12 @@ class GBIFTaxonomyAPI
             if($val = @$rec[1]) $final['remove_ids'][$val] = '';
             if($val = @$rec[3]) $final['retain_ids'][$val] = '';
         }
+        $this->remove_retain_IDs = $final;
+    }
+    function load_taxon_keys_for_removal($taxon_keys)
+    {
+        $final = array();
+        foreach($taxon_keys as $key) $final['remove_ids'][$key] = '';
         $this->remove_retain_IDs = $final;
     }
 }
