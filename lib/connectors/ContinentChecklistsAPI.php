@@ -18,8 +18,7 @@ class ContinentChecklistsAPI
         $this->download_options['expire_seconds'] = false; //doesn't expire
 
         $this->debug = array();
-        $this->bibliographicCitation = "GBIF.org (5 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.7hzepx"; //todo: get it dynamically
-            // https://api.gbif.org/v1/occurrence/download/0056704-241126133413365
+        $this->bibliographicCitation = "GBIF.org (9 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.pr4z3z"; //todo: get it dynamically
 
         if(Functions::is_production())  $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
         else                            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
