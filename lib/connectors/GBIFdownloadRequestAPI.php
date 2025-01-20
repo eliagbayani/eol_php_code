@@ -374,7 +374,7 @@ class GBIFdownloadRequestAPI
             )
             AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
             AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')
-            AND datasetKey != 'c8fb4ced-0374-46f7-8c03-5eb5a6b70640'
+            -- AND datasetKey != 'c8fb4ced-0374-46f7-8c03-5eb5a6b70640'
             GROUP BY specieskey, waterbody";
             /* removed: pertains to country not water body
             AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH')
