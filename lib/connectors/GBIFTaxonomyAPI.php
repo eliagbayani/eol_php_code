@@ -100,7 +100,7 @@ class GBIFTaxonomyAPI
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
         $params['spreadsheetID'] = $this->GBIF_Filters_GoogleSheet_ID;
         $params['range']         = 'taxa from water bodies!A2:D30'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
-        $arr = $func->access_google_sheet($params); //print_r($arr); exit;
+        $arr = $func->access_google_sheet($params, false); //2nd param false means it will NOT use cache but will get current data from spreadsheet //print_r($arr); exit;
         foreach($arr as $rec) {
             if($val = @$rec[1]) $final['remove_ids'][$val] = '';
             if($val = @$rec[3]) $final['retain_ids'][$val] = '';
