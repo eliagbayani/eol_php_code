@@ -511,7 +511,7 @@ class WaterBodyChecklistsAPI
             $save['furtherInformationURL']      = "https://www.gbif.org/species/".$rek['key'];
             return $save;
         }
-        exit("\nSpecies Key not found: [".$rec['specieskey']."]\n");
+        exit("\n--------------------\nSpecies Key not found: [".$rec['specieskey']."]\nProgram will terminate.\n--------------------\n");
     }
     private function save_to_different_waterbody_files($rec)
     {   /*Array(
