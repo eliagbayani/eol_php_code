@@ -95,17 +95,48 @@ class GBIFTaxonomyAPI
         exit("\nTaxon Key not found: [".$rec['specieskey']."]\n");
     }
     private function GBIF_filters_from_GoogleSheet()
-    {
+    {   
+        // /* working well but just static to I've hard-coded it below
         require_library('connectors/GoogleClientAPI');
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
         $params['spreadsheetID'] = $this->GBIF_Filters_GoogleSheet_ID;
         $params['range']         = 'taxa from water bodies!A2:D30'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
-        $arr = $func->access_google_sheet($params, false); //2nd param false means it will NOT use cache but will get current data from spreadsheet //print_r($arr); exit;
+        $arr = $func->access_google_sheet($params, true); //2nd param false means it will NOT use cache but will get current data from spreadsheet //print_r($arr); exit;
         foreach($arr as $rec) {
             if($val = @$rec[1]) $final['remove_ids'][$val] = '';
             if($val = @$rec[3]) $final['retain_ids'][$val] = '';
         }
-        $this->remove_retain_IDs = $final;
+        $this->remove_retain_IDs = $final; //this is the return value
+        // */
+
+        // /* this is just checking if hard-coded value should be updated
+        $hard_coded['remove_ids'] = Array(
+            7707728 => '',
+            1496 => '',
+            216 => '',
+            131 => '',
+            212 => '',
+            359 => '',
+            11592253 => '',
+            5 => ''
+        );
+        $hard_coded['retain_ids'] = Array(
+            9640 => '',
+            3725 => '',
+            7680 => '',
+            3086525 => '',
+            4941589 => '',
+            733 => '',
+            2433669 => '', 
+            2433737 => '',
+            9251131 => '',
+            2433451 => '',
+            2459538 => ''
+        );
+        if($hard_coded == $final) echo "\nHard-coded value still good.\n";
+        else                      exit("\nHard-coded value must be updated\n");
+        // */
+        // print_r($final); exit("\n-let us just have a look-see-\n"); //good debug
     }
     function load_taxon_keys_for_removal($taxon_keys)
     {
