@@ -124,14 +124,17 @@ class WaterBodyChecklistsAPI
         if(self::get_waterbody_uri('Adriatic Sea')  == 'http://www.marineregions.org/mrgid/3314') echo "\nAdriatic Sea: OK";        else exit("\nERROR: Investigate country URI.\n");
         if(self::get_waterbody_uri('Aegean Sea')    == 'http://www.marineregions.org/mrgid/3315') echo "\nAegean Sea: OK";          else exit("\nERROR: Investigate country URI.\n");
         // exit("\n--- stop muna...\n");
+
         // /*
         require_library('connectors/ZenodoConnectorAPI');
         require_library('connectors/ZenodoAPI');
         $this->zenodo = new ZenodoAPI();
         // */
 
+        // /*
         require_library('connectors/GBIFTaxonomyAPI');
-        $this->GBIFTaxonomy = new GBIFTaxonomyAPI();        
+        $this->GBIFTaxonomy = new GBIFTaxonomyAPI();
+        // */
     }
     function start($fields) //start($counter = false, $task, $sought_waterbdy = false) //$counter is only for caching
     {   //exit("\n[$counter]\n");
