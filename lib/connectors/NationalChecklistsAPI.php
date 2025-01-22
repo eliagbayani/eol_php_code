@@ -139,7 +139,7 @@ class NationalChecklistsAPI
         // /* init 03
         require_library('connectors/GBIFTaxonomyAPI');
         $this->GBIFTaxonomy = new GBIFTaxonomyAPI('Country_checklists');
-        // print_r($this->GBIFTaxonomy->country_filters); exit("\nxxx\n");
+        // print_r($this->GBIFTaxonomy->country_filters); exit("\nxxx\n"); //from GBIFTaxonomyAPI.php country_filters() func
         // Array(
         //     [0] => Array(
         //             [Country] => Canada
@@ -157,7 +157,7 @@ class NationalChecklistsAPI
         foreach($this->GBIFTaxonomy->country_filters as $r) {
             $this->exclude_country_taxon_pair[$r['Country']][$r['GBIF ID']] = ''; //main operation
         }
-        // print_r($this->exclude_country_taxon_pair); exit("\n-stop muna-\n");
+        // print_r($this->exclude_country_taxon_pair); exit("\n-stop muna-\n"); //debug only
         // Array(
         //     [Canada] => Array(
         //             [2431950] => 
