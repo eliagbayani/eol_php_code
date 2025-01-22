@@ -69,8 +69,18 @@ class GBIFdownloadRequestAPI
         $this->abbreviation['GBIF_Sweden'] = "SE";
         $this->abbreviation['GBIF_UnitedKingdom'] = "GB";   //United Kingdom of Great Britain and Northern Ireland
     }
+    private function initialize($taxon_group)
+    {
+        if(in_array($this->resource_id, array('Country_checklists', 'WaterBody_checklists', 'Continent_checklists'))) {
+            
+        }
+    }
     function send_download_request($taxon_group) //this will overwrite any current download request. Run this once ONLY every harvest per taxon group.
     {
+        // /* new
+        self::initialize($taxon_group);
+        // */
+
         $json = self::generate_json_request($taxon_group);
         self::save_json_2file($json);
         $arr = json_decode($json, true); // print_r($arr);
@@ -374,7 +384,7 @@ class GBIFdownloadRequestAPI
             )
             AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
             AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')
-            -- AND datasetKey != 'c8fb4ced-0374-46f7-8c03-5eb5a6b70640'
+            -- AND datasetKey != 'c8fb4ced-0374-46f7-8c03-5eb5a6b70640' -- this doesn't change atm Jan 20, 2025
             GROUP BY specieskey, waterbody";
             /* removed: pertains to country not water body
             AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH')
