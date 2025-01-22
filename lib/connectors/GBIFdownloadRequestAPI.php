@@ -88,8 +88,8 @@ class GBIFdownloadRequestAPI
                 [9] => 2ddded16-5565-45ee-8aa1-1b8118fa361f
             )*/
             // e.g. " AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')"
-            $str = '';
-            foreach($this->GBIFTaxonomy->dataset_filters as $key) $str .= " AND NOT ARRAY_CONTAINS(datasetKey, '$key') ";
+            $str = "";
+            foreach($this->GBIFTaxonomy->dataset_filters as $key) $str .= " AND NOT ARRAY_CONTAINS(datasetkey, '$key') ";
             // exit("\n[$str]\n");
             $this->datasetKey_filters = $str;
         }
@@ -427,6 +427,7 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE') " .$this->datasetKey_filters. " 
             GROUP BY specieskey, continent";
         }
+        echo("\n".$param['sql']."\n");
         return json_encode($param);
         /* from GBIF API Downloads: Country_checklists or WaterBody_checklists Continent_checklists
             {
