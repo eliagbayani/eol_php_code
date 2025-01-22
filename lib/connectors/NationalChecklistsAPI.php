@@ -97,7 +97,7 @@ class NationalChecklistsAPI
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
         if(!is_dir($tmp)) mkdir($tmp);
 
-        // /* ---------- Proposed country-taxon pair for manual (removal) curation.
+        /* ---------- Proposed country-taxon pair for manual (removal) curation.
         $tmp = array();
         // $tmp[] = array("1780705", 'Philippines');
         // $tmp[] = array("12171927", 'Philippines');
@@ -111,7 +111,7 @@ class NationalChecklistsAPI
         //         )
         // )
         $this->check_species_exclusion_for_this_ctry = false;
-        // ---------- end */
+        ---------- end */
 
         /*
         found in waterbody
@@ -119,7 +119,8 @@ class NationalChecklistsAPI
         */
     }
     private function initialize()
-    {
+    {   
+        // /* init 01
         $this->country_code_name_info = self::initialize_countries_from_csv(); //print_r($this->country_code_name_info); exit;
         self::assemble_terms_yml(); //generates $this->value_uris
         if(self::get_country_uri('Trinidad And Tobago') == 'http://www.geonames.org/3573591') echo "\nTrinidad And Tobago: OK";     else exit("\nERROR: Investigate country URI.\n");
@@ -127,12 +128,62 @@ class NationalChecklistsAPI
         if(self::get_country_uri('Philippines')         == 'http://www.geonames.org/1694008') echo "\nPhilippines: OK";             else exit("\nERROR: Investigate country URI.\n");
         if(self::get_country_uri('Australia')           == 'http://www.geonames.org/2077456') echo "\nAustralia: OK";               else exit("\nERROR: Investigate country URI.\n");
         if(self::get_country_uri('United States')       == 'http://www.geonames.org/6252001') echo "\nUnited States: OK\n";         else exit("\nERROR: Investigate country URI.\n");
+        // */
 
-        // /*
+        // /* init 02
         require_library('connectors/ZenodoConnectorAPI');
         require_library('connectors/ZenodoAPI');
         $this->zenodo = new ZenodoAPI();
         // */
+
+        // /* init 03
+        require_library('connectors/GBIFTaxonomyAPI');
+        $this->GBIFTaxonomy = new GBIFTaxonomyAPI('Country_checklists');
+        // print_r($this->GBIFTaxonomy->country_filters); exit("\nxxx\n");
+        // Array(
+        //     [0] => Array(
+        //             [Country] => Canada
+        //             [uri] => http://www.geonames.org/6251999
+        //             [remove taxa] => Ambystoma mexicanum
+        //             [GBIF ID] => 2431950
+        //         )
+        //     [1] => Array(
+        //             [Country] => Canada
+        //             [uri] => http://www.geonames.org/6251999
+        //             [remove taxa] => Python regius
+        //             [GBIF ID] => 2465380
+        //         )
+        // )
+        foreach($this->GBIFTaxonomy->country_filters as $r) {
+            $this->exclude_country_taxon_pair[$r['Country']][$r['GBIF ID']] = ''; //main operation
+        }
+        // print_r($this->exclude_country_taxon_pair); exit("\n-stop muna-\n");
+        // Array(
+        //     [Canada] => Array(
+        //             [2431950] => 
+        //             [2465380] => 
+        //             [5716] => 
+        //             [552] => 
+        //             [2481102] => 
+        //         )
+        // )
+        // */
+
+        /* ---------- Proposed country-taxon pair for manual (removal) curation. --- manual assignment works OK
+        $tmp = array();
+        // $tmp[] = array("1780705", 'Philippines');
+        // $tmp[] = array("12171927", 'Philippines');
+        // $tmp[] = array("1780705", 'Indonesia');
+        foreach($tmp as $t) $this->exclude_country_taxon_pair[$t[1]][$t[0]] = '';
+        // print_r($this->exclude_country_taxon_pair); exit;
+        // Array(
+        //     [Philippines] => Array(
+        //             [1780705] => 
+        //             [12171927] => 
+        //         )
+        // )
+        $this->check_species_exclusion_for_this_ctry = false;
+        ---------- end */
     }
     function start($fields) //start($counter = false, $task, $sought_ctry = false) //$counter is only for caching
     {   //exit("\n[$counter]\n");

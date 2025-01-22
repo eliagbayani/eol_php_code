@@ -133,7 +133,7 @@ class WaterBodyChecklistsAPI
 
         // /*
         require_library('connectors/GBIFTaxonomyAPI');
-        $this->GBIFTaxonomy = new GBIFTaxonomyAPI();
+        $this->GBIFTaxonomy = new GBIFTaxonomyAPI('WaterBody_checklists');
         // */
     }
     function start($fields) //start($counter = false, $task, $sought_waterbdy = false) //$counter is only for caching

@@ -7,7 +7,7 @@ Clients are:
 */
 class GBIFTaxonomyAPI
 {
-    function __construct()
+    function __construct($what = false) //$what can be: 
     {
         $this->download_options = array('resource_id' => "gbif_ctry_checklists", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000/2, 
         'timeout' => 10800*2, 'download_attempts' => 3, 'delay_in_minutes' => 5); //3 months to expire
@@ -15,7 +15,7 @@ class GBIFTaxonomyAPI
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->fields = array('kingdomKey', 'phylumKey', 'classKey', 'orderKey', 'familyKey', 'genusKey', 'speciesKey');
         $this->GBIF_Filters_GoogleSheet_ID = '1WB8nX4gaHv0naxg6tkXxMRGaLQIU4kYiuk57KXk9EAg';
-        self::GBIF_filters_from_GoogleSheet();
+        if($what) self::GBIF_filters_from_GoogleSheet($what);
     }
     function is_id_valid_waterbody_taxon($id)
     {
@@ -94,9 +94,49 @@ class GBIFTaxonomyAPI
         }
         exit("\nTaxon Key not found: [".$rec['specieskey']."]\n");
     }
-    private function GBIF_filters_from_GoogleSheet()
+    function GBIF_filters_from_GoogleSheet($what) //$what = 'Country_checklists' OR 'WaterBody_checklists' OR 'Continent_checklists'
+    {
+            if($what == 'WaterBody_checklists') self::waterbody_filters();
+        elseif($what == 'Country_checklists')   self::country_filters();
+        else exit("\nNo filters set. Will terminate.\n");
+    }
+    function country_filters()
+    {
+        require_library('connectors/GoogleClientAPI');
+        $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
+        $params['spreadsheetID'] = $this->GBIF_Filters_GoogleSheet_ID;
+        $params['range']         = 'taxa from countries!A1:D10'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
+        $arr = $func->access_google_sheet($params, true); //2nd param false means it will NOT use cache but will get current data from spreadsheet //print_r($arr); exit;
+        // print_r($arr); exit("\n-stop muna-\n");
+
+        $i = 0;
+        foreach($arr as $temp) { $i++;
+            if($i == 1) {
+                $fields = $temp;
+                continue;
+            }
+            else {
+                $rec = array();
+                $k = 0;
+                if(!$temp) continue;
+                foreach($temp as $t) {
+                    $rec[$fields[$k]] = $t;
+                    $k++;
+                }
+                // print_r($rec); exit("\n-stop muna-\n");
+                /*Array(
+                    [Country] => Canada
+                    [uri] => http://www.geonames.org/6251999
+                    [remove taxa] => Ambystoma mexicanum
+                    [GBIF ID] => 2431950
+                )*/
+                $this->country_filters[] = $rec;
+            }
+        }
+    }
+    function waterbody_filters()
     {   
-        // /* working well but just static to I've hard-coded it below
+        // /* ----- working well but just static to I've hard-coded it below
         require_library('connectors/GoogleClientAPI');
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
         $params['spreadsheetID'] = $this->GBIF_Filters_GoogleSheet_ID;
@@ -107,7 +147,7 @@ class GBIFTaxonomyAPI
             if($val = @$rec[3]) $final['retain_ids'][$val] = '';
         }
         $this->remove_retain_IDs = $final; //this is the return value
-        // */
+        // ----- */
 
         // /* this is just checking if hard-coded value should be updated
         $hard_coded['remove_ids'] = Array(
