@@ -97,22 +97,6 @@ class NationalChecklistsAPI
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
         if(!is_dir($tmp)) mkdir($tmp);
 
-        /* ---------- Proposed country-taxon pair for manual (removal) curation.
-        $tmp = array();
-        // $tmp[] = array("1780705", 'Philippines');
-        // $tmp[] = array("12171927", 'Philippines');
-        // $tmp[] = array("1780705", 'Indonesia');
-        foreach($tmp as $t) $this->exclude_country_taxon_pair[$t[1]][$t[0]] = '';
-        // print_r($this->exclude_country_taxon_pair); exit;
-        // Array(
-        //     [Philippines] => Array(
-        //             [1780705] => 
-        //             [12171927] => 
-        //         )
-        // )
-        $this->check_species_exclusion_for_this_ctry = false;
-        ---------- end */
-
         /*
         found in waterbody
         $this->ctry_map['SOUTH AMERICA {LakeID}'] = "South America";
