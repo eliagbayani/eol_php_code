@@ -98,9 +98,41 @@ class GBIFTaxonomyAPI
     {
             if($what == 'WaterBody_checklists') self::waterbody_filters();
         elseif($what == 'Country_checklists')   self::country_filters();
+        elseif($what == 'GBIF_checklists')   self::dataset_filters();        
         else exit("\nNo filters set. Will terminate.\n");
     }
-    function country_filters()
+    private function dataset_filters()
+    {
+        require_library('connectors/GoogleClientAPI');
+        $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
+        $params['spreadsheetID'] = $this->GBIF_Filters_GoogleSheet_ID;
+        $params['range']         = 'datasets!A1:A20'; //where "A" is the starting column, "C" is the ending column, and "1" is the starting row.
+        $arr = $func->access_google_sheet($params, true); //2nd param false means it will NOT use cache but will get current data from spreadsheet //print_r($arr); exit;
+        // print_r($arr); exit("\n-stop muna-\n");
+        $i = 0;
+        foreach($arr as $temp) { $i++;
+            if($i == 1) {
+                $fields = $temp;
+                continue;
+            }
+            else {
+                $rec = array();
+                $k = 0;
+                if(!$temp) continue;
+                foreach($temp as $t) {
+                    $rec[$fields[$k]] = $t;
+                    $k++;
+                }
+                // print_r($rec); exit("\n-stop muna-\n");
+                /*Array(
+                    [Dataset ID] => ebd01d3e-5e9a-4e80-8ae2-1dfe9a032bf7
+                )*/
+                $final[$rec['Dataset ID']] = '';
+            }
+        }
+        $this->dataset_filters = array_keys($final);
+    }
+    private function country_filters()
     {
         require_library('connectors/GoogleClientAPI');
         $func = new GoogleClientAPI(); //get_declared_classes(); will give you how to access all available classes
@@ -134,7 +166,7 @@ class GBIFTaxonomyAPI
             }
         }
     }
-    function waterbody_filters()
+    private function waterbody_filters()
     {   
         // /* ----- working well but just static to I've hard-coded it below
         require_library('connectors/GoogleClientAPI');
