@@ -94,7 +94,6 @@ class GBIFdownloadRequestAPI
             $str = "AND datasetkey NOT IN ($str)";
             // exit("\n[$str]\n");
             $this->datasetKey_filters = $str;
-            // $this->datasetKey_filters = "";
         }
     }
     function send_download_request($taxon_group) //this will overwrite any current download request. Run this once ONLY every harvest per taxon group.
@@ -427,8 +426,7 @@ class GBIFdownloadRequestAPI
                 OR basisofrecord = 'MATERIAL_SAMPLE'
             )
             AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
-            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE') 
-            " .$this->datasetKey_filters. " 
+            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE') " .$this->datasetKey_filters. " 
             GROUP BY specieskey, continent";
         }
         echo("\n".$param['sql']."\n"); //exit;
