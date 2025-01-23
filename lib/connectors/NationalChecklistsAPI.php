@@ -291,7 +291,7 @@ class NationalChecklistsAPI
         $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
         foreach(glob($files) as $file) { $i++; //echo "\n$file\n"; exit;
 
-            $this->check_species_exclusion_for_this_ctry = false; //important: initialize to false for every country
+            $this->check_species_exclusion_for_this_ctry = false; //IMPORTANT: initialize to false for every country
 
             // /* breakdown when caching
             if($counter) {
