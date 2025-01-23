@@ -760,7 +760,8 @@ class WaterBodyChecklistsAPI
         $taxon->furtherInformationURL      = $rek['furtherInformationURL'];
         if(!isset($this->taxon_ids[$taxon->taxonID])) {
             $this->taxon_ids[$taxon->taxonID] = '';
-            $this->archive_builder->write_object_to_file($taxon);    
+            $this->archive_builder->write_object_to_file($taxon);
+            $this->accross_the_board_taxa[$taxon->taxonID] = $taxon->canonicalName;
         }
         return $taxon->taxonID;
     }
