@@ -87,11 +87,14 @@ class GBIFdownloadRequestAPI
                 [8] => 0360c673-20fc-420a-845a-05d20f185dcf
                 [9] => 2ddded16-5565-45ee-8aa1-1b8118fa361f
             )*/
-            // e.g. " AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')"
+            // e.g. " LastEditedBy NOT IN (11,17,13) "
             $str = "";
-            foreach($this->GBIFTaxonomy->dataset_filters as $key) $str .= " AND NOT ARRAY_CONTAINS(datasetkey, '$key') ";
+            foreach($this->GBIFTaxonomy->dataset_filters as $key) $str .= " '$key', ";
+            $str = substr(trim($str), 0, -1); //remove last char "," a comma
+            $str = "AND datasetkey NOT IN ($str)";
             // exit("\n[$str]\n");
             $this->datasetKey_filters = $str;
+            // $this->datasetKey_filters = "";
         }
     }
     function send_download_request($taxon_group) //this will overwrite any current download request. Run this once ONLY every harvest per taxon group.
@@ -424,10 +427,11 @@ class GBIFdownloadRequestAPI
                 OR basisofrecord = 'MATERIAL_SAMPLE'
             )
             AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
-            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE') " .$this->datasetKey_filters. " 
+            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE') 
+            " .$this->datasetKey_filters. " 
             GROUP BY specieskey, continent";
         }
-        echo("\n".$param['sql']."\n");
+        echo("\n".$param['sql']."\n"); //exit;
         return json_encode($param);
         /* from GBIF API Downloads: Country_checklists or WaterBody_checklists Continent_checklists
             {
