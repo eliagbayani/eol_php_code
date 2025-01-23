@@ -16,7 +16,8 @@ class NationalChecklistsAPI
         $this->download_options['expire_seconds'] = false; //doesn't expire
 
         $this->debug = array();
-        $this->bibliographicCitation = "GBIF.org (26 December 2024) GBIF Occurrence Download https://doi.org/10.15468/dl.uf735k";
+        $this->bibliographicCitation = "GBIF.org (23 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.fy2p2b"; //filtered datasetKey
+            // "GBIF.org (26 December 2024) GBIF Occurrence Download https://doi.org/10.15468/dl.uf735k";
             // https://www.gbif.org/occurrence/download/0049350-241126133413365
             // https://api.gbif.org/v1/occurrence/download/0049350-241126133413365
             
