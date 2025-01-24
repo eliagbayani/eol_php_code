@@ -190,7 +190,7 @@ class WaterBodyChecklistsAPI
             self::compare_waterbodies();
             // */
             self::write_waterbody_tsv_files();
-            exit("\nstop 5\n");
+            exit("\n--end divide_into_waterbody_files--\n");
         }
         elseif($task == 'generate_waterbody_checklists')  self::create_individual_waterbody_checklist_resource($counter, $task, $sought_waterbdy);
         elseif($task == 'major_deletion')                 self::create_individual_waterbody_checklist_resource($counter, $task);
