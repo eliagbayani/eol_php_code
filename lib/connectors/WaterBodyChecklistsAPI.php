@@ -16,7 +16,8 @@ class WaterBodyChecklistsAPI
         $this->download_options['expire_seconds'] = false; //doesn't expire
 
         $this->debug = array();
-        $this->bibliographicCitation = "GBIF.org (5 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.7hzepx"; //todo: get it dynamically
+        $this->bibliographicCitation = "GBIF.org (23 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.3vk32d"; //with filtered datasetKeys
+            // "GBIF.org (5 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.7hzepx"; //todo: get it dynamically
             // https://api.gbif.org/v1/occurrence/download/0056704-241126133413365
             // GBIF.org (20 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.f25h68 ---> with datasetKey filter
 
