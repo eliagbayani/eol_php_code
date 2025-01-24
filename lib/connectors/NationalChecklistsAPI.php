@@ -1,6 +1,12 @@
 <?php
 namespace php_active_record;
-/* connector: [national_checklists_2024.php] */
+/* connector: [national_checklists_2024.php] 
+
+//for local consumption:
+wget https://editors.eol.org/other_files/GBIF_occurrence/Country_checklists/Country_checklists_DwCA.zip
+wget https://editors.eol.org/other_files/GBIF_occurrence/WaterBody_checklists/WaterBody_checklists_DwCA.zip
+wget https://editors.eol.org/other_files/GBIF_occurrence/Continent_checklists/Continent_checklists_DwCA.zip
+*/
 class NationalChecklistsAPI
 {
     public function __construct($what) //typically param $folder is passed here.
@@ -16,7 +22,8 @@ class NationalChecklistsAPI
         $this->download_options['expire_seconds'] = false; //doesn't expire
 
         $this->debug = array();
-        $this->bibliographicCitation = "GBIF.org (23 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.fy2p2b"; //filtered datasetKey
+        $this->bibliographicCitation = "GBIF.org (23 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.vd2ajk";
+            // "GBIF.org (23 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.fy2p2b"; //filtered datasetKey
             // "GBIF.org (26 December 2024) GBIF Occurrence Download https://doi.org/10.15468/dl.uf735k";
             // https://www.gbif.org/occurrence/download/0049350-241126133413365
             // https://api.gbif.org/v1/occurrence/download/0049350-241126133413365
@@ -28,6 +35,8 @@ class NationalChecklistsAPI
         
         $this->report_1 = $this->destination . "countries.tsv";
         $this->report_2 = $this->destination . "run_countries.tsv";
+        $this->report_3 = $this->destination . "countries_unique_taxa.tsv";
+
 
         if(!is_dir($this->destination)) mkdir($this->destination);
         $this->country_path = $this->destination.'countries';
@@ -204,6 +213,15 @@ class NationalChecklistsAPI
         
         if(file_exists($tsv_path)) unlink($tsv_path);
         print_r($this->debug);
+
+        if($task == 'generate_country_checklists' & !$sought_ctry) self::write_unique_taxa_report();
+    }
+    private function write_unique_taxa_report()
+    {
+        // struct is: $this->accross_the_board_taxa[$taxon->taxonID] = $taxon->canonicalName;
+        $f = Functions::file_open($this->report_3, "w");
+        foreach($this->accross_the_board_taxa as $taxonID => $taxonName) fwrite($f, implode("\t", array($taxonID, $taxonName))."\n");
+        fclose($f);
     }
     function show_countries_metadata() //utility
     {   $cont = false; //debug only
