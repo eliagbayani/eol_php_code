@@ -36,7 +36,7 @@ class ContinentChecklistsAPI
         $this->service['country'] = "https://api.gbif.org/v1/node/country/"; //'https://api.gbif.org/v1/node/country/JP';
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->service['country_codes'] = "https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/ISO_3166-1/country_codes_2letter.tsv";
-        $this->AnneT_continents = array('Africa', 'Asia', 'Europe', 'South America', 'North America', 'Oceania'); //'Antarctica' not included
+        $this->AnneT_continents = array('Africa', 'Asia', 'Europe', 'South America', 'North America', 'Oceania', 'Antarctica'); //'Antarctica' not included
 
         /* not applicable for continent checklist
         // left is what the .csv download has; and the right is what the $this->AnneT_continents has.
@@ -576,7 +576,7 @@ class ContinentChecklistsAPI
         if($continent == 'NORTH_AMERICA')   $continent = 'North America';
         if($continent == 'EUROPE')          $continent = 'Europe';
         if($continent == 'OCEANIA')         $continent = 'Oceania';
-        // if($continent == 'ANTARCTICA')      $continent = 'Antarctica';
+        if($continent == 'ANTARCTICA')      $continent = 'Antarctica';
         return $continent;
     }
     private function parse_tsv_file_caching($file, $counter = false)
@@ -898,7 +898,13 @@ class ContinentChecklistsAPI
                 exit("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }
         }
-        else exit("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+        else {
+            // exit("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+            echo("\nERROR 2: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
+            return 'SC_'.strtolower($str);
+
+
+        }
     }
     private function use_label_SampleSize_forCount($headers)
     {
