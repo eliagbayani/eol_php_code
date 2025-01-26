@@ -625,7 +625,8 @@ class NationalChecklistsAPI
         if(!isset($this->taxon_ids[$taxon->taxonID])) {
             $this->taxon_ids[$taxon->taxonID] = '';
             $this->archive_builder->write_object_to_file($taxon);
-            $this->accross_the_board_taxa[$taxon->taxonID] = $taxon->canonicalName;
+            $this->accross_the_board_taxa[$taxon->taxonID] = $taxon->canonicalName ? $taxon->canonicalName : $taxon->scientificName;
+            // (Condition) ? (Statement1) : (Statement2); --- ternary operator
         }
         return $taxon->taxonID;
     }
