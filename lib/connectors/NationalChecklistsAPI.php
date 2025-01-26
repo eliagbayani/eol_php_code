@@ -461,7 +461,7 @@ class NationalChecklistsAPI
             $rek = json_decode($json, true); //print_r($rek); exit;
 
             if(!@$rek['key']) return false;
-            if($this->check_species_exclusion_for_this_ctry) {
+            if(@$this->check_species_exclusion_for_this_ctry) {
                 if(!$this->GBIFTaxonomy->is_id_valid_waterbody_taxon($rec['specieskey'])) return false;
             }
 
