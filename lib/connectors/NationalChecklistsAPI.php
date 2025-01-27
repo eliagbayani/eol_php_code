@@ -111,6 +111,7 @@ class NationalChecklistsAPI
         found in waterbody
         $this->ctry_map['SOUTH AMERICA {LakeID}'] = "South America";
         */
+        $this->country_continue = false;
     }
     private function initialize()
     {   
@@ -241,7 +242,7 @@ class NationalChecklistsAPI
                     [abbrev] => AD
                 )*/
 
-                if($ret['orig'] == 'United States') $cont = true; //debug only
+                // if($ret['orig'] == 'United States') $cont = true; //debug only
 
                 // if($cont) {
                     if($val = $ret['orig']) {
@@ -333,6 +334,12 @@ class NationalChecklistsAPI
                 /* manual filter, dev only
                 if(in_array($this->country_name, array('Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue; //'United States'
                 */
+
+                // /* ----- special occassion:
+                if($this->country_name == 'South Korea') $this->country_continue = true;
+                if($this->country_continue) {}
+                else continue;
+                // ----- */
 
                 if($sought_ctry) {
                     if(!in_array($this->country_name, array($sought_ctry))) continue;
