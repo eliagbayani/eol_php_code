@@ -10,10 +10,10 @@ $params['jenkins_or_cron'] = @$argv[1]; //not needed here
 $param                     = json_decode(@$argv[2], true);
 // print_r($param); exit;
 
-// /* un-comment in real operation
 require_library('connectors/GBIFTaxonomyAPI');
 $func = new GBIFTaxonomyAPI();
 
+/* un-comment in real operation -- works OK
 // $id = '11592253'; //Squamata --- invalid
 // $id = 2433451; //Ursus maritimus -- valid
 // $id = 2433406; //Ursus -- invalid
@@ -24,9 +24,12 @@ $id = 2433737; //Lontra felina -- valid
 // $id = 8084280; //Gadus morhua -- valid
 // $id = 4308837; //species Insecta -- invalid
 // $id = 8474910; //Archaeozostera aungustifolia -- valid
-
 if($func->is_id_valid_waterbody_taxon($id)) echo "\nValid\n";
 else echo "\nInvalid\n";
+*/
+
+// /* a utility that generates this report/stats: https://github.com/EOL/ContentImport/issues/24#issuecomment-2615627318
+$func->long_list_vs_continent_checklists();
 // */
 
 $elapsed_time_sec = time_elapsed() - $timestart;

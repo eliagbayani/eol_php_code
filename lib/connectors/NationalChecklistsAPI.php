@@ -220,6 +220,7 @@ class NationalChecklistsAPI
     {
         // struct is: $this->accross_the_board_taxa[$taxon->taxonID] = $taxon->canonicalName;
         $f = Functions::file_open($this->report_3, "w");
+        fwrite($f, implode("\t", array('taxonID', 'scientificName'))."\n");
         foreach($this->accross_the_board_taxa as $taxonID => $taxonName) fwrite($f, implode("\t", array($taxonID, $taxonName))."\n");
         fclose($f);
     }

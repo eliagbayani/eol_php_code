@@ -16,6 +16,10 @@ class GBIFTaxonomyAPI
         $this->fields = array('kingdomKey', 'phylumKey', 'classKey', 'orderKey', 'familyKey', 'genusKey', 'speciesKey');
         $this->GBIF_Filters_GoogleSheet_ID = '1WB8nX4gaHv0naxg6tkXxMRGaLQIU4kYiuk57KXk9EAg';
         if($what) self::GBIF_filters_from_GoogleSheet($what);
+        // /* Long list taxa VS continent checklists
+        $this->waterbody_taxa = "/Volumes/Crucial_2TB/resources_3/waterbody_compiled/taxon.tab";
+        $this->country_taxa = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries_unique_taxa v1.tsv";
+        // */
     }
     function is_id_valid_waterbody_taxon($id)
     {
@@ -215,6 +219,49 @@ class GBIFTaxonomyAPI
         $final = array();
         foreach($taxon_keys as $key) $final['remove_ids'][$key] = '';
         $this->remove_retain_IDs = $final;
+    }
+    function long_list_vs_continent_checklists()
+    {
+        self::process_tsv($this->waterbody_taxa, 'save');
+        self::process_tsv($this->country_taxa, 'save');
+        asort($this->country_waterbody_taxa);
+        // print_r($this->country_waterbody_taxa);
+        echo "\ncountry_waterbody_taxa total: ".count($this->country_waterbody_taxa)."\n";
+        $paths['africa']        = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_africa/taxon.tab';
+        $paths['antarctica']    = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_antarctica/taxon.tab';
+        $paths['asia']          = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_asia/taxon.tab';
+        $paths['europe']        = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_europe/taxon.tab';
+        $paths['northamerica']  = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_northamerica/taxon.tab';
+        $paths['oceania']       = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_oceania/taxon.tab';
+        $paths['southamerica']  = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_southamerica/taxon.tab';
+        $continents = array('africa', 'antarctica', 'asia', 'europe', 'northamerica', 'oceania', 'southamerica');
+        foreach($continents as $continent) {
+            echo "\n[$continent]: Original taxa count: " . Functions::show_totals($paths[$continent]);
+            $ret = self::process_tsv($paths[$continent], 'count');
+            echo "\nTaxa not in any country or waterbody checklist: ".count($ret)."\n";
+        }
+    }
+    private function process_tsv($file, $task)
+    {   $i = 0;
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            // if(($i % 5000) == 0) echo "\n $i ";
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna\n");
+                if($task == 'save') {
+                    $this->country_waterbody_taxa[$rec['taxonID']] = $rec['canonicalName'] ? $rec['canonicalName'] : $rec['scientificName'];
+                }
+                elseif($task == 'count') {
+                    $taxonID = $rec['taxonID'];
+                    if(!isset($this->country_waterbody_taxa[$taxonID])) $final[$taxonID] = '';
+                }
+            }
+        } //end foreach()
+        if($task == 'count') return $final;
     }
 }
 ?>
