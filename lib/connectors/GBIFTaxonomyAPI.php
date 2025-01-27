@@ -222,10 +222,20 @@ class GBIFTaxonomyAPI
     }
     function long_list_vs_continent_checklists()
     {
+        // /* generates $this->country_waterbody_taxa
         self::process_tsv($this->waterbody_taxa, 'save');
         self::process_tsv($this->country_taxa, 'save');
         asort($this->country_waterbody_taxa);
         // print_r($this->country_waterbody_taxa);
+        // */
+
+        // /* saving to tsv file
+        if(Functions::is_production())  $destination = "/extra/other_files/GBIF_occurrence/";
+        else                            $destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/";
+        $destination = $destination . "long_list_country_waterbody_taxa.tsv";
+        self::write_to_text($this->country_waterbody_taxa, $destination, array('taxonID', 'scientificName'));
+        // */
+        
         echo "\ncountry_waterbody_taxa total: ".count($this->country_waterbody_taxa)."\n";
         $paths['africa']        = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_africa/taxon.tab';
         $paths['antarctica']    = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Continent_checklists/DwCA_continents/SC_antarctica/taxon.tab';
@@ -262,6 +272,13 @@ class GBIFTaxonomyAPI
             }
         } //end foreach()
         if($task == 'count') return $final;
+    }
+    private function write_to_text($arr_with_key_value, $destination, $headers = false)
+    {
+        $f = Functions::file_open($destination, "w");
+        if($headers) fwrite($f, implode("\t", $headers)."\n");
+        foreach($arr_with_key_value as $taxonID => $taxonName) fwrite($f, implode("\t", array($taxonID, $taxonName))."\n");
+        fclose($f);
     }
 }
 ?>

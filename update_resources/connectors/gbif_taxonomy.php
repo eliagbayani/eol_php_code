@@ -28,8 +28,8 @@ if($func->is_id_valid_waterbody_taxon($id)) echo "\nValid\n";
 else echo "\nInvalid\n";
 */
 
-// /* a utility that generates this report/stats: https://github.com/EOL/ContentImport/issues/24#issuecomment-2615627318
-$func->long_list_vs_continent_checklists();
+// /* a local-only utility that generates this report/stats: https://github.com/EOL/ContentImport/issues/24#issuecomment-2615627318
+$func->long_list_vs_continent_checklists(); //can only be run locally
 // */
 
 $elapsed_time_sec = time_elapsed() - $timestart;
