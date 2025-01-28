@@ -51,6 +51,10 @@ class ContinentChecklistsAPI
         $this->proceed = false;
         $tmp = CONTENT_RESOURCE_LOCAL_PATH.'/metadata';
         if(!is_dir($tmp)) mkdir($tmp);
+
+        if(Functions::is_production())  $destination = "/extra/other_files/GBIF_occurrence/";
+        else                            $destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/";
+        $this->long_list_country_waterbody_taxa = $destination . "long_list_country_waterbody_taxa.tsv";
     }
     function generate_report($what) //'waterbodies' or 'countries' or 'continents'
     {
@@ -412,6 +416,10 @@ class ContinentChecklistsAPI
     }
     private function proc_continent_compiled()
     {
+        // /* initialize
+        self::parse_tsv_file($this->long_list_country_waterbody_taxa, 'initialize_country_waterbody_taxa');
+        // */
+
         $file = $this->continent_path . "/continent_compiled.tsv";
         $folder = 'continent_compiled';
 
@@ -426,7 +434,7 @@ class ContinentChecklistsAPI
         $this->func = new TraitGeneric($resource_id, $this->archive_builder);
         // */
 
-        self::parse_tsv_file($file, "process_continent_file");
+        self::parse_tsv_file($file, "process_continent_file_compiled");
         $this->archive_builder->finalize(TRUE);
         Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
     }
@@ -435,8 +443,8 @@ class ContinentChecklistsAPI
     {   echo "\nTask: [$task] [$file]\n";
         $i = 0; $final = array();
         if($task == "divide_into_continent_files") $mod = 100000;
-        elseif($task == "process_continent_file")  $mod = 10000;
-        else                                       $mod = 1000;
+        elseif($task == "process_continent_file")  $mod = 100000;
+        else                                       $mod = 100000;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % $mod) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);
@@ -446,7 +454,7 @@ class ContinentChecklistsAPI
                 $rec = array(); $k = 0;
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                 $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
-                // ---------------------------------------start
+                // ---------------------------------------
                 if($task == "divide_into_continent_files") {
                     /*Array(
                         [specieskey] => 1000607
@@ -457,8 +465,8 @@ class ContinentChecklistsAPI
                     self::save_to_different_continent_files($rec);
 
                 }
-                // ---------------------------------------end
-                if($task == "process_continent_file") { //print_r($rec); exit("\nelix 1\n");
+                // ---------------------------------------
+                elseif($task == "process_continent_file") { //print_r($rec); exit("\nelix 1\n");
                     /*Array(
                         [specieskey] => 1026217
                         [SampleSize] => 1
@@ -467,6 +475,24 @@ class ContinentChecklistsAPI
                     self::process_continent_file($rec);
                     // break; //debug only | process just 1 species
                 }
+                // ---------------------------------------
+                elseif($task == "process_continent_file_compiled") { //print_r($rec); exit("\nelix 1\n");
+                    /*Array(
+                        [specieskey] => 1026217
+                        [SampleSize] => 1
+                        [continent] => Africa
+                    )*/
+                    $taxonID = $rec['specieskey'];
+                    if(!isset($this->country_waterbody_taxa[$taxonID])) self::process_continent_file($rec);
+                    // break; //debug only | process just 1 species
+                }
+                // ---------------------------------------
+                elseif($task == 'initialize_country_waterbody_taxa') {
+                    $taxonID = $rec['taxonID'];
+                    $this->country_waterbody_taxa[$taxonID] = '';
+                }
+
+                // ---------------------------------------
             }
             // if($i > 1000) break; //debug only
         }
@@ -824,14 +850,14 @@ class ContinentChecklistsAPI
         // /* manual mapping
         if($continent == 'Cocos Islands') $continent = 'Cocos [Keeling] Islands';
         if($continent == 'Federated States Of Micronesia') $continent = 'Micronesia';
-        if($continent == 'xxx') $continent = 'yyy';
+        if($continent == 'Oceania') $continent = 'Oceania continent (Australia, NZ and islands)'; //value from EOL Terms file
         // */
 
         if($uris = @$this->value_uris[$continent]) {
             if(count($uris) == 1) return $uris[0];
             else {
                 foreach($uris as $uri) {                    
-                    if(stripos($uri, "marineregions.org") !== false) return $uri; //string is found
+                    if(stripos($uri, "geonames.org") !== false) return $uri; //string is found
                 }
                 return $uris[0];
             }
