@@ -152,6 +152,7 @@ class ContinentChecklistsAPI
         $sought_continent = @$fields['sought_continent'];
         $report_name        = @$fields['report_name'];
 
+        $this->task = $task;
         if($task == 'generate_report') {
             self::generate_report($report_name); //'waterbodies' or 'countries' or 'continents'
             return;
@@ -187,6 +188,8 @@ class ContinentChecklistsAPI
         }
         elseif($task == 'generate_continent_checklists')  self::create_individual_continent_checklist_resource($counter, $task, $sought_continent);
         elseif($task == 'major_deletion')                 self::create_individual_continent_checklist_resource($counter, $task);
+        elseif($task == 'generate_continent_compiled')    self::proc_continent_compiled();
+
 
         else exit("\nNo task to do. Will terminate.\n");
         // */
@@ -293,7 +296,7 @@ class ContinentChecklistsAPI
     private function create_individual_continent_checklist_resource($counter = false, $task, $sought_continent = false)
     {
         // /* caching
-        $m = 252/6; //252 continents
+        $m = 7/1; //7 continents
         $i = 0;
         // */
 
@@ -407,11 +410,32 @@ class ContinentChecklistsAPI
         $this->archive_builder->finalize(TRUE);
         Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
     }
+    private function proc_continent_compiled()
+    {
+        $file = $this->continent_path . "/continent_compiled.tsv";
+        $folder = 'continent_compiled';
+
+        $this->taxon_ids = array(); //very important
+        $resource_id = $folder;
+        $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
+        $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));                
+        // */ // ----------- end -----------
+
+        // /*
+        require_library('connectors/TraitGeneric');
+        $this->func = new TraitGeneric($resource_id, $this->archive_builder);
+        // */
+
+        self::parse_tsv_file($file, "process_continent_file");
+        $this->archive_builder->finalize(TRUE);
+        Functions::finalize_dwca_resource($resource_id, false, true, "", CONTENT_RESOURCE_LOCAL_PATH, array('go_zenodo' => false)); //designed not to go to Zenodo at this point.
+    }
+
     private function parse_tsv_file($file, $task)
     {   echo "\nTask: [$task] [$file]\n";
         $i = 0; $final = array();
         if($task == "divide_into_continent_files") $mod = 100000;
-        elseif($task == "process_continent_file")  $mod = 1000;
+        elseif($task == "process_continent_file")  $mod = 10000;
         else                                       $mod = 1000;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % $mod) == 0) echo "\n $i ";
@@ -434,7 +458,12 @@ class ContinentChecklistsAPI
 
                 }
                 // ---------------------------------------end
-                if($task == "process_continent_file") { //print_r($rec); //exit("\nelix 1\n");
+                if($task == "process_continent_file") { //print_r($rec); exit("\nelix 1\n");
+                    /*Array(
+                        [specieskey] => 1026217
+                        [SampleSize] => 1
+                        [continent] => Africa
+                    )*/
                     self::process_continent_file($rec);
                     // break; //debug only | process just 1 species
                 }
@@ -501,6 +530,11 @@ class ContinentChecklistsAPI
     }
     private function write_continent_tsv_files()
     {
+        // /* new: 1 big continent resource
+        $file_compiled = $this->continent_path.'/continent_compiled.tsv';
+        if(file_exists($file_compiled)) unlink($file_compiled);
+        // */
+
         $exclude = Array('Lincoln Sea', 'Gulf of Riga', 'Sea of Okhostk');
         foreach($this->AnneT_continents as $continent) {
             if(in_array($continent, $exclude)) continue;
@@ -520,6 +554,18 @@ class ContinentChecklistsAPI
                     fwrite($f, implode("\t", $headers)."\n");
                     fclose($f);
                 }
+
+                // /* for 1 big continent resource
+                if(!file_exists($file_compiled)) {
+                    $f2 = Functions::file_open($file_compiled, "w");
+                    $headers = array_keys($rec);
+                    $headers = self::use_label_SampleSize_forCount($headers);
+                    fwrite($f2, implode("\t", $headers)."\n");
+                    fwrite($f2, implode("\t", $rec)."\n");
+                }
+                else fwrite($f2, implode("\t", $rec)."\n");
+                // */                
+
                 $f = Functions::file_open($file, "a");
                 fwrite($f, implode("\t", $rec)."\n");
                 fclose($f);
@@ -720,7 +766,10 @@ class ContinentChecklistsAPI
 
         $mType = 'http://eol.org/schema/terms/Present';
 
-        if($mValue = self::get_continent_uri($this->continent_name, 1)) {
+        if($this->task == 'generate_continent_compiled') $tmp_continent = $rek['measurementRemarks'];   //for 1 big resource
+        else                                             $tmp_continent = $this->continent_name;        //orig 
+
+        if($mValue = self::get_continent_uri($tmp_continent, 1)) {
             $save['measurementRemarks'] = $rek['measurementRemarks'];
             $save["catnum"] = $taxonID.'_'.$mType.$mValue; //making it unique. no standard way of doing it.
             // if(in_array($mValue, $this->investigate)) exit("\nhuli ka 2\n");
