@@ -846,10 +846,7 @@ class ContinentChecklistsAPI
         $continent = str_replace(" the ", " The ", $continent);
         $continent = str_replace(" off ", " Off ", $continent);
 
-
         // /* manual mapping
-        if($continent == 'Cocos Islands') $continent = 'Cocos [Keeling] Islands';
-        if($continent == 'Federated States Of Micronesia') $continent = 'Micronesia';
         if($continent == 'Oceania') $continent = 'Oceania continent (Australia, NZ and islands)'; //value from EOL Terms file
         // */
 

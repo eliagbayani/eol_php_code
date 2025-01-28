@@ -840,7 +840,6 @@ class WaterBodyChecklistsAPI
         $waterbody = str_replace(" the ", " The ", $waterbody);
         $waterbody = str_replace(" off ", " Off ", $waterbody);
 
-
         // /* manual mapping
         if($waterbody == 'Cocos Islands') $waterbody = 'Cocos [Keeling] Islands';
         if($waterbody == 'Federated States Of Micronesia') $waterbody = 'Micronesia';

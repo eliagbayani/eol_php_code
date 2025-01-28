@@ -711,12 +711,10 @@ class NationalChecklistsAPI
         if($country == 'Timor-Leste') $country = 'East Timor';
         if($country == 'US Virgin Islands') $country = 'U.S. Virgin Islands';
         if($country == 'Wallis et Futuna') $country = 'Wallis Et Futuna Islands';
-
         if($country == 'Eswatini') return 'http://www.geonames.org/934841';
         if($country == 'Bosnia And Herzegovina') return 'http://www.geonames.org/3277605';
         if($country == 'Myanmar') return 'http://www.geonames.org/1327865';
-
-            // */
+        // */
 
         if($uris = @$this->value_uris[$country]) {
             if(count($uris) == 1) return $uris[0];
