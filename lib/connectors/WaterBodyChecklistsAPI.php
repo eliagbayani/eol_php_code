@@ -60,7 +60,7 @@ class WaterBodyChecklistsAPI
         $i = 0;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(!trim($row)) continue;
-            if(($i % 2000) == 0) echo "\n $i ";
+            if(($i % 10000) == 0) echo "\n $i ";
             if($i == 1) { $fields = explode("\t", $row); continue; }
             else {
                 if(!$row) continue;
@@ -439,8 +439,8 @@ class WaterBodyChecklistsAPI
     {   echo "\nTask: [$task] [$file]\n";
         $i = 0; $final = array();
         if($task == "divide_into_waterbody_files")      $mod = 100000;
-        elseif($task == "process_waterbody_file")       $mod = 5000; //1000;
-        else                                            $mod = 1000;
+        elseif($task == "process_waterbody_file")       $mod = 10000; //1000;
+        else                                            $mod = 10000;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % $mod) == 0) echo "\n $i ";
             if($i == 1) $fields = explode("\t", $row);

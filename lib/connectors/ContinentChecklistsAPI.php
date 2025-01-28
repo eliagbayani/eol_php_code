@@ -55,6 +55,7 @@ class ContinentChecklistsAPI
         if(Functions::is_production())  $destination = "/extra/other_files/GBIF_occurrence/";
         else                            $destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/";
         $this->long_list_country_waterbody_taxa = $destination . "long_list_country_waterbody_taxa.tsv";
+        $this->long_list_country_waterbody_taxa = 'https://raw.githubusercontent.com/eliagbayani/EOL-connector-data-files/refs/heads/master/GBIF_occurrence/long_list_country_waterbody_taxa.tsv';
     }
     function generate_report($what) //'waterbodies' or 'countries' or 'continents'
     {
@@ -70,7 +71,7 @@ class ContinentChecklistsAPI
         $i = 0;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(!trim($row)) continue;
-            if(($i % 2000) == 0) echo "\n $i ";
+            if(($i % 10000) == 0) echo "\n $i ";
             if($i == 1) { $fields = explode("\t", $row); continue; }
             else {
                 if(!$row) continue;
@@ -417,7 +418,9 @@ class ContinentChecklistsAPI
     private function proc_continent_compiled()
     {
         // /* initialize
-        self::parse_tsv_file($this->long_list_country_waterbody_taxa, 'initialize_country_waterbody_taxa');
+        $local = Functions::save_remote_file_to_local($this->long_list_country_waterbody_taxa);
+        self::parse_tsv_file($local, 'initialize_country_waterbody_taxa');
+        unlink($local);
         // */
 
         $file = $this->continent_path . "/continent_compiled.tsv";
@@ -661,7 +664,6 @@ class ContinentChecklistsAPI
 
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             // if(($i % 1000) == 0) sleep(30);
-            // if(($i % 1000) == 0) echo "\n $i ";
             // echo " [$i $counter]";
             if($i == 1) $fields = explode("\t", $row);
             else {
