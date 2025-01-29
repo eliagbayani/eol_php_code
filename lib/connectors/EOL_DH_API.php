@@ -165,11 +165,10 @@ class EOL_DH_API
         $this->DH_2_EOL[93302] = 6061725; //Biota - Cellular Organisms
         */
 
-        /* un-comment in real operation
-        // remove temp dir
+        // /* un-comment in real operation --- //remove temp dir
         recursive_rmdir($info['temp_dir']);
         echo ("\n temporary directory removed: " . $info['temp_dir']);
-        */
+        // */
         echo "\nDynamic hierarchy ready OK.\n";
     }
     public function get_ancestry_via_DH($page_id, $landmark_only = true, $return_completeYN = false)
