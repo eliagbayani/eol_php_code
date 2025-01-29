@@ -21,9 +21,8 @@ class EOL_DH_API
         $this->EOL_DH = "http://localhost/cp/summary%20data%20resources/DH/eoldynamichierarchywithlandmarks.zip";
 
         // as of Oct 16, 2024 from Katja:
-        $this->EOL_DH = "https://editors.eol.org/uploaded_resources/1c3/b5f/dhv21.zip";
-        $this->EOL_DH = "http://localhost/other_files2/DH_working_2024/dhv21.zip";
-        // /Volumes/Crucial_2TB/other_files2/DH_working_2024/dhv21/taxon.tab
+        $this->EOL_DH = "https://editors.eol.org/uploaded_resources/1c3/b5f/dhv21.zip"; //works OK //main operation
+        // $this->EOL_DH = "http://localhost/other_files2/DH_working_2024/dhv21.zip";   //works OK //dev only
     }
     private function extract_DH($filename)
     {
@@ -40,7 +39,14 @@ class EOL_DH_API
         $filename = 'taxon.tab';
         // if(true) {
         if(Functions::is_production()) {
-            if(!($info = self::extract_DH($filename))) return;
+            if(!($info = self::extract_DH($filename))) {
+                exit("\nERROR: Cannot access DH file.\n");
+                return;
+            }
+            else {
+                // print_r($info); exit("\nOK goes here.\n");
+                return $info;
+            }
         }
         else { //local development only
             /*
@@ -51,8 +57,8 @@ class EOL_DH_API
                           'temp_dir' => '/opt/homebrew/var/www/eol_php_code/tmp/dir_86040/',
                           'tables' => Array('taxa' => 'taxa.txt'));
             */
-            $info = Array('archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_35497/',                             //for dhv21.zip
-                          'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_35497/',
+            $info = Array('archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_19423/',                             //for dhv21.zip
+                          'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_19423/',
                           'tables'       => Array('taxa' => $filename));            
         }
         print_r($info);
@@ -154,10 +160,12 @@ class EOL_DH_API
             }
         }
         // print_r($this->DH_canonical_EOLid); exit("\n111 222\n");
+        
         /* may not want to force assign this:
         $this->DH_2_EOL[93302] = 6061725; //Biota - Cellular Organisms
         */
-        /* main operation
+
+        /* un-comment in real operation
         // remove temp dir
         recursive_rmdir($info['temp_dir']);
         echo ("\n temporary directory removed: " . $info['temp_dir']);
