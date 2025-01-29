@@ -105,7 +105,9 @@ class WaterBodyChecklistsAPI
 
             if(!file_exists($report)) {
                 $f = Functions::file_open($report, "w");
-                fwrite($f, implode("\t", array_keys($rek))."\n");
+                $headers = array_keys($rek);
+                $headers[] = date("d F Y");
+                fwrite($f, implode("\t", $headers)."\n");
                 fwrite($f, implode("\t", $rek)."\n");    
             }
             else {
@@ -553,6 +555,7 @@ class WaterBodyChecklistsAPI
                     $f = Functions::file_open($file, "w");
                     $headers = array_keys($rec);
                     $headers = self::use_label_SampleSize_forCount($headers);
+                    $headers[] = date("d F Y");
                     fwrite($f, implode("\t", $headers)."\n");
                     fclose($f);
                 }
@@ -562,6 +565,7 @@ class WaterBodyChecklistsAPI
                     $f2 = Functions::file_open($file_compiled, "w");
                     $headers = array_keys($rec);
                     $headers = self::use_label_SampleSize_forCount($headers);
+                    $headers[] = date("d F Y");
                     fwrite($f2, implode("\t", $headers)."\n");
                     fwrite($f2, implode("\t", $rec)."\n");
                 }
