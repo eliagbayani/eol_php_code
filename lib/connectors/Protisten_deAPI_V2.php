@@ -65,7 +65,7 @@ class Protisten_deAPI_V2
             foreach($paths as $url) { $i++; $this->report_main_url = $url;
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
-                // break; //debug - process only 1
+                break; //debug - process only 1 just 1 record
                 // if($i >= 3) break; //debug only
             }
         }
@@ -634,13 +634,13 @@ class Protisten_deAPI_V2
             if(preg_match('/<nav id=\"ubermenu-main-40\"(.*?)<\/nav>/ims', $html, $arr)) {
                 $html = $arr[1];
                 if(preg_match_all('/href=\"(.*?)\"/ims', $html, $arr)) {
-                    print_r($arr[1]); //exit("\nstop 3\n");
+                    // print_r($arr[1]); //exit("\nstop 3\n");
                     $final = array();
                     foreach($arr[1] as $r) {
                         if(stripos($r, "usage") !== false) continue; //string is found
                         if(stripos($r, "home-new") !== false) $final[] = $r;; //string is found
                     }
-                    print_r($final);
+                    // print_r($final); exit;
                     return $final;
                 }    
             }
