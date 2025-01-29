@@ -34,7 +34,7 @@ class Protisten_deAPI_V2
     }
     function start()
     {   
-        // /* access DH
+        /* access DH - part of main operation
         require_library('connectors/EOL_DH_API');
         $this->func = new EOL_DH_API();
         $this->func->parse_DH(); $landmark_only = false; $return_completeYN = true; //default value anyway is true
@@ -47,8 +47,9 @@ class Protisten_deAPI_V2
         // print_r($this->func->DH_canonical_EOLid);
         // print_r($this->func->DH_canonical_EOLid['Endomyxa']);
         // exit("\nchaeli\n");
-        // */
+        */
 
+        /* part of main operation
         self::taxon_mapping_from_GoogleSheet(); //print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
         // echo "\n111\n";
         // print_r($this->taxon_EOLpageID['Heleopera petricola var. amethystea']); 
@@ -58,6 +59,7 @@ class Protisten_deAPI_V2
 
         self::load_legacy_taxa_data();          //print_r($this->legacy);             exit("\nstop 2\n");
         self::write_agent();
+        */
 
         if($paths = self::get_main_paths()) {
             print_r($paths); //exit("\nstop 1\n");
@@ -65,7 +67,7 @@ class Protisten_deAPI_V2
             foreach($paths as $url) { $i++; $this->report_main_url = $url;
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
-                break; //debug - process only 1 just 1 record
+                break; //debug - process only 1 just 1 group
                 // if($i >= 3) break; //debug only
             }
         }
@@ -83,33 +85,46 @@ class Protisten_deAPI_V2
     private function process_one_group($url)
     {
         $recs = self::get_records_per_group($url);
-        foreach($recs as $rec) { //print_r($rec); //exit("\nhuli 2\n");
+        foreach($recs as $rec) { //print_r($rec); exit("\nhuli 2\n");
             /*Array(
                 [title] => Teleostei egg
                 [data-href] => https://www.protisten.de/home-new/metazoa/chordata/teleostei-species/
                 [target] => _blank
                 [src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
                 [data-lazy-src] => https://www.protisten.de/wp-content/uploads/2024/08/Asset_Fischei-STEMI-4180361-HEL.jpg
+            )
+            OR
+            Array(
+                [title] => Achromatium oxaliferum
+                [data-href] => https://www.protisten.de/home-new/bac-proteo/achromatium-oxaliferum/
+                [target] => _blank
+                [src] => https://www.protisten.de/wp-content/uploads/2024/07/Asset_achromatium-oxaliferum-jwbw_144.jpg
+                [data-lazy-src] => https://www.protisten.de/wp-content/uploads/2024/07/Asset_achromatium-oxaliferum-jwbw_144.jpg
             )*/
 
             $ret = self::process_taxon_rec($rec, $url); //print_r($ret); //2nd param $url is just for debug
+            $ret = self::parse_images_and_descriptions_from_elementors($ret);
             if($val = $ret['images']) $images = $val;
             else                      $images = array();
-            $images = array_filter($images); //remove null arrays
-            $images = array_unique($images); //make unique
-            $images = array_values($images); //reindex key
+            $images = self::array_filter_unique_values($images);
             $this->report[$url][$rec['title']]['url']       = $rec['data-href'];
             $title = self::clean_sciname($rec['title']);
             $this->report[$url][$rec['title']]['DH_EOLid']  = @$this->func->DH_canonical_EOLid[$title];  //EOLid from the Katjaj's DH file
             $this->report[$url][$rec['title']]['XLS_EOLid'] = @$this->taxon_EOLpageID[$title];           //EOLid from Wolfgang's Googlespreadsheet
             $this->report[$url][$rec['title']]['images']    = $images;
-
+            // break; //dev only process just 1 rec
         } //end foreach()
         // print_r($this->report); exit("\nstopx\n");
     }
     private function process_taxon_rec($rec, $url)
     {
-        $url2 = $rec['data-href'];
+        $url2 = $rec['data-href']; //e.g. https://www.protisten.de/home-new/bac-proteo/achromatium-oxaliferum/
+
+        /* force assign during dev
+        $url2 = 'https://www.protisten.de/home-new/colored-flagellates/archaeplastida-colored-flagellates/chlamydomonadales-colored-flagellates/chloromonas-spec/';
+        $rec['title'] = 'Chloromonas spec.';
+        */
+
         if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') //return; //page not found
             {
                 return; print_r($rec); exit("\nbroken link\n[$url]\n");
@@ -136,7 +151,8 @@ class Protisten_deAPI_V2
             self::get_EOLid_from_HTML($html, $sciname, $rec);
 
             if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) { //possibly for text descriptions. Not used atm.
-                // print_r($arr[1]); //exit("\nhuli 5\n");
+                // print_r($arr[1]); exit("\nhuli 5\n");
+                $rec['elementor'] = $arr[1];
             }
 
             $images1 = array();
@@ -157,10 +173,19 @@ class Protisten_deAPI_V2
                 }
             }
 
+            // <div class="elementor-element elementor-element-4d03d177 elementor-widget elementor-widget-image" data-id="4d03d177" data-element_type="widget" data-widget_type="image.default">
+			// 	<div class="elementor-widget-container">
+			// 												<img loading="lazy" decoding="async" width="800" height="692" src="https://www.protisten.de/wp-content/uploads/2024/01/achromatium-oxaliferum-jwbw-1.jpg" class="attachment-full size-full wp-image-1231" alt="Achromatium oxaliferum" srcset="https://www.protisten.de/wp-content/uploads/2024/01/achromatium-oxaliferum-jwbw-1.jpg 800w, https://www.protisten.de/wp-content/uploads/2024/01/achromatium-oxaliferum-jwbw-1-300x260.jpg 300w, https://www.protisten.de/wp-content/uploads/2024/01/achromatium-oxaliferum-jwbw-1-768x664.jpg 768w" sizes="(max-width: 800px) 100vw, 800px">															
+            //         </div>
+			// 	</div>
+
+            // <div class="elementor-element elementor-element-c657c5e elementor-widget elementor-widget-text-editor" data-id="c657c5e" data-element_type="widget" data-widget_type="text-editor.default">
+			// 	<div class="elementor-widget-container">
+			// 						<p>Sampling date 09/2009. Scale bar indicates 50 µm.</p><p>Multi-layer image shows cell in conjugation sharing genetic information.</p><p>Place name: Pond situated in the vicinity of Lake Constance (Germany).<br>Latitude: 47.734945 &nbsp;&nbsp;&nbsp; Longitude: 9.091097</p><p>Microscope Zeiss Universal, camera Olympus C7070.</p>								</div>
+			// 	</div>
+
             $pre_tmp = array_merge($images1, $images2);
-            $pre_tmp = array_filter($pre_tmp); //remove null arrays
-            $pre_tmp = array_unique($pre_tmp); //make unique
-            $pre_tmp = array_values($pre_tmp); //reindex key
+            $pre_tmp = self::array_filter_unique_values($pre_tmp);
             // print_r($pre_tmp);
 
             $tmp = array();
@@ -248,6 +273,7 @@ class Protisten_deAPI_V2
             }
         }
         print_r($rec); print_r($this->debug); echo("\nhuli 4 - should not go here.\n"); //return //un-comment in real operation. Let there be exit()
+        // return
     }
     private function get_EOLid_from_HTML($html, $sciname, $rec)
     {
@@ -914,6 +940,25 @@ class Protisten_deAPI_V2
         }
         // print_r($this->taxon_EOLpageID['Heleopera petricola var. amethystea']); exit("\nend 2\n");
         // print_r($this->remove_scinames); exit; //seems obsolete already
+    }
+    private function array_filter_unique_values($images)
+    {
+        $images = array_filter($images); //remove null arrays
+        $images = array_unique($images); //make unique
+        $images = array_values($images); //reindex key
+        return $images;
+    }
+    private function parse_images_and_descriptions_from_elementors($ret)
+    {
+        $i = -1;
+        $elementors = $ret['elementor'];
+        foreach($elementors as $e) { $i++;
+            $old_e = $e;
+            if(stripos($e, "place name:") !== false) { //string is found
+                echo "\n-----\n".$elementors[$i-1]."\n-----\n$e\n";
+            }
+        }
+        exit;
     }
 }
 ?>
