@@ -985,8 +985,7 @@ class Protisten_deAPI_V2
         $elementors = $ret['elementor'];
         foreach($elementors as $e) { $i++;
             $old_e = $e;
-            if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false || stripos($e, "<strong>Place names</strong>") !== false) { //string is found
-
+            if(self::has_place_name_OR_dimension_strings($e)) {
                 $tmp[] = $elementors[$i-4]; //gets the 4th image. e.g. https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/melosira-nummuloides/
                 $tmp[] = $e;
 
@@ -1023,15 +1022,23 @@ class Protisten_deAPI_V2
         } //end foreach()
         // print_r($this->image_text); exit("\nstop muna 1\n");
     }
+    private function has_place_name_OR_dimension_strings($e)
+    {
+        if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false 
+                                                || stripos($e, "<strong>Place names") !== false
+                                                || stripos($e, "<p>Place name") !== false
+                                                ) { //string is found
+            return true;
+        }
+        return false;
+    }
     private function parse_images_and_descriptions_from_elementors_v2($ret) //for single images, no sliders
     {   // ----- step 1
         $tmp = array(); $i = -1;
         $elementors = $ret['elementor_v2'];
         echo "\n-=-=-=-=-=\n";
         foreach($elementors as $e) { $i++;
-            if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false || stripos($e, "<strong>Place names</strong>") !== false) { //string is found
-                $tmp[] = $e;
-            }
+            if(self::has_place_name_OR_dimension_strings($e)) $tmp[] = $e;
         }
         if($tmp) {
             print_r($tmp); //exit("\nstopx 1\n");
