@@ -107,7 +107,7 @@ class Protisten_deAPI_V2
             $this->image_text = array();
             self::parse_images_and_descriptions_from_elementors($ret); //for single images, no sliders
             self::parse_images_and_descriptions_from_elementors_v2($ret); //for slider images
-            print_r($this->image_text); exit("\nelix 3\n");
+            print_r($this->image_text); //exit("\nelix 3\n");
 
             if($val = $ret['images']) $images = $val;
             else                      $images = array();
