@@ -103,8 +103,12 @@ class Protisten_deAPI_V2
             )*/
 
             $ret = self::process_taxon_rec($rec, $url); //print_r($ret); //2nd param $url is just for debug
+            
+            $this->image_text = array();
             self::parse_images_and_descriptions_from_elementors($ret); //for single images, no sliders
             self::parse_images_and_descriptions_from_elementors_v2($ret); //for slider images
+            print_r($this->image_text); exit("\nelix 3\n");
+
             if($val = $ret['images']) $images = $val;
             else                      $images = array();
             $images = self::array_filter_unique_values($images);
@@ -971,9 +975,11 @@ class Protisten_deAPI_V2
         $i = 0;
         foreach($tmp as $t) { $i++;
             if ($i % 2 == 0) { //even meaning text description
-                $t = Functions::remove_whitespace($t);
-                echo "\ntext:[$image_is] [".$t."]\n";
-                $this->image_text[$image_is] = $t; //for saving
+                if($image_is) {
+                    $t = Functions::remove_whitespace($t);
+                    echo "\ntext:[$image_is] [".$t."]\n";
+                    $this->image_text[$image_is] = $t; //for saving    
+                }
             }
             else { //odd meaning image(s)
                 $image_is = "";
@@ -984,7 +990,7 @@ class Protisten_deAPI_V2
                 }
             }
         } //end foreach()
-        print_r($this->image_text); //exit("\nstop muna 1\n");
+        // print_r($this->image_text); exit("\nstop muna 1\n");
     }
     private function parse_images_and_descriptions_from_elementors_v2($ret) //for single images, no sliders
     {   // ----- step 1
@@ -1050,7 +1056,17 @@ class Protisten_deAPI_V2
             )*/
             // ----- step 4: assign ID to text desc.
             $saved_ID_texts = self::assign_ID_to_text($tmp);
-            print_r($saved_ID_texts); exit("\nhuli 4\n");
+            // print_r($saved_ID_texts); exit("\nhuli 4\n");
+            /*Array(
+                [dc99d5c] => <p>Sampling date 08/2012. </p><p>Two images. <br />Underwater photos taken with an Olympus Tough. The sponge branches in the first picture were about 3 cm long and about 5 mm thick at the base.</p><p>Please click on &lt; or &gt; on the image edges or on the dots at the bottom edge of the images to browse through the slides!</p><p>Place name: Lake Brahmsee near Kiel (Schleswig-Holstein, Germany)   <br />Latitude: 54.202309     Longitude: 9.906453</p>
+                [6d3877e] => <p>Two images. <br />Some branches of the sponge were broken off and placed in a Petri dish filled with local water in the laboratory. After a few days, the loose sponge tissue had formed into a new sponge.</p><p>Please click on &lt; or &gt; on the image edges or on the dots at the bottom edge of the images to browse through the slides!</p><p>Place name: Lake Brahmsee near Kiel (Schleswig-Holstein, Germany)   <br />Latitude: 54.202309     Longitude: 9.906453</p><p>Dissecting microscope Zeiss SV6, camera Olympus C7070WZ. DOF images.</p>
+            )*/
+            // ----- step 5: saving to: $this->image_text[$image_is] = $t; //for saving
+            foreach($saved_ID_images as $ID => $images) {
+                foreach($images as $image_is) {
+                    $this->image_text[$image_is] = $saved_ID_texts[$ID]; //for saving
+                }
+            }
         }
     }
     private function proc_preg_match($left, $right, $i, $html)
