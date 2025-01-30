@@ -119,7 +119,7 @@ class Protisten_deAPI_V2
             $this->report[$url][$rec['title']]['DH_EOLid']  = @$this->func->DH_canonical_EOLid[$title];  //EOLid from the Katjaj's DH file
             $this->report[$url][$rec['title']]['XLS_EOLid'] = @$this->taxon_EOLpageID[$title];           //EOLid from Wolfgang's Googlespreadsheet
             $this->report[$url][$rec['title']]['images']    = $images;
-            // break; //dev only process just 1 rec
+            // break; //dev only process only 1 just 1 rec
         } //end foreach()
         // print_r($this->report); exit("\nstopx\n");
     }
