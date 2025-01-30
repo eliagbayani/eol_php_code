@@ -43,10 +43,6 @@ class EOL_DH_API
                 exit("\nERROR: Cannot access DH file.\n");
                 return;
             }
-            else {
-                // print_r($info); exit("\nOK goes here.\n");
-                return $info;
-            }
         }
         else { //local development only
             /*
@@ -57,8 +53,8 @@ class EOL_DH_API
                           'temp_dir' => '/opt/homebrew/var/www/eol_php_code/tmp/dir_86040/',
                           'tables' => Array('taxa' => 'taxa.txt'));
             */
-            $info = Array('archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_19423/',                             //for dhv21.zip
-                          'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_19423/',
+            $info = Array('archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_46815/',                             //for dhv21.zip
+                          'temp_dir'     => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_46815/',
                           'tables'       => Array('taxa' => $filename));            
         }
         print_r($info);
