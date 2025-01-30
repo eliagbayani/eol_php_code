@@ -1063,8 +1063,10 @@ class Protisten_deAPI_V2
             )*/
             // ----- step 5: saving to: $this->image_text[$image_is] = $t; //for saving
             foreach($saved_ID_images as $ID => $images) {
-                foreach($images as $image_is) {
-                    $this->image_text[$image_is] = $saved_ID_texts[$ID]; //for saving
+                if($images) {
+                    foreach($images as $image_is) {
+                        $this->image_text[$image_is] = $saved_ID_texts[$ID]; //for saving
+                    }    
                 }
             }
         }
