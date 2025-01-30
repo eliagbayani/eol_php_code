@@ -31,6 +31,7 @@ class Protisten_deAPI_V2
         if(!is_dir($path)) mkdir($path);
         $this->report_file = $path.'protistenDE_images.tsv';
         $this->protisten_de_legacy_taxa = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/refs/heads/master/protisten_de/protisten_2024_07_10/taxon.tab';
+        $this->desc_suffix = '<p>© Wolfgang Bettighofer,<br />images under Creative Commons License V 3.0 (CC BY-NC-SA).<br />For permission to use of (high resolution) images please contact <a href="mailto:postmaster@protisten.de">postmaster@protisten.de</a>.</p>';
     }
     function start()
     {   
@@ -786,7 +787,10 @@ class Protisten_deAPI_V2
             $mr->Owner                  = "Wolfgang Bettighofer";
             $mr->UsageTerms             = "http://creativecommons.org/licenses/by-nc-sa/3.0/";
 
-            if($val = @$this->image_text[$image]) $mr->description = $val;
+            if($val = @$this->image_text[$image]) {
+                $str = '<p>For further information about the image, please click here: <a href="'.$rec['url'].'">Link to protisten.de page</a></p>';
+                $mr->description = Functions::remove_whitespace($val . $this->desc_suffix . $str);
+            }
             else $this->debug['image no text'][$image] = $mr->furtherInformationURL;
 
             if(!isset($this->obj_ids[$mr->identifier])) {
