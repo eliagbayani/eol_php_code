@@ -987,6 +987,9 @@ class Protisten_deAPI_V2
             $old_e = $e;
             if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false) { //string is found
 
+                $tmp[] = $elementors[$i-4]; //gets the 4th image. e.g. https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/melosira-nummuloides/
+                $tmp[] = $e;
+
                 $tmp[] = $elementors[$i-3]; //gets the 3rd image upwards from the text desc. e.g. https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-oscillatoriales/lyngbya-nigra/
                 $tmp[] = $e;                //the 3rd image is: https://www.protisten.de/wp-content/uploads/2024/01/Lyngbya-nigra-040-125-2-1208386-393-AQU_NEW.jpg
 
