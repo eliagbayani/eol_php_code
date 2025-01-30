@@ -125,13 +125,13 @@ class Protisten_deAPI_V2
     {
         $url2 = $rec['data-href']; //e.g. https://www.protisten.de/home-new/bac-proteo/achromatium-oxaliferum/
 
-        // /* force assign during dev
+        /* force assign during dev
         $url2 = 'https://www.protisten.de/home-new/colored-flagellates/archaeplastida-colored-flagellates/chlamydomonadales-colored-flagellates/chloromonas-spec/';
         $rec['title'] = 'Chloromonas spec.';
 
         $url2 = 'https://www.protisten.de/home-new/metazoa/porifera/spongilla-lacustris/';
         $rec['title'] = 'Spongilla lacustris';
-        // */
+        */
 
         if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') {
             return; print_r($rec); exit("\nbroken link\n[$url]\n");
