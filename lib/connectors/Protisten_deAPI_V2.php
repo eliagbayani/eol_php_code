@@ -68,7 +68,7 @@ class Protisten_deAPI_V2
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
                 // break; //debug - process only 1 just 1 group
-                // if($i >= 3) break; //debug only
+                // if($i >= 2) break; //debug only
             }
         }
         else exit("\nStructure changed. Investigate.\n");
@@ -777,7 +777,10 @@ class Protisten_deAPI_V2
             $mr->furtherInformationURL  = $rec['url'];
             $mr->Owner                  = "Wolfgang Bettighofer";
             $mr->UsageTerms             = "http://creativecommons.org/licenses/by-nc-sa/3.0/";
-            $mr->description            = ''; //waiting on Wolfgang
+
+            if($val = @$this->image_text[$image]) $mr->description = $val;
+            else $this->debug['image no text'][$image] = '';
+
             if(!isset($this->obj_ids[$mr->identifier])) {
                 $this->archive_builder->write_object_to_file($mr);
                 $this->obj_ids[$mr->identifier] = '';
@@ -965,7 +968,7 @@ class Protisten_deAPI_V2
         $elementors = $ret['elementor'];
         foreach($elementors as $e) { $i++;
             $old_e = $e;
-            if(stripos($e, "place name:") !== false) { //string is found
+            if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false) { //string is found
                 $tmp[] = $elementors[$i-1];
                 $tmp[] = $e;
                 // echo "\n-----\n".$elementors[$i-1]."\n-----\n$e\n";
@@ -998,7 +1001,7 @@ class Protisten_deAPI_V2
         $elementors = $ret['elementor_v2'];
         echo "\n-=-=-=-=-=\n";
         foreach($elementors as $e) { $i++;
-            if(stripos($e, "place name:") !== false) { //string is found
+            if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false) { //string is found
                 $tmp[] = $e;
             }
         }
