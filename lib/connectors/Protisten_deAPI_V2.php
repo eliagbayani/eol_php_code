@@ -986,6 +986,13 @@ class Protisten_deAPI_V2
         foreach($elementors as $e) { $i++;
             $old_e = $e;
             if(self::has_place_name_OR_dimension_strings($e)) {
+
+                // gets images 5th and 6th https://www.protisten.de/home-new/ciliophora/oligohymenophorea/hymenostomatia/tetrahymena-pyriformis/
+                $tmp[] = $elementors[$i-6];
+                $tmp[] = $e;
+                $tmp[] = $elementors[$i-5];
+                $tmp[] = $e;
+
                 $tmp[] = $elementors[$i-4]; //gets the 4th image. e.g. https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/melosira-nummuloides/
                 $tmp[] = $e;
 
