@@ -121,10 +121,13 @@ class Protisten_deAPI_V2
     {
         $url2 = $rec['data-href']; //e.g. https://www.protisten.de/home-new/bac-proteo/achromatium-oxaliferum/
 
-        /* force assign during dev
+        // /* force assign during dev
         $url2 = 'https://www.protisten.de/home-new/colored-flagellates/archaeplastida-colored-flagellates/chlamydomonadales-colored-flagellates/chloromonas-spec/';
         $rec['title'] = 'Chloromonas spec.';
-        */
+
+        $url2 = 'https://www.protisten.de/home-new/metazoa/porifera/spongilla-lacustris/';
+        $rec['title'] = 'Spongilla lacustris';
+        // */
 
         if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') {
             return; print_r($rec); exit("\nbroken link\n[$url]\n");
@@ -155,6 +158,7 @@ class Protisten_deAPI_V2
             }
             if(preg_match_all("/data-id=(.*?)<\/div>/ims", $html, $arr)) { //for slider images text descriptions.
                 $rec['elementor_v2'] = $arr[1];
+                $rec['html'] = $html;
             }
 
 
@@ -1007,8 +1011,58 @@ class Protisten_deAPI_V2
             foreach($tmp as $t) {
                 if(preg_match("/\"(.*?)\"/ims", $t, $arr)) $IDs[$arr[1]] = '';
             }
-            print_r($IDs); exit;
+            print_r($IDs); //exit;
+            /*Array(
+                [59772381] => 
+                [c657c5e] => 
+            )*/
+            // ----- step 3: do the preg_match()
+            $i = 0; $prev_ID = ''; $saved = array();
+            foreach(array_keys($IDs) as $ID) { $i++;
+                if($i == 1) {
+                    $arr_images = self::proc_preg_match("background-image:url", $ID, $i, $ret['html']);
+                    $saved[$ID] = $arr_images;
+                }
+                else {
+                    $arr_images = self::proc_preg_match($prev_ID, $ID, $i, $ret['html']);
+                    $saved[$ID] = $arr_images;
+                }
+                $prev_ID = $ID;
+            }
+            // print_r($saved); exit("\nditox 1\n");
+            /*Array(
+                [dc99d5c] => Array(
+                        [0] => https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-P8130028_NEW.jpg
+                        [1] => https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-P8130023-_NEW.jpg
+                    )
+                [6d3877e] => Array(
+                        [0] => https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-STEMI-P8135439-441-BRA_NEW.jpg
+                        [1] => https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-STEMI-P8135445-448-BRA_NEW.jpg
+                    )
+            )*/
+            // ----- step 4: assign ID to text desc.
+            
         }
+    }
+    private function proc_preg_match($left, $right, $i, $html)
+    {
+        if($i == 1) {}
+        else $left = "element.elementor-element-".$left;
+        $right = "element.elementor-element-".$right;
+        echo "\nleft: [$left]";
+        echo "\nright: [$right]\n";
+
+        if(preg_match("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $html, $arr)) {
+            // [0] => (https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-P8130028_NEW.jpg);background-size:cover;}
+            if(preg_match_all("/\(https(.*?)\)/ims", $arr[1], $arr2)) {
+                // print_r($arr2[1]); exit("\nok huli 1\n");
+                $final = array();
+                foreach($arr2[1] as $s) $final[] = 'https'.$s;
+                return $final;
+            }
+            // exit("\nok huli 2\n");
+        }
+        // exit("\ndito siya\n");
     }
 }
 ?>
