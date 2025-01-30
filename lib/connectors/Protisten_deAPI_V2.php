@@ -989,13 +989,25 @@ class Protisten_deAPI_V2
         echo "\n-=-=-=-=-=\n";
         foreach($elementors as $e) { $i++;
             if(stripos($e, "place name:") !== false) { //string is found
-                // echo "\n$e\n";
                 $tmp[] = $e;
             }
         }
         if($tmp) {
-            print_r($tmp);
-            exit("\nstopx 1\n");
+            print_r($tmp); exit("\nstopx 1\n");
+            /*Array(
+                [0] => "59772381" data-element_type="widget" data-widget_type="text-editor.default">
+                            <div class="elementor-widget-container">
+                                                <p>Sampling date 04/2006. Scale bar indicates 10 µm.</p><p><i>Achromatium oxaliferum</i> is a large colorless sulpher bacterium containing large refractile structures of calcite spherulites.</p><p>Place name: Pond Demühlen, rain storage reservoir in Kiel-Russee (Schleswig-Holstein, Germany).<br />Latitude: 54.304095     Longitude: 10.086073</p><p>Microscope Zeiss Universal, camera Olympus C7070.</p>								
+                [1] => "c657c5e" data-element_type="widget" data-widget_type="text-editor.default">
+                            <div class="elementor-widget-container">
+                                                <p>Sampling date 09/2009. Scale bar indicates 50 µm.</p><p>Multi-layer image shows cell in conjugation sharing genetic information.</p><p>Place name: Pond situated in the vicinity of Lake Constance (Germany).<br />Latitude: 47.734945     Longitude: 9.091097</p><p>Microscope Zeiss Universal, camera Olympus C7070.</p>								
+            )*/
+            // ----- step 2: get IDs
+            $IDs = array();
+            foreach($tmp as $t) {
+                if(preg_match("/\"(.*?)\"/ims", $t, $arr)) $IDs[$arr[1]] = '';
+            }
+            print_r($IDs); exit;
         }
     }
 }
