@@ -985,7 +985,7 @@ class Protisten_deAPI_V2
         $elementors = $ret['elementor'];
         foreach($elementors as $e) { $i++;
             $old_e = $e;
-            if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false) { //string is found
+            if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false || stripos($e, "<strong>Place names</strong>") !== false) { //string is found
 
                 $tmp[] = $elementors[$i-4]; //gets the 4th image. e.g. https://www.protisten.de/home-new/bacillariophyta/coscinodiscophyceae/melosira-nummuloides/
                 $tmp[] = $e;
@@ -1029,7 +1029,7 @@ class Protisten_deAPI_V2
         $elementors = $ret['elementor_v2'];
         echo "\n-=-=-=-=-=\n";
         foreach($elementors as $e) { $i++;
-            if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false) { //string is found
+            if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false || stripos($e, "<strong>Place names</strong>") !== false) { //string is found
                 $tmp[] = $e;
             }
         }
