@@ -1006,6 +1006,14 @@ class Protisten_deAPI_V2
                             <div class="elementor-widget-container">
                                                 <p>Sampling date 09/2009. Scale bar indicates 50 µm.</p><p>Multi-layer image shows cell in conjugation sharing genetic information.</p><p>Place name: Pond situated in the vicinity of Lake Constance (Germany).<br />Latitude: 47.734945     Longitude: 9.091097</p><p>Microscope Zeiss Universal, camera Olympus C7070.</p>								
             )*/
+            /*Array(
+                [0] => "dc99d5c" data-element_type="widget" data-widget_type="text-editor.default">
+                            <div class="elementor-widget-container">
+                                                <p>Sampling date 08/2012. </p><p>Two images. <br />Underwater photos taken with an Olympus Tough. The sponge branches in the first picture were about 3 cm long and about 5 mm thick at the base.</p><p>Please click on &lt; or &gt; on the image edges or on the dots at the bottom edge of the images to browse through the slides!</p><p>Place name: Lake Brahmsee near Kiel (Schleswig-Holstein, Germany)   <br />Latitude: 54.202309     Longitude: 9.906453</p>						
+                [1] => "6d3877e" data-element_type="widget" data-widget_type="text-editor.default">
+                            <div class="elementor-widget-container">
+                                                <p>Two images. <br />Some branches of the sponge were broken off and placed in a Petri dish filled with local water in the laboratory. After a few days, the loose sponge tissue had formed into a new sponge.</p><p>Please click on &lt; or &gt; on the image edges or on the dots at the bottom edge of the images to browse through the slides!</p><p>Place name: Lake Brahmsee near Kiel (Schleswig-Holstein, Germany)   <br />Latitude: 54.202309     Longitude: 9.906453</p><p>Dissecting microscope Zeiss SV6, camera Olympus C7070WZ. DOF images.</p>								
+            )*/
             // ----- step 2: get IDs
             $IDs = array();
             foreach($tmp as $t) {
@@ -1017,19 +1025,19 @@ class Protisten_deAPI_V2
                 [c657c5e] => 
             )*/
             // ----- step 3: do the preg_match()
-            $i = 0; $prev_ID = ''; $saved = array();
+            $i = 0; $prev_ID = ''; $saved_ID_images = array();
             foreach(array_keys($IDs) as $ID) { $i++;
                 if($i == 1) {
                     $arr_images = self::proc_preg_match("background-image:url", $ID, $i, $ret['html']);
-                    $saved[$ID] = $arr_images;
+                    $saved_ID_images[$ID] = $arr_images;
                 }
                 else {
                     $arr_images = self::proc_preg_match($prev_ID, $ID, $i, $ret['html']);
-                    $saved[$ID] = $arr_images;
+                    $saved_ID_images[$ID] = $arr_images;
                 }
                 $prev_ID = $ID;
             }
-            // print_r($saved); exit("\nditox 1\n");
+            // print_r($saved_ID_images); exit("\nditox 1\n");
             /*Array(
                 [dc99d5c] => Array(
                         [0] => https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-P8130028_NEW.jpg
@@ -1041,7 +1049,8 @@ class Protisten_deAPI_V2
                     )
             )*/
             // ----- step 4: assign ID to text desc.
-            
+            $saved_ID_texts = self::assign_ID_to_text($tmp);
+            print_r($saved_ID_texts); exit("\nhuli 4\n");
         }
     }
     private function proc_preg_match($left, $right, $i, $html)
@@ -1063,6 +1072,25 @@ class Protisten_deAPI_V2
             // exit("\nok huli 2\n");
         }
         // exit("\ndito siya\n");
+    }
+    private function assign_ID_to_text($tmp)
+    {
+        /*Array(
+            [0] => "dc99d5c" data-element_type="widget" data-widget_type="text-editor.default">
+                        <div class="elementor-widget-container">
+                                            <p>Sampling date 08/2012. </p><p>Two images. <br />Underwater photos taken with an Olympus Tough. The sponge branches in the first picture were about 3 cm long and about 5 mm thick at the base.</p><p>Please click on &lt; or &gt; on the image edges or on the dots at the bottom edge of the images to browse through the slides!</p><p>Place name: Lake Brahmsee near Kiel (Schleswig-Holstein, Germany)   <br />Latitude: 54.202309     Longitude: 9.906453</p>						
+            [1] => "6d3877e" data-element_type="widget" data-widget_type="text-editor.default">
+                        <div class="elementor-widget-container">
+                                            <p>Two images. <br />Some branches of the sponge were broken off and placed in a Petri dish filled with local water in the laboratory. After a few days, the loose sponge tissue had formed into a new sponge.</p><p>Please click on &lt; or &gt; on the image edges or on the dots at the bottom edge of the images to browse through the slides!</p><p>Place name: Lake Brahmsee near Kiel (Schleswig-Holstein, Germany)   <br />Latitude: 54.202309     Longitude: 9.906453</p><p>Dissecting microscope Zeiss SV6, camera Olympus C7070WZ. DOF images.</p>								
+        )*/
+        $final = array();
+        foreach($tmp as $t) {
+            if(preg_match("/\"(.*?)\"/ims", $t, $arr)) {
+                $ID = $arr[1];
+                if(preg_match("/<div class=\"elementor-widget-container\">(.*?)elix/ims", $t."elix", $arr)) $final[$ID] = Functions::remove_whitespace($arr[1]);
+            }
+        }
+        return $final;
     }
 }
 ?>
