@@ -80,6 +80,7 @@ class Protisten_deAPI_V2
         // exit("\nstop muna\n");
         $this->archive_builder->finalize(true);
         if(isset($this->debug)) print_r($this->debug);
+        echo "\n[image no text]: ".count(@$this->debug['image no text'])."\n";
         if(!@$this->debug['does not exist']) echo "\n--No broken images!--\n";    
     }
     private function process_one_group($url)
@@ -104,10 +105,10 @@ class Protisten_deAPI_V2
 
             $ret = self::process_taxon_rec($rec, $url); //print_r($ret); //2nd param $url is just for debug
             
-            $this->image_text = array();
+            // $this->image_text = array(); --- NEVER initialize this
             self::parse_images_and_descriptions_from_elementors($ret); //for single images, no sliders
             self::parse_images_and_descriptions_from_elementors_v2($ret); //for slider images
-            print_r($this->image_text); //exit("\nelix 3\n");
+            // print_r($this->image_text); exit("\nelix 3\n");
 
             if($val = $ret['images']) $images = $val;
             else                      $images = array();
@@ -131,6 +132,12 @@ class Protisten_deAPI_V2
 
         $url2 = 'https://www.protisten.de/home-new/metazoa/porifera/spongilla-lacustris/';
         $rec['title'] = 'Spongilla lacustris';
+
+        $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-chroococcales/aphanothece-stagnina/';
+        $rec['title'] = 'Aphanothece stagnina';
+
+        // $url2 = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-nostocales/aphanizomenon-flos-aquae/';
+        // $rec['title'] = 'Aphanizomenon flos-aquae';
         */
 
         if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') {
@@ -159,6 +166,7 @@ class Protisten_deAPI_V2
 
             if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) { //for single image text descriptions. Not sliders.
                 $rec['elementor'] = $arr[1];
+                // print_r($arr[1]); exit;
             }
             if(preg_match_all("/data-id=(.*?)<\/div>/ims", $html, $arr)) { //for slider images text descriptions.
                 $rec['elementor_v2'] = $arr[1];
@@ -779,7 +787,7 @@ class Protisten_deAPI_V2
             $mr->UsageTerms             = "http://creativecommons.org/licenses/by-nc-sa/3.0/";
 
             if($val = @$this->image_text[$image]) $mr->description = $val;
-            else $this->debug['image no text'][$image] = '';
+            else $this->debug['image no text'][$image] = $mr->furtherInformationURL;
 
             if(!isset($this->obj_ids[$mr->identifier])) {
                 $this->archive_builder->write_object_to_file($mr);
@@ -969,8 +977,16 @@ class Protisten_deAPI_V2
         foreach($elementors as $e) { $i++;
             $old_e = $e;
             if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false) { //string is found
+
+                // $tmp[] = $elementors[$i-3];
+                // $tmp[] = $e;
+
+                $tmp[] = $elementors[$i-2];
+                $tmp[] = $e;
+                
                 $tmp[] = $elementors[$i-1];
                 $tmp[] = $e;
+
                 // echo "\n-----\n".$elementors[$i-1]."\n-----\n$e\n";
             }
         } //end foreach() // print_r($tmp);
