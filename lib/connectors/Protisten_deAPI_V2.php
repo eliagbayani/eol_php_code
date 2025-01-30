@@ -34,7 +34,7 @@ class Protisten_deAPI_V2
     }
     function start()
     {   
-        /* access DH - part of main operation
+        // /* access DH - part of main operation
         require_library('connectors/EOL_DH_API');
         $this->func = new EOL_DH_API();
         $this->func->parse_DH(); $landmark_only = false; $return_completeYN = true; //default value anyway is true
@@ -47,9 +47,9 @@ class Protisten_deAPI_V2
         // print_r($this->func->DH_canonical_EOLid);
         // print_r($this->func->DH_canonical_EOLid['Endomyxa']);
         // exit("\nchaeli\n");
-        */
+        // */
 
-        /* part of main operation
+        // /* part of main operation
         self::taxon_mapping_from_GoogleSheet(); //print_r($this->taxon_EOLpageID);    exit("\ncount: ".count($this->taxon_EOLpageID)."\nstop 1\n");
         // echo "\n111\n";
         // print_r($this->taxon_EOLpageID['Heleopera petricola var. amethystea']); 
@@ -59,7 +59,7 @@ class Protisten_deAPI_V2
 
         self::load_legacy_taxa_data();          //print_r($this->legacy);             exit("\nstop 2\n");
         self::write_agent();
-        */
+        // */
 
         if($paths = self::get_main_paths()) {
             print_r($paths); //exit("\nstop 1\n");
@@ -67,7 +67,7 @@ class Protisten_deAPI_V2
             foreach($paths as $url) { $i++; $this->report_main_url = $url;
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
-                break; //debug - process only 1 just 1 group
+                // break; //debug - process only 1 just 1 group
                 // if($i >= 3) break; //debug only
             }
         }
@@ -103,7 +103,8 @@ class Protisten_deAPI_V2
             )*/
 
             $ret = self::process_taxon_rec($rec, $url); //print_r($ret); //2nd param $url is just for debug
-            $ret = self::parse_images_and_descriptions_from_elementors($ret);
+            self::parse_images_and_descriptions_from_elementors($ret); //for single images, no sliders
+            self::parse_images_and_descriptions_from_elementors_v2($ret); //for slider images
             if($val = $ret['images']) $images = $val;
             else                      $images = array();
             $images = self::array_filter_unique_values($images);
@@ -125,10 +126,9 @@ class Protisten_deAPI_V2
         $rec['title'] = 'Chloromonas spec.';
         */
 
-        if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') //return; //page not found
-            {
-                return; print_r($rec); exit("\nbroken link\n[$url]\n");
-            }
+        if($url2 == 'https://www.protisten.de/home-new/bacillariophyta/bacillariophyceae/cymbella-spec-2/') {
+            return; print_r($rec); exit("\nbroken link\n[$url]\n");
+        }
 
         // $url2 = 'https://www.protisten.de/home-new/heliozoic-amoeboids/haptista-heliozoic-amoeboids/panacanthocystida-acanthocystida/acanthocystis-penardi/';
         // $url2 = 'https://www.protisten.de/home-new/testatamoeboids-infra/amoebozoa-testate/glutinoconcha/excentrostoma/centropyxis-aculeata/';
@@ -150,10 +150,13 @@ class Protisten_deAPI_V2
             // to do: differentiate eol.org with tree and without tree but just a link to eol page
             self::get_EOLid_from_HTML($html, $sciname, $rec);
 
-            if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) { //possibly for text descriptions. Not used atm.
-                // print_r($arr[1]); exit("\nhuli 5\n");
+            if(preg_match_all("/<div class=\"elementor-widget-container\">(.*?)<\/div>/ims", $html, $arr)) { //for single image text descriptions. Not sliders.
                 $rec['elementor'] = $arr[1];
             }
+            if(preg_match_all("/data-id=(.*?)<\/div>/ims", $html, $arr)) { //for slider images text descriptions.
+                $rec['elementor_v2'] = $arr[1];
+            }
+
 
             $images1 = array();
             // background-image:url(https://www.protisten.de/wp-content/uploads/2024/06/Centropyxis-aculeata-Matrix-063-200-Mipro-P3224293-302-HID_NEW.jpg)
@@ -948,17 +951,52 @@ class Protisten_deAPI_V2
         $images = array_values($images); //reindex key
         return $images;
     }
-    private function parse_images_and_descriptions_from_elementors($ret)
-    {
-        $i = -1;
+    private function parse_images_and_descriptions_from_elementors($ret) //for single images, no sliders
+    {   // ----- step 1
+        $tmp = array(); $i = -1;
         $elementors = $ret['elementor'];
         foreach($elementors as $e) { $i++;
             $old_e = $e;
             if(stripos($e, "place name:") !== false) { //string is found
-                echo "\n-----\n".$elementors[$i-1]."\n-----\n$e\n";
+                $tmp[] = $elementors[$i-1];
+                $tmp[] = $e;
+                // echo "\n-----\n".$elementors[$i-1]."\n-----\n$e\n";
+            }
+        } //end foreach() // print_r($tmp);
+        // ----- step 2
+        $i = 0;
+        foreach($tmp as $t) { $i++;
+            if ($i % 2 == 0) { //even meaning text description
+                $t = Functions::remove_whitespace($t);
+                echo "\ntext:[$image_is] [".$t."]\n";
+                $this->image_text[$image_is] = $t; //for saving
+            }
+            else { //odd meaning image(s)
+                $image_is = "";
+                if(preg_match_all("/src=\"(.*?)\"/ims", $t, $arr)) {
+                    $image_is = $arr[1][0];
+                    echo "\nimages: "; echo $image_is; //there is only 1 image here
+                    if(count($arr[1]) > 1) exit("\nhuli stop - does not go here.\n");
+                }
+            }
+        } //end foreach()
+        print_r($this->image_text); //exit("\nstop muna 1\n");
+    }
+    private function parse_images_and_descriptions_from_elementors_v2($ret) //for single images, no sliders
+    {   // ----- step 1
+        $tmp = array(); $i = -1;
+        $elementors = $ret['elementor_v2'];
+        echo "\n-=-=-=-=-=\n";
+        foreach($elementors as $e) { $i++;
+            if(stripos($e, "place name:") !== false) { //string is found
+                // echo "\n$e\n";
+                $tmp[] = $e;
             }
         }
-        exit;
+        if($tmp) {
+            print_r($tmp);
+            exit("\nstopx 1\n");
+        }
     }
 }
 ?>
