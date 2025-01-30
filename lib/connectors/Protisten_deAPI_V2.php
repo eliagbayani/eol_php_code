@@ -1035,6 +1035,7 @@ class Protisten_deAPI_V2
                                                 || stripos($e, "<strong>Place names") !== false
                                                 || stripos($e, "<p>Place name") !== false
                                                 || stripos($e, "Microscope Zeiss") !== false
+                                                || stripos($e, "Scale bar indicate") !== false
                                                 ) { //string is found
             return true;
         }
