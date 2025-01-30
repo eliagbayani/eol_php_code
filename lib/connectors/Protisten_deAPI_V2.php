@@ -238,6 +238,11 @@ class Protisten_deAPI_V2
             foreach($pre_tmp as $f) {
                 if(stripos($f, "Asset_") !== false) continue; //string is found
                 if(stripos($f, $genus_name.".jpg") !== false) continue; //string is found
+
+                // /* exclude taxonomic tree image e.g. https://www.protisten.de/wp-content/uploads/2024/01/Aphanothece-e1722003443558.jpg
+                if(stripos($f, "-e1") !== false) continue; //string is found 
+                // */
+                
                 if(stripos($f, $genus_dash_species) !== false) $tmp[] = $f; //string is found
                 if(stripos($f, $genus_dash_species2) !== false) $tmp[] = $f; //string is found
                 if(stripos($f, $genus_dash_species3) !== false) $tmp[] = $f; //string is found
@@ -249,7 +254,7 @@ class Protisten_deAPI_V2
                     if(stripos($f, $genus_dash2) !== false) $tmp[] = $f; //string is found
                 }
             }
-            print_r($tmp); echo " ret - 111";
+            echo "\n---elix---\n"; print_r($tmp); echo " ret - 111";
             if(count($tmp) > 0) { $rec['images'] = $tmp; return $rec; }
 
             if(count($tmp) == 0) {
@@ -982,8 +987,8 @@ class Protisten_deAPI_V2
             $old_e = $e;
             if(stripos($e, "place name:") !== false || stripos($e, "dimension:") !== false) { //string is found
 
-                // $tmp[] = $elementors[$i-3];
-                // $tmp[] = $e;
+                $tmp[] = $elementors[$i-3];
+                $tmp[] = $e;
 
                 $tmp[] = $elementors[$i-2];
                 $tmp[] = $e;
