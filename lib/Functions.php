@@ -2586,6 +2586,13 @@ class Functions
         if($textToDelete) return self::delete_all_between($beginning, $end, str_replace($textToDelete, '', $string)); // recursion to ensure all occurrences are replaced
         return trim($string);
     }
+    public static function preg_delete_all_between($left, $right, $str) //inclusive | e.g. $left = 'style="'  $right='"'
+    {
+        if(preg_match_all("/".preg_quote($left, '/')."(.*?)".preg_quote($right, '/')."/ims", $str, $arr)) { 
+            foreach($arr[1] as $substr) $str = str_replace($left . $substr . $right, "", $str);
+        }
+        return Functions::remove_whitespace($str);
+    }
     public static function start_print_debug($this_debug, $resource_id)
     {
         $file = CONTENT_RESOURCE_LOCAL_PATH . $resource_id."_debug.txt";
