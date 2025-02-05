@@ -33,7 +33,7 @@ class Protisten_deAPI_V2
         $this->protisten_de_legacy_taxa = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/refs/heads/master/protisten_de/protisten_2024_07_10/taxon.tab';
         $this->desc_suffix = '<p>© Wolfgang Bettighofer,<br />images under Creative Commons License V 3.0 (CC BY-NC-SA).<br />For permission to use of (high resolution) images please contact <a href="mailto:postmaster@protisten.de">postmaster@protisten.de</a>.</p>';
         /* To edit 1 record search for "******" and un-comment line. */
-        if($val = @$param['RunTest']) $this->RunTest = $val;
+        $this->RunTest = @$param['RunTest'];
     }
     function start()
     {   
@@ -122,7 +122,7 @@ class Protisten_deAPI_V2
             // $rec['data-href'] = 'https://www.protisten.de/home-new/colored-flagellates/archaeplastida-colored-flagellates/chlamydomonadales-colored-flagellates/chloromonas-spec/';
             // */
 
-            if($test = $this->RunTest) {
+            if($test = @$this->RunTest) {
                 $rec = array();
                 $rec['title'] = $test['title'];
                 $rec['data-href'] = $test['data-href'];    
@@ -148,7 +148,7 @@ class Protisten_deAPI_V2
             $this->report[$url][$rec['title']]['images_v2'] = $this->image_text_current;
             // print_r($this->report); exit("\n-report exit-\n"); //good debug for single rec testing | ******
             // break; //dev only process only 1 just 1 rec | ******
-            if($this->RunTest) {
+            if(@$this->RunTest) {
                 print_r($this->report);
                 $test_sciname = $this->RunTest['title'];
                 $pre = $this->report['https://www.protisten.de/home-new/bac-proteo/'][$test_sciname];
