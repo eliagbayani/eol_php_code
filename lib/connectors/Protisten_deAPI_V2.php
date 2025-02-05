@@ -1193,19 +1193,28 @@ class Protisten_deAPI_V2
                 [c657c5e] => 
             )*/
             // ----- step 3: do the preg_match()
-            $i = 0; $prev_ID = ''; $saved_ID_images = array();
+            $i = 0; $prev_ID = ''; $saved_ID_images = array(); $gotImagesYN = false;
             foreach(array_keys($IDs) as $ID) { $i++;
                 if($i == 1) {
                     $arr_images = self::proc_preg_match("background-image:url", $ID, $i, $ret['html']);
                     $saved_ID_images[$ID] = $arr_images;
+                    if($arr_images) $gotImagesYN = true;
                 }
                 else {
                     $arr_images = self::proc_preg_match($prev_ID, $ID, $i, $ret['html']);
                     $saved_ID_images[$ID] = $arr_images;
+                    if($arr_images) $gotImagesYN = true;
                 }
                 $prev_ID = $ID;
             }
-            print_r($saved_ID_images); //exit("\nditox 1\n");
+            // /* ---------- NEW to accomodate: https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-nostocales/aphanizomenon-flos-aquae/
+            if(!$gotImagesYN) {
+                $arr_images = self::proc_preg_match("background-image:url", $ID, 1, $ret['html']);
+                $saved_ID_images[$ID] = $arr_images;
+                if($arr_images) $gotImagesYN = true;
+            }
+            // ---------- */
+            print_r($saved_ID_images); //exit("\nHere is where image(s) is/are assigned.\n[$gotImagesYN]\n");
             /*Array(
                 [dc99d5c] => Array(
                         [0] => https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-P8130028_NEW.jpg
