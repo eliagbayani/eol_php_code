@@ -34,6 +34,18 @@ $param                     = json_decode(@$argv[2], true);
     [expire_seconds] => 86400
 )*/
 
+/* to run test
+$rec['title'] = 'Aphanizomenon flos-aquae';
+$rec['data-href'] = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-nostocales/aphanizomenon-flos-aquae/';
+$rec['title'] = 'Aphanothece stagnina';
+$rec['data-href'] = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-chroococcales/aphanothece-stagnina/';
+$rec['title'] = 'Spongilla lacustris';
+$rec['data-href'] = 'https://www.protisten.de/home-new/metazoa/porifera/spongilla-lacustris/';
+$rec['title'] = 'Chloromonas spec.';
+$rec['data-href'] = 'https://www.protisten.de/home-new/colored-flagellates/archaeplastida-colored-flagellates/chlamydomonadales-colored-flagellates/chloromonas-spec/';
+$param['RunTest'] = $rec;
+*/
+
 // /* un-comment in real operation
 require_library('connectors/Protisten_deAPI_V2');
 $func = new Protisten_deAPI_V2($resource_id, $param);

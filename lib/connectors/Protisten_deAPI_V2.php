@@ -33,6 +33,7 @@ class Protisten_deAPI_V2
         $this->protisten_de_legacy_taxa = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/refs/heads/master/protisten_de/protisten_2024_07_10/taxon.tab';
         $this->desc_suffix = '<p>© Wolfgang Bettighofer,<br />images under Creative Commons License V 3.0 (CC BY-NC-SA).<br />For permission to use of (high resolution) images please contact <a href="mailto:postmaster@protisten.de">postmaster@protisten.de</a>.</p>';
         /* To edit 1 record search for "******" and un-comment line. */
+        if($val = @$param['RunTest']) $this->RunTest = $val;
     }
     function start()
     {   
@@ -71,6 +72,7 @@ class Protisten_deAPI_V2
                 self::process_one_group($url);
                 // break; //debug - process only 1 just 1 group | ******
                 // if($i >= 2) break; //debug only
+                if($this->RunTest) break;
             }
         }
         else exit("\nStructure changed. Investigate.\n");
@@ -107,8 +109,8 @@ class Protisten_deAPI_V2
 
             /* force assign dev only --- works OK | ******
             $rec = array();
-            // $rec['title'] = 'Aphanizomenon flos-aquae';
-            // $rec['data-href'] = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-nostocales/aphanizomenon-flos-aquae/';
+            $rec['title'] = 'Aphanizomenon flos-aquae';
+            $rec['data-href'] = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-nostocales/aphanizomenon-flos-aquae/';
 
             // $rec['title'] = 'Aphanothece stagnina';
             // $rec['data-href'] = 'https://www.protisten.de/home-new/bac-cya-chlorobi/bac-cya/bac-chroococcales/aphanothece-stagnina/';
@@ -116,9 +118,15 @@ class Protisten_deAPI_V2
             // $rec['title'] = 'Spongilla lacustris';
             // $rec['data-href'] = 'https://www.protisten.de/home-new/metazoa/porifera/spongilla-lacustris/';
 
-            $rec['title'] = 'Chloromonas spec.';
-            $rec['data-href'] = 'https://www.protisten.de/home-new/colored-flagellates/archaeplastida-colored-flagellates/chlamydomonadales-colored-flagellates/chloromonas-spec/';
-            */
+            // $rec['title'] = 'Chloromonas spec.';
+            // $rec['data-href'] = 'https://www.protisten.de/home-new/colored-flagellates/archaeplastida-colored-flagellates/chlamydomonadales-colored-flagellates/chloromonas-spec/';
+            // */
+
+            if($test = $this->RunTest) {
+                $rec = array();
+                $rec['title'] = $test['title'];
+                $rec['data-href'] = $test['data-href'];    
+            }
 
             $ret = self::process_taxon_rec($rec, $url); //print_r($ret); //2nd param $url is just for debug
             
@@ -138,8 +146,15 @@ class Protisten_deAPI_V2
             $this->report[$url][$rec['title']]['XLS_EOLid'] = @$this->taxon_EOLpageID[$title];           //EOLid from Wolfgang's Googlespreadsheet
             $this->report[$url][$rec['title']]['images']    = $images;
             $this->report[$url][$rec['title']]['images_v2'] = $this->image_text_current;
-            // print_r($this->report); //exit("\n-report exit-\n"); //good debug for single rec testing | ******
+            // print_r($this->report); exit("\n-report exit-\n"); //good debug for single rec testing | ******
             // break; //dev only process only 1 just 1 rec | ******
+            if($this->RunTest) {
+                print_r($this->report);
+                $test_sciname = $this->RunTest['title'];
+                $pre = $this->report['https://www.protisten.de/home-new/bac-proteo/'][$test_sciname];
+                self::run_local_tests($pre, $test_sciname);
+                exit("\n-end tests-\n");
+            }
         } //end foreach()
         // print_r($this->report); exit("\nstopx\n");
     }
@@ -1283,6 +1298,81 @@ class Protisten_deAPI_V2
             }
         }
         return $final;
+    }
+    private function run_local_tests($pre, $test_sciname)
+    {   
+        if($test_sciname == 'Aphanizomenon flos-aquae') {
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Apanizomenon-flos-aquae-016-100-P6030438-ODB_NEW.jpg']) {
+                if(stripos($desc, "Sampling date 05/2011") !== false) echo "\nPass OK 1"; //string is found
+                else echo "\nTest Error 1a\n";
+            }
+            else echo "\nTest Error 1b\n";
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanizomenon-flos-aquae-IMG-20210818-094755_NEW.jpg']) {
+                if(stripos($desc, "Sampling date 08/2021") !== false) echo "\nPass OK 2"; //string is found
+                else echo "\nTest Error 2a\n";
+            }
+            else echo "\nTest Error 2b\n";
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanizomenon-flos-aquae-SZX16-2-115-8172366-SSW_NEW.jpg']) {
+                if(stripos($desc, "Scale bars indicate 2 mm") !== false) echo "\nPass OK 3"; //string is found
+                else echo "\nTest Error 3a\n";
+            }
+            else echo "\nTest Error 3b\n";
+            if(count($pre['images'] == 7)) echo "\nPass OK 4";
+            else echo "\nTest Error 4\n";    
+        }
+        elseif($test_sciname == 'Aphanothece stagnina') {
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanothece-stagnina-016-100-P9284680-SIM_NEW.jpg']) {
+                if(stripos($desc, "Scale bars indicate 100 µm") !== false) echo "\nPass OK 1"; //string is found
+                else echo "\nTest Error 1a\n";
+            }
+            else echo "\nTest Error 1b\n";
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanothece-stagnina-025-100-P9284676-BOD_NEW.jpg']) {
+                if(stripos($desc, "Scale bars indicate 100 µm") !== false) echo "\nPass OK 2"; //string is found
+                else echo "\nTest Error 2a\n";
+            }
+            else echo "\nTest Error 2b\n";            
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanothece-stagnina-Epithemia-adnata-040-100-P6101397-404-PIL_NEW.jpg']) {
+                if(stripos($desc, "Sampling date 05/2011") !== false) echo "\nPass OK 3"; //string is found
+                else echo "\nTest Error 3a\n";
+            }
+            else echo "\nTest Error 3b\n";
+            if(count($pre['images'] == 3)) echo "\nPass OK 4";
+            else echo "\nTest Error 4\n";    
+        }  
+        elseif($test_sciname == 'Spongilla lacustris') {
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-P8130028_NEW.jpg']) {
+                if(stripos($desc, "Sampling date 08/2012") !== false) echo "\nPass OK 1"; //string is found
+                else echo "\nTest Error 1a\n";
+            }
+            else echo "\nTest Error 1b\n";
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-P8130023-_NEW.jpg']) {
+                if(stripos($desc, "Sampling date 08/2012") !== false) echo "\nPass OK 2"; //string is found
+                else echo "\nTest Error 2a\n";
+            }
+            else echo "\nTest Error 2b\n";
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-STEMI-P8135439-441-BRA_NEW.jpg']) {
+                if(stripos($desc, "Two images.") !== false) echo "\nPass OK 3"; //string is found
+                else echo "\nTest Error 3a\n";
+            }
+            else echo "\nTest Error 3b\n";
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/08/Spongilla-lacustris-STEMI-P8135445-448-BRA_NEW.jpg']) {
+                if(stripos($desc, "Two images.") !== false) echo "\nPass OK 4"; //string is found
+                else echo "\nTest Error 4a\n";
+            }
+            else echo "\nTest Error 4b\n";
+            if(count($pre['images'] == 4)) echo "\nPass OK 5";
+            else echo "\nTest Error 5\n";
+        }
+        elseif($test_sciname == 'Chloromonas spec.') {
+            $desc1 = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/10/Chloromonas-040-200-2-5171985-994-1.5kV-ASW_NEW.jpg'];
+            $desc2 = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/10/Chloromonas-040-200-2-5171985-994-1kV-ASW_NEW.jpg'];
+            $desc3 = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/10/Chloromonas-040-200-2-5171985-994-2kV-ASW_NEW.jpg'];
+            $desc4 = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/10/Chloromonas-040-200-2-5171985-994-1.5kV2-ASW_NEW.jpg'];
+            if($desc1 == $desc2 && $desc3 == $desc4 && $desc1 == $desc4) echo "\nPass OK 1";
+            else echo "\nTest Error 1\n";
+            if(count($pre['images'] == 4)) echo "\nPass OK 2";
+            else echo "\nTest Error 2\n";
+        }  
     }
 }
 ?>
