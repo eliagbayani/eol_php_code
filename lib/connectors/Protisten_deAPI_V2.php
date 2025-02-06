@@ -1312,13 +1312,18 @@ class Protisten_deAPI_V2
                 else echo "\nTest Error 2a\n";
             }
             else echo "\nTest Error 2b\n";
-            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanizomenon-flos-aquae-SZX16-2-115-8172366-SSW_NEW.jpg']) {
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanizomenon-flos-aquae-SZX16-1-125-8172344-SSW_NEW.jpg']) {
                 if(stripos($desc, "Scale bars indicate 2 mm") !== false) echo "\nPass OK 3"; //string is found
                 else echo "\nTest Error 3a\n";
             }
             else echo "\nTest Error 3b\n";
-            if(count($pre['images'] == 7)) echo "\nPass OK 4";
-            else echo "\nTest Error 4\n";    
+            if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanizomenon-flos-aquae-SZX16-2-115-8172366-SSW_NEW.jpg']) {
+                if(stripos($desc, "Scale bars indicate 2 mm") !== false) echo "\nPass OK 4"; //string is found
+                else echo "\nTest Error 4a\n";
+            }
+            else echo "\nTest Error 4b\n";
+            if(count($pre['images'] == 7)) echo "\nPass OK 5";
+            else echo "\nTest Error 5\n";
         }
         elseif($test_sciname == 'Aphanothece stagnina') {
             if($desc = $pre['images_v2']['https://www.protisten.de/wp-content/uploads/2024/01/Aphanothece-stagnina-016-100-P9284680-SIM_NEW.jpg']) {
