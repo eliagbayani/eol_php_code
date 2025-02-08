@@ -48,7 +48,7 @@ class WaterBodyChecklistsAPI
     }
     function generate_report($what) //'waterbodies' or 'countries'
     {
-        $report = $this->destination . $what . "_report.tsv";
+        $report = $this->destination . $what . "_report.tsv"; //countries_report.tsv OR waterbodies_report.tsv
         if($what == 'countries') $report = str_replace('WaterBody_checklists', 'Country_checklists', $report);
         if(file_exists($report)) unlink($report);
         // /*
