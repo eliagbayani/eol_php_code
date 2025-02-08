@@ -277,6 +277,9 @@ class NationalChecklistsAPI
 
     private function evaluate_country_file($file)
     {
+        /* force assign dev only
+        $file = '/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/CH.tsv'; //Switzerland force assign dev only
+        */
         $ret = self::get_country_name_from_file($file); //e.g. $file "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/Country_checklists/countries/AD.tsv"
         $country_name_lower = $ret['lower_case'];
         $this->country_name = $ret['orig'];
@@ -327,7 +330,7 @@ class NationalChecklistsAPI
             }
             // */
 
-            if($ret = self::evaluate_country_file($file)) {
+            if($ret = self::evaluate_country_file($file)) { //print_r($ret);
                 $country_name_lower = $ret['lower_case'];
                 $this->country_name = $ret['orig'];
 
@@ -335,11 +338,11 @@ class NationalChecklistsAPI
                 if(in_array($this->country_name, array('Philippines', 'Australia', 'Germany', 'Trinidad and Tobago', 'Canada'))) continue; //'United States'
                 */
 
-                // /* ----- special occassion:
+                /* ----- special occassion: dev only
                 if($this->country_name == 'South Korea') $this->country_continue = true;
                 if($this->country_continue) {}
                 else continue;
-                // ----- */
+                ----- */
 
                 if($sought_ctry) {
                     if(!in_array($this->country_name, array($sought_ctry))) continue;
@@ -374,7 +377,10 @@ class NationalChecklistsAPI
                 }    
                 // */
             }
-            else continue;
+            else {
+                // print_r($ret); echo "\nfailed file: [$file]\n"; exit; //debug only
+                continue;
+            }
             
             // /* during major file deletion
             if($task == 'major_deletion') continue;
