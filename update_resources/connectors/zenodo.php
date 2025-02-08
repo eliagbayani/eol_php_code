@@ -58,6 +58,7 @@ exit("\n -end test- \n");
 */
 
 $func = new ZenodoAPI();
+$func->eli_update_meta_national_2019_checklists(); //Feb 8, 2015
 // $func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
 
 /* all these four (4) done already:
