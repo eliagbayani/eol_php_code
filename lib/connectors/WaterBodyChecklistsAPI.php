@@ -611,6 +611,7 @@ class WaterBodyChecklistsAPI
                 $f = Functions::file_open($file, "w");
                 $headers = array_keys($rec);
                 $headers = self::use_label_SampleSize_forCount($headers);
+                $headers[] = date("d F Y");
                 fwrite($f, implode("\t", $headers)."\n");
                 fclose($f);
             }
