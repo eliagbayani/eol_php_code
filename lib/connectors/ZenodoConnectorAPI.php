@@ -49,6 +49,34 @@ class ZenodoConnectorAPI
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
     }
+    function eli_update_meta_national_2019_checklists()
+    {
+        $this->log_error(array("==================== Log starts here ==================== update_meta_national_2019_checklists"));
+        /* ---------- start: normal
+        $q = "+title:national +title:checklists +title:2019 -title:water";      //works splendidly - OK!
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]);
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
+            foreach($objs as $o) { $i++;
+                // do batches
+                // if($i < 860) continue;
+                // elseif($i >= 860 && $i <= 1300) {}
+                // elseif($i > 1300) break;
+                // else continue;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
+                // break; //debug only, run 1 only
+            }
+        } //end if($objs)
+        exit("\n- end Deprecated tasks -\n");
+        ---------- end: normal */
+
+        // /* ---------- start: dev only
+        $id = 14836889; // [National Checklists 2019: United Kingdom Species List]...
+        // $id = 13317095; //older version
+        self::update_zenodo_record_of_latest_requested_changes($id);
+        exit("\n-----end per taxon, during dev-----\n");
+        // ---------- end: dev only */
+    }
     function jen_Deprecated_Works()
     {
         $this->log_error(array("==================== Log starts here ==================== Deprecated tasks"));
@@ -343,7 +371,7 @@ class ZenodoConnectorAPI
         $excluded_ids = array(13743941, 13751009);
         if(in_array($zenodo_id, $excluded_ids)) return;
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna 1a\n");
 
         /* NEW Oct_6: to filter per tag requirement */
         /* batch 66 - 67
@@ -377,13 +405,14 @@ class ZenodoConnectorAPI
 
         $edit_obj = $this->edit_Zenodo_dataset($obj_1st); //request to edit a record //exit("\nstop muna 1\n");
 
-        if($this->if_error($edit_obj, 'edit_22Nov2024', $id)) {}
+        if($this->if_error($edit_obj, 'edit_08Feb2025', $id)) {} //history past values: edit_22Nov2024
         else {
             /* ran already - DONE
             $obj_latest = self::fill_in_Katja_changes($edit_obj);
             $obj_latest = self::fill_in_Jen_deprecated_tasks($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
-            */
             $obj_latest = self::fill_in_Jen_DOI_tasks($edit_obj);
+            */
+            $obj_latest = self::eli_update_meta_natl_checklist_2019($edit_obj); //8Feb2025
             // /* un-comment in real operation ---- part of main operation
             if($obj_latest) self::update_then_publish($id, $obj_latest);
             // */
@@ -718,6 +747,15 @@ class ZenodoConnectorAPI
         echo "\ncontributors to save: "; print_r($o['metadata']['contributors']);
         echo "\nrelated_identifiers to save: "; print_r($o['metadata']['related_identifiers']);
         // exit("\nstop muna tayo...\n"); $RI
+        return $o;
+    }
+    private function eli_update_meta_natl_checklist_2019($o)
+    {
+        // print_r($o); exit("\nstop muna 1\n");
+        // step: assignment
+        $bibliographicCitation = 'GBIF.org (23 January 2025) GBIF Occurrence Download <a href="https://doi.org/10.15468/dl.vd2ajk" target="_blank" rel="noopener">https://doi.org/10.15468/dl.vd2ajk</a>';
+        $description = "Data from: $bibliographicCitation";
+        $o['metadata']['description'] = trim($description);
         return $o;
     }
     private function fill_in_Katja_changes($o)
