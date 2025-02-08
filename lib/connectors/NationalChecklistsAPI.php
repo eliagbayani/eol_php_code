@@ -52,7 +52,7 @@ class NationalChecklistsAPI
         $this->AnneT_natl_checklists[] = 'Sao Tome and Principe';
         $this->AnneT_natl_checklists[] = 'São Tomé and Príncipe';
 
-        // $this->ctry_map['Pitcairn'] = "Pitcairn, Henderson, Ducie, and, Oeno Islands";
+        $this->ctry_map['Pitcairn'] = "Pitcairn, Henderson, Ducie, and, Oeno Islands";
         $this->ctry_map['Palestine, State of'] = "Palestine";
         $this->ctry_map['Russian Federation'] = "Russia";
         $this->ctry_map['Saint Helena, Ascension and Tristan da Cunha'] = "Saint Helena Ascension and Tristan da Cunha";
