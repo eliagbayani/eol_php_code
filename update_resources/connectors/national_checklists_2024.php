@@ -8,7 +8,7 @@ regular operation:
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists"}'
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists", "sought_ctry":"Philippines"}'
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"major_deletion"}'
-    php update_resources/connectors/national_checklists_2024.php _ '{"task":"show_countries_metadata"}'
+    php update_resources/connectors/national_checklists_2024.php _ '{"task":"show_countries_metadata"}' //utility
     OR 
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists", "counter":"1"}'
     php update_resources/connectors/national_checklists_2024.php _ '{"task":"generate_country_checklists", "counter":"2"}'
