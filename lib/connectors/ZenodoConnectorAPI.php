@@ -167,9 +167,6 @@ class ZenodoConnectorAPI
             $this->record_in_question = array();
             self::update_zenodo_record_of_latest_requested_changes($id);
         }
-
-
-
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
 
