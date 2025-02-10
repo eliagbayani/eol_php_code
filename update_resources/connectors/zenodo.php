@@ -59,11 +59,11 @@ exit("\n -end test- \n");
 
 $func = new ZenodoAPI();
 // /*
-// $func->rename_anne_thessen_to_2017(); //DONE Feb 10, 2025
 // $func->investigate_diff_on_natl_checklists();
 // $func->update_desc_national_2019_checklists(); //DONE Feb 8, 2015
+// $func->rename_anne_thessen_to_2017(); //DONE Feb 10, 2025
 // $func->rename_latest_GBIFsql_from_2019_to_blank();
-$func->add_active_tag_2latest_national_checklists();
+// $func->add_active_tag_2latest_national_checklists(); done Feb 11, 2025
 // */
 
 // $func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
