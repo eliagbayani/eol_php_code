@@ -49,36 +49,107 @@ class ZenodoConnectorAPI
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
     }
-    function eli_update_meta_national_2019_checklists()
+    /* function rename_anne_thessen_to_2017() //--- DONE
     {
-        $this->log_error(array("==================== Log starts here ==================== update_meta_national_2019_checklists"));
-        /* ---------- start: normal
-        $q = "+title:national +title:checklists +title:2019 -title:water";      //works splendidly - OK!
-        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]);
+        $q = '+title: National +title: "Checklists:" -title: 2019 -title: 2017'; //Anne Thessen's 2017 resources     //works OK n=247 + 5 = 252
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
             $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
             foreach($objs as $o) { $i++;
-                // do batches
-                // if($i < 860) continue;
-                // elseif($i >= 860 && $i <= 1300) {}
-                // elseif($i > 1300) break;
-                // else continue;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'eli_rename_annethessen_to_2017');
+                // break; //debug only, run 1 only
+            }
+        } //end if($objs)
+        exit("\n-end rename_anne_thessen_to_2017-\n");
+    }*/
+    function add_active_tag_2latest_national_checklists()
+    {
+        $q = "+title:national +title:checklists -title:2017 -title:2019 -title:water +metadata.publication_date: [2025-02-08 TO 2025-02-10]"; //n=234 +5 n=239
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
+            foreach($objs as $o) { $i++;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'eli_add_active_tag_2latest_natl_checklists');
+                // break; //debug only, run 1 only
+            }
+        } //end if($objs)
+        exit("\n-end add_active_tag_latest_national_checklists-\n");
+    }
+    /* function rename_latest_GBIFsql_from_2019_to_blank()
+    {   exit("\nRan already.\n");
+        $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: [2025-02-08 TO 2025-02-10]"; //n=234
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
+            foreach($objs as $o) { $i++;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'eli_rename_latest_GBIFsql_from_2019_to_blank');
+                // break; //debug only, run 1 only
+            }
+        } //end if($objs)
+        exit("\n-end rename_latest_GBIFsql_from_2019_to_blank-\n");
+    } */
+    function investigate_diff_on_natl_checklists()
+    {
+        $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: [2024-08-13 TO 2024-08-14]";      //works OK n=260
+        $titles_1 = array();
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
+            foreach($objs as $o) {
+                $title = $o['metadata']['title'];
+                $titles_1[$title] = '';
+            }
+        }
+        $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: 2025-02-08";   //works OK n=234 DONE ALREADY
+        $titles_2 = array();
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
+            foreach($objs as $o) {
+                $title = $o['metadata']['title'];
+                $titles_2[$title] = '';
+            }
+        }
+        echo "\ntitles_1: ".count($titles_1)."\n";
+        echo "\ntitles_2: ".count($titles_2)."\n";
+        $titles_1 = array_keys($titles_1);
+        $titles_2 = array_keys($titles_2);
+        $titles_3 = array_diff($titles_1, $titles_2);
+        print_r($titles_3);
+        exit("\n-end investigate_diff_on_natl_checklists-\n");
+    }
+    function update_desc_national_2019_checklists()
+    {   
+        $this->log_error(array("==================== Log starts here ==================== update_meta_national_2019_checklists"));
+        // /* ---------- start: normal
+        $q = "+title:national +title:checklists +title:2019 -title:water";      //works splendidly - OK! n=494
+
+        // $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: 2024-08-13";      //works OK n=60
+        // $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: 2024-08-14";      //works OK n=200
+        // $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: 2024-08-15";      //works OK n=0
+        // $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: 2024-08-12";      //works OK n=0
+        // $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: [2024-08-13 TO 2024-08-14]";      //works OK n=260 n=255
+
+        $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: 2025-02-08";      //works OK n=234 DONE ALREADY
+        // $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: 2025-02-07";      //works OK n=0
+        // $q = "+title:national +title:checklists +title:2019 -title:water +metadata.publication_date: 2025-02-09";      //works OK n=0
+
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; exit;
+            foreach($objs as $o) { $i++;
                 echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
                 if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
                 // break; //debug only, run 1 only
             }
         } //end if($objs)
-        exit("\n- end Deprecated tasks -\n");
-        ---------- end: normal */
+        exit("\n- end [update_meta_national_2019_checklists] task -\n");
+        // ---------- end: normal */
 
-        // /* ---------- start: dev only
+        /* ---------- start: dev only
         $id = 14836889; // [National Checklists 2019: United Kingdom Species List]...
         // $id = 13317095; //older version
         self::update_zenodo_record_of_latest_requested_changes($id);
         exit("\n-----end per taxon, during dev-----\n");
-        // ---------- end: dev only */
+        ---------- end: dev only */
     }
     function jen_Deprecated_Works()
-    {
+    {   exit("\nRan already.\n");
         $this->log_error(array("==================== Log starts here ==================== Deprecated tasks"));
         // /* ---------- start: normal
         $q = "+title:national +title:checklists -title:2019 -title:water";      //works splendidly - OK!
@@ -364,7 +435,7 @@ class ZenodoConnectorAPI
         good example for general formatting of description field: https://zenodo.org/records/13795451
         */
     }
-    function update_zenodo_record_of_latest_requested_changes($zenodo_id)
+    function update_zenodo_record_of_latest_requested_changes($zenodo_id, $what = '')
     {
         $this->html_contributors = array(); //initialize
 
@@ -405,21 +476,29 @@ class ZenodoConnectorAPI
 
         $edit_obj = $this->edit_Zenodo_dataset($obj_1st); //request to edit a record //exit("\nstop muna 1\n");
 
-        if($this->if_error($edit_obj, 'edit_08Feb2025', $id)) {} //history past values: edit_22Nov2024
+        if($this->if_error($edit_obj, 'edit_11Feb2025', $id)) {} //history past values: edit_22Nov2024
         else {
             /* ran already - DONE
             $obj_latest = self::fill_in_Katja_changes($edit_obj);
             $obj_latest = self::fill_in_Jen_deprecated_tasks($edit_obj); //for the 'deprecated' batch: https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
             $obj_latest = self::fill_in_Jen_DOI_tasks($edit_obj);
             */
-            $obj_latest = self::eli_update_meta_natl_checklist_2019($edit_obj); //8Feb2025
+
+            // /*
+                if($what == 'x eli_update_meta_natl_checklist_2019')          $obj_latest = self::eli_update_meta_natl_checklist_2019($edit_obj); //8Feb2025
+            elseif($what == 'x eli_rename_annethessen_to_2017')               $obj_latest = self::eli_rename_annethessen_to_2017($edit_obj); //10Feb2025
+            elseif($what == 'x eli_rename_latest_GBIFsql_from_2019_to_blank') $obj_latest = self::eli_rename_latest_GBIFsql_from_2019_to_blank($edit_obj); //10Feb2025
+            elseif($what == 'eli_add_active_tag_2latest_natl_checklists')     $obj_latest = self::eli_add_active_tag_2latest_natl_checklists($edit_obj); //10Feb2025
+            else exit("\nERROR: Task not specified.\n");
+            // */
+
             // /* un-comment in real operation ---- part of main operation
             if($obj_latest) self::update_then_publish($id, $obj_latest);
             // */
         }
     }
     private function update_then_publish($id, $obj_latest)
-    {   sleep(2);
+    {   echo "\nsleep 2 secs.\n"; sleep(2);
         // /*
         $this->log_error(array('proceed with U and P', @$obj_latest['id'], @$obj_latest['metadata']['title']));
         // return; //dev only
@@ -749,13 +828,36 @@ class ZenodoConnectorAPI
         // exit("\nstop muna tayo...\n"); $RI
         return $o;
     }
+    private function eli_add_active_tag_2latest_natl_checklists($o)
+    {
+        $keywords = $o['metadata']['keywords'];
+        $keywords = self::add_to_keywords('active', $keywords);
+        $keywords = self::remove_from_keywords('deprecated', $keywords); //not needed but just in case
+        $o['metadata']['keywords'] = $keywords;
+        return $o;
+    }
     private function eli_update_meta_natl_checklist_2019($o)
     {
         // print_r($o); exit("\nstop muna 1\n");
-        // step: assignment
         $bibliographicCitation = 'GBIF.org (23 January 2025) GBIF Occurrence Download <a href="https://doi.org/10.15468/dl.vd2ajk" target="_blank" rel="noopener">https://doi.org/10.15468/dl.vd2ajk</a>';
         $description = "Data from: $bibliographicCitation";
         $o['metadata']['description'] = trim($description);
+        return $o;
+    }
+    private function eli_rename_annethessen_to_2017($o)
+    {
+        // print_r($o); exit("\nstop muna 1\n");
+        $title = $o['metadata']['title']; //e.g. National Checklists: Mexico Species List
+        $title = str_replace(" Checklists: ", " Checklists 2017: ", $title);
+        $o['metadata']['title'] = trim($title);
+        return $o;
+    }
+    private function eli_rename_latest_GBIFsql_from_2019_to_blank($o)
+    {
+        // print_r($o); exit("\nstop muna 1\n");
+        $title = $o['metadata']['title']; //e.g. National Checklists 2019: Turkmenistan
+        $title = str_replace(" Checklists 2019: ", " Checklists: ", $title);
+        $o['metadata']['title'] = trim($title);
         return $o;
     }
     private function fill_in_Katja_changes($o)
