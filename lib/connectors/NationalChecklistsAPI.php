@@ -242,7 +242,7 @@ class NationalChecklistsAPI
                     [abbrev] => AD
                 )*/
 
-                // if($ret['orig'] == 'United States') $cont = true; //debug only
+                // if($ret['orig'] == 'Syria') $cont = true; //debug only // dev only
 
                 // if($cont) {
                     if($val = $ret['orig']) {
@@ -254,6 +254,7 @@ class NationalChecklistsAPI
                         $ret['dwca'] = $dwca_filename;
                     }    
                 // }
+                // else continue;
                 if(!file_exists($this->report_1)) {
                     $f = Functions::file_open($this->report_1, "w");
                     fwrite($f, implode("\t", array_keys($ret))."\n");
@@ -836,6 +837,8 @@ class NationalChecklistsAPI
             // else                                             exit("\nERROR: DwCA does not exist\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
 
             if($f1 == $f2 && $f1) return str_ireplace(".tar.gz", "", $f1);
+            elseif(substr($f1,0,3) == 'SC_' && substr($f1, -7) == '.tar.gz') return str_ireplace(".tar.gz", "", $f1);
+            elseif(substr($f2,0,3) == 'SC_' && substr($f2, -7) == '.tar.gz') return str_ireplace(".tar.gz", "", $f2);
             else {
                 exit("\nERROR 1: Cannot find DwCA\n[$str]\n[$f1]\n[$f2]\n[$path]\n");
             }

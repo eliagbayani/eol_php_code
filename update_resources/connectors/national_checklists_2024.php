@@ -34,7 +34,7 @@ $task = @$fields['task'];
 $what = 'Country_checklists';
 $func = new NationalChecklistsAPI($what);
 if($task == 'show_countries_metadata') {
-    $func->show_countries_metadata(); //utility, generates https://editors.eol.org/other_files/GBIF_occurrence/Country_checklists/countries.tsv --- works OK | ran already
+    $func->show_countries_metadata(); //utility, generates https://editors.eol.org/other_files/GBIF_occurrence/Country_checklists/countries.tsv (and run_countries.tsv)
 }
 else $func->start($fields); //main operation
 

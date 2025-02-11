@@ -57,13 +57,22 @@ if(in_array($last_char, array(")", "]", "}"))) {
 exit("\n -end test- \n");
 */
 
+/* At some point these 10 countries had problems (missing?) in the past:
+Canada Guatemala Martinique Niue? Eswatini (swaziland)
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_saotomeprincipe", "source_dwca": "SC_saotomeprincipe", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_saintbarthelemy", "source_dwca": "SC_saintbarthelemy", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_kosovo", "source_dwca": "SC_kosovo", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_ivorycoast", "source_dwca": "SC_ivorycoast", "resource": "fillup_missing_parents_GBIFChecklists"}'
+php fill_up_undefined_parents_real_GBIFChecklists.php _ '{"resource_id": "SC_pitcairnhendersonducieandoenoislands", "source_dwca": "SC_pitcairnhendersonducieandoenoislands", "resource": "fillup_missing_parents_GBIFChecklists"}'
+*/
+
 $func = new ZenodoAPI();
 // /*
 // $func->investigate_diff_on_natl_checklists();
-// $func->update_desc_national_2019_checklists();       //DONE Feb 8, 2015
-// $func->rename_anne_thessen_to_2017();                //DONE Feb 10, 2025       final count: 252 deprecated 2017
+// $func->update_desc_national_2019_checklists();       //DONE Feb 8, 2015        final count: 252 remained 2019      as of 11Feb2025
+// $func->rename_anne_thessen_to_2017();                //DONE Feb 10, 2025       final count: 251 deprecated 2017    as of 11Feb2025
 // $func->rename_latest_GBIFsql_from_2019_to_blank();
-// $func->add_active_tag_2latest_national_checklists();     done Feb 11, 2025     final count: 239 + 1 {no year}
+// $func->add_active_tag_2latest_national_checklists();     done Feb 11, 2025     final count: 243 {no year}          as of 11Feb2025
 // $func->add_deprecated_to_all_2017_national_checklists(); done Feb 11, 2025
 // */
 
@@ -87,7 +96,8 @@ print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
 */
 
 // /* -------------------------------------------------------------------------------------------- very good query results
-$q = "+title:national +title:checklists -title:2019 -title:water"; //works splendidly - OK!
+exit;
+$q = "+title:national +title:checklists -title:2019 -title:2017 -title:water"; //works splendidly - OK!
 // $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
 // $q = "+title:checklists +title:2019"; //set 'geography', remove 'deprecated', add isDerivedFrom
 // $q = "+title:FishBase";
@@ -102,13 +112,14 @@ $q = "+title:national +title:checklists -title:2019 -title:water"; //works splen
 // $q = "+title:LD_";
 // $q = "+related.relation:issupplementto";
 // $q = "+title:Scratchpad";
-$q = "+title:Democratic Republic of the Congo +title:2019";
-$q = '+title:"Territory of the French Southern and Antarctic Lands" +title:2019 +title:Checklists';
+// $q = "+title:Democratic Republic of the Congo +title:2019";
+// $q = '+title:"Territory of the French Southern and Antarctic Lands" +title:2019 +title:Checklists';
 
-if($obj = $func->get_depositions_by_part_title($q)) {
-  print_r($obj); exit("\n-found-\n");
+if($obj = $func->get_depositions_by_part_title($q)) { echo "\nTotal: ".count($obj)."\n"; exit;
+  // print_r($obj); exit("\n-found-\n");
 }
-exit("\n-not found-\n");
+else exit("\n-not found-\n");
+exit("\n-end tests-\n");
 // -------------------------------------------------------------------------------------------- */
 
 // $func->access_json_reports(); //this generates the HTML report
