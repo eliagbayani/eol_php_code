@@ -77,8 +77,8 @@ class ZenodoConnectorAPI
         /* dev only
         $zenodo_id = 13313155;
         self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'eli_add_deprecated_to_all_2017_natl_checklists');
-        exit("\n-end add_deprecated_to_all_2017_national_checklists-\n");
         */
+        exit("\n-end add_deprecated_to_all_2017_national_checklists-\n");
     }
     /* function add_active_tag_2latest_national_checklists()
     {
