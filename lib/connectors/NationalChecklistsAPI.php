@@ -825,7 +825,8 @@ class NationalChecklistsAPI
         // /* manual adjustment
         if($str == "North Korea") $str = "North Korean";
         // */
-        $q = '+title:"'.$str.'" +title:2019 +title:National +title:Checklists';
+        $q = '+title:"'.$str.'" +title:2019 +title:National +title:Checklists'; //obsolete
+        $q = '+title:"'.$str.'" -title:2019 -title:2017 +title:National +title:Checklists'; //latest
         if($obj = $this->zenodo->get_depositions_by_part_title($q)) { //print_r($obj[0]); 
             $f1 = $obj[0]['files'][0]['filename'];
             $path = $obj[0]['metadata']['related_identifiers'][0]['identifier'];
