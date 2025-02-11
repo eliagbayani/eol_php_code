@@ -311,7 +311,7 @@ class NationalChecklistsAPI
 
         require_library('connectors/GBIFTaxonomyAPI');
         
-        $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n";
+        $files = $this->country_path . "/*.tsv"; echo "\n[$files]\n"; //e.g. AD.tsv
         foreach(glob($files) as $file) { $i++; sleep(1); //echo "\n$file\n"; exit;
 
             $this->check_species_exclusion_for_this_ctry = false; //IMPORTANT: initialize to false for every country
@@ -379,6 +379,7 @@ class NationalChecklistsAPI
             }
             else {
                 // print_r($ret); echo "\nfailed file: [$file]\n"; exit; //debug only
+                $this->debug['Fail: Unrecognized country file'][$file] = '';
                 continue;
             }
             
