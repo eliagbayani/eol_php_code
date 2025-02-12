@@ -46,6 +46,7 @@ class GBIFdownloadRequestAPI
         if($this->resource_id == 'GBIF_map_harvest') $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF';
         elseif($this->resource_id == 'NMNH_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/NMNH_images';
         elseif($this->resource_id == 'Country_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Country_checklists';
+        elseif($this->resource_id == 'map_data')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data';
         
         elseif($this->resource_id == 'WaterBody_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/WaterBody_checklists';
         elseif($this->resource_id == 'Continent_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Continent_checklists';
@@ -357,6 +358,7 @@ class GBIFdownloadRequestAPI
         
         if($this->resource_id == 'Data_coverage')               $format = 'SPECIES_LIST'; //'SPECIESLIST';
         elseif($this->resource_id == 'Country_checklists')      $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'map_data')                $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'WaterBody_checklists')    $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'Continent_checklists')    $format = 'SQL_TSV_ZIP';
         else                                                    $format = 'DWCA';
@@ -387,6 +389,56 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')
             AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH') " .$this->datasetKey_filters. " 
             GROUP BY specieskey, countrycode";
+        }
+        elseif($this->resource_id == 'map_data') {
+            unset($param['predicate']);
+            $param['sql'] = "SELECT 
+            catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
+            recordedby, identifiedby, eventdate,
+            kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey
+            FROM occurrence
+            WHERE
+            orderkey = 549
+            AND hascoordinate = 1
+            AND hasgeospatialissues = 0
+            AND specieskey IS NOT NULL
+            AND occurrencestatus = 'PRESENT'
+            AND (
+                basisofrecord = 'HUMAN_OBSERVATION'
+                OR basisofrecord = 'MACHINE_OBSERVATION'
+                OR basisofrecord = 'OCCURRENCE'
+                OR basisofrecord = 'LIVING_SPECIMEN'
+                OR basisofrecord = 'MATERIAL_SAMPLE'
+            )
+            AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
+            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')";
+            /*
+            Animalia = 1    2,399,915,365 GEOREFERENCED RECORDS
+            Archaea = 2           347,864 GEOREFERENCED RECORDS
+            Bacteria = 3       19,163,936 GEOREFERENCED RECORDS
+            Chromista = 4      13,530,072 GEOREFERENCED RECORDS
+            Fungi = 5          35,826,777 GEOREFERENCED RECORDS
+            Plantae = 6       435,612,922 GEOREFERENCED RECORDS
+            Protozoa = 7        1,316,127 GEOREFERENCED RECORDS
+            Viruses = 8            18,638 GEOREFERENCED RECORDS
+            incertae sedis      5,205,406 GEOREFERENCED RECORDS
+
+            $rec = array();
+            $rec['a']   = $rek['catalognumber'];
+            $rec['b']   = $rek['scientificname'];
+            $rec['c']   = self::get_org_name('publisher', @$rek['publishingorgkey']);
+            $rec['d']   = @$rek['publishingorgkey'];
+            if($val = @$rek['institutioncode']) $rec['c'] .= " ($val)";
+            $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title'); //self::get_org_name('dataset', @$rek['datasetkey']);
+            $rec['f']   = @$rek['datasetkey'];
+            $rec['g']   = $rek['gbifid'];
+            $rec['h']   = $rek['decimallatitude'];
+            $rec['i']   = $rek['decimallongitude'];
+            $rec['j']   = @$rek['recordedby'];
+            $rec['k']   = @$rek['identifiedby'];
+            $rec['l']   = self::get_media_by_gbifid($gbifid);
+            $rec['m']   = @$rek['eventdate'];
+            */
         }
         elseif($this->resource_id == 'WaterBody_checklists') {
             unset($param['predicate']);
