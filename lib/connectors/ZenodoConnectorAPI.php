@@ -61,10 +61,29 @@ class ZenodoConnectorAPI
         } //end if($objs)
         exit("\n-end rename_anne_thessen_to_2017-\n");
     }*/
-    function add_deprecated_to_all_2017_national_checklists()
+    function set_all_to_keyword_active_if_not_deprecated()
     {
-        // /*
-        $q = "+title:national +title:checklists +title:2017 -title:2019 -title:water"; //n=252
+        $objs = true;
+        $q = "-keywords:deprecated -keywords:active"; //n=
+        while($objs) {
+            if($objs = $this->get_depositions_by_part_title($q, false, true)) { //print_r($objs[0]); exit;
+                $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
+                foreach($objs as $o) { $i++;
+                    echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                    if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_all_to_keyword_active_if_not_deprecated');
+                    // break; //debug only, run 1 only
+                }
+            } //end if($objs)    
+        }
+        // dev only
+        // $zenodo_id = 13313155;
+        // self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_all_to_keyword_active_if_not_deprecated');
+        // exit("\n-end set_all_to_keyword_active_if_not_deprecated-\n"); //prev 2017
+    }
+    /* function add_deprecated_to_all_2019_national_checklists() //prev 2017
+    {
+        $q = "+title:national +title:checklists +title:2017 -title:2019 -title:water"; //n=251 2017
+        $q = "+title:national +title:checklists +title:2019 -title:2017 -title:water"; //n=252 2019
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
             $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
             foreach($objs as $o) { $i++;
@@ -73,13 +92,11 @@ class ZenodoConnectorAPI
                 // break; //debug only, run 1 only
             }
         } //end if($objs)
-        // */
-        /* dev only
+        dev only
         $zenodo_id = 13313155;
         self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'eli_add_deprecated_to_all_2017_natl_checklists');
-        */
-        exit("\n-end add_deprecated_to_all_2017_national_checklists-\n");
-    }
+        exit("\n-end add_deprecated_to_all_2019_national_checklists-\n"); //prev 2017
+    } */
     /* function add_active_tag_2latest_national_checklists()
     {
         $q = "+title:national +title:checklists -title:2017 -title:2019 -title:water +metadata.publication_date: [2025-02-08 TO 2025-02-10]"; //n=234 +5 n=239
@@ -507,7 +524,8 @@ class ZenodoConnectorAPI
             elseif($what == 'x eli_rename_annethessen_to_2017')                 $obj_latest = self::eli_rename_annethessen_to_2017($edit_obj); //10Feb2025
             elseif($what == 'x eli_rename_latest_GBIFsql_from_2019_to_blank')   $obj_latest = self::eli_rename_latest_GBIFsql_from_2019_to_blank($edit_obj); //10Feb2025
             elseif($what == 'x eli_add_active_tag_2latest_natl_checklists')     $obj_latest = self::eli_add_active_tag_2latest_natl_checklists($edit_obj); //10Feb2025
-            elseif($what == 'eli_add_deprecated_to_all_2017_natl_checklists')   $obj_latest = self::eli_add_deprecated_to_all_2017_natl_checklists($edit_obj); //11Feb2025
+            elseif($what == 'x eli_add_deprecated_to_all_2017_natl_checklists') $obj_latest = self::eli_add_deprecated_to_all_2017_natl_checklists($edit_obj); //11Feb2025
+            elseif($what == 'set_all_to_keyword_active_if_not_deprecated')      $obj_latest = self::add_keyword_active_if_not_deprecated($edit_obj); //13Feb2025
             else exit("\nERROR: Task not specified.\n");
             // */
 
@@ -845,6 +863,18 @@ class ZenodoConnectorAPI
         echo "\ncontributors to save: "; print_r($o['metadata']['contributors']);
         echo "\nrelated_identifiers to save: "; print_r($o['metadata']['related_identifiers']);
         // exit("\nstop muna tayo...\n"); $RI
+        return $o;
+    }
+    private function add_keyword_active_if_not_deprecated($o)
+    {
+        if($val = @$o['metadata']['keywords']) $keywords = $val;
+        else $keywords = array();
+
+        if(!in_array('deprecated', $keywords)) {
+            $keywords = self::add_to_keywords('active', $keywords);
+        }
+
+        $o['metadata']['keywords'] = $keywords;
         return $o;
     }
     private function eli_add_deprecated_to_all_2017_natl_checklists($o)

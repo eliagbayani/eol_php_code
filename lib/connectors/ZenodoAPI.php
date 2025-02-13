@@ -892,7 +892,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
             return $obj;    
         }
     }
-    function get_depositions_by_part_title($q, $allVersions = false)
+    function get_depositions_by_part_title($q, $allVersions = false, $returnNow = false)
     {
         $final = array();
         echo "\nallVersions: [$allVersions]\n";
@@ -924,6 +924,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 echo "\n- [$page_num] $i. [$id] [$result_title] [$publication_date]...";
                 $final[] = $o;
             }
+            if($returnNow) return $final;
             // return $final; //debug only, return the first 25 records only
             // if($page_num >= 3) return; //debug only
         } //end while()
