@@ -399,6 +399,9 @@ class GBIFdownloadRequestAPI
             FROM occurrence
             WHERE
             orderkey = 549
+            
+            AND taxonomicstatus = 'ACCEPTED' //newly added 12Feb2025
+
             AND hascoordinate = 1
             AND hasgeospatialissues = 0
             AND specieskey IS NOT NULL
@@ -419,6 +422,7 @@ class GBIFdownloadRequestAPI
             Chromista = 4      13,530,072 GEOREFERENCED RECORDS
             Fungi = 5          35,826,777 GEOREFERENCED RECORDS
             Plantae = 6       435,612,922 GEOREFERENCED RECORDS
+                              525,272,828 https://api.gbif.org/v1/occurrence/count?taxonKey=6
             Protozoa = 7        1,316,127 GEOREFERENCED RECORDS
             Viruses = 8            18,638 GEOREFERENCED RECORDS
             incertae sedis      5,205,406 GEOREFERENCED RECORDS
