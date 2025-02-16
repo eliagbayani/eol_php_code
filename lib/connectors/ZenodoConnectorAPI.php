@@ -474,8 +474,10 @@ class ZenodoConnectorAPI
     {
         $this->html_contributors = array(); //initialize
 
-        $excluded_ids = array(13743941, 13751009);
+        /* dev only debug onlhy
+        $excluded_ids = array(13743941, 13751009); //13751009 EOL full taxon identifier map
         if(in_array($zenodo_id, $excluded_ids)) return;
+        */
 
         $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna 1a\n");
 

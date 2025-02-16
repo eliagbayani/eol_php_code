@@ -75,7 +75,7 @@ $func = new ZenodoAPI();
 // $func->add_active_tag_2latest_national_checklists();     done Feb 11, 2025     final count: 243 {no year}          as of 11Feb2025
 // $func->add_deprecated_to_all_2017_national_checklists(); done Feb 11, 2025
 // $func->add_deprecated_to_all_2019_national_checklists(); //done Feb 13, 2025
-$func->set_all_to_keyword_active_if_not_deprecated();
+// $func->set_all_to_keyword_active_if_not_deprecated();
 // */
 
 // $func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
