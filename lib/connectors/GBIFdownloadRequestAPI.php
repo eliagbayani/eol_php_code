@@ -397,22 +397,15 @@ class GBIFdownloadRequestAPI
 
             if($this->resource_id == 'map_data_animalia') $sql_part = " kingdomkey = 1 ";
             elseif($this->resource_id == 'map_data_others') {
-                $sql_part = " AND (
-                                kingdomkey = '2' 
-                                OR kingdomkey = '3'
-                                OR kingdomkey = '4'
-                                OR kingdomkey = '5'
-                                OR kingdomkey = '6'
-                                OR kingdomkey = '7'
-                                OR kingdomkey = '8'
-                                OR kingdomkey = '0'
+                $sql_part = " (
+                                kingdomkey = 2 OR kingdomkey = 3 OR kingdomkey = 4 OR 
+                                kingdomkey = 5 OR kingdomkey = 6 OR kingdomkey = 7 OR 
+                                kingdomkey = 8 OR kingdomkey = 0
                             ) ";
             }
 
-            $param['sql'] = "SELECT 
-            catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
-            recordedby, identifiedby, eventdate,
-            kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey
+            $param['sql'] = "SELECT catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
+            recordedby, identifiedby, eventdate, kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey
             FROM occurrence WHERE
             $sql_part
             AND taxonomicstatus = 'ACCEPTED' //newly added 12Feb2025
