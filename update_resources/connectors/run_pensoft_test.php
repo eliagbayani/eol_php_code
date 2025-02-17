@@ -132,11 +132,22 @@ $descs[] = "Genova, Cosmo (11 January 2022). How to Preserve a Squirrel Pelt For
 $descs[] = "Many fish live in the stream.";
 $descs[] = "A taxon named Trifolium occidentale Coombe. I like to go to these places cwm, coombe, corrie";
 
-/*
+/* 
 $descs = array();
 // $descs[] = file_get_contents(DOC_ROOT."/tmp2/sample_treatment.txt");
-$descs[] = "A taxon named Trifolium occidentale Coombe. I like to go to these places cwm, coombe, corrie";
+$descs[] = "I went to 'Malabar Coast (India)'.";
+// $descs[] = "I live in India, near the Malabar coast.";
+// $descs[] = "He lives in the coast";
+// $descs[] = "I went to Malabar in India";
+// $descs[] = "Malabar (New South Wales, Australia)";
+// $descs[] = "Malabar (Florida, USA)";
 */
+
+// Good idea. I think it's best if we use WikiData uris:
+//     Malabar Coast (India) https://www.wikidata.org/entity/Q473181
+//     Malabar (New South Wales, Australia) https://www.wikidata.org/entity/Q2915709
+//     Malabar (Florida, USA) https://www.wikidata.org/wiki/Q1022772
+
 
 $final = array();
 $IDs = array('24', '617_ENV', 'TreatmentBank_ENV', '26_ENV'); //normal operation --- 617_ENV -> Wikipedia EN //24 -> AntWeb resource ID
