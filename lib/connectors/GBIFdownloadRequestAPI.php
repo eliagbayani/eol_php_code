@@ -46,7 +46,8 @@ class GBIFdownloadRequestAPI
         if($this->resource_id == 'GBIF_map_harvest') $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF';
         elseif($this->resource_id == 'NMNH_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/NMNH_images';
         elseif($this->resource_id == 'Country_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Country_checklists';
-        elseif($this->resource_id == 'map_data')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data';
+        elseif($this->resource_id == 'map_data_animalia')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_animalia';
+        elseif($this->resource_id == 'map_data_others')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_others';
         
         elseif($this->resource_id == 'WaterBody_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/WaterBody_checklists';
         elseif($this->resource_id == 'Continent_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Continent_checklists';
@@ -358,7 +359,8 @@ class GBIFdownloadRequestAPI
         
         if($this->resource_id == 'Data_coverage')               $format = 'SPECIES_LIST'; //'SPECIESLIST';
         elseif($this->resource_id == 'Country_checklists')      $format = 'SQL_TSV_ZIP';
-        elseif($this->resource_id == 'map_data')                $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'map_data_animalia')              $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'map_data_others')         $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'WaterBody_checklists')    $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'Continent_checklists')    $format = 'SQL_TSV_ZIP';
         else                                                    $format = 'DWCA';
@@ -390,18 +392,30 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH') " .$this->datasetKey_filters. " 
             GROUP BY specieskey, countrycode";
         }
-        elseif($this->resource_id == 'map_data') {
+        elseif(in_array($this->resource_id, array('map_data_animalia', 'map_data_others'))) {
             unset($param['predicate']);
+
+            if($this->resource_id == 'map_data_animalia') $sql_part = " kingdomkey = 1 ";
+            elseif($this->resource_id == 'map_data_others') {
+                $sql_part = " AND (
+                                kingdomkey = '2' 
+                                OR kingdomkey = '3'
+                                OR kingdomkey = '4'
+                                OR kingdomkey = '5'
+                                OR kingdomkey = '6'
+                                OR kingdomkey = '7'
+                                OR kingdomkey = '8'
+                                OR kingdomkey = '0'
+                            ) ";
+            }
+
             $param['sql'] = "SELECT 
             catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
             recordedby, identifiedby, eventdate,
             kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey
-            FROM occurrence
-            WHERE
-            orderkey = 549
-            
+            FROM occurrence WHERE
+            $sql_part
             AND taxonomicstatus = 'ACCEPTED' //newly added 12Feb2025
-
             AND hascoordinate = 1
             AND hasgeospatialissues = 0
             AND specieskey IS NOT NULL
@@ -425,7 +439,7 @@ class GBIFdownloadRequestAPI
                               525,272,828 https://api.gbif.org/v1/occurrence/count?taxonKey=6
             Protozoa = 7        1,316,127 GEOREFERENCED RECORDS
             Viruses = 8            18,638 GEOREFERENCED RECORDS
-            incertae sedis      5,205,406 GEOREFERENCED RECORDS
+            incertae sedis = 0  5,205,406 GEOREFERENCED RECORDS
 
             $rec = array();
             $rec['a']   = $rek['catalognumber'];
