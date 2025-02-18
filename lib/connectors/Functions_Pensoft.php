@@ -160,7 +160,7 @@ class Functions_Pensoft
         $pipe_delimited = $rec['http://rs.tdwg.org/ac/terms/additionalInformation'];
         $arr = explode("|", $pipe_delimited);
         $description_type = $arr[0];
-        $zip_file = $arr[1];
+        $zip_file = @$arr[1]; //seems not used anyway
 
         $title            = $rec['http://purl.org/dc/terms/title'];
         // $this->ontologies = "envo,eol-geonames"; //orig
