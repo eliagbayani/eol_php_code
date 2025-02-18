@@ -451,6 +451,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 $k++;
             }
             // print_r($rec); exit("\n[1]\n");
+            // if($i >= 100) break; //debug only
 
             $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
             
@@ -748,9 +749,9 @@ class Pensoft2EOLAPI extends Functions_Pensoft
                 else continue;
                 
                 if(stripos($uri, "ENVO_") !== false) { //string is found
-                    $arr = array($basename, '', '', $label, pathinfo($uri, PATHINFO_FILENAME), $rek['ontology'], ""); //7th param is mType
+                    $arr = array($basename, '', '', $label, pathinfo($uri, PATHINFO_FILENAME), $rek['ontology'], "", $rek['context']); //7th param is mType
                 }
-                else $arr = array($basename, '', '', $label, $uri, $rek['ontology'], ""); //7th param is mType
+                else $arr = array($basename, '', '', $label, $uri, $rek['ontology'], "", $rek['context']); //7th param is mType
                 
                 /*===== CUSTOMIZE START =====*/
                 // /* DATA-1893 - a provision to assign measurementType as early as this stage
@@ -1165,13 +1166,13 @@ class Pensoft2EOLAPI extends Functions_Pensoft
             //============= below this point is where $this->results is populated =============
             if($this->param['resource_id'] == '617_ENV') { //Wikipedia EN
                 if(ctype_lower(substr($rek['lbl'],0,1))) { //bec. references has a lot like 'Urban C.' which are authors.
-                    $this->results[$rek['id']] = array("lbl" => $rek['lbl'], "ontology" => $rek['ontology'], "mtype" => @$rek['mtype']);
+                    $this->results[$rek['id']] = array("lbl" => $rek['lbl'], "ontology" => $rek['ontology'], "mtype" => @$rek['mtype'], "context" => $rek['context']);
                     // $this->eli[$rek['id']][] = $rek['lbl']; //good debug
                 }
                 // else exit("\nWent here...\n"); //means Wikipedia EN is strict. "Sri Lanka" will be excluded.
             }
             else { //rest of the resources --> Just be sure the citation, reference, biblio parts of text is not included as input to Pensoft
-                $this->results[$rek['id']] = array("lbl" => $rek['lbl'], "ontology" => $rek['ontology'], "mtype" => @$rek['mtype']);
+                $this->results[$rek['id']] = array("lbl" => $rek['lbl'], "ontology" => $rek['ontology'], "mtype" => @$rek['mtype'], "context" => $rek['context']);
             }
             // echo "\nGoes- 103\n";
 
