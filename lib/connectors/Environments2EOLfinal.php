@@ -546,6 +546,10 @@ class Environments2EOLfinal extends ContributorsMapAPI
     private function generate_new_mremarks($context)
     {   // [adult male found calling in leaf litter Heyer 1977 Hoogmoed and Lescure 1984 the juvenile female was also found in <b>leaf litter</b> Lynch 1986 .]
 
+        // step 0: "forest to Afro-<b>alpine</b> moorland."
+        $context = str_replace("<b>", " <b>", $context);
+        $context = str_replace("</b>", "</b> ", $context);
+        $context = Functions::remove_whitespace($context);
 
         // step 1:
         if(preg_match_all("/<b>(.*?)<\/b>/ims", $context, $a)) {
