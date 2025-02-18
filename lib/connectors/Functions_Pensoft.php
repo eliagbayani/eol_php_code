@@ -325,7 +325,11 @@ class Functions_Pensoft
         //, ' ed. ', 'eds. ' from Eli 
         $cont = true;
         foreach($parts_of_lit_ref as $part) {
-            if(stripos($rek['context'], $part) !== false) { $cont = false; debug("\nExcluded: part: [$part]\n"); } //string is found
+            if(stripos($rek['context'], $part) !== false) { 
+                $cont = false;
+                @$this->debug['Excluded: part:'][$part]++;
+                // debug("\nExcluded: part: [$part]\n"); 
+            } //string is found
         }
         if(!$cont) return false;//continue;
         // */
