@@ -833,7 +833,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $loops = $len/$batch_length; //echo("\nloops: [$loops]\n");
         $loops = ceil($loops);
         $ctr = 0;
-        sleep(0.5);
+        // sleep(0.5);
         for($loop = 1; $loop <= $loops; $loop++) { //echo "\n[$loop of $loops]";
             // ----- block check start -----
             $i = 100;
