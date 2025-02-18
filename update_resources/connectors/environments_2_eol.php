@@ -520,6 +520,14 @@ include_once(dirname(__FILE__) . "/../../config/environment.php");
 $GLOBALS['ENV_DEBUG'] = false; //true;
 ini_set('memory_limit','8096M'); //required
 
+/* test only
+$str = "of Kedah on the west coast of Peninsular Malaysia. It is associated with riparian habitats and can be found near <b>streams</b>. It has been only been found at elevations between 800 – 1200 m Quah et al. 2017 .";
+$source_text = parse_context($str);
+echo "\n[$source_text]\n";
+exit("\n-end test-\n");
+*/
+
+
 $timestart = time_elapsed();
 // print_r($argv);
 $params['jenkins_or_cron'] = @$argv[1]; //not needed here
@@ -554,4 +562,7 @@ if($task == 'generate_eol_tags_pensoft') {
     // */
     $func->generate_eol_tags_pensoft($resource, $timestart, $download_options);
 }
+
+function parse_context($context)
+{}
 ?>
