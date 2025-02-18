@@ -454,7 +454,7 @@ class Functions
             -> there is a final 201_meta_recoded_2.tar.gz resource that is in Zenodo. 201.tar.gz is just a step. 202 should be deleted in CKAN actually.
         */
         elseif(@$end_options['go_zenodo']) {
-            /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
+            // /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
             // $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign, dev only
             $EOL_resource_id = $resource_id;
             require_library('connectors/ZenodoConnectorAPI');
@@ -462,7 +462,7 @@ class Functions
             $func = new ZenodoAPI();
             $func->update_Zenodo_record_using_EOL_resourceID($EOL_resource_id);
             // $func->new_description_for_zenodo = ""; //initialize again
-            */
+            // */
         }
         else echo $msg;
     }
