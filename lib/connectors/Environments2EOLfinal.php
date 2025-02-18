@@ -585,7 +585,7 @@ class Environments2EOLfinal extends ContributorsMapAPI
                     $final[] = $word;
                 }
             }
-            print_r($final);
+            // print_r($final);
             return implode(" ", $final);
         }
         echo "\n===========================\n[$context]\n";
