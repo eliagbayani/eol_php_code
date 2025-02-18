@@ -184,7 +184,7 @@ class Environments2EOLfinal extends ContributorsMapAPI
         foreach(new FileIterator($tsv) as $line_number => $row) {
             if(!$row) continue;
             $i++; if(($i % $this->modulo) == 0) echo "\n".number_format($i);
-            $arr = explode("\t", $row); // print_r($arr); exit;
+            $arr = explode("\t", $row); //print_r($arr); exit("\nstop 01\n");
             if(!$arr) continue;
             /* Array(
                 [0] => 1005_-_1005_distribution.txt
@@ -194,6 +194,7 @@ class Environments2EOLfinal extends ContributorsMapAPI
                 [4] => ENVO:00000300
                 [5] => envo
                 [6] =>                      --- this is new, a placeholder for measurementType (DATA-1893)
+                [7] => {new} this is where the context is saved...
             )*/
             // print_r($arr); exit("\n-stop muna-\n"); //DATA-1893
 
@@ -243,7 +244,8 @@ class Environments2EOLfinal extends ContributorsMapAPI
                 
                 // /* customized:
                 if($this->resource_id == '26_ENV')  $rec['measurementRemarks'] = "";
-                else                                $rec['measurementRemarks'] = "source text: \"" . $arr[3] . "\"";
+                // else                                $rec['measurementRemarks'] = "source text: \"" . $arr[3] . "\""; //obsolete
+                else                                $rec['measurementRemarks'] = "source text: \"" . self::generate_new_mremarks($arr[7]) . "\""; //NEW: Feb 18, 2025
                 // */
                 
                 /* customize --- add text object description to measurementRemarks in MoF
@@ -540,6 +542,50 @@ class Environments2EOLfinal extends ContributorsMapAPI
                 $this->archive_builder->write_object_to_file($o);
             }
         }
+    }
+    private function generate_new_mremarks($context)
+    {   // [adult male found calling in leaf litter Heyer 1977 Hoogmoed and Lescure 1984 the juvenile female was also found in <b>leaf litter</b> Lynch 1986 .]
+
+
+        // step 1:
+        if(preg_match_all("/<b>(.*?)<\/b>/ims", $context, $a)) {
+            foreach($a[1] as $substr) {
+                $new_substr = str_replace(" ", "_", $substr);
+                $context = str_replace($substr, $new_substr, $context);
+            }
+        }
+
+        // step 2:
+        $words = explode(" ", $context);
+        // print_r($words);
+        $i = -1;
+        $index = false;
+        foreach($words as $word) { $i++;
+            if(substr($word,0,3) == "<b>" && stripos($word, "</b>") !== false) {
+                $index = $i;
+                break;
+            }
+        }
+        if($index === false) {}
+        else {
+            $start_index = $index - 4;
+            $end_index = $index + 4;
+            $i = -1;
+            foreach($words as $word) { $i++;
+                if($i >= $start_index && $i <= $end_index) {
+                    if($i == $index) {
+                        $word = str_replace("_", " ", $word);       //e.g. "xx the <b>leaf litter</b> hhh ii"
+                        $word = str_replace("<b>", "_", $word);
+                        $word = str_replace("</b>", "_", $word);
+                    }
+                    $final[] = $word;
+                }
+            }
+            print_r($final);
+            return implode(" ", $final);
+        }
+        echo "\n===========================\n[$context]\n";
+        exit("\nERROR: Investigate cannot capture context properly.\n");    
     }
 }
 ?>
