@@ -9,9 +9,10 @@ class ZenodoConnectorAPI
     function jen_DOI_Works()
     {
         $this->log_error(array("==================== Log starts here ==================== DOI tasks"));
-        /* ---------- start: normal
+        // /* ---------- start: normal
         $q = "+description:doi";
-        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]);
+        $q = "+description:*doi* -title:Checklists";
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
             $i = 0; $total = count($objs);
             foreach($objs as $o) { $i++;
                 
@@ -22,29 +23,30 @@ class ZenodoConnectorAPI
                 // else continue;
 
                 echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
-                // if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id);
-                // break; //debug only, run 1 only
+                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'fill_in_Jen_DOI_tasks');
+                break; //debug only, run 1 only
             }
         } //end if($objs)
         exit("\n- end DOI tasks -\n");
-        ---------- end: normal */
+        // ---------- end: normal */
 
         // /* ---------- start: dev only
-        $id = 13316353;
-        $id = 13319339; //http
-        $id = 13320381; //doi: http
-        $id = 13283186; //doi: 10.1649/0010-065X(2008)61[1:ATROTG]2.0.CO;2 ---- violates our orig rules
-        $id = 13319100; //remove ending period e.g. "DOI:10.1016/j.meatsci.2006.04.005."
-        $id = 13310461; //with duplicate DOIs
-        $id = 13305288; // ending )
-        $id = 13283201; //13 DOI:
-        $id = 13320601; //misc.
-        $id = 13305288;
-        $id = 13283186;
+        // $id = 13316353;
+        // $id = 13319339; //http
+        // $id = 13320381; //doi: http
+        // $id = 13283186; //doi: 10.1649/0010-065X(2008)61[1:ATROTG]2.0.CO;2 ---- violates our orig rules
+        // $id = 13319100; //remove ending period e.g. "DOI:10.1016/j.meatsci.2006.04.005."
+        // $id = 13310461; //with duplicate DOIs
+        // $id = 13305288; // ending )
+        // $id = 13283201; //13 DOI:
+        // $id = 13320601; //misc.
+        // $id = 13305288;
+        // $id = 13283186;
         // $id = 13322681; //missed out, reported by Jen
         // $id = 13313923; //missed out
         // $id = 13313923; //13320307; //13313923; //with error at some point
-        self::update_zenodo_record_of_latest_requested_changes($id);
+        $id = 13320341; //13320243; //13321513; //13319269; //missed out, reported by Jen 20Feb2025
+        self::update_zenodo_record_of_latest_requested_changes($id, 'fill_in_Jen_DOI_tasks');
         exit("\n-----end per taxon, during dev-----\n");
         // ---------- end: dev only */
     }
@@ -527,7 +529,8 @@ class ZenodoConnectorAPI
             elseif($what == 'x eli_rename_latest_GBIFsql_from_2019_to_blank')   $obj_latest = self::eli_rename_latest_GBIFsql_from_2019_to_blank($edit_obj); //10Feb2025
             elseif($what == 'x eli_add_active_tag_2latest_natl_checklists')     $obj_latest = self::eli_add_active_tag_2latest_natl_checklists($edit_obj); //10Feb2025
             elseif($what == 'x eli_add_deprecated_to_all_2017_natl_checklists') $obj_latest = self::eli_add_deprecated_to_all_2017_natl_checklists($edit_obj); //11Feb2025
-            elseif($what == 'set_all_to_keyword_active_if_not_deprecated')      $obj_latest = self::add_keyword_active_if_not_deprecated($edit_obj); //13Feb2025
+            elseif($what == 'x set_all_to_keyword_active_if_not_deprecated')    $obj_latest = self::add_keyword_active_if_not_deprecated($edit_obj); //13Feb2025
+            elseif($what == 'fill_in_Jen_DOI_tasks')    $obj_latest = self::fill_in_Jen_DOI_tasks($edit_obj); //20Feb2025 missed out reported by Jen
             else exit("\nERROR: Task not specified.\n");
             // */
 
@@ -686,8 +689,6 @@ class ZenodoConnectorAPI
         // - [13305453] - ends in ) ending parenthesis
         // - ends in . period
 
-
-
         $tmp = array();
         $desc .= "elicha";
         $desc = str_ireplace("doi: ", "DOI:", $desc); //massage
@@ -698,6 +699,8 @@ class ZenodoConnectorAPI
         $left[] = 'DOI:';     
         $left[] = 'http://datadryad.org/resource/doi:';
         $left[] = 'https://datadryad.org/resource/doi:';
+        $left[] = 'https://dx.doi';
+        $left[] = 'http://dx.doi';
         foreach($left as $kaliwa) {
             if($kaliwa == "DOI:") {
                 if(preg_match_all("/".preg_quote($kaliwa, '/')."(.*?)(\"|<|\]|\)| |elicha)/ims", $desc, $arr)) { print_r($arr[1]);

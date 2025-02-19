@@ -78,7 +78,7 @@ $func = new ZenodoAPI();
 // $func->set_all_to_keyword_active_if_not_deprecated();
 // */
 
-// $func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
+$func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414
 
 /* all these four (4) done already:
 $func->jen_Deprecated_Works(); //deprecated task... one-time only | DONE ?? ??, 2024 https://github.com/EOL/ContentImport/issues/16#issuecomment-2488617061
@@ -97,7 +97,7 @@ $obj = $func->get_deposition_by_title($title);
 print_r($obj); echo "\n[".$obj['id']."]\n"; exit("\n-end test-\n");
 */
 
-// /* -------------------------------------------------------------------------------------------- very good query results
+/* -------------------------------------------------------------------------------------------- very good query results
 exit;
 $q = "+title:national +title:checklists -title:2019 -title:2017 -title:water"; //works splendidly - OK!
 // $q = "-title:national +title:checklists -title:2019 title:water"; //works splendidly - OK!
@@ -122,7 +122,7 @@ if($obj = $func->get_depositions_by_part_title($q)) { echo "\nTotal: ".count($ob
 }
 else exit("\n-not found-\n");
 exit("\n-end tests-\n");
-// -------------------------------------------------------------------------------------------- */
+-------------------------------------------------------------------------------------------- */
 
 // $func->access_json_reports(); //this generates the HTML report
 
