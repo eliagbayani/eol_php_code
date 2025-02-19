@@ -26,6 +26,12 @@ $what = 'yyy';
 $func = new GBIFMapDataAPI($what);
 // $func->start($fields); //main operation
 
+// /* testing functions
+$key = 44; //Chordata
+$func->prepare_taxa($key);
+// */
+
+
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
 echo "\n elapsed time = " . $elapsed_time_sec/60 . " minutes";

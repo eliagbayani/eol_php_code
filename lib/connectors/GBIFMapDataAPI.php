@@ -14,9 +14,41 @@ class GBIFMapDataAPI
         if(!is_dir($this->destination)) mkdir($this->destination);
 
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
+        $this->service['children'] = "https://api.gbif.org/v1/species/TAXON_KEY/childrenAll"; //https://api.gbif.org/v1/species/44/childrenAll
+        $this->service['occurrence_count'] = "https://api.gbif.org/v1/occurrence/count?taxonKey="; //https://api.gbif.org/v1/occurrence/count?taxonKey=44            
     }
     function start($fields) //start($counter = false, $task, $sought_waterbdy = false) //$counter is only for caching
     {   
+    }
+
+    function prepare_taxa($key)
+    {
+        $options = $this->download_options;
+        $options['expire_seconds'] = false; //should not expire; false is the right value.
+        $url = str_replace("TAXON_KEY", $key, $this->service['children']);
+
+        if($json = Functions::lookup_with_cache($url, $options)) {
+            $reks = json_decode($json, true); //print_r($reks);
+            foreach($reks as $rek) {
+                /*Array(
+                    [key] => 131
+                    [name] => Amphibia
+                    [rank] => CLASS
+                    [size] => 16476
+                )*/
+                $count = Functions::lookup_with_cache($this->service['occurrence_count'].$key, $options);
+                $rek['occurrence_count'] = $count;
+                                print_r($rek); exit;
+                break; //debug only get only 1 rec
+            }
+        }
+
+
+        $url = "https://www.gbif.org/species/44";
+        if($html = Functions::lookup_with_cache($url, $options)) {
+            echo "\n$html\n";
+        }
+
     }
 }
 ?>
