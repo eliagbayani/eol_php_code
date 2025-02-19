@@ -46,9 +46,11 @@ class GBIFdownloadRequestAPI
         if($this->resource_id == 'GBIF_map_harvest') $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF';
         elseif($this->resource_id == 'NMNH_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/NMNH_images';
         elseif($this->resource_id == 'Country_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Country_checklists';
+        
         elseif($this->resource_id == 'map_data_animalia')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_animalia';
         elseif($this->resource_id == 'map_data_others')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_others';
-        
+        elseif($this->resource_id == 'map_data_animalia_phylum_54')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_animalia_phylum_54';
+
         elseif($this->resource_id == 'WaterBody_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/WaterBody_checklists';
         elseif($this->resource_id == 'Continent_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Continent_checklists';
 
@@ -361,6 +363,8 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'Country_checklists')      $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'map_data_animalia')              $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'map_data_others')         $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'map_data_animalia_phylum_54')         $format = 'SQL_TSV_ZIP';
+
         elseif($this->resource_id == 'WaterBody_checklists')    $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'Continent_checklists')    $format = 'SQL_TSV_ZIP';
         else                                                    $format = 'DWCA';
@@ -392,7 +396,7 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH') " .$this->datasetKey_filters. " 
             GROUP BY specieskey, countrycode";
         }
-        elseif(in_array($this->resource_id, array('map_data_animalia', 'map_data_others'))) {
+        elseif(in_array($this->resource_id, array('map_data_animalia', 'map_data_others', 'map_data_animalia_phylum_54'))) {
             unset($param['predicate']);
 
             if($this->resource_id == 'map_data_animalia') $sql_part = " kingdomkey = 1 ";
@@ -403,6 +407,7 @@ class GBIFdownloadRequestAPI
                                 kingdomkey = 8 OR kingdomkey = 0
                             ) ";
             }
+            elseif($this->resource_id == 'map_data_animalia_phylum_54') $sql_part = " phylumkey = 54 ";
 
             $param['sql'] = "SELECT catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
             recordedby, identifiedby, eventdate, kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey
