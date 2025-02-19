@@ -290,7 +290,11 @@ class Functions_Pensoft
         $labels = array('malabar', 'antarctica'); //A. malabar OR C. antarctica - exclude | Off to Malabar - include
         $lbl = $rek['lbl'];
         if(in_array($lbl, $labels)) {
-            if(strpos($rek['context'], "<b>$lbl</b>") !== false) {debug("\nExcluded: huli_5\n"); return false;} //continue;
+            if(strpos($rek['context'], "<b>$lbl</b>") !== false) {
+                // debug("\nExcluded: huli_5\n"); 
+                @$this->debug['Excluded if lowercase'][$lbl]++;
+                return false;
+            } //continue;
         }
         // */
 
