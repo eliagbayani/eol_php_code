@@ -12,8 +12,6 @@ class GBIFMapDataAPI
         if(Functions::is_production())  $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
         else                            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
         if(!is_dir($this->destination)) mkdir($this->destination);
-        $this->zip_file = $this->destination.$what."_DwCA.zip";  //for development it was manually put here, it was copied from editors.eol.org
-                                                                 //for production it was downloaded from GBIF during "step: 03 Initialize and download dumps"
 
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
     }
