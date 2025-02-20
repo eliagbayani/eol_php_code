@@ -23,6 +23,8 @@ class GBIFMapDataAPI
 
     function prepare_taxa($key)
     {
+        $final['occurrences'] = 0;
+        $sum = 0;
         $options = $this->download_options;
         $options['expire_seconds'] = false; //should not expire; false is the right value.
         $url = str_replace("TAXON_KEY", $key, $this->service['children']);
@@ -36,18 +38,21 @@ class GBIFMapDataAPI
                     [rank] => CLASS
                     [size] => 16476
                 )*/
-                $count = Functions::lookup_with_cache($this->service['occurrence_count'].$key, $options);
-                $rek['occurrence_count'] = $count;
-                                print_r($rek); exit;
-                break; //debug only get only 1 rec
+                $count = Functions::lookup_with_cache($this->service['occurrence_count'].$rek['key'], $options);
+                $final['occurrences'] = $final['occurrences'] + $count;
+                $rek['occurrence_count'] = number_format($count);
+                // print_r($rek); //exit;
+                // break; //debug only get only 1 rec
             }
+            print_r($final);
+            echo "\n". number_format($final['occurrences']) ."\n";
         }
 
 
-        $url = "https://www.gbif.org/species/44";
-        if($html = Functions::lookup_with_cache($url, $options)) {
-            echo "\n$html\n";
-        }
+        // $url = "https://www.gbif.org/species/44";
+        // if($html = Functions::lookup_with_cache($url, $options)) {
+        //     echo "\n$html\n";
+        // }
 
     }
 }
