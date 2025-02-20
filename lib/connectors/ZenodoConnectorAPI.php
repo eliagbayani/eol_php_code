@@ -10,27 +10,27 @@ class ZenodoConnectorAPI
     {
         $this->log_error(array("==================== Log starts here ==================== DOI tasks"));
         // /* ---------- start: normal
-        $q = "+description:doi";
-        $q = "+description:*doi* -title:Checklists";
+        $q = "+description:doi";                     //initial query used OK
+        $q = "+description:*doi* -title:Checklists"; //latest 20Feb2025 OK --- more records n=296
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
             $i = 0; $total = count($objs);
             foreach($objs as $o) { $i++;
                 
                 // -batches-
-                // if($i < 860) continue;
-                // elseif($i >= 860 && $i <= 1300) {}
-                // elseif($i > 1300) break;
-                // else continue;
+                if($i < 51) continue;
+                elseif($i >= 51 && $i <= 296) {}
+                elseif($i > 296) break;
+                else continue;
 
                 echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
                 if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'fill_in_Jen_DOI_tasks');
-                break; //debug only, run 1 only
+                // break; //debug only, run 1 only
             }
         } //end if($objs)
         exit("\n- end DOI tasks -\n");
         // ---------- end: normal */
 
-        // /* ---------- start: dev only
+        /* ---------- start: dev only
         // $id = 13316353;
         // $id = 13319339; //http
         // $id = 13320381; //doi: http
@@ -48,7 +48,7 @@ class ZenodoConnectorAPI
         $id = 13320341; //13320243; //13321513; //13319269; //missed out, reported by Jen 20Feb2025
         self::update_zenodo_record_of_latest_requested_changes($id, 'fill_in_Jen_DOI_tasks');
         exit("\n-----end per taxon, during dev-----\n");
-        // ---------- end: dev only */
+        ---------- end: dev only */
     }
     /* function rename_anne_thessen_to_2017() //--- DONE
     {
