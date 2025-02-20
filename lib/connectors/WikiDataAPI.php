@@ -668,7 +668,7 @@ class WikiDataAPI extends WikipediaAPI
             $taxon_name  = trim((string) @$arr->claims->P225[0]->mainsnak->datavalue->value); //has a taxon name
 
             
-            // /* debug Jan 2, 2025
+            /* debug only dev only: Jan 2, 2025
             if($Q_id == "Q199788") print_r($arr); //Gadus morhua
             if($Q_id == "Q19486") {
                 echo "\n===================================================================\n";
@@ -676,7 +676,7 @@ class WikiDataAPI extends WikipediaAPI
                 exit("\nhuli ka 01...[$Q_id]\n");
             }
             else continue;
-            // */
+            */
             // grep '"type":"item","id":"Q199788","labels":' latest-all-taxon.json
             // grep '"type":"item","id":"Q19486","labels":' latest-all-taxon.json
 

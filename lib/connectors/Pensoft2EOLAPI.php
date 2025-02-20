@@ -200,6 +200,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         self::initialize_files();
         // */
         $info = self::parse_dwca($resource, $download_options); // print_r($info); exit;
+        if(!$info) exit("\nERROR: It seems 80.tar.gz is missing.\n");
         $tables = $info['harvester']->tables;
         print_r(array_keys($tables)); //exit;
 
@@ -420,7 +421,7 @@ class Pensoft2EOLAPI extends Functions_Pensoft
         $harvester = new ContentArchiveReader(NULL, $archive_path);
         $tables = $harvester->tables;
         $index = array_keys($tables);
-        if(!($tables["http://rs.tdwg.org/dwc/terms/taxon"][0]->fields)) { // take note the index key is all lower case
+        if(!(@$tables["http://rs.tdwg.org/dwc/terms/taxon"][0]->fields)) { // take note the index key is all lower case
             debug("Invalid archive file. Program will terminate.");
             return false;
         }
