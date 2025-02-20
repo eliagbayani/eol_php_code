@@ -9,7 +9,7 @@ class ZenodoConnectorAPI
     function jen_DOI_Works()
     {
         $this->log_error(array("==================== Log starts here ==================== DOI tasks"));
-        // /* ---------- start: normal
+        /* ---------- start: normal
         $q = "+description:doi";                     //initial query used OK
         $q = "+description:*doi* -title:Checklists"; //latest 20Feb2025 OK --- more records n=296
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
@@ -17,10 +17,10 @@ class ZenodoConnectorAPI
             foreach($objs as $o) { $i++;
                 
                 // -batches-
-                if($i < 51) continue;
-                elseif($i >= 51 && $i <= 296) {}
-                elseif($i > 296) break;
-                else continue;
+                // if($i < 51) continue;
+                // elseif($i >= 51 && $i <= 296) {}
+                // elseif($i > 296) break;
+                // else continue;
 
                 echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
                 if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'fill_in_Jen_DOI_tasks');
@@ -28,9 +28,9 @@ class ZenodoConnectorAPI
             }
         } //end if($objs)
         exit("\n- end DOI tasks -\n");
-        // ---------- end: normal */
+        ---------- end: normal */
 
-        /* ---------- start: dev only
+        // /* ---------- start: dev only
         // $id = 13316353;
         // $id = 13319339; //http
         // $id = 13320381; //doi: http
@@ -46,9 +46,12 @@ class ZenodoConnectorAPI
         // $id = 13313923; //missed out
         // $id = 13313923; //13320307; //13313923; //with error at some point
         $id = 13320341; //13320243; //13321513; //13319269; //missed out, reported by Jen 20Feb2025
+        $id = 13316311; //Eli found from logs with error - fixed
+        $id = 13283194; //with logs error - fixed
+        $id = 13315853; //13283197; 
         self::update_zenodo_record_of_latest_requested_changes($id, 'fill_in_Jen_DOI_tasks');
         exit("\n-----end per taxon, during dev-----\n");
-        ---------- end: dev only */
+        // ---------- end: dev only */
     }
     /* function rename_anne_thessen_to_2017() //--- DONE
     {
@@ -752,6 +755,15 @@ class ZenodoConnectorAPI
         }
         foreach($final as $doi) {
             if(!in_array($doi, $identifiers)) {
+
+                // /* new: remove space in doi:
+                $tmp_arr = explode(" ", $doi);
+                $doi = $tmp_arr[0];
+                $tmp_arr = explode("\n", $doi);
+                $doi = $tmp_arr[0];
+                if(strlen($doi) <= 7) continue; //e.g. "10.1371" https://zenodo.org/records/13315853
+                // */
+
                 $save = array('identifier' => $doi, 'relation' => 'references', 'scheme' => 'doi', 'resource_type' => 'publication');
                 $RI[] = $save;
             }
