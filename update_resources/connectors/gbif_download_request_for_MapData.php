@@ -14,7 +14,7 @@ php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task"
 
 php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_data_plantae_order_729"}'
 
----------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- as of Feb 23, 2025
 Animalia = 1    2,405,787,432 GEOREFERENCED RECORDS
 Plantae = 6       437,438,303 GEOREFERENCED RECORDS
 
@@ -33,10 +33,12 @@ Plantae (6)                             437,340,042
             Order Caryophyllales (422)              25,144,085
             Order Ericales (1353)                   13,660,931
 
-Plantae but NOT Phylum Tracheophyta
-Plantae with Phylum Tracheophyta with Class Magnoliopsida with order Asterales Caryophyllales Ericales
-Plantae with Phylum Tracheophyta with Class Magnoliopsida but NOT order Asterales Caryophyllales Ericales
-Plantae with Phylum Tracheophyta but not Class Magnoliopsida
+Plantae (6) but NOT Phylum Tracheophyta (7707728)
+    kingdomkey = 6 AND phylumkey <> 7707728
+    plantae_not_phylum_Tracheophyta
+Plantae (6) with Phylum Tracheophyta (7707728) with Class Magnoliopsida (220) with order Asterales Caryophyllales Ericales
+Plantae (6) with Phylum Tracheophyta (7707728) with Class Magnoliopsida (220) but NOT order Asterales Caryophyllales Ericales
+Plantae (6) with Phylum Tracheophyta (7707728) but not Class Magnoliopsida (220)
 ---------------------------------------------------------------------------------------------------------------
 Animalia (1)                            2,405,714,505
     Phylum Arthropoda (54)                  276,229,066
@@ -66,10 +68,17 @@ Animalia (1)                            2,405,714,505
                 Family Campephagidae (9284)             2,067,394
                 Family Estrildidae (5709)               4,233,653
 
-Animalia with Phylum Arthropoda
-Animalia but not Phylum Arthropoda nor Chordata
+Animalia (1) with Phylum Arthropoda (54)
+    map_animalia_phylum_Arthropoda
+Animalia but not Phylum Arthropoda (54) nor Chordata (44)
+    map_animalia_not_phylum_Arthropoda_Chordata
+    kingdomkey = 1 AND phylumkey <> 54 AND phylumkey <> 44 
 Chordata (44) but not Class Aves (212)
+    map_phylum_Chordata_not_class_Aves
+    phylumkey = 44 AND classkey <> 212
 Class Aves (212) but not Order Passeriformes (729)
+    map_class_Aves_not_order_Passeriformes
+    classkey = 212 AND orderkey <> 729
 Order Passeriformes (729)
                 Family Corvidae (5235)                  101,641,071
                 Family Passerellidae (9410667)          90,413,679
