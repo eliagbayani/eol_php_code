@@ -83,6 +83,9 @@ Order Passeriformes (729)
                 Family Corvidae (5235)                  101,641,071
                 Family Passerellidae (9410667)          90,413,679
                 Family Tyrannidae (5291)                48,796,928
+    map_order_Passeriformes_with_3_families
+    orderkey = 729 AND (familykey = 5235 OR familykey = 9410667 OR familykey = 5291)
+    
 Order Passeriformes (729)
                 Family Fringillidae (5242)              86,379,609
                 Family Parulidae (5263)                 70,769,533

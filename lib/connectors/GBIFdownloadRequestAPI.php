@@ -56,7 +56,7 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'map_animalia_not_phylum_Arthropoda_Chordata')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_animalia_not_phylum_Arthropoda_Chordata';
         elseif($this->resource_id == 'map_phylum_Chordata_not_class_Aves')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_phylum_Chordata_not_class_Aves';        
         elseif($this->resource_id == 'map_class_Aves_not_order_Passeriformes')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_class_Aves_not_order_Passeriformes';
-
+        
         
 
         elseif($this->resource_id == 'map_data_plantae_order_729')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_plantae_order_729';
