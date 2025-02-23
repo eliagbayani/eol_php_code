@@ -21,31 +21,50 @@ class GBIFMapDataAPI
     {   
     }
 
-    function prepare_taxa($key)
+    function prepare_taxa($key) //seems to be run just for Chordata
     {
-        $final['occurrences'] = 0;
-        $sum = 0;
+        $final['occurrences'] = 0; $batch_sum = 0;
+        $sum = 0; $batch_total = 250000000; //250 million
+        $taxon_key_batches = array(); $current_keys = array();
         $options = $this->download_options;
         $options['expire_seconds'] = false; //should not expire; false is the right value.
         $url = str_replace("TAXON_KEY", $key, $this->service['children']);
 
         if($json = Functions::lookup_with_cache($url, $options)) {
             $reks = json_decode($json, true); //print_r($reks);
-            foreach($reks as $rek) {
+            $i = -1;
+            foreach($reks as $rek) { $i++;
                 /*Array(
                     [key] => 131
                     [name] => Amphibia
                     [rank] => CLASS
                     [size] => 16476
                 )*/
+                $taxon_key = $rek['key'];
+                $taxon_rank = $rek['rank'];
                 $count = Functions::lookup_with_cache($this->service['occurrence_count'].$rek['key'], $options);
+                if($count <= 0) continue;
                 $final['occurrences'] = $final['occurrences'] + $count;
-                $rek['occurrence_count'] = number_format($count);
+            
+                $batch_sum += $count;
+                $current_keys[] = array('key' => $taxon_key, 'rank' => $taxon_rank);
+
+                if($batch_sum > $batch_total) {
+                    $taxon_key_batches[] = array('batch_sum' => $batch_sum, 'current_keys' => $current_keys);
+                    $batch_sum = 0;
+                    $current_keys = array();
+                }
+
+
                 // print_r($rek); //exit;
                 // break; //debug only get only 1 rec
             }
+            // last batch
+            $taxon_key_batches[] = array('batch_sum' => $batch_sum, 'current_keys' => $current_keys);
+
             print_r($final);
             echo "\n". number_format($final['occurrences']) ."\n";
+            print_r($taxon_key_batches);
         }
 
 

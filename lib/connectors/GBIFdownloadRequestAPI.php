@@ -361,9 +361,9 @@ class GBIFdownloadRequestAPI
         
         if($this->resource_id == 'Data_coverage')               $format = 'SPECIES_LIST'; //'SPECIESLIST';
         elseif($this->resource_id == 'Country_checklists')      $format = 'SQL_TSV_ZIP';
-        elseif($this->resource_id == 'map_data_animalia')              $format = 'SQL_TSV_ZIP';
-        elseif($this->resource_id == 'map_data_others')         $format = 'SQL_TSV_ZIP';
-        elseif($this->resource_id == 'map_data_animalia_phylum_54')         $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'map_data_animalia')               $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'map_data_others')                 $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'map_data_animalia_phylum_54')     $format = 'SQL_TSV_ZIP';
 
         elseif($this->resource_id == 'WaterBody_checklists')    $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'Continent_checklists')    $format = 'SQL_TSV_ZIP';

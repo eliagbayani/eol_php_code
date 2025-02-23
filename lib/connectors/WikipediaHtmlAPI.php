@@ -317,6 +317,7 @@ class WikipediaHtmlAPI
         // $sections[] = '';
         $sections[] = '<h2 id="References[3]"><span id="References.5B3.5D"></span>References<sup id="cite_ref-:0_3-1"><a href="#cite_note-:0-3"><span>[</span>3<span>]</span></a></sup></h2>';
         $sections[] = '<h2 id="References[3]"><span id="References.5B3.5D"></span>References<sup id="cite_ref-3"><a href="#cite_note-3"><span>[</span>3<span>]</span></a></sup></h2>';
+        $sections[] = '<h2 id="External_resources">External resources</h2>';
         // print_r($sections); exit;
         
         // <h2 id="References">References</h2></div>
