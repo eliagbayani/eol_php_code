@@ -12,6 +12,20 @@ php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task"
     GBIF.org (16 February 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.5pgy7k
 php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_data_others"}'
 
+php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_data_plantae_order_729"}'
+
+---------------------------------------------------------------------------------------------------------------
+Animalia = 1    2,405,787,432 GEOREFERENCED RECORDS
+Plantae = 6       437,438,303 GEOREFERENCED RECORDS
+
+Archaea = 2           348,156 GEOREFERENCED RECORDS
+Bacteria = 3       19,176,920 GEOREFERENCED RECORDS
+Chromista = 4      13,544,248 GEOREFERENCED RECORDS
+Fungi = 5          36,320,132 GEOREFERENCED RECORDS
+Protozoa = 7        1,321,912 GEOREFERENCED RECORDS
+Viruses = 8            18,765 GEOREFERENCED RECORDS
+incertae sedis = 0  5,045,233 GEOREFERENCED RECORDS
+---------------------------------------------------------------------------------------------------------------
 Plantae (6)                             437,340,042
     Phylyum Tracheophyta (7707728)          416,670,220
         Class Magnoliopsida (220)               308,858,342
@@ -23,6 +37,95 @@ Plantae but NOT Phylum Tracheophyta
 Plantae with Phylum Tracheophyta with Class Magnoliopsida with order Asterales Caryophyllales Ericales
 Plantae with Phylum Tracheophyta with Class Magnoliopsida but NOT order Asterales Caryophyllales Ericales
 Plantae with Phylum Tracheophyta but not Class Magnoliopsida
+---------------------------------------------------------------------------------------------------------------
+Animalia (1)                            2,405,714,505
+    Phylum Arthropoda (54)                  276,229,066
+    Phylum Chordata (44)                    2,097,009,265
+        Class Amphibia (131)                    9,574,975
+        Class Aves (212)                        1,984,676,566
+            Order Passeriformes (729)               1,093,006,886
+                Family Corvidae (5235)                  101,641,071
+                Family Passerellidae (9410667)          90,413,679
+                Family Fringillidae (5242)              86,379,609
+                Family Parulidae (5263)                 70,769,533
+                Family Turdidae (5290)                  70,521,825
+                Family Paridae (9327)                   68,968,932
+                Family Icteridae (6176)                 61,050,292
+                Family Tyrannidae (5291)                48,796,928
+                Family Cardinalidae (9285)              39,277,227 
+                Family Troglodytidae (9355)             33,589,855
+                Family Sturnidae (9350)                 31,884,219
+                Family Passeridae (5264)                27,285,246
+                Family Motacillidae (5257)              18,371,440
+                Family Vireonidae (9358)                16,099,606
+                Family Sylviidae (5285)                 13,280,665
+                Family Phylloscopidae (6100963)         12,783,108
+                Family Meliphagidae (9319)              9,785,279
+                Family Pycnonotidae (5277)              6,228,319
+                Family Cisticolidae (9293)              6,076,943
+                Family Campephagidae (9284)             2,067,394
+                Family Estrildidae (5709)               4,233,653
+
+Animalia with Phylum Arthropoda
+Animalia but not Phylum Arthropoda nor Chordata
+Chordata (44) but not Class Aves (212)
+Class Aves (212) but not Order Passeriformes (729)
+Order Passeriformes (729)
+                Family Corvidae (5235)                  101,641,071
+                Family Passerellidae (9410667)          90,413,679
+                Family Tyrannidae (5291)                48,796,928
+Order Passeriformes (729)
+                Family Fringillidae (5242)              86,379,609
+                Family Parulidae (5263)                 70,769,533
+                Family Turdidae (5290)                  70,521,825
+                Family Motacillidae (5257)              18,371,440
+Order Passeriformes (729)
+                Family Paridae (9327)                   68,968,932
+                Family Icteridae (6176)                 61,050,292
+                Family Cardinalidae (9285)              39,277,227 
+                Family Troglodytidae (9355)             33,589,855
+                Family Sturnidae (9350)                 31,884,219
+                Family Passeridae (5264)                27,285,246
+Order Passeriformes (729) but not these families:
+                Family Corvidae (5235)                  101,641,071
+                Family Passerellidae (9410667)          90,413,679
+                Family Tyrannidae (5291)                48,796,928
+                Family Fringillidae (5242)              86,379,609
+                Family Parulidae (5263)                 70,769,533
+                Family Turdidae (5290)                  70,521,825
+                Family Motacillidae (5257)              18,371,440
+                Family Paridae (9327)                   68,968,932
+                Family Icteridae (6176)                 61,050,292
+                Family Cardinalidae (9285)              39,277,227 
+                Family Troglodytidae (9355)             33,589,855
+                Family Sturnidae (9350)                 31,884,219
+                Family Passeridae (5264)                27,285,246
+
+
+
+
+
+==================================                
+Order Passeriformes un-used:
+                Family Vireonidae (9358)                16,099,606
+                Family Sylviidae (5285)                 13,280,665
+                Family Phylloscopidae (6100963)         12,783,108
+                Family Meliphagidae (9319)              9,785,279
+                Family Pycnonotidae (5277)              6,228,319
+                Family Cisticolidae (9293)              6,076,943
+                Family Campephagidae (9284)             2,067,394
+                Family Estrildidae (5709)               4,233,653
+
+
+
+---------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------
+
+
+
 
 This will generate the .sh file if download is ready. The .sh file is the curl command to download.
 php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"generate_sh_file", "taxon":"map_data_others"}'

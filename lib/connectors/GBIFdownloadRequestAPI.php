@@ -46,13 +46,16 @@ class GBIFdownloadRequestAPI
         if($this->resource_id == 'GBIF_map_harvest') $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF';
         elseif($this->resource_id == 'NMNH_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/NMNH_images';
         elseif($this->resource_id == 'Country_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Country_checklists';
+        elseif($this->resource_id == 'WaterBody_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/WaterBody_checklists';
+        elseif($this->resource_id == 'Continent_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Continent_checklists';
         
         elseif($this->resource_id == 'map_data_animalia')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_animalia';
         elseif($this->resource_id == 'map_data_others')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_others';
         elseif($this->resource_id == 'map_data_animalia_phylum_54')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_animalia_phylum_54';
+        elseif($this->resource_id == 'map_data_plantae_order_729')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_plantae_order_729';
 
-        elseif($this->resource_id == 'WaterBody_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/WaterBody_checklists';
-        elseif($this->resource_id == 'Continent_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Continent_checklists';
+        
+
 
 
         elseif($this->resource_id == 'iNat_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/iNat_images';
@@ -364,6 +367,9 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'map_data_animalia')               $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'map_data_others')                 $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'map_data_animalia_phylum_54')     $format = 'SQL_TSV_ZIP';
+        elseif($this->resource_id == 'map_data_plantae_order_729')     $format = 'SQL_TSV_ZIP';
+
+        
 
         elseif($this->resource_id == 'WaterBody_checklists')    $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'Continent_checklists')    $format = 'SQL_TSV_ZIP';
@@ -396,7 +402,7 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH') " .$this->datasetKey_filters. " 
             GROUP BY specieskey, countrycode";
         }
-        elseif(in_array($this->resource_id, array('map_data_animalia', 'map_data_others', 'map_data_animalia_phylum_54'))) {
+        elseif(in_array($this->resource_id, array('map_data_animalia', 'map_data_others', 'map_data_animalia_phylum_54', 'map_data_plantae_order_729'))) {
             unset($param['predicate']);
 
             if($this->resource_id == 'map_data_animalia') $sql_part = " kingdomkey = 1 ";
@@ -408,6 +414,7 @@ class GBIFdownloadRequestAPI
                             ) ";
             }
             elseif($this->resource_id == 'map_data_animalia_phylum_54') $sql_part = " phylumkey = 54 ";
+            elseif($this->resource_id == 'map_data_plantae_order_729') $sql_part = " orderkey = 729 ";
 
             $param['sql'] = "SELECT catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
             recordedby, identifiedby, eventdate, kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey
@@ -428,17 +435,6 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
             AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')";
             /*
-            Animalia = 1    2,399,915,365 GEOREFERENCED RECORDS
-            Archaea = 2           347,864 GEOREFERENCED RECORDS
-            Bacteria = 3       19,163,936 GEOREFERENCED RECORDS
-            Chromista = 4      13,530,072 GEOREFERENCED RECORDS
-            Fungi = 5          35,826,777 GEOREFERENCED RECORDS
-            Plantae = 6       435,612,922 GEOREFERENCED RECORDS
-                              525,272,828 https://api.gbif.org/v1/occurrence/count?taxonKey=6
-            Protozoa = 7        1,316,127 GEOREFERENCED RECORDS
-            Viruses = 8            18,638 GEOREFERENCED RECORDS
-            incertae sedis = 0  5,205,406 GEOREFERENCED RECORDS
-
             $rec = array();
             $rec['a']   = $rek['catalognumber'];
             $rec['b']   = $rek['scientificname'];

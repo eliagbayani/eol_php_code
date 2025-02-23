@@ -11,9 +11,6 @@ $timestart = time_elapsed();
 /*
 This will overwrite any current download request. Run this once ONLY every harvest per taxon group.
 php update_resources/connectors/gbif_download_request_for_CtryChecklists.php _ '{"task":"send_download_request", "taxon":"Country_checklists"}'
-php update_resources/connectors/gbif_download_request_for_CtryChecklists.php _ '{"task":"send_download_request", "taxon":"map_data_animalia"}'
-    GBIF.org (16 February 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.5pgy7k
-php update_resources/connectors/gbif_download_request_for_CtryChecklists.php _ '{"task":"send_download_request", "taxon":"map_data_others"}'
 
 This will generate the .sh file if download is ready. The .sh file is the curl command to download.
 php update_resources/connectors/gbif_download_request_for_CtryChecklists.php _ '{"task":"generate_sh_file", "taxon":"Country_checklists"}'
