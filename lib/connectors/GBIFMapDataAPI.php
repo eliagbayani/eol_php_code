@@ -20,7 +20,6 @@ class GBIFMapDataAPI
     function start($fields) //start($counter = false, $task, $sought_waterbdy = false) //$counter is only for caching
     {   
     }
-
     function prepare_taxa($key) //seems to be run just for Chordata
     {
         $final['occurrences'] = 0; $batch_sum = 0;

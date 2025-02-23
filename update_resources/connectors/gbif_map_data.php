@@ -28,6 +28,7 @@ $func = new GBIFMapDataAPI($what);
 
 // /* testing functions
 $key = 44; //Chordata
+$key = 7707728; //Plantae - Tracheophyta
 $func->prepare_taxa($key);
 // */
 
