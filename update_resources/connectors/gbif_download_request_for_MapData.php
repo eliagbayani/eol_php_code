@@ -26,6 +26,10 @@ Protozoa = 7        1,321,912 GEOREFERENCED RECORDS
 Viruses = 8            18,765 GEOREFERENCED RECORDS
 incertae sedis = 0  5,045,233 GEOREFERENCED RECORDS
 ---------------------------------------------------------------------------------------------------------------
+Kingdom not Animalia (1) nor Plantae (6)
+    map_kingdom_not_animalia_nor_plantae
+    kingdomkey IN (2,3,4,5,7,8,0)
+---------------------------------------------------------------------------------------------------------------
 Plantae (6)                             437,340,042
     Phylyum Tracheophyta (7707728)          416,670,220
         Class Magnoliopsida (220)               308,858,342
@@ -134,17 +138,7 @@ Order Passeriformes un-used:
                 Family Cisticolidae (9293)              6,076,943
                 Family Campephagidae (9284)             2,067,394
                 Family Estrildidae (5709)               4,233,653
-
-
-
 ---------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
-
-
-
 
 This will generate the .sh file if download is ready. The .sh file is the curl command to download.
 php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"generate_sh_file", "taxon":"map_data_others"}'

@@ -49,8 +49,6 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'WaterBody_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/WaterBody_checklists';
         elseif($this->resource_id == 'Continent_checklists')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Continent_checklists';
         
-        elseif($this->resource_id == 'map_data_animalia')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_animalia';
-        elseif($this->resource_id == 'map_data_others')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_others';
 
         // Animalia map data: n = 8
         elseif($this->resource_id == 'map_animalia_phylum_Arthropoda')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_animalia_phylum_Arthropoda';
@@ -66,11 +64,11 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_phylum_Tracheophyta_class_Magnoliopsida_orders_3';
         elseif($this->resource_id == 'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3';
         elseif($this->resource_id == 'map_phylum_Tracheophyta_not_class_Magnoliopsida')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_phylum_Tracheophyta_not_class_Magnoliopsida';
-
+        // Not Animalia nor Plantae        
+        elseif($this->resource_id == 'map_kingdom_not_animalia_nor_plantae')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_kingdom_not_animalia_nor_plantae';        
     
 
 
-        elseif($this->resource_id == 'map_data_plantae_order_729')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_plantae_order_729';
 
         elseif($this->resource_id == 'iNat_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/iNat_images';
         elseif($this->resource_id == 'Data_coverage')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Data_coverage';
@@ -378,18 +376,15 @@ class GBIFdownloadRequestAPI
         
         if($this->resource_id == 'Data_coverage')               $format = 'SPECIES_LIST'; //'SPECIESLIST';
         elseif($this->resource_id == 'Country_checklists')      $format = 'SQL_TSV_ZIP';
-        elseif($this->resource_id == 'map_data_animalia')               $format = 'SQL_TSV_ZIP';
-        elseif($this->resource_id == 'map_data_others')                 $format = 'SQL_TSV_ZIP';
         
     
         elseif(in_array($this->resource_id, array('map_animalia_phylum_Arthropoda', 'map_animalia_not_phylum_Arthropoda_Chordata', 
             'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes', 'map_order_Passeriformes_with_3_families', 
             'map_order_Passeriformes_with_4_families', 'map_order_Passeriformes_but_not_13_families', 'map_order_Passeriformes_with_6_families', 
             'map_plantae_not_phylum_Tracheophyta', 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3', 
-            'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida'
+            'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae'
             ))) $format = 'SQL_TSV_ZIP';
         
-        elseif($this->resource_id == 'map_data_plantae_order_729')     $format = 'SQL_TSV_ZIP';
 
         elseif($this->resource_id == 'WaterBody_checklists')    $format = 'SQL_TSV_ZIP';
         elseif($this->resource_id == 'Continent_checklists')    $format = 'SQL_TSV_ZIP';
@@ -422,25 +417,15 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'COUNTRY_COORDINATE_MISMATCH') " .$this->datasetKey_filters. " 
             GROUP BY specieskey, countrycode";
         }
-        elseif(in_array($this->resource_id, array('map_data_animalia', 'map_data_others', 
+        elseif(in_array($this->resource_id, array( 
                     'map_animalia_phylum_Arthropoda', 'map_animalia_not_phylum_Arthropoda_Chordata', 'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes', 
                     'map_order_Passeriformes_with_3_families', 'map_order_Passeriformes_with_4_families', 'map_order_Passeriformes_with_6_families',
-                    'map_order_Passeriformes_but_not_13_families', 
-                    'map_plantae_not_phylum_Tracheophyta', 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3', 
-                    'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida',
-        
-
-                    'map_data_plantae_order_729'))) {
+                    'map_order_Passeriformes_but_not_13_families', 'map_plantae_not_phylum_Tracheophyta', 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3', 
+                    'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae'))) {
             unset($param['predicate']);
-
-            if($this->resource_id == 'map_data_animalia') $sql_part = " kingdomkey = 1 ";
-            elseif($this->resource_id == 'map_data_others') {
-                $sql_part = " (
-                                kingdomkey = 2 OR kingdomkey = 3 OR kingdomkey = 4 OR 
-                                kingdomkey = 5 OR kingdomkey = 6 OR kingdomkey = 7 OR 
-                                kingdomkey = 8 OR kingdomkey = 0
-                            ) ";
-            }
+            // -----------------------------
+            if($this->resource_id == 'map_kingdom_not_animalia_nor_plantae') $sql_part = " kingdomkey IN (2,3,4,5,7,8,0) ";
+            // -----------------------------
             elseif($this->resource_id == 'map_animalia_phylum_Arthropoda') $sql_part = " phylumkey = 54 ";
             elseif($this->resource_id == 'map_animalia_not_phylum_Arthropoda_Chordata') $sql_part = " kingdomkey = 1 AND phylumkey <> 54 AND phylumkey <> 44 ";
             elseif($this->resource_id == 'map_phylum_Chordata_not_class_Aves') $sql_part = " phylumkey = 44 AND classkey <> 212 ";
@@ -449,15 +434,12 @@ class GBIFdownloadRequestAPI
             elseif($this->resource_id == 'map_order_Passeriformes_with_4_families') $sql_part = " orderkey = 729 AND (familykey = 5242 OR familykey = 5263 OR familykey = 5290 OR familykey = 5257) ";            
             elseif($this->resource_id == 'map_order_Passeriformes_with_6_families') $sql_part = " orderkey = 729 AND (familykey = 9327 OR familykey = 6176 OR familykey = 9285 OR familykey = 9355 OR familykey = 9350 OR familykey = 5264) ";
             elseif($this->resource_id == 'map_order_Passeriformes_but_not_13_families') $sql_part = " orderkey = 729 AND familykey NOT IN (5235, 9410667, 5291, 5242, 5263, 5290, 5257, 9327, 6176, 9285, 9355, 9350, 5264) ";
-            
+            // -----------------------------            
             elseif($this->resource_id == 'map_plantae_not_phylum_Tracheophyta') $sql_part = " kingdomkey = 6 AND phylumkey <> 7707728 ";
             elseif($this->resource_id == 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3') $sql_part = " phylumkey = 7707728 AND classkey = 220 AND orderkey IN (414, 422, 1353) ";            
             elseif($this->resource_id == 'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3') $sql_part = " phylumkey = 7707728 AND classkey = 220 AND orderkey NOT IN (414, 422, 1353) ";
             elseif($this->resource_id == 'map_phylum_Tracheophyta_not_class_Magnoliopsida') $sql_part = " phylumkey = 7707728 AND classkey <> 220 ";
-
-
-            elseif($this->resource_id == 'map_data_plantae_order_729') $sql_part = " orderkey = 729 ";
-
+            // -----------------------------
             $param['sql'] = "SELECT catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
             recordedby, identifiedby, eventdate, kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey
             FROM occurrence WHERE
