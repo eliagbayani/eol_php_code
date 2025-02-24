@@ -85,7 +85,6 @@ Order Passeriformes (729)
                 Family Tyrannidae (5291)                48,796,928
     map_order_Passeriformes_with_3_families
     orderkey = 729 AND (familykey = 5235 OR familykey = 9410667 OR familykey = 5291)
-
 Order Passeriformes (729)
                 Family Fringillidae (5242)              86,379,609
                 Family Parulidae (5263)                 70,769,533
@@ -93,7 +92,6 @@ Order Passeriformes (729)
                 Family Motacillidae (5257)              18,371,440
     map_order_Passeriformes_with_4_families
     orderkey = 729 AND (familykey = 5242 OR familykey = 5263 OR familykey = 5290 OR familykey = 5257)
-    
 Order Passeriformes (729)
                 Family Paridae (9327)                   68,968,932
                 Family Icteridae (6176)                 61,050,292
