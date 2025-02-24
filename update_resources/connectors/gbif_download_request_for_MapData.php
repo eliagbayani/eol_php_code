@@ -33,16 +33,16 @@ Plantae (6)                             437,340,042
             Order Caryophyllales (422)              25,144,085
             Order Ericales (1353)                   13,660,931
 
-Plantae (6) but NOT Phylum Tracheophyta (7707728)
+1. Plantae (6) but NOT Phylum Tracheophyta (7707728)
     map_plantae_not_phylum_Tracheophyta
     kingdomkey = 6 AND phylumkey <> 7707728
-Plantae (6) with Phylum Tracheophyta (7707728) with Class Magnoliopsida (220) with order Asterales Caryophyllales Ericales
+2. Plantae (6) with Phylum Tracheophyta (7707728) with Class Magnoliopsida (220) with order Asterales Caryophyllales Ericales
     map_phylum_Tracheophyta_class_Magnoliopsida_orders_3
     phylumkey = 7707728 AND classkey = 220 AND orderkey IN (414, 422, 1353)
-Plantae (6) with Phylum Tracheophyta (7707728) with Class Magnoliopsida (220) but NOT order Asterales Caryophyllales Ericales
+3. Plantae (6) with Phylum Tracheophyta (7707728) with Class Magnoliopsida (220) but NOT order Asterales Caryophyllales Ericales
     map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3
     phylumkey = 7707728 AND classkey = 220 AND orderkey NOT IN (414, 422, 1353)
-Plantae (6) with Phylum Tracheophyta (7707728) but not Class Magnoliopsida (220)
+4. Plantae (6) with Phylum Tracheophyta (7707728) but not Class Magnoliopsida (220)
     map_phylum_Tracheophyta_not_class_Magnoliopsida
     phylumkey = 7707728 AND classkey <> 220
 ---------------------------------------------------------------------------------------------------------------
@@ -123,8 +123,6 @@ Animalia (1)                            2,405,714,505
                 Family Passeridae (5264)                27,285,246
     map_order_Passeriformes_but_not_13_families
     orderkey = 729 AND familykey NOT IN (5235, 9410667, 5291, 5242, 5263, 5290, 5257, 9327, 6176, 9285, 9355, 9350, 5264)
-
-
 
 ==================================                
 Order Passeriformes un-used:
