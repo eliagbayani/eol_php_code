@@ -55,15 +55,13 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'map_animalia_phylum_Arthropoda')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_animalia_phylum_Arthropoda';
         elseif($this->resource_id == 'map_animalia_not_phylum_Arthropoda_Chordata')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_animalia_not_phylum_Arthropoda_Chordata';
         elseif($this->resource_id == 'map_phylum_Chordata_not_class_Aves')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_phylum_Chordata_not_class_Aves';        
-        elseif($this->resource_id == 'map_class_Aves_not_order_Passeriformes')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_class_Aves_not_order_Passeriformes';
-        
-        
+        elseif($this->resource_id == 'map_class_Aves_not_order_Passeriformes')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_class_Aves_not_order_Passeriformes';        
+        elseif($this->resource_id == 'map_order_Passeriformes_with_3_families')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_order_Passeriformes_with_3_families';        
+        elseif($this->resource_id == 'map_order_Passeriformes_with_4_families')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_order_Passeriformes_with_4_families';        
+        elseif($this->resource_id == 'map_order_Passeriformes_but_not_13_families')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_order_Passeriformes_but_not_13_families';
+
 
         elseif($this->resource_id == 'map_data_plantae_order_729')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_data_plantae_order_729';
-
-        
-
-
 
         elseif($this->resource_id == 'iNat_images')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/iNat_images';
         elseif($this->resource_id == 'Data_coverage')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/Data_coverage';
@@ -375,7 +373,9 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'map_data_others')                 $format = 'SQL_TSV_ZIP';
         
         elseif(in_array($this->resource_id, array('map_animalia_phylum_Arthropoda', 'map_animalia_not_phylum_Arthropoda_Chordata', 
-            'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes'))) $format = 'SQL_TSV_ZIP';
+            'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes', 'map_order_Passeriformes_with_3_families', 
+            'map_order_Passeriformes_with_4_families', 'map_order_Passeriformes_but_not_13_families'
+            ))) $format = 'SQL_TSV_ZIP';
         
         elseif($this->resource_id == 'map_data_plantae_order_729')     $format = 'SQL_TSV_ZIP';
 
@@ -412,6 +412,7 @@ class GBIFdownloadRequestAPI
         }
         elseif(in_array($this->resource_id, array('map_data_animalia', 'map_data_others', 
                     'map_animalia_phylum_Arthropoda', 'map_animalia_not_phylum_Arthropoda_Chordata', 'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes', 
+                    'map_order_Passeriformes_with_3_families', 'map_order_Passeriformes_with_4_families', 'map_order_Passeriformes_but_not_13_families', 
                     'map_data_plantae_order_729'))) {
             unset($param['predicate']);
 
@@ -427,9 +428,11 @@ class GBIFdownloadRequestAPI
             elseif($this->resource_id == 'map_animalia_not_phylum_Arthropoda_Chordata') $sql_part = " kingdomkey = 1 AND phylumkey <> 54 AND phylumkey <> 44 ";
             elseif($this->resource_id == 'map_phylum_Chordata_not_class_Aves') $sql_part = " phylumkey = 44 AND classkey <> 212 ";
             elseif($this->resource_id == 'map_class_Aves_not_order_Passeriformes') $sql_part = " classkey = 212 AND orderkey <> 729 ";
-            
+            elseif($this->resource_id == 'map_order_Passeriformes_with_3_families') $sql_part = " orderkey = 729 AND (familykey = 5235 OR familykey = 9410667 OR familykey = 5291) ";            
+            elseif($this->resource_id == 'map_order_Passeriformes_with_4_families') $sql_part = " orderkey = 729 AND (familykey = 5242 OR familykey = 5263 OR familykey = 5290 OR familykey = 5257) ";
+            elseif($this->resource_id == 'map_order_Passeriformes_but_not_13_families') $sql_part = " orderkey = 729 AND familykey NOT IN (5235, 9410667, 5291, 5242, 5263, 5290, 5257, 9327, 6176, 9285, 9355, 9350, 5264) ";
 
-            
+
             elseif($this->resource_id == 'map_data_plantae_order_729') $sql_part = " orderkey = 729 ";
 
             $param['sql'] = "SELECT catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
