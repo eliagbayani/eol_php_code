@@ -34,11 +34,17 @@ Plantae (6)                             437,340,042
             Order Ericales (1353)                   13,660,931
 
 Plantae (6) but NOT Phylum Tracheophyta (7707728)
+    map_plantae_not_phylum_Tracheophyta
     kingdomkey = 6 AND phylumkey <> 7707728
-    plantae_not_phylum_Tracheophyta
 Plantae (6) with Phylum Tracheophyta (7707728) with Class Magnoliopsida (220) with order Asterales Caryophyllales Ericales
+    map_phylum_Tracheophyta_class_Magnoliopsida_orders_3
+    phylumkey = 7707728 AND classkey = 220 AND orderkey IN (414, 422, 1353)
 Plantae (6) with Phylum Tracheophyta (7707728) with Class Magnoliopsida (220) but NOT order Asterales Caryophyllales Ericales
+    map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3
+    phylumkey = 7707728 AND classkey = 220 AND orderkey NOT IN (414, 422, 1353)
 Plantae (6) with Phylum Tracheophyta (7707728) but not Class Magnoliopsida (220)
+    map_phylum_Tracheophyta_not_class_Magnoliopsida
+    phylumkey = 7707728 AND classkey <> 220
 ---------------------------------------------------------------------------------------------------------------
 Animalia (1)                            2,405,714,505
     Phylum Arthropoda (54)                  276,229,066
@@ -68,31 +74,31 @@ Animalia (1)                            2,405,714,505
                 Family Campephagidae (9284)             2,067,394
                 Family Estrildidae (5709)               4,233,653
 
-Animalia (1) with Phylum Arthropoda (54)
+1. Animalia (1) with Phylum Arthropoda (54)
     map_animalia_phylum_Arthropoda
-Animalia but not Phylum Arthropoda (54) nor Chordata (44)
+2. Animalia but not Phylum Arthropoda (54) nor Chordata (44)
     map_animalia_not_phylum_Arthropoda_Chordata
     kingdomkey = 1 AND phylumkey <> 54 AND phylumkey <> 44 
-Chordata (44) but not Class Aves (212)
+3. Chordata (44) but not Class Aves (212)
     map_phylum_Chordata_not_class_Aves
     phylumkey = 44 AND classkey <> 212
-Class Aves (212) but not Order Passeriformes (729)
+4. Class Aves (212) but not Order Passeriformes (729)
     map_class_Aves_not_order_Passeriformes
     classkey = 212 AND orderkey <> 729
-Order Passeriformes (729)
+5. Order Passeriformes (729)
                 Family Corvidae (5235)                  101,641,071
                 Family Passerellidae (9410667)          90,413,679
                 Family Tyrannidae (5291)                48,796,928
     map_order_Passeriformes_with_3_families
     orderkey = 729 AND (familykey = 5235 OR familykey = 9410667 OR familykey = 5291)
-Order Passeriformes (729)
+6. Order Passeriformes (729)
                 Family Fringillidae (5242)              86,379,609
                 Family Parulidae (5263)                 70,769,533
                 Family Turdidae (5290)                  70,521,825
                 Family Motacillidae (5257)              18,371,440
     map_order_Passeriformes_with_4_families
     orderkey = 729 AND (familykey = 5242 OR familykey = 5263 OR familykey = 5290 OR familykey = 5257)
-Order Passeriformes (729)
+7. Order Passeriformes (729)
                 Family Paridae (9327)                   68,968,932
                 Family Icteridae (6176)                 61,050,292
                 Family Cardinalidae (9285)              39,277,227 
@@ -101,8 +107,7 @@ Order Passeriformes (729)
                 Family Passeridae (5264)                27,285,246
     map_order_Passeriformes_with_6_families
     orderkey = 729 AND (familykey = 9327 OR familykey = 6176 OR familykey = 9285 OR familykey = 9355 OR familykey = 9350 OR familykey = 5264)
-
-Order Passeriformes (729) but not these families:
+8. Order Passeriformes (729) but not these families:
                 Family Corvidae (5235)                  101,641,071
                 Family Passerellidae (9410667)          90,413,679
                 Family Tyrannidae (5291)                48,796,928
