@@ -78,7 +78,10 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'GBIF_Brazil')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_Brazil';
         elseif($this->resource_id == 'GBIF_Sweden')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_Sweden';
         elseif($this->resource_id == 'GBIF_UnitedKingdom')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/GBIF_UnitedKingdom';
-        else exit("\nresource_id not yet initialized\n");
+        else {
+            echo("\nresource_id not yet initialized\n");
+            exit(1); //jenkins fail
+        }
         if(!is_dir($this->destination_path)) mkdir($this->destination_path);
         
         $this->abbreviation['GBIF_Netherlands'] = "NL";

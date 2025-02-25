@@ -126,7 +126,7 @@ exit("\n-end tests-\n");
 
 // $func->access_json_reports(); //this generates the HTML report
 
-// $func->retrieve_dataset(13240083); exit;
+$obj = $func->retrieve_dataset(13136202); print_r($obj); exit("\n-end retrieve test-\n");
 
 // $func->update_Zenodo_record(13273185);
 
