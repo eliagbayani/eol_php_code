@@ -1,6 +1,6 @@
 <?php
 namespace php_active_record;
-/*
+/*  2025
     php update_resources/connectors/gbif_map_data.php _ '{"task":"xxx", "taxonGroup":"map_kingdom_not_animalia_nor_plantae"}' //Kingdoms not Animalia (1) nor Plantae (6)
     php update_resources/connectors/gbif_map_data.php _ '{"task":"xxx", "taxonGroup":"map_plantae_not_phylum_Tracheophyta"}' //Plantae 1
 */

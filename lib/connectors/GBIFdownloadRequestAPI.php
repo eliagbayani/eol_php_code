@@ -66,7 +66,8 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'map_phylum_Tracheophyta_not_class_Magnoliopsida')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_phylum_Tracheophyta_not_class_Magnoliopsida';
         // Not Animalia nor Plantae        
         elseif($this->resource_id == 'map_kingdom_not_animalia_nor_plantae')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_kingdom_not_animalia_nor_plantae';        
-    
+        // for testing
+        elseif($this->resource_id == 'map_Gadiformes')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_Gadiformes';        
 
 
 
@@ -385,7 +386,7 @@ class GBIFdownloadRequestAPI
             'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes', 'map_order_Passeriformes_with_3_families', 
             'map_order_Passeriformes_with_4_families', 'map_order_Passeriformes_but_not_13_families', 'map_order_Passeriformes_with_6_families', 
             'map_plantae_not_phylum_Tracheophyta', 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3', 
-            'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae'
+            'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae', 'map_Gadiformes'
             ))) $format = 'SQL_TSV_ZIP';
         
 
@@ -424,10 +425,11 @@ class GBIFdownloadRequestAPI
                     'map_animalia_phylum_Arthropoda', 'map_animalia_not_phylum_Arthropoda_Chordata', 'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes', 
                     'map_order_Passeriformes_with_3_families', 'map_order_Passeriformes_with_4_families', 'map_order_Passeriformes_with_6_families',
                     'map_order_Passeriformes_but_not_13_families', 'map_plantae_not_phylum_Tracheophyta', 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3', 
-                    'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae'))) {
+                    'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae', 'map_Gadiformes'))) {
             unset($param['predicate']);
             // -----------------------------
             if($this->resource_id == 'map_kingdom_not_animalia_nor_plantae') $sql_part = " kingdomkey IN (2,3,4,5,7,8,0) ";
+            elseif($this->resource_id == 'map_Gadiformes') $sql_part = " orderkey = 549 ";
             // -----------------------------
             elseif($this->resource_id == 'map_animalia_phylum_Arthropoda') $sql_part = " phylumkey = 54 ";
             elseif($this->resource_id == 'map_animalia_not_phylum_Arthropoda_Chordata') $sql_part = " kingdomkey = 1 AND phylumkey <> 54 AND phylumkey <> 44 ";

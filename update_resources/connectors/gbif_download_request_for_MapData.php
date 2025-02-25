@@ -10,9 +10,9 @@ $timestart = time_elapsed();
 This will overwrite any current download request. Run this once ONLY every harvest per taxon group.
 php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_data_animalia"}'
     GBIF.org (16 February 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.5pgy7k
-php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_data_others"}'
+php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_kingdom_not_animalia_nor_plantae"}'
+php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_plantae_not_phylum_Tracheophyta"}'
 
-php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_data_plantae_order_729"}'
 
 --------------------------------------------------------------------------------------------------------------- as of Feb 23, 2025
 Animalia = 1    2,405,787,432 GEOREFERENCED RECORDS

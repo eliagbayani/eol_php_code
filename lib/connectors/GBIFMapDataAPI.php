@@ -1,6 +1,6 @@
 <?php
 namespace php_active_record;
-/* connector: [gbif_map_data.php] */
+/* connector 2025: [gbif_map_data.php] */
 class GBIFMapDataAPI
 {
     public function __construct($what) //typically param $folder is passed here.
