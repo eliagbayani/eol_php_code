@@ -26,7 +26,7 @@ Protozoa = 7        1,321,912 GEOREFERENCED RECORDS
 Viruses = 8            18,765 GEOREFERENCED RECORDS
 incertae sedis = 0  5,045,233 GEOREFERENCED RECORDS
 ---------------------------------------------------------------------------------------------------------------
-Kingdom not Animalia (1) nor Plantae (6)
+1. Kingdom not Animalia (1) nor Plantae (6)
     map_kingdom_not_animalia_nor_plantae
     kingdomkey IN (2,3,4,5,7,8,0)
 ---------------------------------------------------------------------------------------------------------------
