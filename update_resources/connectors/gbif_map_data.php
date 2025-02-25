@@ -3,6 +3,7 @@ namespace php_active_record;
 /*  2025
     php update_resources/connectors/gbif_map_data.php _ '{"task":"xxx", "taxonGroup":"map_kingdom_not_animalia_nor_plantae"}' //Kingdoms not Animalia (1) nor Plantae (6)
     php update_resources/connectors/gbif_map_data.php _ '{"task":"xxx", "taxonGroup":"map_plantae_not_phylum_Tracheophyta"}' //Plantae 1
+    php update_resources/connectors/gbif_map_data.php _ '{"task":"breakdown_GBIF_DwCA_file", "taxonGroup":"map_Gadiformes"}' //Gadiformes
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/GBIFMapDataAPI');
@@ -12,18 +13,17 @@ $timestart = time_elapsed();
 // print_r($argv);
 $params['jenkins_or_cron']   = @$argv[1]; //irrelevant here
 $params['json']              = @$argv[2]; //useful here
-$fields = json_decode($params['json'], true);
+$p = json_decode($params['json'], true);
 
-$what = 'yyy';
-$func = new GBIFMapDataAPI($what);
-$func->start($fields); //main operation
+$taxonGroup = $p['taxonGroup'];
+$func = new GBIFMapDataAPI($taxonGroup);
+if($p['task'] == 'breakdown_GBIF_DwCA_file') $func->breakdown_GBIF_DwCA_file($taxonGroup);
 
-// /* testing functions
+/* testing functions
 $key = 44; //Chordata
 $key = 7707728; //Plantae - Tracheophyta
 $func->prepare_taxa($key); //a utility
-// */
-
+*/
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";

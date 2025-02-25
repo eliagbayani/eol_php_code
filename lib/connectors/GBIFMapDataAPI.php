@@ -1,24 +1,213 @@
 <?php
 namespace php_active_record;
-/* connector 2025: [gbif_map_data.php] */
+/* connector 2025: [gbif_map_data.php] 
+https://editors.eol.org/map_data2/1/4501.json
+https://editors.eol.org/map_data2/final_taxon_concept_IDS.txt
+*/
 class GBIFMapDataAPI
 {
-    public function __construct($what) //typically param $folder is passed here.
+    public function __construct($what) //eg. map_Gadiformes
     {
         $this->download_options = array('resource_id' => "gbif_ctry_checklists", 'expire_seconds' => 60*60*24*30*3, 'download_wait_time' => 1000000/2, 'timeout' => 10800*2, 'download_attempts' => 3, 'delay_in_minutes' => 5); //3 months to expire
         $this->download_options['expire_seconds'] = false; //doesn't expire
         $this->debug = array();
-        $this->bibliographicCitation = "GBIF.org (23 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.3vk32d";
-        // if(Functions::is_production())  $this->destination = "/extra/other_files/GBIF_occurrence/".$what."/";
-        // else                            $this->destination = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
-        // if(!is_dir($this->destination)) mkdir($this->destination);
+        // $this->bibliographicCitation = "GBIF.org (23 January 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.3vk32d";
+
+        $this->taxonGroup = $what;
+        if(Functions::is_production())  $this->work_dir = "/extra/other_files/GBIF_occurrence/".$what."/";
+        else                            $this->work_dir = "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/".$what."/";
 
         $this->service['species'] = "https://api.gbif.org/v1/species/"; //https://api.gbif.org/v1/species/1000148
         $this->service['children'] = "https://api.gbif.org/v1/species/TAXON_KEY/childrenAll"; //https://api.gbif.org/v1/species/44/childrenAll
         $this->service['occurrence_count'] = "https://api.gbif.org/v1/occurrence/count?taxonKey="; //https://api.gbif.org/v1/occurrence/count?taxonKey=44            
+
+        if(Functions::is_production()) {
+            $this->save_path['taxa_csv_path']     = "/extra/other_files/GBIF_occurrence/GBIF_taxa_csv_dwca/";
+            $this->save_path['multimedia_gbifID'] = "/extra/other_files/GBIF_occurrence/multimedia_gbifID/";
+            $this->save_path['map_data']          = "/extra/map_data_dwca/";
+            // $this->eol_taxon_concept_names_tab    = "/extra/eol_php_code_public_tmp/google_maps/taxon_concept_names.tab"; obsolete
+            // $this->eol_taxon_concept_names_tab    = "/extra/other_files/DWH/from_OpenData/EOL_dynamic_hierarchyV1Revised/taxa.txt"; //working but old DH ver.
+            $this->eol_taxon_concept_names_tab    = "/extra/other_files/DWH/TRAM-809/DH_v1_1/taxon.tab";    //latest active DH ver.
+            
+            $this->occurrence_txt_path['Animalia']     = "/extra/other_files/GBIF_occurrence/DwCA_Animalia/occurrence.txt";
+            $this->occurrence_txt_path['Plantae']      = "/extra/other_files/GBIF_occurrence/DwCA_Plantae/occurrence.txt";
+            $this->occurrence_txt_path['Other7Groups'] = "/extra/other_files/GBIF_occurrence/DwCA_Other7Groups/occurrence.txt";
+        }
+        else {
+            $this->save_path['taxa_csv_path']     = "/Volumes/Crucial_4TB/google_maps/GBIF_taxa_csv_dwca/";
+            $this->save_path['multimedia_gbifID'] = "/Volumes/Crucial_4TB/google_maps/multimedia_gbifID/";
+            $this->save_path['map_data']          = "/Volumes/Crucial_4TB/google_maps/map_data_dwca/";
+            // $this->eol_taxon_concept_names_tab    = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/JRice_tc_ids/taxon_concept_names.tab"; obsolete
+            // $this->eol_taxon_concept_names_tab    = "/Volumes/AKiTiO4/other_files/from_OpenData/EOL_dynamic_hierarchyV1Revised/taxa.txt"; //working but old DH ver.
+            $this->eol_taxon_concept_names_tab = "/Volumes/AKiTiO4/d_w_h/EOL Dynamic Hierarchy Active Version/DH_v1_1/taxon.tab"; //latest active DH ver.
+
+            $this->occurrence_txt_path['Gadus morhua'] = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/occurrence_downloads/DwCA/Gadus morhua/occurrence.txt";
+            $this->occurrence_txt_path['Lates niloticus'] = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/occurrence_downloads/DwCA/Lates niloticus/occurrence.txt";
+        }
+
+        $folders = array($this->save_path['taxa_csv_path'], $this->save_path['multimedia_gbifID'], $this->save_path['map_data']);
+        foreach($folders as $folder) {
+            if(!is_dir($folder)) mkdir($folder);
+        }
+              
+
+
+    }
+    private function initialize()
+    {
+        require_library('connectors/GBIFoccurrenceAPI_DwCA');
+        $this->func = new GBIFoccurrenceAPI_DwCA();
+
     }
     function start($params)
+    {   // print_r($params);
+        self::initialize();
+        $source = $this->work_dir . $this->taxonGroup ."_DwCA.zip";
+        $tsv_path = self::download_extract_gbif_zip_file($source, $this->work_dir); echo "\n$this->taxonGroup: $tsv_path\n";
+        // self::process_big_csv_file($tsv_path, "");
+    }
+    function breakdown_GBIF_DwCA_file($taxonGroup)
+    {   //IMPORTANT: run only once every harvest
+        self::initialize();
+        $source = $this->work_dir . $this->taxonGroup ."_DwCA.zip";
+        $tsv_path = self::download_extract_gbif_zip_file($source, $this->work_dir); echo "\n$this->taxonGroup: $tsv_path\n";
+
+        $path2 = $this->save_path['taxa_csv_path'];
+        $paths[] = $tsv_path;
+        /* copied template
+        if(Functions::is_production()) {
+            if($group) $paths[] = $this->occurrence_txt_path[$group];
+            else { //this means a long run, several days. Not distributed.
+                $paths[] = $this->occurrence_txt_path['Animalia'];        //~717 million - Took 3 days 15 hr (when API calls are not yet cached)
+                $paths[] = $this->occurrence_txt_path['Plantae'];         //~183 million - Took 1 day 19 hr (when API calls are not yet cached)
+                $paths[] = $this->occurrence_txt_path['Other7Groups'];    //~25 million - Took 5 hr 10 min (when API calls are not yet cached)
+            }
+        }
+        else $paths[] = $this->occurrence_txt_path[$group];
+        */
+        foreach($paths as $path) { $i = 0;
+            foreach(new FileIterator($path) as $line_number => $row) { $i++; // 'true' will auto delete temp_filepath
+                if($i == 1) { $fields = explode("\t", $row); continue; }
+                else {
+                    if(!$row) continue;
+                    $tmp = explode("\t", $row);
+                    $rec = array(); $k = 0;
+                    foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                    $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+                }
+                /*Array(
+                    [catalognumber] => 
+                    [scientificname] => Ciliata mustela (Linnaeus, 1758)
+                    [publishingorgkey] => 1928bdf0-f5d2-11dc-8c12-b8a03c50a862
+                    [institutioncode] => 
+                    [datasetkey] => baa3340c-1c8b-46bf-9fc9-50554cb1cd01
+                    [gbifid] => 4576498311
+                    [decimallatitude] => 46.15224
+                    [decimallongitude] => -1.35597
+                    [recordedby] => JULUX (INDÉPENDANT)
+                    [identifiedby] => 
+                    [eventdate] => 2021-09-22
+                    [kingdomkey] => 1
+                    [phylumkey] => 44
+                    [classkey] => 
+                    [orderkey] => 549
+                    [familykey] => 9639
+                    [genuskey] => 9577782
+                    [subgenuskey] => 
+                    [specieskey] => 2415526
+                )*/
+                if(($i % 500000) == 0) echo "\n".number_format($i) . "[$path]\n";
+                $taxonkey = $rec['specieskey'];
+                $rec['publishingorgkey'] = $this->func->get_dataset_field($rec['datasetkey'], 'publishingOrganizationKey');
+
+                $rek = array($rec['gbifid'], $rec['datasetkey'], $rec['scientificname'], $rec['publishingorgkey'], $rec['decimallatitude'], $rec['decimallongitude'], $rec['eventdate'], 
+                $rec['institutioncode'], $rec['catalognumber'], $rec['identifiedby'], $rec['recordedby']);
+                if($rec['decimallatitude'] && $rec['decimallongitude']) {
+                    $path3 = $this->func->get_md5_path($path2, $taxonkey);
+                    $csv_file = $path3 . $taxonkey . ".csv";
+                    if(!file_exists($csv_file)) {
+                        //order of fields here is IMPORTANT: will use it when accessing these generated individual taxon csv files
+                        $str = 'gbifid,datasetkey,scientificname,publishingorgkey,decimallatitude,decimallongitude,eventdate,institutioncode,catalognumber,identifiedby,recordedby';
+                        $fhandle = Functions::file_open($csv_file, "w");
+                        fwrite($fhandle, implode("\t", explode(",", $str)) . "\n");
+                        fclose($fhandle);
+                    }
+                    $fhandle = Functions::file_open($csv_file, "a");
+                    fwrite($fhandle, implode("\t", $rek) . "\n");
+                    fclose($fhandle);
+                }
+                // break;
+            } //end foreach()
+        } //end loop paths
+    }
+
+    
+
+    private function process_big_csv_file($file, $task)
+    {   echo "\nTask: [$task] [$file]\n";
+        $i = 0; $final = array();
+        if($task == "divide_into_country_files") $mod = 100000;
+        elseif($task == "process_country_file")  $mod = 10000;
+        else                                     $mod = 10000;
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(($i % $mod) == 0) echo "\n $i ";
+            if($i == 1) $fields = explode("\t", $row);
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); print_r($rec); //exit("\nstop muna\n");
+                /*Array(
+                    [catalognumber] => 
+                    [scientificname] => Ciliata mustela (Linnaeus, 1758)
+                    [publishingorgkey] => 1928bdf0-f5d2-11dc-8c12-b8a03c50a862
+                    [institutioncode] => 
+                    [datasetkey] => baa3340c-1c8b-46bf-9fc9-50554cb1cd01
+                    [gbifid] => 4576498311
+                    [decimallatitude] => 46.15224
+                    [decimallongitude] => -1.35597
+                    [recordedby] => JULUX (INDÉPENDANT)
+                    [identifiedby] => 
+                    [eventdate] => 2021-09-22
+                    [kingdomkey] => 1
+                    [phylumkey] => 44
+                    [classkey] => 
+                    [orderkey] => 549
+                    [familykey] => 9639
+                    [genuskey] => 9577782
+                    [subgenuskey] => 
+                    [specieskey] => 2415526
+                )*/
+                self::save_to_json($rec);
+                break;
+            }
+        }
+    }
+    private function write_taxon_csv()
+    {
+        // gbifid	datasetkey	scientificname	publishingorgkey	decimallatitude	decimallongitude	eventdate	institutioncode	catalognumber	identifiedby	recordedby
+    }
+    private function save_to_json($rek)
     {   
+        $rec = array();
+        $rec['a']   = $rek['catalognumber'];
+        $rec['b']   = $rek['scientificname'];
+        $rec['c']   = $this->func->get_org_name('publisher', @$rek['publishingorgkey']);
+        $rec['d']   = @$rek['publishingorgkey'];
+        if($val = @$rek['institutioncode']) $rec['c'] .= " ($val)";
+        $rec['e']   = $this->func->get_dataset_field(@$rek['datasetkey'], 'title'); //self::get_org_name('dataset', @$rek['datasetkey']);
+        $rec['f']   = @$rek['datasetkey'];
+        $rec['g']   = $rek['gbifid'];
+        $rec['h']   = $rek['decimallatitude'];
+        $rec['i']   = $rek['decimallongitude'];
+        $rec['j']   = @$rek['recordedby'];
+        $rec['k']   = @$rek['identifiedby'];
+        $rec['l']   = $this->func->get_media_by_gbifid($rek['gbifid']);
+        $rec['m']   = @$rek['eventdate'];
+        print_r($rec); exit("\nstop 1\n");
+
+
     }
     function prepare_taxa($key) //a utility
     {
@@ -63,6 +252,23 @@ class GBIFMapDataAPI
         // if($html = Functions::lookup_with_cache($url, $options)) {
         //     echo "\n$html\n";
         // }
+    }
+    private function download_extract_gbif_zip_file($source, $destination)
+    {
+        echo "\ndownload_extract_gbif_zip_file...\n";
+        /* main operation - works OK
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        $ret = $func->download_extract_zip_file($source, $destination); // echo "\n[$ret]\n";
+        if(preg_match("/inflating:(.*?)elix/ims", $ret.'elix', $arr)) {
+            $csv_path = trim($arr[1]); //echo "\n[$csv_path]\n";
+            return $csv_path;
+        }
+        return false;
+        */
+        // /* during dev only
+        return "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/map_Gadiformes/0000466-250225085111116.csv";
+        // */
     }
 }
 ?>

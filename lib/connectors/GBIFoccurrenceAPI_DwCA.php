@@ -48,9 +48,9 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             $this->occurrence_txt_path['Other7Groups'] = "/extra/other_files/GBIF_occurrence/DwCA_Other7Groups/occurrence.txt";
         }
         else {
-            $this->save_path['taxa_csv_path']     = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/GBIF_taxa_csv_dwca/";
-            $this->save_path['multimedia_gbifID'] = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/multimedia_gbifID/";
-            $this->save_path['map_data']          = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/map_data_dwca/";
+            $this->save_path['taxa_csv_path']     = "/Volumes/Crucial_4TB/google_maps/GBIF_taxa_csv_dwca/";
+            $this->save_path['multimedia_gbifID'] = "/Volumes/Crucial_4TB/google_maps/multimedia_gbifID/";
+            $this->save_path['map_data']          = "/Volumes/Crucial_4TB/google_maps/map_data_dwca/";
             // $this->eol_taxon_concept_names_tab    = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/JRice_tc_ids/taxon_concept_names.tab"; obsolete
             // $this->eol_taxon_concept_names_tab    = "/Volumes/AKiTiO4/other_files/from_OpenData/EOL_dynamic_hierarchyV1Revised/taxa.txt"; //working but old DH ver.
             $this->eol_taxon_concept_names_tab = "/Volumes/AKiTiO4/d_w_h/EOL Dynamic Hierarchy Active Version/DH_v1_1/taxon.tab"; //latest active DH ver.
@@ -347,7 +347,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             } //end foreach()
         } //end loop paths
     }
-    private function get_dataset_field($datasetKey, $return_field)
+    function get_dataset_field($datasetKey, $return_field)
     {
         $options = $this->download_options;
         $options['expire_seconds'] = false; //should always be false, unless dataset info changes alot. e.g. http://api.gbif.org/v1/dataset/e9b63688-ed8d-4be8-aa35-89646d887a5e
@@ -365,7 +365,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     //==========================
     // start GBIF methods
     //==========================
-    private function get_md5_path($path, $taxonkey)
+    function get_md5_path($path, $taxonkey)
     {
         $md5 = md5($taxonkey);
         $cache1 = substr($md5, 0, 2);
@@ -822,7 +822,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         }
         return $final;
     }
-    private function get_media_by_gbifid($gbifid)
+    function get_media_by_gbifid($gbifid)
     {
         $path = $this->save_path['multimedia_gbifID'];
         $final_path = self::get_md5_path($path, $gbifid);
@@ -1185,7 +1185,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         // if($r->taxonRank == "SPECIES") return $r->species;
         return $r->scientificName;
     }
-    private function get_org_name($org, $id)
+    function get_org_name($org, $id)
     {
         $id = trim($id);
         if(!$id) return "";

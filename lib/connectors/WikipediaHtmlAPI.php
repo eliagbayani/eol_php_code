@@ -319,6 +319,7 @@ class WikipediaHtmlAPI
         $sections[] = '<h2 id="References[3]"><span id="References.5B3.5D"></span>References<sup id="cite_ref-3"><a href="#cite_note-3"><span>[</span>3<span>]</span></a></sup></h2>';
         $sections[] = '<h2 id="External_resources">External resources</h2>';
         $sections[] = '<h2 id="References_and_External_Links">References and External Links</h2>';
+        $sections[] = '<h2 id="External_sources">External sources</h2>';
         // print_r($sections); exit;
         
         // <h2 id="References">References</h2></div>

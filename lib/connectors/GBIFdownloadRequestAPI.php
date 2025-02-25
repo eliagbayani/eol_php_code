@@ -427,6 +427,13 @@ class GBIFdownloadRequestAPI
                     'map_order_Passeriformes_but_not_13_families', 'map_plantae_not_phylum_Tracheophyta', 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3', 
                     'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae', 'map_Gadiformes'))) {
             unset($param['predicate']);
+            // /* Eli initiated dataset filters: BOLD: e.g. scientificname = "BOLD:AAB3717"
+            $str = "";
+            foreach(array('040c5662-da76-4782-a48e-cdea1892d14c') as $key) $str .= " '$key', ";
+            $str = substr(trim($str), 0, -1); //remove last char "," a comma
+            $str = "AND datasetkey NOT IN ($str)";
+            $datasetKey_filters = $str;
+            // */
             // -----------------------------
             if($this->resource_id == 'map_kingdom_not_animalia_nor_plantae') $sql_part = " kingdomkey IN (2,3,4,5,7,8,0) ";
             elseif($this->resource_id == 'map_Gadiformes') $sql_part = " orderkey = 549 ";
@@ -462,7 +469,7 @@ class GBIFdownloadRequestAPI
                 OR basisofrecord = 'MATERIAL_SAMPLE'
             )
             AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
-            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE')";
+            AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE') $datasetKey_filters ";
             /*
             $rec = array();
             $rec['a']   = $rek['catalognumber'];
