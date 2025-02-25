@@ -150,6 +150,7 @@ class GBIFMapDataAPI
     function generate_map_data_using_GBIF_csv_files($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $autoRefreshYN = false)
     {
         self::initialize();
+        $paths = $this->csv_paths;
         // $eol_taxon_id_list["Gadus morhua"] = 206692;
         // $eol_taxon_id_list["Achillea millefolium L."] = 45850244;
         // $eol_taxon_id_list["Francolinus levaillantoides"] = 1; //5227890
@@ -160,21 +161,20 @@ class GBIFMapDataAPI
         // $eol_taxon_id_list["Plantae"] = 281;
         // $eol_taxon_id_list["Chaetoceros"] = 12010;
         // $eol_taxon_id_list["Chenonetta"] = 104248;
+
         /* for testing 1 taxon
         $eol_taxon_id_list = array();
         $eol_taxon_id_list["Gadus morhua"] = 206692;
-        // $eol_taxon_id_list["Gadidae"] = 5503;
-        $eol_taxon_id_list["Hyperiidae"] = 1180;
+        $eol_taxon_id_list["Gadidae"] = 5503;
+        $eol_taxon_id_list["Gadiformes"] = 1180;
         // $eol_taxon_id_list["Decapoda"] = 1183;
         // $eol_taxon_id_list["Proterebia keymaea"] = 137680; //csv map data not available from DwCA download
         // $eol_taxon_id_list["Aichi virus"] = 540501;
         */
 
-        $sciname = 'Gadella imberbis';
-        $tc_id = '46564969';
+        // $sciname = 'Gadella imberbis';
+        // $tc_id = '46564969';
 
-
-        $paths = $this->csv_paths; 
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);
             $this->func->create_map_data($sciname, $tc_id, $paths); //result of refactoring
@@ -202,7 +202,8 @@ class GBIFMapDataAPI
                 }
             }
             $rec = array_map('trim', $rec);
-            print_r($rec); exit("\nstopx\n");
+            if(substr($rec['canonicalName'],0,1) != "G") continue;
+            print_r($rec); //exit("\nstopx\n");
             /*Array(
                 [canonicalName] => Oscillatoriales
                 [EOLid] => 3255
@@ -217,7 +218,8 @@ class GBIFMapDataAPI
             }
             //  --------------------------------------------------------
             echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
-            self::create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
+            $this->func->create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
+            // break; //debug only
         }
         unlink($local);
     }

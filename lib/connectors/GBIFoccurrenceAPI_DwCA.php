@@ -25,7 +25,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         // $this->download_options['expire_seconds'] = false; //debug | true -- expires now
 
         if(Functions::is_production()) $this->download_options['cache_path'] = "/extra/eol_cache_gbif/";
-        else                           $this->download_options['cache_path'] = "/Volumes/Thunderbolt4/eol_cache_gbif/";
+        else                           $this->download_options['cache_path'] = "/Volumes/Crucial_4TB/eol_cache_gbif/";
 
         //GBIF services
         $this->gbif_taxon_info      = "http://api.gbif.org/v1/species/match?name="; //http://api.gbif.org/v1/species/match?name=felidae&kingdom=Animalia
