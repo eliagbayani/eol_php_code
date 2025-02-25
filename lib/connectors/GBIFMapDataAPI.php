@@ -141,8 +141,6 @@ class GBIFMapDataAPI
         } //end loop paths
     }
 
-    
-
     private function process_big_csv_file($file, $task)
     {   echo "\nTask: [$task] [$file]\n";
         $i = 0; $final = array();
@@ -180,7 +178,7 @@ class GBIFMapDataAPI
                     [specieskey] => 2415526
                 )*/
                 self::save_to_json($rec);
-                break;
+                // break;
             }
         }
     }
@@ -261,13 +259,13 @@ class GBIFMapDataAPI
         $func = new INBioAPI();
         $ret = $func->download_extract_zip_file($source, $destination); // echo "\n[$ret]\n";
         if(preg_match("/inflating:(.*?)elix/ims", $ret.'elix', $arr)) {
-            $csv_path = trim($arr[1]); //echo "\n[$csv_path]\n";
+            $csv_path = trim($arr[1]); echo "\n[$csv_path]\n";
             return $csv_path;
         }
         return false;
         */
         // /* during dev only
-        return "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/map_Gadiformes/0000466-250225085111116.csv";
+        return "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/map_Gadiformes/0000896-250225085111116.csv";
         // */
     }
 }
