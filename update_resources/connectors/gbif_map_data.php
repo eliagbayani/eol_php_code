@@ -3,7 +3,10 @@ namespace php_active_record;
 /*  2025
     php update_resources/connectors/gbif_map_data.php _ '{"task":"xxx", "taxonGroup":"map_kingdom_not_animalia_nor_plantae"}' //Kingdoms not Animalia (1) nor Plantae (6)
     php update_resources/connectors/gbif_map_data.php _ '{"task":"xxx", "taxonGroup":"map_plantae_not_phylum_Tracheophyta"}' //Plantae 1
-    php update_resources/connectors/gbif_map_data.php _ '{"task":"breakdown_GBIF_DwCA_file", "taxonGroup":"map_Gadiformes"}' //Gadiformes
+    php update_resources/connectors/gbif_map_data.php _ '{"task":"breakdown_GBIF_DwCA_file", "taxonGroup":"map_Gadiformes"}' //Gadiformes - during dev
+    
+    php update_resources/connectors/gbif_map_data.php _ '{"task":"generate_map_data_using_GBIF_csv_files"}'
+
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/GBIFMapDataAPI');
@@ -15,9 +18,11 @@ $params['jenkins_or_cron']   = @$argv[1]; //irrelevant here
 $params['json']              = @$argv[2]; //useful here
 $p = json_decode($params['json'], true);
 
-$taxonGroup = $p['taxonGroup'];
+$taxonGroup = @$p['taxonGroup'];
 $func = new GBIFMapDataAPI($taxonGroup);
 if($p['task'] == 'breakdown_GBIF_DwCA_file') $func->breakdown_GBIF_DwCA_file($taxonGroup);
+elseif($p['task'] == 'generate_map_data_using_GBIF_csv_files') $func->generate_map_data_using_GBIF_csv_files();
+
 
 /* testing functions
 $key = 44; //Chordata

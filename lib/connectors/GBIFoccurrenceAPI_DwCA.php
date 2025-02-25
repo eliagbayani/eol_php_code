@@ -593,7 +593,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             self::save_json_file($taxon_concept_id, $final);
         }
     }
-    private function create_map_data($sciname, $taxon_concept_id, $paths)
+    function create_map_data($sciname, $taxon_concept_id, $paths)
     {
         if($usageKey = self::get_usage_key($sciname)) { debug("\nOK GBIF key [$usageKey]\n");
             if(!$this->auto_refresh_mapYN) {
