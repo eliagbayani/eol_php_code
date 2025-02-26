@@ -174,7 +174,10 @@ class GBIFMapDataAPI
 
         // $sciname = 'Gadella imberbis';  $tc_id = '46564969';
         // $sciname = 'Gadiformes';        $tc_id = '5496';
-        $sciname = 'Gadus morhua';      $tc_id = '46564415';
+        // $sciname = 'Gadus morhua';      $tc_id = '46564415';
+
+        $sciname = "Gadus chalcogrammus"; $tc_id = 216657;
+        $sciname = "Gadus macrocephalus"; $tc_id = 46564417;
 
 
         if($sciname && $tc_id) {
@@ -204,7 +207,11 @@ class GBIFMapDataAPI
                 }
             }
             $rec = array_map('trim', $rec);
-            if(substr($rec['canonicalName'],0,1) != "G") continue;
+            // /* dev only
+            // if(substr($rec['canonicalName'],0,1) != "G") continue;
+            if(substr($rec['canonicalName'],0,1) == "G") continue;
+            // */
+
             print_r($rec); //exit("\nstopx\n");
             /*Array(
                 [canonicalName] => Oscillatoriales
@@ -221,7 +228,80 @@ class GBIFMapDataAPI
             //  --------------------------------------------------------
             echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
             $this->func->create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
-            break; //debug only
+            // break; //debug only
+        }
+        unlink($local);
+    }
+    function gen_map_data_forTaxa_with_children($p) //($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $filter_rank = '')
+    {
+        self::initialize();
+        $this->use_API_YN = false; //no more API calls at this point.
+        require_library('connectors/DHConnLib'); $func = new DHConnLib('');
+        $paths = $this->csv_paths; 
+        
+        $sciname = "Gadus"; $tc_id = "46564414";
+
+        if($sciname && $tc_id) {
+            $eol_taxon_id_list[$sciname] = $tc_id; print_r($eol_taxon_id_list); 
+            $this->func->create_map_data_include_descendants($sciname, $tc_id, $paths, $func); //result of refactoring
+            return;
+        }
+        
+        /* used FileIterator below instead, to save on memory
+        $i = 0;
+        foreach($eol_taxon_id_list as $sciname => $taxon_concept_id) {
+            $i++;
+            //  new ranges ---------------------------------------------
+            if($range_from && $range_to) {
+                $cont = false;
+                if($i >= $range_from && $i < $range_to) $cont = true;
+                if(!$cont) continue;
+            }
+            //  --------------------------------------------------------
+            echo "\n$i. [$sciname][$taxon_concept_id]";
+            self::create_map_data_include_descendants($sciname, $taxon_concept_id, $paths, $func); //result of refactoring
+        } //end main foreach()
+        */
+        
+        $options = $this->download_options;
+        $options['expire_seconds'] = 60*60*24*30; //1 month expires
+        $local = Functions::save_remote_file_to_local($this->listOf_taxa[$filter_rank], $options);
+        $i = 0; $found = 0;
+        foreach(new FileIterator($local) as $line_number => $line) {
+            $i++; if(($i % 500000) == 0) echo "\n".number_format($i)." ";
+            $row = explode("\t", $line); // print_r($row);
+            if($i == 1) {
+                $fields = $row;
+                $fields = array_filter($fields); //print_r($fields);
+                continue;
+            }
+            else {
+                if(!@$row[0]) continue;
+                $k = 0; $rec = array();
+                foreach($fields as $fld) {
+                    $rec[$fld] = @$row[$k];
+                    $k++;
+                }
+            }
+            $rec = array_map('trim', $rec);
+            // print_r($rec); exit("\nstopx\n");
+            /*Array(
+                [canonicalName] => Oscillatoriales
+                [EOLid] => 3255
+                [taxonRank] => order
+                [taxonomicStatus] => accepted
+            )*/
+            
+            //  new ranges ---------------------------------------------
+            if($range_from && $range_to) {
+                $cont = false;
+                if($i >= $range_from && $i < $range_to) $cont = true;
+                if(!$cont) continue;
+            }
+            //  --------------------------------------------------------
+            echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
+            self::create_map_data_include_descendants($rec['canonicalName'], $rec['EOLid'], $paths, $func); //result of refactoring
+            
         }
         unlink($local);
     }
