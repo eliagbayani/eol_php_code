@@ -172,8 +172,10 @@ class GBIFMapDataAPI
         // $eol_taxon_id_list["Aichi virus"] = 540501;
         */
 
-        // $sciname = 'Gadella imberbis';
-        // $tc_id = '46564969';
+        // $sciname = 'Gadella imberbis';  $tc_id = '46564969';
+        // $sciname = 'Gadiformes';        $tc_id = '5496';
+        $sciname = 'Gadus morhua';      $tc_id = '46564415';
+
 
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);

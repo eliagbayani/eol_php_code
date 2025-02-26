@@ -810,7 +810,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     */
                     
                     // /* PROBABLY WE CAN TRY early cluster here. Early clustering may provide a better spread of coordinates.
-                    if(count($final['records']) > $this->rec_limit) { /* for early clustering, the taxon_concept_id or gbifID is irrelevant bec. you're not saving json file yet. */
+                    if(count($final['records']) > $this->rec_limit) { //for early clustering, the taxon_concept_id or gbifID is irrelevant bec. you're not saving json file yet.
                         $final['records'] = self::process_revised_cluster(array('count' => count($final['records']), 'records' => $final['records']), $gbifid."_gbifID", true, 'c'); //3rd param true means 'early cluster'
                     }
                     // */
