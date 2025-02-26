@@ -662,6 +662,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     {
         if($early_cluster) debug("\nStart of early cluster [$whoCalled]...");
         else               debug("\nStart with revised cluster [$whoCalled]");
+        echo "\nInitial total: ".count($final['records']);
         $to_be_saved = array();
         $to_be_saved['records'] = array();
         $unique = array();
@@ -815,11 +816,11 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     }
                     // */
                     
-                }
+                } //inner foreach()
                 $final['count'] = count($final['records']);
             }
             else debug("\n[$usageKey] NOT found in [$path]");
-        }
+        } //outer foreach()
         return $final;
     }
     function get_media_by_gbifid($gbifid)
