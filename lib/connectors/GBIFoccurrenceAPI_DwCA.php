@@ -374,7 +374,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         if(!file_exists($path . "$cache1/$cache2")) mkdir($path . "$cache1/$cache2");
         return $path . "$cache1/$cache2/";
     }
-    function gen_map_data_forTaxa_with_children($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $filter_rank = '')
+    function x_gen_map_data_forTaxa_with_children($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $filter_rank = '')
     {
         $this->use_API_YN = false; //no more API calls at this point.
         require_library('connectors/DHConnLib'); $func = new DHConnLib('');
@@ -479,7 +479,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             $sep = " |";
             if($json = self::get_json_map_data($child)) {
                 $arr = json_decode($json, true); // print_r($arr);
-                // echo "\n[$child] - ".count(@$arr['records']); //good debug
+                echo "\n[$child] - ".count(@$arr['records']); //good debug
                 if($val = @$arr['records']) {
                     $final = array_merge($final, $val);
                     if(count($final) > $this->rec_limit) $final = self::process_revised_cluster(array('count' => count($final), 'records' => $final), $taxon_concept_id, true, 'a'); //3rd param true means 'early cluster'
@@ -497,7 +497,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         }
         return;
     }
-    function generate_map_data_using_GBIF_csv_files($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $autoRefreshYN = false)
+    private function generate_map_data_using_GBIF_csv_files($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $autoRefreshYN = false)
     {
         // $eol_taxon_id_list["Gadus morhua"] = 206692;
         // $eol_taxon_id_list["Achillea millefolium L."] = 45850244;
@@ -680,7 +680,9 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             debug("\n New total [$decimal_places]: " . count($unique) . "");
             $limit_to_break = $this->limit_20k;
             if($basename == 281) $limit_to_break = 35000; //Plantae 34131
-
+            // /* NEW: Feb 26, 2025
+            if($decimal_places == 1) break; //this is the least decimal places value
+            // */
             if(count($to_be_saved['records']) < $limit_to_break || $decimal_places == 0) break; //orig value is 0, not 1
             else {   //initialize vars
                 $decimal_places--;
