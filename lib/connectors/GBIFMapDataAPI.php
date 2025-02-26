@@ -32,9 +32,9 @@ class GBIFMapDataAPI
             // to be updated to: https://editors.eol.org/uploaded_resources/1c3/b5f/dhv21.zip
     
             
-            $this->occurrence_txt_path['Animalia']     = "/extra/other_files/GBIF_occurrence/DwCA_Animalia/occurrence.txt";
-            $this->occurrence_txt_path['Plantae']      = "/extra/other_files/GBIF_occurrence/DwCA_Plantae/occurrence.txt";
-            $this->occurrence_txt_path['Other7Groups'] = "/extra/other_files/GBIF_occurrence/DwCA_Other7Groups/occurrence.txt";
+            // $this->occurrence_txt_path['Animalia']     = "/extra/other_files/GBIF_occurrence/DwCA_Animalia/occurrence.txt";
+            // $this->occurrence_txt_path['Plantae']      = "/extra/other_files/GBIF_occurrence/DwCA_Plantae/occurrence.txt";
+            // $this->occurrence_txt_path['Other7Groups'] = "/extra/other_files/GBIF_occurrence/DwCA_Other7Groups/occurrence.txt";
         }
         else {
             $this->save_path['taxa_csv_path']     = "/Volumes/Crucial_4TB/google_maps/GBIF_taxa_csv_dwca/";
@@ -45,8 +45,8 @@ class GBIFMapDataAPI
             $this->eol_taxon_concept_names_tab = "/Volumes/AKiTiO4/d_w_h/EOL Dynamic Hierarchy Active Version/DH_v1_1/taxon.tab"; //used for the longest time
             $this->eol_taxon_concept_names_tab = "/Volumes/AKiTiO4/d_w_h/history/dhv21/taxon.tab";
 
-            $this->occurrence_txt_path['Gadus morhua'] = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/occurrence_downloads/DwCA/Gadus morhua/occurrence.txt";
-            $this->occurrence_txt_path['Lates niloticus'] = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/occurrence_downloads/DwCA/Lates niloticus/occurrence.txt";
+            // $this->occurrence_txt_path['Gadus morhua'] = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/occurrence_downloads/DwCA/Gadus morhua/occurrence.txt";
+            // $this->occurrence_txt_path['Lates niloticus'] = "/Volumes/AKiTiO4/eol_pub_tmp/google_maps/occurrence_downloads/DwCA/Lates niloticus/occurrence.txt";
         }
 
         $this->csv_paths = array();
@@ -77,7 +77,7 @@ class GBIFMapDataAPI
     {   //IMPORTANT: run only once every harvest
         self::initialize();
         $source = $this->work_dir . $this->taxonGroup ."_DwCA.zip";
-        $tsv_path = self::download_extract_gbif_zip_file($source, $this->work_dir); echo "\n$this->taxonGroup: $tsv_path\n";
+        $tsv_path = self::download_extract_gbif_zip_file($source, $this->work_dir); echo "\nRun once: $this->taxonGroup: $tsv_path\n";
 
         $path2 = $this->save_path['taxa_csv_path'];
         $paths[] = $tsv_path;
@@ -175,10 +175,8 @@ class GBIFMapDataAPI
         // $sciname = 'Gadella imberbis';  $tc_id = '46564969';
         // $sciname = 'Gadiformes';        $tc_id = '5496';
         // $sciname = 'Gadus morhua';      $tc_id = '46564415';
-
-        $sciname = "Gadus chalcogrammus"; $tc_id = 216657;
-        $sciname = "Gadus macrocephalus"; $tc_id = 46564417;
-
+        // $sciname = "Gadus chalcogrammus"; $tc_id = 216657;
+        // $sciname = "Gadus macrocephalus"; $tc_id = 46564417;
 
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);
@@ -208,8 +206,8 @@ class GBIFMapDataAPI
             }
             $rec = array_map('trim', $rec);
             // /* dev only
-            // if(substr($rec['canonicalName'],0,1) != "G") continue;
-            if(substr($rec['canonicalName'],0,1) == "G") continue;
+            if(substr($rec['canonicalName'],0,1) != "G") continue;
+            // if(substr($rec['canonicalName'],0,1) == "G") continue;
             // */
 
             print_r($rec); //exit("\nstopx\n");
@@ -239,7 +237,8 @@ class GBIFMapDataAPI
         require_library('connectors/DHConnLib'); $func = new DHConnLib('');
         $paths = $this->csv_paths; 
         
-        $sciname = "Gadus"; $tc_id = "46564414";
+        $sciname = "Gadus";     $tc_id = "46564414";
+        // $sciname = "Gadidae";   $tc_id = "5503";
 
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; print_r($eol_taxon_id_list); 
@@ -265,7 +264,7 @@ class GBIFMapDataAPI
         
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*30; //1 month expires
-        $local = Functions::save_remote_file_to_local($this->listOf_taxa[$filter_rank], $options);
+        $local = Functions::save_remote_file_to_local($this->listOf_taxa[$p['filter_rank']], $options);
         $i = 0; $found = 0;
         foreach(new FileIterator($local) as $line_number => $line) {
             $i++; if(($i % 500000) == 0) echo "\n".number_format($i)." ";
@@ -420,7 +419,7 @@ class GBIFMapDataAPI
     private function download_extract_gbif_zip_file($source, $destination)
     {
         echo "\ndownload_extract_gbif_zip_file...\n";
-        /* main operation - works OK
+        // /* main operation - works OK
         require_library('connectors/INBioAPI');
         $func = new INBioAPI();
         $ret = $func->download_extract_zip_file($source, $destination); // echo "\n[$ret]\n";
@@ -429,10 +428,10 @@ class GBIFMapDataAPI
             return $csv_path;
         }
         return false;
-        */
-        // /* during dev only
-        return "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/map_Gadiformes/0000896-250225085111116.csv";
         // */
+        /* during dev only
+        return "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/map_Gadiformes/0000896-250225085111116.csv";
+        */
     }
 }
 ?>
