@@ -439,7 +439,7 @@ class GBIFdownloadRequestAPI
             elseif($this->resource_id == 'map_Gadiformes') $sql_part = " orderkey = 549 ";
             // -----------------------------
             elseif($this->resource_id == 'map_animalia_phylum_Arthropoda') $sql_part = " phylumkey = 54 ";
-            elseif($this->resource_id == 'map_animalia_not_phylum_Arthropoda_Chordata') $sql_part = " kingdomkey = 1 AND phylumkey <> 54 AND phylumkey <> 44 ";
+            elseif($this->resource_id == 'map_animalia_not_phylum_Arthropoda_Chordata') $sql_part = " kingdomkey = 1 AND phylumkey NOT IN (54, 44) ";
             elseif($this->resource_id == 'map_phylum_Chordata_not_class_Aves') $sql_part = " phylumkey = 44 AND classkey <> 212 ";
             elseif($this->resource_id == 'map_class_Aves_not_order_Passeriformes') $sql_part = " classkey = 212 AND orderkey <> 729 ";
             elseif($this->resource_id == 'map_order_Passeriformes_with_3_families') $sql_part = " orderkey = 729 AND (familykey = 5235 OR familykey = 9410667 OR familykey = 5291) ";            
@@ -461,13 +461,13 @@ class GBIFdownloadRequestAPI
             AND hasgeospatialissues = 0
             AND specieskey IS NOT NULL
             AND occurrencestatus = 'PRESENT'
-            AND (
-                basisofrecord = 'HUMAN_OBSERVATION'
-                OR basisofrecord = 'MACHINE_OBSERVATION'
-                OR basisofrecord = 'OCCURRENCE'
-                OR basisofrecord = 'LIVING_SPECIMEN'
-                OR basisofrecord = 'MATERIAL_SAMPLE'
-            )
+            -- AND (
+            --     basisofrecord = 'HUMAN_OBSERVATION'
+            --     OR basisofrecord = 'MACHINE_OBSERVATION'
+            --     OR basisofrecord = 'OCCURRENCE'
+            --     OR basisofrecord = 'LIVING_SPECIMEN'
+            --     OR basisofrecord = 'MATERIAL_SAMPLE'
+            -- )
             AND NOT ARRAY_CONTAINS(issue, 'ZERO_COORDINATE')
             AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE') $datasetKey_filters ";
             /*
