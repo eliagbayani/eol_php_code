@@ -221,7 +221,7 @@ class GBIFMapDataAPI
             //  --------------------------------------------------------
             echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
             $this->func->create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
-            // break; //debug only
+            break; //debug only
         }
         unlink($local);
     }
