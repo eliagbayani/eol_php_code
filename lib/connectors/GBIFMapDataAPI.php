@@ -125,8 +125,10 @@ class GBIFMapDataAPI
                 )*/
                 if(($i % 500000) == 0) echo "\n".number_format($i) . "[$path]\n";
                 $taxonkey = $rec['specieskey'];
-                $rec['publishingorgkey'] = $this->func->get_dataset_field($rec['datasetkey'], 'publishingOrganizationKey');
-
+                // /* ----- can be postponed since not all records will eventually be used
+                // $rec['publishingorgkey'] = $this->func->get_dataset_field($rec['datasetkey'], 'publishingOrganizationKey'); //orig but can be postponed
+                $rec['publishingorgkey'] = 'nyc'; //not yet computed by Eli
+                // ----- */
                 $rek = array($rec['gbifid'], $rec['datasetkey'], $rec['scientificname'], $rec['publishingorgkey'], $rec['decimallatitude'], $rec['decimallongitude'], $rec['eventdate'], 
                 $rec['institutioncode'], $rec['catalognumber'], $rec['identifiedby'], $rec['recordedby']);
                 if($rec['decimallatitude'] && $rec['decimallongitude']) {
@@ -351,6 +353,7 @@ class GBIFMapDataAPI
     {
         // gbifid	datasetkey	scientificname	publishingorgkey	decimallatitude	decimallongitude	eventdate	institutioncode	catalognumber	identifiedby	recordedby
     }
+    /* not used atm
     private function save_to_json($rek)
     {   
         $rec = array();
@@ -369,7 +372,7 @@ class GBIFMapDataAPI
         $rec['l']   = $this->func->get_media_by_gbifid($rek['gbifid']);
         $rec['m']   = @$rek['eventdate'];
         print_r($rec); exit("\nstop 1\n");
-    }
+    } */
     function prepare_taxa($key) //a utility
     {
         $final['occurrences'] = 0; $batch_sum = 0;

@@ -266,6 +266,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             }//end loop text file
         }//end foreach($paths)
     }
+    /* commented Feb 27, 2025
     function breakdown_GBIF_DwCA_file($group = false, $range_from = false, $range_to = false) //e.g. $group = 'Animalia'
     {
         // exit("\nFinished running Aug 23, 2018\n");
@@ -296,7 +297,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 else {
                     // [0] => 1        [1] => 47416
                     // [0] => 47416    [1] => 94831
-                    // /* new ranges ----------------------------------------------------
+                    // new ranges ----------------------------------------------------
                     if($range_from && $range_to) {
                         $cont = false;
                         if($i >= $range_from && $i < $range_to) $cont = true;
@@ -308,8 +309,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                             break;
                         }
                     }
-                    // */ ----------------------------------------------------
-                    
+                    // ----------------------------------------------------
                     if(!@$row[0]) continue; //$row[0] is gbifID
                     $k = 0; $rec = array();
                     foreach($fields as $fld) {
@@ -342,7 +342,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 }
             } //end foreach()
         } //end loop paths
-    }
+    } */
     function get_dataset_field($datasetKey, $return_field)
     {
         $options = $this->download_options;
@@ -784,10 +784,19 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     $rec = array();
                     $rec['a']   = $rek['catalognumber'];
                     $rec['b']   = $rek['scientificname'];
+                    
+                    /* new 2025: these can be postponed
                     $rec['c']   = self::get_org_name('publisher', @$rek['publishingorgkey']);
                     $rec['d']   = @$rek['publishingorgkey'];
                     if($val = @$rek['institutioncode']) $rec['c'] .= " ($val)";
-                    $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title'); //self::get_org_name('dataset', @$rek['datasetkey']);
+                    */
+                    $rec['c'] = 'nyc';
+                    $rec['d'] = 'nyc';
+
+                    // /* ----- new 2025: postpone assignment of letter e since not all records that pass here will be used.
+                    // $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title'); //self::get_org_name('dataset', @$rek['datasetkey']);
+                    $rec['e'] = '';
+                    // ----- */    
                     $rec['f']   = @$rek['datasetkey'];
                     $rec['g']   = $rek['gbifid'];
                     $rec['h']   = $rek['decimallatitude'];
@@ -819,6 +828,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             }
             else debug("\n[$usageKey] NOT found in [$path]");
         } //outer foreach()
+        print_r($final); exit("\nelix 2025\n");
         return $final;
     }
     function get_media_by_gbifid($gbifid)
