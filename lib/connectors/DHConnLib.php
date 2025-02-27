@@ -18,10 +18,13 @@ class DHConnLib
         }
         else {
             $this->download_options = array(
-                'cache_path'         => '/Volumes/AKiTiO4/active_DH_cache/',
+                'cache_path'         => '/Volumes/Crucial_4TB/active_DH_cache/',
                 'download_wait_time' => 250000, 'timeout' => 600, 'download_attempts' => 1, 'delay_in_minutes' => 0, 'expire_seconds' => false);
-            $this->main_path = "/Volumes/AKiTiO4/d_w_h/EOL Dynamic Hierarchy Active Version/DH_v1_1/";
+            $this->main_path = "/Volumes/AKiTiO4/d_w_h/EOL Dynamic Hierarchy Active Version/DH_v1_1/";  //used for the longest time
+            // $this->main_path = "/Volumes/AKiTiO4/d_w_h/history/dhv21/";                              //supposedly latest but doesn't have EOLid
         }
+        if(!is_dir($this->download_options['cache_path'])) mkdir($this->download_options['cache_path']);
+        $this->download_options['expire_seconds'] = 60*60*24*7; //1 week cache
         
         $this->listOf_taxa['order']  = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_order_4maps.txt';
         $this->listOf_taxa['family'] = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_family_4maps.txt';
@@ -69,7 +72,7 @@ class DHConnLib
         }
         else echo "\nNo children\n";
         echo "\ncount: ".count($this->taxID_info)."\n";
-        exit("\n-end tests-\n");
+        echo("\n-end tests-\n");
         */
     }
     function generate_children_of_taxa_from_DH() /* This generates cache of children of order, family & genus. Also generates respective list txt files. */
@@ -214,7 +217,9 @@ class DHConnLib
             }
             @unlink($cache_path);
         }
-        else echo "\nAlert: json not yet saved for this taxon ($name).\n"; //almost not seen, since all concerned taxa will have a json file. Even for those without children will have '[]' json value
+        else {  //almost not seen, since all concerned taxa will have a json file. Even for those without children will have '[]' json value
+            // echo "\nAlert: json not yet saved for this taxon ($name).\n"; exit("\n-=-=-=\n");
+        }
         if($gen_descendants_ifNot_availableYN) {
             //generate json
             // echo "\nGenerating cache json for the first time ($name)...\n"; //good debug
