@@ -829,10 +829,16 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             else debug("\n[$usageKey] NOT found in [$path]");
         } //outer foreach()
         // print_r($final); //exit("\nelix 2025\n");
-        $final = self::run_lookups_now($final);
+        if(@$final['records']) $final = self::run_lookups_now($final);
         // print_r($final); exit("\nelix 2025\n");
         return $final;
     }
+    /*
+    375977 of . [Gersemia rubiformis][46547909]
+    OK GBIF key [2263181]
+    :: [update_resources/connectors/gbif_map_data.php [29]]<br>
+    map file: [/Volumes/Crucial_4TB/google_maps/map_data_dwca//9/46547909.json]
+    */
     private function run_lookups_now($arr)
     {
         /*Array(
