@@ -281,9 +281,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 $paths[] = $this->occurrence_txt_path['Other7Groups'];    //~25 million - Took 5 hr 10 min (when API calls are not yet cached)
             }
         }
-        else {
-            $paths[] = $this->occurrence_txt_path[$group];
-        }
+        else $paths[] = $this->occurrence_txt_path[$group];
         foreach($paths as $path) {
             $i = 0;
             foreach(new FileIterator($path) as $line_number => $line) { // 'true' will auto delete temp_filepath
@@ -1096,7 +1094,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                         )
         */
     }
-    private function write_to_file($j) //for cluster map
+    private function write_to_file($j) //for cluster map | when using API to get georeference data
     {
         $recs = array();
         $i = 0;
