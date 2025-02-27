@@ -294,10 +294,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     continue;
                 }
                 else {
-                    /*
-                        [0] => 1        [1] => 47416
-                        [0] => 47416    [1] => 94831
-                    */
+                    // [0] => 1        [1] => 47416
+                    // [0] => 47416    [1] => 94831
                     // /* new ranges ----------------------------------------------------
                     if($range_from && $range_to) {
                         $cont = false;
