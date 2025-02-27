@@ -179,6 +179,8 @@ class GBIFMapDataAPI
         // $sciname = 'Gadus morhua';      $tc_id = '46564415';
         // $sciname = "Gadus chalcogrammus"; $tc_id = 216657;
         // $sciname = "Gadus macrocephalus"; $tc_id = 46564417;
+        $sciname = 'Stichastrella rosea'; $tc_id = '598446';
+        
 
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);

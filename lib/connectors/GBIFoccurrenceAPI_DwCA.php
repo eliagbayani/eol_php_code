@@ -784,7 +784,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     $rec = array();
                     $rec['a']   = $rek['catalognumber'];
                     $rec['b']   = $rek['scientificname'];
-                    
+
                     /* new 2025: these can be postponed
                     $rec['c']   = self::get_org_name('publisher', @$rek['publishingorgkey']);
                     $rec['d']   = @$rek['publishingorgkey'];
@@ -795,7 +795,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
 
                     // /* ----- new 2025: postpone assignment of letter e since not all records that pass here will be used.
                     // $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title'); //self::get_org_name('dataset', @$rek['datasetkey']);
-                    $rec['e'] = '';
+                    $rec['e'] = 'nyc';
                     // ----- */    
                     $rec['f']   = @$rek['datasetkey'];
                     $rec['g']   = $rek['gbifid'];
@@ -828,8 +828,65 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             }
             else debug("\n[$usageKey] NOT found in [$path]");
         } //outer foreach()
-        print_r($final); exit("\nelix 2025\n");
+        // print_r($final); //exit("\nelix 2025\n");
+        $final = self::run_lookups_now($final);
+        // print_r($final); exit("\nelix 2025\n");
         return $final;
+    }
+    private function run_lookups_now($arr)
+    {
+        /*Array(
+            [records] => Array(
+                    [0] => Array(
+                            [a] => 
+                            [b] => Stichastrella rosea (O.F.Müller, 1776)
+                            [c] => nyc
+                            [d] => nyc
+                            [e] => 
+                            [f] => 139a966c-22d5-486b-bff2-cfcbccd6fdfc
+                            [g] => 2933760949
+                            [h] => 53.296003
+                            [i] => -4.059275
+                            [j] => 
+                            [k] => 
+                            [l] => 
+                            [m] => 1992-06-02/1992-08-02
+                        )
+                    [1] => Array(
+                            [a] => 
+                            [b] => Stichastrella rosea (O.F.Müller, 1776)
+                            [c] => nyc
+                            [d] => nyc
+                            [e] => 
+                            [f] => 139a966c-22d5-486b-bff2-cfcbccd6fdfc
+                            [g] => 2933243777
+                            [h] => 58.418566
+                            [i] => -5.127211
+                            [j] => Connor, D. David
+                            [k] => 
+                            [l] => 
+                            [m] => 1991-05-16
+                        )
+        */
+        $final = array();
+        foreach($arr['records'] as $r) {
+            $r['c'] = ''; $r['d'] = ''; $r['e'] = ''; //remove the 'nyc' not yet computed reminder.
+            if($datasetkey = $r['f']) {
+                if($publishingorgkey = self::get_dataset_field($datasetkey, 'publishingOrganizationKey')) { //this was postponed before
+                    $r['c']   = self::get_org_name('publisher', $publishingorgkey);
+                    $r['d']   = $publishingorgkey;    
+                }
+                $r['e']   = self::get_dataset_field($datasetkey, 'title');
+            }
+            $final[] = $r;
+            // /* debug only
+            if($r['c']) {
+                print_r($c); exit("\nhuli ka\n");
+            }
+            // */
+        }
+        if($final) return array('records' => $final, 'count' => count($final));
+        return $arr;
     }
     function get_media_by_gbifid($gbifid)
     {
@@ -1204,6 +1261,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         if($html = Functions::lookup_with_cache($this->html[$org] . $id, $options)) {
             if(preg_match("/Full title<\/h3>(.*?)<\/p>/ims", $html, $arr)) return strip_tags(trim($arr[1]));
         }
+        return '';
     }
     private function get_initial_data($sciname)
     {
