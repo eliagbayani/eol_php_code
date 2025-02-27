@@ -369,8 +369,6 @@ class GBIFMapDataAPI
         $rec['l']   = $this->func->get_media_by_gbifid($rek['gbifid']);
         $rec['m']   = @$rek['eventdate'];
         print_r($rec); exit("\nstop 1\n");
-
-
     }
     function prepare_taxa($key) //a utility
     {
