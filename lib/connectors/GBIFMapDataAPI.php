@@ -176,7 +176,7 @@ class GBIFMapDataAPI
 
         // $sciname = 'Gadella imberbis';  $tc_id = '46564969';
         // $sciname = 'Gadiformes';        $tc_id = '5496';
-        // $sciname = 'Gadus morhua';      $tc_id = '46564415';
+        // $sciname = 'Gadus morhua';      $tc_id = '46564415'; $taxonKey = '8084280';
         // $sciname = "Gadus chalcogrammus"; $tc_id = 216657;
         // $sciname = "Gadus macrocephalus"; $tc_id = 46564417;
         // $sciname = 'Stichastrella rosea'; $tc_id = '598446';
@@ -184,8 +184,16 @@ class GBIFMapDataAPI
 
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);
+            /* using dumps
             $this->func->create_map_data($sciname, $tc_id, $paths); //result of refactoring
+            */
+            // /* using API
+            $this->func->get_georeference_data_via_api($taxonKey, $tc_id);
+            // */
             return;
+
+
+
         }
 
         $options = $this->download_options;
@@ -210,11 +218,14 @@ class GBIFMapDataAPI
             }
             $rec = array_map('trim', $rec);
             // /* dev only
-            if(substr($rec['canonicalName'],0,1) != "G") continue;
+            // if(substr($rec['canonicalName'],0,1) != "G") continue;
             // if(substr($rec['canonicalName'],0,1) == "G") continue;
             // */
 
+            if($rec['taxonRank'] == 'species') {}
+            else continue;
             print_r($rec); //exit("\nstopx\n");
+
             /*Array(
                 [canonicalName] => Oscillatoriales
                 [EOLid] => 3255
@@ -229,7 +240,19 @@ class GBIFMapDataAPI
             }
             //  --------------------------------------------------------
             echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
+            /* orig using downloaded csv
             $this->func->create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
+            */
+            // /* new: using api
+            if($usageKey = $this->func->get_usage_key($rec['canonicalName'])) { debug("\nOK GBIF key [$usageKey]\n");
+                $this->func->get_georeference_data_via_api($usageKey, $rec['EOLid']);
+            }
+            else {
+                echo "\n usageKey not found! [".$rec['canonicalName']."][".$rec['EOLid']."]\n";
+                $this->debug['usageKey not found']["[".$rec['canonicalName']."][".$rec['EOLid']."]"] = '';
+            }
+            // */
+
             // break; //debug only
         }
         unlink($local);

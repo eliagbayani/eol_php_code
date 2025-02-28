@@ -13,6 +13,17 @@ that is mapped to EOL's (sciname, taxonConceptID)
 2.2. get taxonkey using scientific name
 2.3. use taxonkey to get the occurrence in CSV file (CSV created in 4.2)
 
+curl -X 'GET' \
+  'https://api.gbif.org/v1/occurrence/search?acceptedTaxonKey=8084280&hasCoordinate=true&hasGeospatialIssue=false&occurrenceStatus=PRESENT
+
+  // ' \
+  -H 'accept: application/json'
+
+curl -X 'GET' \
+  'https://api.gbif.org/v1/occurrence/search?acceptedTaxonKey=8084280&associatedSequences=http%3A%2F%2Fwww.ncbi.nlm.nih.gov%2Fnuccore%2FU34853.1&basisOfRecord=PRESERVED_SPECIMEN&bed=Harlem%20coal&catalogNumber=K001275042&classKey=212&collectionCode=F&collectionKey=dceb8d52-094c-4c2c-8960-75e0097c6861&continent=EUROPE&country=AF&crawlId=1&datasetId=https%3A%2F%2Fdoi.org%2F10.1594%2FPANGAEA.315492&datasetKey=13b70480-bd69-11dd-b15f-b8a03c50a862&degreeOfEstablishment=Invasive&dwcaExtension=http%3A%2F%2Frs.tdwg.org%2Fac%2Fterms%2FMultimedia&earliestEonOrLowestEonothem=Mesozoic&earliestEraOrLowestErathem=Proterozoic&earliestPeriodOrLowestSystem=Neogene&earliestEpochOrLowestSeries=Holocene&earliestAgeOrLowestStage=Skullrockian&endDayOfYear=6&establishmentMeans=Native&eventDate=2000%2C2001-06-30&eventId=A%20123&familyKey=2405&fieldNumber=RV%20Sol%2087-03-08&formation=Notch%20Peak%20Formation&gadmGid=AGO.1_1&gadmLevel0Gid=AGO&gadmLevel1Gid=AGO.1_1&gadmLevel2Gid=AFG.1.1_1&gadmLevel3Gid=AFG.1.1.1_1&gbifId=2005380410&gbifRegion=AFRICA&genusKey=2877951&georeferencedBy=Brad%20Millen&geometry=POLYGON%20%28%2830.1%2010.1%2C%2040%2040%2C%2020%2040%2C%2010%2020%2C%2030.1%2010.1%29%29&group=Bathurst&hasCoordinate=true&higherGeography=Argentina&highestBiostratigraphicZone=Blancan&hasGeospatialIssue=false&hostingOrganizationKey=fbca90e3-8aed-48b1-84e3-369afbd000ce&identifiedBy=Allison&identifiedByID=https%3A%2F%2Forcid.org%2F0000-0001-6492-4016&installationKey=17a83780-3060-4851-9d6f-029d5fcb81c9&institutionCode=K&institutionKey=fa252605-26f6-426c-9892-94d071c2c77f&issue=COUNTRY_COORDINATE_MISMATCH&island=Zanzibar&islandGroup=Seychelles&iucnRedListCategory=EX&kingdomKey=5&lastInterpreted=2023-02&latestEonOrHighestEonothem=Proterozoic&latestEraOrHighestErathem=Cenozoic&latestPeriodOrHighestSystem=Neogene&latestEpochOrHighestSeries=Pleistocene&latestAgeOrHighestStage=Boreal&license=CC0_1_0&lifeStage=Juvenile&lowestBiostratigraphicZone=Maastrichtian&member=Lava%20Dam%20Member&modified=2023-02-20&month=5&networkKey=2b7c7b4f-4d4f-40d3-94de-c28b6fa054a6&occurrenceId=URN%3Acatalog%3AUWBM%3ABird%3A126493
+  // &occurrenceStatus=PRESENT&orderKey=1448&organismQuantity=1&organismQuantityType=individuals&parentEventId=A%20123&pathway=Agriculture&phylumKey=44&preparations=pinned&previousIdentifications=Chalepidae&programme=BID&projectId=bid-af2020-039-reg&protocol=DWC_ARCHIVE&publishedByGbifRegion=AFRICA&publishingOrg=e2e717bf-551a-4917-bdc9-4fa0f342c530&recordedBy=MiljoStyrelsen&recordedByID=https%3A%2F%2Forcid.org%2F0000-0003-0623-6682&recordNumber=1&sampleSizeUnit=hectares&sampleSizeValue=50.5&samplingProtocol=malaise%20trap&sex=MALE&scientificName=Quercus%20robur&speciesKey=2476674&startDayOfYear=5&stateProvince=Leicestershire&taxonConceptId=8fa58e08-08de-4ac1-b69c-1235340b7001&taxonKey=2476674&taxonId=urn%3Alsid%3Adyntaxa.se%3ATaxon%3A103026&taxonomicStatus=SYNONYM&typeStatus=HOLOTYPE&verbatimScientificName=Quercus%20robur%20L.&waterBody=Lake%20Michigan&year=1998' \
+  -H 'accept: application/json'
+
 */
 class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downloads
 {
@@ -31,6 +42,15 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $this->gbif_taxon_info      = "http://api.gbif.org/v1/species/match?name="; //http://api.gbif.org/v1/species/match?name=felidae&kingdom=Animalia
         $this->gbif_record_count    = "http://api.gbif.org/v1/occurrence/count?taxonKey=";
         $this->gbif_occurrence_data = "http://api.gbif.org/v1/occurrence/search?taxonKey=";
+
+        $this->gbif_record_count    = "http://api.gbif.org/v1/occurrence/count?hasCoordinate=true&hasGeospatialIssue=false&occurrenceStatus=PRESENT&taxonKey=";
+        $this->gbif_occurrence_data = "http://api.gbif.org/v1/occurrence/search?hasCoordinate=true&hasGeospatialIssue=false&occurrenceStatus=PRESENT&taxonKey=";
+        
+                        
+        /*
+        https://api.gbif.org/v1/occurrence/search?acceptedTaxonKey=8084280&hasCoordinate=true&hasGeospatialIssue=false&occurrenceStatus=PRESENT
+        from: https://techdocs.gbif.org/en/openapi/v1/occurrence#/Searching%20occurrences/searchOccurrence
+        */
         
         $this->html['publisher']    = "http://www.gbif.org/publisher/";
         $this->html['dataset']      = "http://www.gbif.org/dataset/";
@@ -625,8 +645,10 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             }
         }
     }
-    private function get_georeference_data_via_api($taxonKey, $taxon_concept_id) //updated from original version
+    function get_georeference_data_via_api($taxonKey, $taxon_concept_id) //updated from original version
     {
+        $options = $this->download_options;
+        $options['download_wait_time'] = 500000; //half a sec.
         $offset = 0; $limit = 300; $continue = true; $final = array(); echo "\n";
         $final['records'] = array();
         while($continue) {
@@ -634,13 +656,13 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             // if($offset > 50000) break; //debug only --- during development only - COMMENT IN REAL OPERATION
             $url = $this->gbif_occurrence_data . $taxonKey . "&limit=$limit";
             if($offset) $url .= "&offset=$offset";
-            if($json = Functions::lookup_with_cache($url, $this->download_options)) {
+            if($json = Functions::lookup_with_cache($url, $options)) {
                 $j = json_decode($json);
                 if(!is_object($j)) {
                     $offset += $limit;
                     continue;
                 }
-                $recs = self::write_to_file($j);
+                $recs = self::write_to_file($j); //ngayon lang commented
                 $final['records'] = array_merge($final['records'], $recs);
                 debug(" increments: " . count($recs) . "");
                 if($j->endOfRecords)                            $continue = false;
@@ -840,7 +862,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     map file: [/Volumes/Crucial_4TB/google_maps/map_data_dwca//9/46547909.json]
     */
     private function run_lookups_now($arr)
-    {
+    { echo "\nrun_lookups_now...\n";
         /*Array(
             [records] => Array(
                     [0] => Array(
@@ -1176,10 +1198,17 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 $rec = array();
                 $rec['a']   = (string) @$r->catalogNumber;
                 $rec['b']   = self::get_sciname($r);
+
+                /* postpone
                 $rec['c']   = self::get_org_name('publisher', @$r->publishingOrgKey);
                 $rec['d']   = @$r->publishingOrgKey;
                 if($val = @$r->institutionCode) $rec['c'] .= " ($val)";
                 $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title'); //self::get_org_name('dataset', @$r->datasetKey);
+                */
+                $rec['c']   = 'nyc';
+                $rec['d']   = 'nyc';
+                $rec['e']   = 'nyc';
+
                 $rec['f']   = @$r->datasetKey;
                 $rec['g']   = $r->gbifID;
                 $rec['h']   = $r->decimalLatitude;
