@@ -735,7 +735,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     private function save_json_file($tc_id, $rec)
     {
-        if(@$rec['records']) $rec = self::run_lookups_now($rec, 2);
+        if(@$rec['records']) $rec = self::run_lookups_now($rec, 2); //for API
 
 
         if($rec['count'] > 0) {
@@ -854,7 +854,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             else debug("\n[$usageKey] NOT found in [$path]");
         } //outer foreach()
         // print_r($final); //exit("\nelix 2025\n");
-        if(@$final['records']) $final = self::run_lookups_now($final, 1);
+        if(@$final['records']) $final = self::run_lookups_now($final, 1); //for csv download
         // print_r($final); exit("\nelix 2025\n");
         return $final;
     }
