@@ -218,7 +218,15 @@ class GBIFMapDataAPI
             }
             $rec = array_map('trim', $rec);
             // /* dev only
-            // if(substr($rec['canonicalName'],0,1) != "G") continue;
+            $first_char = substr($rec['canonicalName'],0,1);
+            // if(in_array(strtolower($first_char), array('a','b','c','d','e'))) {} else continue;
+            // if(in_array(strtolower($first_char), array('f','g','h','i','j'))) {} else continue;
+            // if(in_array(strtolower($first_char), array('k','l','m','n','o'))) {} else continue;
+            // if(in_array(strtolower($first_char), array('p','q','r','s','t'))) {} else continue;
+            if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {} else continue;
+
+
+            // if( != "G") continue;
             // if(substr($rec['canonicalName'],0,1) == "G") continue;
             // */
 
