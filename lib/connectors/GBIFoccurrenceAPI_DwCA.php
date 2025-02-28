@@ -735,6 +735,9 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     private function save_json_file($tc_id, $rec)
     {
+        if(@$rec['records']) $rec = self::run_lookups_now($rec, 2);
+
+
         if($rec['count'] > 0) {
             $filename = self::get_map_data_path($tc_id).$tc_id.".json";
             debug(" -> saving json... recs: ".$rec['count']. " [$filename]");
@@ -851,7 +854,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             else debug("\n[$usageKey] NOT found in [$path]");
         } //outer foreach()
         // print_r($final); //exit("\nelix 2025\n");
-        if(@$final['records']) $final = self::run_lookups_now($final);
+        if(@$final['records']) $final = self::run_lookups_now($final, 1);
         // print_r($final); exit("\nelix 2025\n");
         return $final;
     }
@@ -861,8 +864,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     :: [update_resources/connectors/gbif_map_data.php [29]]<br>
     map file: [/Volumes/Crucial_4TB/google_maps/map_data_dwca//9/46547909.json]
     */
-    private function run_lookups_now($arr)
-    { echo "\nrun_lookups_now...\n";
+    private function run_lookups_now($arr, $what)
+    { echo "\nrun_lookups_now...$what\n";
         /*Array(
             [records] => Array(
                     [0] => Array(
