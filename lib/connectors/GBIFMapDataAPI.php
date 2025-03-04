@@ -181,6 +181,16 @@ class GBIFMapDataAPI
         // $sciname = "Gadus macrocephalus"; $tc_id = 46564417;
         // $sciname = 'Stichastrella rosea'; $tc_id = '598446';
         
+        /* just a test of the func
+            $test_sciname = "Gonyaulax baltica";
+            // $test_sciname = "Gadus";
+            // $test_sciname = "Gonyaulax";
+            // $test_sciname = "Fervidicoccaceae";
+            if($usageKey = $this->func->get_usage_key($test_sciname)) { debug("\nOK GBIF key [$usageKey]\n");
+            }
+            else echo "\n usageKey not found! [".$test_sciname."]\n";
+            exit("\n-end test-\n");
+        */
 
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);
@@ -191,9 +201,6 @@ class GBIFMapDataAPI
             $this->func->get_georeference_data_via_api($taxonKey, $tc_id);
             // */
             return;
-
-
-
         }
 
         $options = $this->download_options;
@@ -220,18 +227,19 @@ class GBIFMapDataAPI
             // /* dev only
             $first_char = substr($rec['canonicalName'],0,1);
             // if(in_array(strtolower($first_char), array('a','b','c','d'))) {} else continue;
-            // if(in_array(strtolower($first_char), array('e','f','g','h'))) {} else continue;
+            // if(in_array(strtolower($first_char), array('e','f','h'))) {} else continue;
             // if(in_array(strtolower($first_char), array('i','j','k','l'))) {} else continue;
             // if(in_array(strtolower($first_char), array('m','n','o','p'))) {} else continue;
             // if(in_array(strtolower($first_char), array('q','r','s','t'))) {} else continue;
             // if(in_array(strtolower($first_char), array('u','v','w'))) {} else continue;
-            if(in_array(strtolower($first_char), array('x','y','z'))) {} else continue;
+            // if(in_array(strtolower($first_char), array('x','y','z'))) {} else continue;
+            if(in_array(strtolower($first_char), array('g'))) {} else continue;
 
             // if( != "G") continue;
             // if(substr($rec['canonicalName'],0,1) == "G") continue;
             // */
 
-            if($rec['taxonRank'] == 'species') {}
+            if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
             else continue;
             print_r($rec); //exit("\nstopx\n");
 
