@@ -1328,7 +1328,33 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 if(isset($json->note)) $usageKey = self::get_usage_key_again($sciname);
                 else {} // e.g. Fervidicoccaceae
             }
-            else $usageKey = trim((string) $json->usageKey);
+            else { // echo "\nGoes here 100\n"; // print_r($json);
+                /*stdClass Object(
+                    [usageKey] => 9594474
+                    [scientificName] => Gonyaulax Diesing, 1866
+                    [canonicalName] => Gonyaulax
+                    [rank] => GENUS
+                    [status] => ACCEPTED
+                    [confidence] => 94
+                    [matchType] => HIGHERRANK
+                    [kingdom] => Chromista
+                    [phylum] => Myzozoa
+                    [order] => Gonyaulacales
+                    [family] => Gonyaulacaceae
+                    [genus] => Gonyaulax
+                    [kingdomKey] => 4
+                    [phylumKey] => 8770992
+                    [classKey] => 9049014
+                    [orderKey] => 8775728
+                    [familyKey] => 7665054
+                    [genusKey] => 9594474
+                    [synonym] => 
+                    [class] => Dinophyceae
+                )*/
+                if($sciname == $json->canonicalName) {
+                    $usageKey = trim((string) $json->usageKey);
+                }
+            }
             if($val = $usageKey) return $val;
         }
         return false;
