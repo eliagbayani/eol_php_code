@@ -194,7 +194,7 @@ class GBIFMapDataAPI
         */
 
         if($sciname && $tc_id) {
-            $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);
+            // $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);
             /* using dumps
             $this->func->create_map_data($sciname, $tc_id, $paths); //result of refactoring
             */
