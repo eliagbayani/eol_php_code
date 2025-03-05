@@ -1369,8 +1369,31 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             $options = array();
             $json = json_decode($json);
             if(!isset($json->alternatives)) return false;
-            foreach($json->alternatives as $rec) {
-                if($rec->canonicalName == $sciname) {
+            foreach($json->alternatives as $rec) { //print_r($rec);
+                /*{
+                "usageKey": 3212024,
+                "scientificName": "Globigerina d'Orbigny, 1826",
+                "canonicalName": "Globigerina",
+                "rank": "GENUS",
+                "status": "ACCEPTED",
+                "confidence": 99,
+                "note": "Similarity: name=100; authorship=0; classification=-2; rank=0; status=1; score=99",
+                "matchType": "EXACT",
+                "kingdom": "Chromista",
+                "phylum": "Foraminifera",
+                "order": "Rotaliida",
+                "family": "Globigerinidae",
+                "genus": "Globigerina",
+                "kingdomKey": 4,
+                "phylumKey": 8376456,
+                "classKey": 7434778,
+                "orderKey": 7692889,
+                "familyKey": 8273781,
+                "genusKey": 3212024,
+                "synonym": false,
+                "class": "Globothalamea"
+                },*/
+                if($rec->canonicalName == $sciname && $rec->status == "ACCEPTED" && $rec->confidence >= 99) {
                     $options[$rec->rank][] = $rec->usageKey;
                     $usagekeys[] = $rec->usageKey;
                 }
