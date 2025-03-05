@@ -653,6 +653,11 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $final['records'] = array();
         while($continue) {
             if($offset > $this->rec_limit) break; //working... uncomment if u want to limit to 100,000
+            
+            // /* new: Mar 5, 2025
+            if(($offset + $limit) > 100001) $limit = 100001 - $offset;
+            // */
+
             // if($offset > 50000) break; //debug only --- during development only - COMMENT IN REAL OPERATION
             $url = $this->gbif_occurrence_data . $taxonKey . "&limit=$limit";
             if($offset) $url .= "&offset=$offset";
