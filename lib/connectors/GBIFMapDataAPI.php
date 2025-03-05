@@ -186,6 +186,7 @@ class GBIFMapDataAPI
             // $test_sciname = "Gadus";
             // $test_sciname = "Gonyaulax";
             // $test_sciname = "Fervidicoccaceae";
+            $test_sciname = "Globigerina";
             if($usageKey = $this->func->get_usage_key($test_sciname)) { debug("\nOK GBIF key [$usageKey]\n");
             }
             else echo "\n usageKey not found! [".$test_sciname."]\n";
