@@ -87,6 +87,7 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         $zenodo_id = 14927926; //13321100
         $zenodo_id = 14437247;
         $this->retrieve_save_stats($zenodo_id);
+        // $this->retrieve_save_stats($zenodo_id);
         exit("\n-end generate_stats_for_views_downloads-\n"); //prev 2017
     }
     function set_all_to_keyword_active_if_not_deprecated()
