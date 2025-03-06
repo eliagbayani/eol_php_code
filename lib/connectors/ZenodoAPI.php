@@ -52,9 +52,16 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->download_options['expire_seconds'] = 60*60*24*30; //for eol content partners
 
         $this->api['domain'] = 'https://zenodo.org';
-        if(Functions::is_production()) $this->path_2_file_dat = '/extra/other_files/Zenodo/';
-        else                           $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
+        if(Functions::is_production()) {
+            $this->path_2_file_dat = '/extra/other_files/Zenodo/';
+            $this->cache_path      = '/extra/other_files/Zenodo/cache/';
+        }
+        else {
+            $this->path_2_file_dat = '/Volumes/OWC_Express/other_files/Zenodo/';
+            $this->cache_path      = '/Volumes/OWC_Express/other_files/Zenodo/cache/';
+        }
         if(!is_dir($this->path_2_file_dat)) mkdir($this->path_2_file_dat);
+        if(!is_dir($this->cache_path)) mkdir($this->cache_path);
         $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
         $this->html_report = $this->path_2_file_dat . "opendata_zenodo.html";
 
@@ -129,6 +136,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $this->ORCIDs['Katja Schulz'] = '0000-0001-7134-3324'; //https://orcid.org/0000-0001-7134-3324
 
         $this->github_EOL_resource_id_and_Zenodo_id_file = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/Zenodo/EOL_resource_id_and_Zenodo_id_file.tsv';
+        $this->api['record'] = 'https://zenodo.org/api/records/'; //e.g. https://zenodo.org/api/records/13322979
     }
     function start()
     {   self::log_error(array("==================== Log starts here ===================="));
