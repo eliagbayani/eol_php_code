@@ -934,7 +934,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 $final[] = $o;
             }
             if($returnNow) return $final;
-            return $final; //debug only, return the first 25 records only
+            // return $final; //debug only, return the first 25 records only
             // if($page_num >= 3) return; //debug only
         } //end while()
         return $final;
