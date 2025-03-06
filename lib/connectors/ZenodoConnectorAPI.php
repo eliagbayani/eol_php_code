@@ -69,25 +69,26 @@ class ZenodoConnectorAPI extends ZenodoFunctions
     }*/
     function generate_stats_for_views_downloads()
     {   
-        /*
+        // /*
         $objs = true;
         $q = "+keywords:active"; //n=
-        while($objs) {
-            if($objs = $this->get_depositions_by_part_title($q, false, true)) { //print_r($objs[0]); //exit;
-                $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit("\nStop muna\n");
-                foreach($objs as $o) { $i++;
-                    echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
-                    if($zenodo_id = $o['id']) self::retrieve_save_stats($zenodo_id);
-                    break; //debug only, run 1 only
-                }
-            } //end if($objs)    
-        }
-        */
-        // dev only
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); //exit;
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit("\nStop muna\n");
+            foreach($objs as $o) { $i++;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) $this->process_stats($zenodo_id);
+                // break; //debug only, run 1 only
+                // if($i >= 5) break; //debug only
+            }
+        } //end if($objs)    
+        // */
+
+        /* dev only
         $zenodo_id = 14927926; //13321100
         $zenodo_id = 14437247;
-        $this->retrieve_save_stats($zenodo_id);
-        // $this->retrieve_save_stats($zenodo_id);
+        $this->process_stats($zenodo_id);
+        // $this->process_stats($zenodo_id);
+        */
         exit("\n-end generate_stats_for_views_downloads-\n"); //prev 2017
     }
     function set_all_to_keyword_active_if_not_deprecated()

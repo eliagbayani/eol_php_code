@@ -16,16 +16,17 @@ class ZenodoFunctions
         else echo "\ncache is set already\n";
         // */        
     }
-    function retrieve_save_stats($zenodo_id)
+    function process_stats($zenodo_id)
     {
         self::initialize();
         // $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna 1a\n");
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*30; //designed to expire monthly 30 days
-        $options['expire_seconds'] = 0;
+        // $options['expire_seconds'] = 0;
+        $options['expire_seconds'] = 60*60*24; //to expire in 1 day
         if($json = Functions::lookup_with_cache($this->api['record'].$zenodo_id, $options)) {
             $o = json_decode($json, true); //print_r($o);
-            $rek = self::retrieve($o);         print_r($rek);
+            $rek = self::retrieve($o);     //print_r($rek);
             $rek = self::append_stats_today($rek, $o);
             ksort($rek);
             print_r($rek);
