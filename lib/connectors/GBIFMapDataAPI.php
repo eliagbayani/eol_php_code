@@ -227,14 +227,16 @@ class GBIFMapDataAPI
             $rec = array_map('trim', $rec);
             // /* dev only
             $first_char = substr($rec['canonicalName'],0,1);
-            // if(in_array(strtolower($first_char), array('a','b','c','d'))) {} else continue;
-            // if(in_array(strtolower($first_char), array('e','f','h'))) {} else continue;
-            // if(in_array(strtolower($first_char), array('i','j','k','l'))) {} else continue;
-            // if(in_array(strtolower($first_char), array('m','n','o','p'))) {} else continue;
-            // if(in_array(strtolower($first_char), array('q','r','s','t'))) {} else continue;
-            // if(in_array(strtolower($first_char), array('u','v','w'))) {} else continue;
-            // if(in_array(strtolower($first_char), array('x','y','z'))) {} else continue;
-            if(in_array(strtolower($first_char), array('g'))) {} else continue;
+            // if(in_array(strtolower($first_char), array('a','b','c'))) {} else continue;      //1
+            // if(in_array(strtolower($first_char), array('e','f','h'))) {} else continue;      //2
+            // if(in_array(strtolower($first_char), array('i','j','k'))) {} else continue;      //3
+            // if(in_array(strtolower($first_char), array('m','n','o','p'))) {} else continue;  //4
+            // if(in_array(strtolower($first_char), array('q','r','s','t'))) {} else continue;  //5
+            // if(in_array(strtolower($first_char), array('u','v','w'))) {} else continue;      //6
+            // if(in_array(strtolower($first_char), array('x','y','z'))) {} else continue;      //7
+            // if(in_array(strtolower($first_char), array('g'))) {} else continue;              //8
+            // if(in_array(strtolower($first_char), array('d'))) {} else continue;              //9
+            if(in_array(strtolower($first_char), array('l'))) {} else continue;              //10
 
             // if( != "G") continue;
             // if(substr($rec['canonicalName'],0,1) == "G") continue;
