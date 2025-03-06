@@ -25,6 +25,7 @@ curl -X 'GET' \
   -H 'accept: application/json'
 */
 /* Workspaces for GBIF map tasks:
+- GBIFMapDataAPI
 - GBIF_map_harvest
 - GBIF_SQL_DownloadsAPI
 - GBIFTaxonomy */
