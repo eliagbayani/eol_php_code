@@ -16,6 +16,19 @@ class ZenodoFunctions
         else echo "\ncache is set already\n";
         // */        
     }
+    function show_dataset_stats($zenodo_id)
+    {
+        self::initialize();
+        $options = $this->download_options;
+        $options['expire_seconds'] = 60*60*24*30; //designed to expire monthly 30 days
+        // $options['expire_seconds'] = 0;
+        $options['expire_seconds'] = 60*60*24; //to expire in 1 day
+        if($json = Functions::lookup_with_cache($this->api['record'].$zenodo_id, $options)) {
+            $o = json_decode($json, true); //print_r($o);
+            $rek = self::retrieve($o);
+            ksort($rek); print_r($rek);
+        }
+    }
     function process_stats($zenodo_id)
     {
         self::initialize();
@@ -71,6 +84,7 @@ class ZenodoFunctions
     {   
         self::initialize();
         self::init_stats_file(14927926); //this is: Wikipedia: Wikipedia English - traits (inferred records) | https://zenodo.org/records/14927926
+        // self::init_stats_file(13322937);
         // /*
         $objs = true;
         $q = "+keywords:active"; //n=
@@ -83,7 +97,7 @@ class ZenodoFunctions
                     $title = $o['metadata']['title'];
                     self::write_tsv($rek, $title);
                 }
-                break; //debug only, run 1 only
+                // break; //debug only, run 1 only
                 // if($i >= 5) break; //debug only
             }
         } //end if($objs)    
@@ -115,10 +129,16 @@ class ZenodoFunctions
         $this->header_dates = array_keys($rek); sort($this->header_dates);
         $final_dates = array();
         foreach($this->header_dates as $d) {
+            // /* better interface
             $final_dates[] = $d;
             $final_dates[] = "";
             $second_row[] = 'Views';
             $second_row[] = 'Downloads';
+            // */
+            /* 2nd option: interface
+            $final_dates[] = "$d V";
+            $final_dates[] = "$d D";
+            */
         }
         $final_second_row = array("");
         $final_second_row = array_merge($final_second_row, $second_row);

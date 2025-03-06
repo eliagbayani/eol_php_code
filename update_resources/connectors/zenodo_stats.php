@@ -3,6 +3,7 @@ namespace php_active_record;
 /*
 php update_resources/connectors/zenodo_stats.php _ '{"task":"generate"}'
 php update_resources/connectors/zenodo_stats.php _ '{"task":"show_report"}'
+php update_resources/connectors/zenodo_stats.php _ '{"task":"show_stats", "ZenodoID":"13322896"}'
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/ZenodoFunctions');
@@ -29,6 +30,8 @@ $task = @$p['task'];
 $func = new ZenodoAPI();
 if($task == 'generate')         $func->generate_stats_for_views_downloads();  //Mar 6, 2025
 elseif($task == 'show_report')  $func->generate_tsv_report();                 //Mar 6-7, 2025
+elseif($task == 'show_stats')   $func->show_dataset_stats($p['ZenodoID']);    //Mar 7, 2025
+
 
 // $obj = $func->retrieve_dataset(13136202); print_r($obj); exit("\n-end retrieve test-\n");
 
