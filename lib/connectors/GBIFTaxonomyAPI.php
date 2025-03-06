@@ -5,6 +5,10 @@ This is about ways to access the GBIF taxonomy
 Clients are:
     - WaterBodyChecklistsAPI.php
 */
+/* Workspaces for GBIF map tasks:
+- GBIF_map_harvest
+- GBIF_SQL_DownloadsAPI
+- GBIFTaxonomy */
 class GBIFTaxonomyAPI
 {
     function __construct($what = false) //$what can be: 

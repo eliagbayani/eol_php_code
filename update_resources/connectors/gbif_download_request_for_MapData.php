@@ -3,6 +3,10 @@ namespace php_active_record;
 /* This is a library that handles GBIF download requests using their API 
 Copied template from original: gbif_download_request.php
 */
+/* Workspaces for GBIF map tasks:
+- GBIF_map_harvest
+- GBIF_SQL_DownloadsAPI
+- GBIFTaxonomy */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/GBIFdownloadRequestAPI');
 $timestart = time_elapsed();
@@ -12,8 +16,6 @@ php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task"
     GBIF.org (16 February 2025) GBIF Occurrence Download https://doi.org/10.15468/dl.5pgy7k
 php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_kingdom_not_animalia_nor_plantae"}'
 php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task":"send_download_request", "taxon":"map_plantae_not_phylum_Tracheophyta"}'
-
-
 --------------------------------------------------------------------------------------------------------------- as of Feb 23, 2025
 Animalia = 1    2,405,787,432 GEOREFERENCED RECORDS
 Plantae = 6       437,438,303 GEOREFERENCED RECORDS
