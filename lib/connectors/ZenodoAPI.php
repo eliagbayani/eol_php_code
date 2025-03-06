@@ -64,6 +64,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
         if(!is_dir($this->cache_path)) mkdir($this->cache_path);
         $this->log_file = $this->path_2_file_dat . "Zenodo_logs.tsv";
         $this->html_report = $this->path_2_file_dat . "opendata_zenodo.html";
+        $this->stats_file = $this->path_2_file_dat . "stats.tsv";
 
         $this->Write_EOL_resource_id_and_Zenodo_id_file = $this->path_2_file_dat . "EOL_resource_id_and_Zenodo_id_file.tsv";
         $WRITE = Functions::file_open($this->Write_EOL_resource_id_and_Zenodo_id_file, "c");
@@ -933,7 +934,7 @@ class ZenodoAPI extends ZenodoConnectorAPI
                 $final[] = $o;
             }
             if($returnNow) return $final;
-            // return $final; //debug only, return the first 25 records only
+            return $final; //debug only, return the first 25 records only
             // if($page_num >= 3) return; //debug only
         } //end while()
         return $final;
