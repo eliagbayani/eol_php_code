@@ -90,11 +90,34 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         */
         exit("\n-end generate_stats_for_views_downloads-\n"); //prev 2017
     }
+    function set_license_to_cc_by_sa()
+    {
+        // /*
+        $objs = true;
+        $q = '+keywords:"descriptions" +title:"Wikipedia:"'; //n=65
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
+            foreach($objs as $o) { $i++;
+                if($i <= 20) {} //continue;
+                else continue;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa');
+                // break; //debug only, run 1 only
+            }
+        } //end if($objs)    
+        // */
+        /* dev only
+        $zenodo_id = 14035881;
+        $zenodo_id = 14035881;
+        self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa');
+        exit("\n-end set_license_to_cc_by_sa-\n"); //prev 2017
+        */
+    }
     function set_all_to_keyword_active_if_not_deprecated()
     {
         $objs = true;
-        $q = "-keywords:deprecated -keywords:active"; //n=
-        while($objs) {
+        $q = "-keywords:deprecated -keywords:active"; //n= goes to zero eventually
+        while($objs) { //every $objs is a refreshed version, so the query actually changes. Hence the params ($q, false, true) and not ($q)
             if($objs = $this->get_depositions_by_part_title($q, false, true)) { //print_r($objs[0]); exit;
                 $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
                 foreach($objs as $o) { $i++;
@@ -558,6 +581,7 @@ class ZenodoConnectorAPI extends ZenodoFunctions
             elseif($what == 'x eli_add_deprecated_to_all_2017_natl_checklists') $obj_latest = self::eli_add_deprecated_to_all_2017_natl_checklists($edit_obj); //11Feb2025
             elseif($what == 'x set_all_to_keyword_active_if_not_deprecated')    $obj_latest = self::add_keyword_active_if_not_deprecated($edit_obj); //13Feb2025
             elseif($what == 'x fill_in_Jen_DOI_tasks')                          $obj_latest = self::fill_in_Jen_DOI_tasks($edit_obj); //20Feb2025 missed out reported by Jen
+            elseif($what == 'set_license_to_cc_by_sa')                          $obj_latest = self::set_license_2_cc_by_sa($edit_obj); //7Mar2025
             else exit("\nERROR: Task not specified.\n");
             // */
 
@@ -904,6 +928,11 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         echo "\ncontributors to save: "; print_r($o['metadata']['contributors']);
         echo "\nrelated_identifiers to save: "; print_r($o['metadata']['related_identifiers']);
         // exit("\nstop muna tayo...\n"); $RI
+        return $o;
+    }
+    private function set_license_2_cc_by_sa($o)
+    {
+        $o['metadata']['license'] = "cc-by-sa"; //orig value is "cc-by-4.0" //Zenodo will force this to cc-by-sa-04
         return $o;
     }
     private function add_keyword_active_if_not_deprecated($o)
