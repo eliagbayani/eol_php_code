@@ -163,5 +163,28 @@ class ZenodoFunctions
         fwrite($file, implode("\t", $finals)."\n");
         fclose($file);
     }
+    function get_all_versions($zenodo_id, $IDs_only_YN = true)
+    {
+        // $this->api['versions'] => "https://zenodo.org/api/records/ZENODO_ID/versions?page=PAGE_NUM&size=25&sort=version";
+        $final = array();
+        $options = $this->download_options;
+        $options['expire_seconds'] = 60*60*24; //1 day expires
+        $page_num = 0;
+        while(true) { $page_num++;
+            $url = str_replace("ZENODO_ID", $zenodo_id, $this->api['versions']);
+            $url = str_replace("PAGE_NUM", $page_num, $url);
+            if($json = Functions::lookup_with_cache($url, $options)) {
+                $o = json_decode($json, true); //print_r($o); exit("\nstop 1\n");
+                if($o['hits']['hits']) {
+                    foreach($o['hits']['hits'] as $r) {
+                        if($IDs_only_YN) $final[] = $r['id'];
+                        else             $final[] = $r;
+                    }    
+                }
+                else return $final;
+            }
+            else return $final;
+        }
+    }
 }
 ?>

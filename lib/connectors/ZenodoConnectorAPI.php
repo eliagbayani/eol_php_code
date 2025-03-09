@@ -90,9 +90,23 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         */
         exit("\n-end generate_stats_for_views_downloads-\n"); //prev 2017
     }
+    function set_license_all_versions_to_cc_by_sa()
+    {
+        // /* dev only
+        $zenodo_id = 14035881;
+        $zenodo_id = 14908969; //Chinese Wikipedia
+        $versions = $this->get_all_versions($zenodo_id); print_r($versions);
+        array_shift($versions); //remove 1st element, the current version
+        print_r($versions); //exit;
+        foreach($versions as $zenodo_id) {
+            self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa', false); //3rd param false means no longer needs to get the latest version.
+        }
+        exit("\n-end set_license_all_versions_to_cc_by_sa-\n"); //prev 2017
+        // */
+    }
     function set_license_to_cc_by_sa()
     {
-        // /*
+        /*
         $objs = true;
         $q = '+keywords:"descriptions" +title:"Wikipedia:"'; //n=65
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
@@ -105,13 +119,13 @@ class ZenodoConnectorAPI extends ZenodoFunctions
                 // break; //debug only, run 1 only
             }
         } //end if($objs)    
-        // */
-        /* dev only
+        */
+        // /* dev only
         $zenodo_id = 14035881;
         $zenodo_id = 14035881;
         self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa');
         exit("\n-end set_license_to_cc_by_sa-\n"); //prev 2017
-        */
+        // */
     }
     function set_all_to_keyword_active_if_not_deprecated()
     {
@@ -522,7 +536,7 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         good example for general formatting of description field: https://zenodo.org/records/13795451
         */
     }
-    function update_zenodo_record_of_latest_requested_changes($zenodo_id, $what = '')
+    function update_zenodo_record_of_latest_requested_changes($zenodo_id, $what = '', $versionLatestYN = true)
     {
         $this->html_contributors = array(); //initialize
 
@@ -531,7 +545,7 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         if(in_array($zenodo_id, $excluded_ids)) return;
         */
 
-        $obj_1st = $this->retrieve_dataset($zenodo_id); //print_r($obj_1st); exit("\nstop muna 1a\n");
+        $obj_1st = $this->retrieve_dataset($zenodo_id, $versionLatestYN); //print_r($obj_1st); exit("\nstop muna 1a\n");
 
         /* NEW Oct_6: to filter per tag requirement */
         /* batch 66 - 67
