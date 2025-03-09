@@ -92,7 +92,30 @@ class ZenodoConnectorAPI extends ZenodoFunctions
     }
     function set_license_all_versions_to_cc_by_sa()
     {
-        // /* dev only
+        // /*
+        $objs = true;
+        $q = '+keywords:"descriptions" +title:"Wikipedia:"'; //n=65
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
+            foreach($objs as $o) { $i++;
+                if($i <= 20) {} //continue;
+                else continue;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                if($zenodo_id = $o['id']) {
+                    $versions = $this->get_all_versions($zenodo_id); print_r($versions);
+                    array_shift($versions); //remove 1st element, the current version
+                    print_r($versions); //exit;
+                    foreach($versions as $zenodo_id) { sleep(1);
+                        self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa', false); //3rd param false means no longer needs to get the latest version.
+                    }            
+                }
+                break; //debug only, run 1 only
+            }
+        } //end if($objs)    
+        // */
+
+
+        /* dev only
         $zenodo_id = 14035881;
         $zenodo_id = 14908969; //Chinese Wikipedia
         $versions = $this->get_all_versions($zenodo_id); print_r($versions);
@@ -101,8 +124,8 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         foreach($versions as $zenodo_id) {
             self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa', false); //3rd param false means no longer needs to get the latest version.
         }
-        exit("\n-end set_license_all_versions_to_cc_by_sa-\n"); //prev 2017
-        // */
+        */
+        exit("\n-end set_license_all_versions_to_cc_by_sa-\n");
     }
     function set_license_to_cc_by_sa()
     {
@@ -122,10 +145,9 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         */
         // /* dev only
         $zenodo_id = 14035881;
-        $zenodo_id = 14035881;
         self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa');
-        exit("\n-end set_license_to_cc_by_sa-\n"); //prev 2017
         // */
+        exit("\n-end set_license_to_cc_by_sa-\n");
     }
     function set_all_to_keyword_active_if_not_deprecated()
     {
