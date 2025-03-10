@@ -112,7 +112,8 @@ class ZenodoFunctions
     private function prepare_to_write($zenodo_id)
     {
         $options = $this->download_options;
-        $options['expire_seconds'] = false;
+        // $options['expire_seconds'] = false;
+        $options['expire_seconds'] = 60*60*24; //1 day expires
         if($json = Functions::lookup_with_cache($this->api['record'].$zenodo_id, $options)) {
             $o = json_decode($json, true); //print_r($o); exit;
             $rek = self::retrieve($o);     
