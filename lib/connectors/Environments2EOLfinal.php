@@ -179,7 +179,7 @@ class Environments2EOLfinal extends ContributorsMapAPI
         // */
         
         $this->func = new TraitGeneric($resource_id, $this->archive_builder);
-        $tsv = $this->eol_tags_path.'eol_tags_noParentTerms.tsv';
+        $tsv = $this->eol_tags_path.'eol_tags_noParentTerms.tsv'; echo "\neol_tags_path: [$tsv]\n";
         $i = 0;
         foreach(new FileIterator($tsv) as $line_number => $row) {
             if(!$row) continue;
