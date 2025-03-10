@@ -105,11 +105,12 @@ class ZenodoConnectorAPI extends ZenodoFunctions
                     $versions = $this->get_all_versions($zenodo_id); print_r($versions);
                     array_shift($versions); //remove 1st element, the current version
                     print_r($versions); //exit;
-                    foreach($versions as $zenodo_id) { sleep(1);
+                    foreach($versions as $zenodo_id) { echo " - sleeps 2 secs.\n"; sleep(2);
                         self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa', false); //3rd param false means no longer needs to get the latest version.
                     }            
                 }
-                break; //debug only, run 1 only
+                // break; //debug only, run 1 only
+                // if($i >= 2) break; //debug only
             }
         } //end if($objs)    
         // */
