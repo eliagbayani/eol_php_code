@@ -245,7 +245,15 @@ class Environments2EOLfinal extends ContributorsMapAPI
                 // /* customized:
                 if($this->resource_id == '26_ENV')  $rec['measurementRemarks'] = "";
                 // else                                $rec['measurementRemarks'] = "source text: \"" . $arr[3] . "\""; //obsolete
-                else                                $rec['measurementRemarks'] = "source text: \"" . self::generate_new_mremarks($arr[7]) . "\""; //NEW: Feb 18, 2025
+                else {
+                    if($val = @$arr[7]) {
+                        $rec['measurementRemarks'] = "source text: \"" . self::generate_new_mremarks($arr[7]) . "\""; //NEW: Feb 18, 2025
+                    }
+                    else {
+                        $rec['measurementRemarks'] = "source text: \"" . $arr[3] . "\""; //obsolete
+                        echo "\nNo column 7: "; print_r($arr);
+                    }
+                }
                 // */
                 
                 /* customize --- add text object description to measurementRemarks in MoF
