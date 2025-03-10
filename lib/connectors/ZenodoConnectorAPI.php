@@ -94,12 +94,14 @@ class ZenodoConnectorAPI extends ZenodoFunctions
     {
         // /*
         $objs = true;
-        $q = '+keywords:"descriptions" +title:"Wikipedia:"'; //n=65
+        $q = '+keywords:"descriptions" +title:"Wikipedia:" sort:newest'; //n=65
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
             $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
             foreach($objs as $o) { $i++;
-                if($i <= 20) {} //continue;
-                else continue;
+                /* copied template but works. For interrupted run.
+                if($i <= 36) continue;
+                else {} //continue;
+                */
                 echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
                 if($zenodo_id = $o['id']) {
                     $versions = $this->get_all_versions($zenodo_id); print_r($versions);
@@ -136,8 +138,9 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
             $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
             foreach($objs as $o) { $i++;
-                if($i <= 20) {} //continue;
-                else continue;
+                // for interrupted run 
+                // if($i <= 20) {} //continue;
+                // else continue;
                 echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
                 if($zenodo_id = $o['id']) self::update_zenodo_record_of_latest_requested_changes($zenodo_id, 'set_license_to_cc_by_sa');
                 // break; //debug only, run 1 only
