@@ -21,7 +21,7 @@ class ZenodoFunctions
         self::initialize();
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*30; //designed to expire monthly 30 days
-        // $options['expire_seconds'] = 0;
+        // $options['expire_seconds'] = 0; //dev only
         $options['expire_seconds'] = 60*60*24; //to expire in 1 day
         if($json = Functions::lookup_with_cache($this->api['record'].$zenodo_id, $options)) {
             $o = json_decode($json, true); //print_r($o);
@@ -32,7 +32,6 @@ class ZenodoFunctions
     function process_stats($zenodo_id)
     {
         self::initialize();
-        // $obj_1st = $this->retrieve_dataset($zenodo_id); print_r($obj_1st); exit("\nstop muna 1a\n");
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*30; //designed to expire monthly 30 days
         // $options['expire_seconds'] = 0;
