@@ -96,7 +96,7 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         $objs = true;
         $q = '+keywords:"descriptions" +title:"Wikipedia:" sort:newest'; //n=65
         if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); exit;
-            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit;
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; exit;
             foreach($objs as $o) { $i++;
                 /* copied template but works. For interrupted run.
                 if($i <= 36) continue;
