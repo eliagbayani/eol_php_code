@@ -191,6 +191,8 @@ php5.6 environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "re
 php5.6 environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"all_BHL", "resource_id":"15423", "subjects":"Description|Uses"}'
 php5.6 environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"all_BHL", "resource_id":"91155", "subjects":"Description|Uses"}'
 15427 15428 91144
+
+php5.6 environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"all_BHL", "resource_id":"NorthAmericanFlora_2025", "subjects":"Description|Uses"}'
 -------------------------------
 
 BHL Fungi:
