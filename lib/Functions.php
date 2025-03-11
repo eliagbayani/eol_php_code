@@ -457,6 +457,7 @@ class Functions
             // /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
             // $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign, dev only
             $EOL_resource_id = $resource_id;
+            require_library('connectors/ZenodoFunctions');
             require_library('connectors/ZenodoConnectorAPI');
             require_library('connectors/ZenodoAPI');
             $func = new ZenodoAPI();
