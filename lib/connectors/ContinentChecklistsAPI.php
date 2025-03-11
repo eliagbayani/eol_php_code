@@ -138,6 +138,7 @@ class ContinentChecklistsAPI
         if(self::get_continent_uri('Aegean Sea')    == 'http://www.marineregions.org/mrgid/3315') echo "\nAegean Sea: OK";          else exit("\nERROR: Investigate country URI.\n");
         */
         // /*
+        require_library('connectors/ZenodoFunctions');
         require_library('connectors/ZenodoConnectorAPI');
         require_library('connectors/ZenodoAPI');
         $this->zenodo = new ZenodoAPI();

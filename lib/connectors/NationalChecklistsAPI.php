@@ -126,6 +126,7 @@ class NationalChecklistsAPI
         // */
 
         // /* init 02
+        require_library('connectors/ZenodoFunctions');
         require_library('connectors/ZenodoConnectorAPI');
         require_library('connectors/ZenodoAPI');
         $this->zenodo = new ZenodoAPI();
