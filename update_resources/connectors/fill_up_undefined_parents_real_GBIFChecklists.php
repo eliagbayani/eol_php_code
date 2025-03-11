@@ -80,6 +80,7 @@ echo "\n--------------------END: fillup missing parent entries------------------
 /* as of Sep 4, 2024: snippet to update corresponding Zenodo record --- PART OF MAIN OPERATION --- uncomment in real operation
 if(!Functions::is_production()) {
     $EOL_resource_id = $resource_id;
+    require_library('connectors/ZenodoFunctions');
     require_library('connectors/ZenodoConnectorAPI');
     require_library('connectors/ZenodoAPI');
     $func = new ZenodoAPI();

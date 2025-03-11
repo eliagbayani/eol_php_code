@@ -90,6 +90,7 @@ echo "\n--------------------END: fillup missing parent entries------------------
 /* new: Oct 29,2024 - final step where Zenodo record should be updated. Because all iterations above have not updated Zenodo as intended. */
 // /* as of Sep 4, 2024: snippet to update corresponding Zenodo record
 $EOL_resource_id = $resource_id;
+require_library('connectors/ZenodoFunctions');
 require_library('connectors/ZenodoConnectorAPI');
 require_library('connectors/ZenodoAPI');
 $func = new ZenodoAPI();
