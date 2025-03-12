@@ -6,6 +6,7 @@ Clients are:
     - WaterBodyChecklistsAPI.php
 */
 /* Workspaces for GBIF map tasks:
+- GBIFMapDataAPI
 - GBIF_map_harvest
 - GBIF_SQL_DownloadsAPI
 - GBIFTaxonomy */
