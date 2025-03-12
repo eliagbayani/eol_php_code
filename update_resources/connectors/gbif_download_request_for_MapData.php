@@ -4,6 +4,7 @@ namespace php_active_record;
 Copied template from original: gbif_download_request.php
 */
 /* Workspaces for GBIF map tasks:
+- GBIFMapDataAPI
 - GBIF_map_harvest
 - GBIF_SQL_DownloadsAPI
 - GBIFTaxonomy */
