@@ -4,6 +4,11 @@ namespace php_active_record;
 https://editors.eol.org/map_data2/1/4501.json
 https://editors.eol.org/map_data2/final_taxon_concept_IDS.txt
 */
+/* Workspaces for GBIF map tasks:
+- GBIFMapDataAPI
+- GBIF_map_harvest
+- GBIF_SQL_DownloadsAPI
+- GBIFTaxonomy */
 class GBIFMapDataAPI
 {
     public function __construct($what) //eg. map_Gadiformes
