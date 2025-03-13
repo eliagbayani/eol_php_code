@@ -18,7 +18,7 @@ $params                     = json_decode(@$argv[2], true);
 $resource_id = @$params['resource_id']; 
 
 if(Functions::is_production())  $dwca = 'https://editors.eol.org/eol_php_code/applications/content_server/resources/'.$resource_id.'.tar.gz';
-else                            $dwca = 'http://localhost/eol_php_code/applications/content_server/resources/'.$resource_id.'.tar.gz';
+else                            $dwca = 'http://localhost/eol_php_code/applications/content_server/resources_3/'.$resource_id.'.tar.gz';
 
 $resource_id = $params['destination_id'];
 
@@ -32,11 +32,11 @@ recursive_rmdir(CONTENT_RESOURCE_LOCAL_PATH.$resource_id."/"); //we can now dele
 
 function run_utility($resource_id)
 {
-    // /* utility ==========================
+    /* utility ==========================
     require_library('connectors/DWCADiagnoseAPI');
     $func = new DWCADiagnoseAPI();
     $undefined_parents = $func->check_if_all_parents_have_entries($resource_id, true, false, false, 'parentMeasurementID', 'measurement_or_fact_specific.tab');
     echo "\nTotal undefined parents MoF:" . count($undefined_parents)."\n";
-    // ===================================== */
+    ===================================== */
 }
 ?>
