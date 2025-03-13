@@ -268,7 +268,13 @@ class DwCA_Utility
             $func = new DWCA_Measurements_Fix($this->archive_builder, $this->resource_id);
             $func->start($info);
         }
-        
+
+        if(in_array($this->resource_id, array('NorthAmericanFlora_All_subset'))) {
+            require_library('connectors/DWCA_Remove_MoF_RecordsAPI');
+            $func = new DWCA_Remove_MoF_RecordsAPI($this->archive_builder, $this->resource_id);
+            $func->start($info);
+        }
+
         /* this has been run already. Other connector(s) are created for further adjustments on DwCA's. e.g. DATA-1841
         if(substr($this->resource_id,0,3) == 'SC_') {
             if($this->resource_id == 'SC_australia') { //customized for DATA-1833
