@@ -24,7 +24,7 @@ $resource_id = $params['destination_id'];
 
 $func = new DwCA_Utility($resource_id, $dwca, $params);
 $preferred_rowtypes = array();
-$excluded_rowtypes = array('http://rs.tdwg.org/dwc/terms/measurementorfact');
+$excluded_rowtypes = array('http://rs.tdwg.org/dwc/terms/measurementorfact', 'http://rs.tdwg.org/dwc/terms/occurrence');
 $func->convert_archive($preferred_rowtypes, $excluded_rowtypes);
 Functions::finalize_dwca_resource($resource_id, true, false, $timestart); //3rd param true means delete folder
 $ret = run_utility($resource_id); //check for orphan records in MoF

@@ -271,8 +271,8 @@ class DwCA_Utility
 
         if(in_array($this->resource_id, array('NorthAmericanFlora_All_subset'))) {
             require_library('connectors/DWCA_Remove_MoF_RecordsAPI');
-            $func = new DWCA_Remove_MoF_RecordsAPI($this->archive_builder, $this->resource_id);
-            $func->start($info);
+            $func = new DWCA_Remove_MoF_RecordsAPI($this->archive_builder, $this->resource_id); //diff ways of removing MoF records
+            $func->task2_remove_MoF_records_with_criteria($info);
         }
 
         /* this has been run already. Other connector(s) are created for further adjustments on DwCA's. e.g. DATA-1841

@@ -1,7 +1,13 @@
 <?php
 namespace php_active_record;
-/* connector: [called from DwCA_Utility.php, which is called from first client: dwca_remove_MoF_records.php for https://github.com/EOL/ContentImport/issues/26] 
-Right now the fix means: removing MoF records with specific criteria.
+/* connector: [called from DwCA_Utility.php, which is called from: dwca_remove_MoF_records.php
+Right now this lib offers 2 types of MoF record removal:
+task1 -> remove orphan records in MoF
+    No client yet for this version
+task2 -> removing MoF records with specific criteria.
+    1st client: https://github.com/EOL/ContentImport/issues/26] 
+
+Different resources may have different criteria
 */
 class DWCA_Remove_MoF_RecordsAPI
 {
@@ -13,17 +19,27 @@ class DWCA_Remove_MoF_RecordsAPI
         // $this->download_options['expire_seconds'] = false; //comment after first harvest
         $this->debug = array();
     }
-    function start($info)
-    {   echo "\nDWCA_Remove_MoF_RecordsAPI...\n";
+    function task2_remove_MoF_records_with_criteria($info)
+    {   echo "\ntask2_remove_MoF_records_with_criteria...\n";
+        $tables = $info['harvester']->tables;
+        if($this->resource_id == 'NorthAmericanFlora_All_subset') {
+            $paramz['excluded_measurementTypes'] = array('http://purl.obolibrary.org/obo/RO_0002303', 'http://eol.org/schema/terms/Present');        
+            self::process_extension($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'MoF', 'task2_write_MoF', $paramz);
+            self::process_extension($tables['http://rs.tdwg.org/dwc/terms/occurrence'][0], 'occurrence', 'task2_write_Occurrence');
+        }
+        else exit("\nResource not yet specified.\n");
+    }
+    function task1_remove_MoF_orphan_records($info) //No client yet for this version. It was a copied template from: DWCA_Measurements_Fix.php
+    {   echo "\ntask1_remove_MoF_orphan_records...\n";
         $tables = $info['harvester']->tables;
         /*step 1: loop MoF and get all measurementIDs -> $this->measurementIDs */
-        self::process_extension($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'MoF', 'build-up');
+        self::process_extension($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'MoF', 'task1_build-up');
         /*step 2: loop MoF again, now delete those recs where parentMeasurementID not in $this->measurementIDs. Start write */
-        self::process_extension($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'MoF', 'write');
+        self::process_extension($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'MoF', 'task1_write');
     }
-    private function process_extension($meta, $class, $what)
+    private function process_extension($meta, $class, $what, $paramz = array())
     {   //print_r($meta);
-        echo "\nprocess_extension [$class][$what]...DWCA_Remove_MoF_RecordsAPI...\n"; $i = 0;
+        echo "\nprocess_extension [$class][$what]...\n"; $i = 0;
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
             $i++; if(($i % 100000) == 0) echo "\n".number_format($i);
             if($meta->ignore_header_lines && $i == 1) continue;
@@ -54,12 +70,12 @@ class DWCA_Remove_MoF_RecordsAPI
             )*/
             //===========================================================================================================================================================
             //===========================================================================================================================================================
-            if($what == 'build-up') {
+            if($what == 'task1_build-up') {
                 if($class == 'MoF') {
                     $this->measurementIDs[$rec['http://rs.tdwg.org/dwc/terms/measurementID']] = '';
                 }
             }
-            elseif($what == 'write') {
+            elseif($what == 'task1_write') {
                 if($class == 'MoF') {
                     if($parentMeasurementID = @$rec['http://eol.org/schema/parentMeasurementID']) {
                         if(!isset($this->measurementIDs[$parentMeasurementID])) continue; //remove orphan records in MoF
@@ -87,6 +103,35 @@ class DWCA_Remove_MoF_RecordsAPI
                     $field = pathinfo($uri, PATHINFO_BASENAME);
                     $o->$field = $rec[$uri];
                 }
+                $this->archive_builder->write_object_to_file($o);
+            }
+            elseif($what == 'task2_write_MoF') {
+                if($class == 'MoF')             $o = new \eol_schema\MeasurementOrFact_specific();
+                else exit("\nClass not yet specified\n");
+                $uris = array_keys($rec); //print_r($uris); exit("\ndito eli\n");
+                foreach($uris as $uri) {
+                    $field = pathinfo($uri, PATHINFO_BASENAME);
+                    $o->$field = $rec[$uri];
+                }
+                $occurrenceID = $o->occurrenceID;
+                if($excluded_measurementTypes = @$paramz['excluded_measurementTypes']) {
+                    if(in_array($o->measurementType, $excluded_measurementTypes)) {
+                        $this->excluded_occurenceIDs[$occurrenceID] = '';
+                        continue;
+                    }
+                }
+                $this->archive_builder->write_object_to_file($o);
+            }            
+            elseif($what == 'task2_write_Occurrence') {
+                if($class == 'occurrence')  $o = new \eol_schema\Occurrence_specific();
+                else exit("\nClass not yet specified\n");
+                $uris = array_keys($rec); //print_r($uris); exit("\ndito eli\n");
+                foreach($uris as $uri) {
+                    $field = pathinfo($uri, PATHINFO_BASENAME);
+                    $o->$field = $rec[$uri];
+                }
+                $occurrenceID = $o->occurrenceID;
+                if(isset($this->excluded_occurenceIDs[$occurrenceID])) continue;
                 $this->archive_builder->write_object_to_file($o);
             }
         }

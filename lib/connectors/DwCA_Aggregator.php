@@ -141,7 +141,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             [2] => http://rs.tdwg.org/dwc/terms/occurrence
             [3] => http://rs.tdwg.org/dwc/terms/measurementorfact
         */
-        // print_r($index); //exit; //good debug to see the all-lower case URIs
+        print_r($index); //exit("\nLet us investigate first.\n"); //good debug to see the all-lower case URIs
         $index = $this->let_media_document_go_first_over_description($index); // print_r($index); exit;
         foreach($index as $row_type) {
 
@@ -150,9 +150,12 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             elseif(stripos($dwca_file, "of10") !== false) {} //found string
             elseif(stripos($dwca_file, "of6") !== false) {} //found string
             else { //as of Oct 2024 - I'm thinking I'm not sure why I excluded media objects starting Jul 8, 2024.
-                // /* NEW: remove media rowtype: Jul 8, 2024
-                if($row_type == strtolower("http://eol.org/schema/media/Document")) continue;
-                // */    
+                if(in_array($this->resource_id, array("NorthAmericanFlora_All_2025"))) {}
+                else {
+                    // /* NEW: remove media rowtype: Jul 8, 2024
+                    if($row_type == strtolower("http://eol.org/schema/media/Document")) continue;
+                    // */    
+                }
             }
 
             /* ----------customized start------------ */
