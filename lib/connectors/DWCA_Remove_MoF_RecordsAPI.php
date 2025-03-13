@@ -3,7 +3,7 @@ namespace php_active_record;
 /* connector: [called from DwCA_Utility.php, which is called from first client: dwca_MoF_fix.php for DATA-1886] 
 Right now the fix means: remove the orphan child records in MoF
 */
-class DWCA_Measurements_Fix
+class DWCA_Remove_MoF_RecordsAPI
 {
     function __construct($archive_builder, $resource_id)
     {
@@ -14,7 +14,7 @@ class DWCA_Measurements_Fix
         $this->debug = array();
     }
     function start($info)
-    {   echo "\nDWCA_Measurements_Fix...\n";
+    {   echo "\nDWCA_Remove_MoF_RecordsAPI...\n";
         $tables = $info['harvester']->tables;
         /*step 1: loop MoF and get all measurementIDs -> $this->measurementIDs */
         self::process_extension($tables['http://rs.tdwg.org/dwc/terms/measurementorfact'][0], 'MoF', 'build-up');
@@ -23,7 +23,7 @@ class DWCA_Measurements_Fix
     }
     private function process_extension($meta, $class, $what)
     {   //print_r($meta);
-        echo "\nprocess_extension [$class][$what]...DWCA_Measurements_Fix...\n"; $i = 0;
+        echo "\nprocess_extension [$class][$what]...DWCA_Remove_MoF_RecordsAPI...\n"; $i = 0;
         foreach(new FileIterator($meta->file_uri) as $line => $row) {
             $i++; if(($i % 100000) == 0) echo "\n".number_format($i);
             if($meta->ignore_header_lines && $i == 1) continue;
