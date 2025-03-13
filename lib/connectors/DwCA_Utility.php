@@ -34,7 +34,8 @@ class DwCA_Utility
                                   //start of other row_types: check for NOTICES or WARNINGS, add here those undefined URIs
                                   "http://rs.gbif.org/terms/1.0/description"        => "document",
                                   "http://rs.gbif.org/terms/1.0/multimedia"         => "document",
-                                  "http://eol.org/schema/reference/reference"       => "reference"
+                                  "http://eol.org/schema/reference/reference"       => "reference",
+                                  "http://eol.org/schema/association"               => "association"
                                   );
 
                                   /*
@@ -769,7 +770,8 @@ class DwCA_Utility
             elseif($class == "occurrence")  $c = new \eol_schema\Occurrence();
             elseif($class == "occurrence_specific")  $c = new \eol_schema\Occurrence_specific(); //1st client is 10088_5097_ENV
             elseif($class == "measurementorfact")   $c = new \eol_schema\MeasurementOrFact();
-            else exit("\nUndefined class [$class]. Will terminate.\n");
+            elseif($class == "association")   $c = new \eol_schema\Association();
+            else exit("\nUndefined class [$class]. Will terminate*.\n");
             
             if($this->resource_id == 'parent_basal_values_Carnivora') { //this actually works. But only goes here during dev. if needed, since MoF is customized in /lib/SDRreportLib.php in real operation
                 if($class == "measurementorfact") $c = new \eol_schema\MeasurementOrFact_specific();
@@ -1003,7 +1005,7 @@ class DwCA_Utility
             elseif($class == "occurrence")          $o = new \eol_schema\Occurrence();
             elseif($class == "occurrence_specific") $o = new \eol_schema\Occurrence_specific(); //1st client is 10088_5097_ENV
             elseif($class == "measurementorfact")   $o = new \eol_schema\MeasurementOrFact();
-            else exit("\nUndefined class [$class]. Will terminate.\n");
+            else exit("\nUndefined class [$class]. Will terminate**.\n");
             
             foreach($uris as $uri) {
                 $field = pathinfo($uri, PATHINFO_BASENAME);
