@@ -653,7 +653,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     function get_georeference_data_via_api($taxonKey, $taxon_concept_id) //updated from original version
     {
         $options = $this->download_options;
-        $options['download_wait_time'] = 1000000*20; //20 seconds before it tries again to download a failed attempt.
+        $options['download_wait_time'] = 500000; //never use bigger than 1 sec here. //1000000*20; //20 seconds before it tries again to download a failed attempt.
         $offset = 0; $limit = 300; $continue = true; $final = array(); echo "\n";
         $final['records'] = array();
         while($continue) {
