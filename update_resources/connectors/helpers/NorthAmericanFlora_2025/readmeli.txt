@@ -30,4 +30,6 @@ but without the MoF records with:
     1. NorthAmericanFlora_2025_ENV.tar.gz
     2. NorthAmericanFlora_All_subset.tar.gz
     Sum = NorthAmericanFlora_All_2025.tar.gz
-8. -end-
+
+8. Finally, using Zenodo interface, the file (NorthAmericanFlora_All_2025.tar.gz) was then uploaded to https://zenodo.org/records/15020541
+9. -end-
