@@ -36,8 +36,11 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         /* add: 'resource_id' => "gbif" ;if you want to add cache inside a folder [gbif] inside [eol_cache_gbif] */
         $this->download_options = array(
             'expire_seconds'     => false, //60*60*24*30*3, //ideally 3 months to expire
-            'download_wait_time' => 1000000, //1 second before it tries again to download a failed attempt.
-            'timeout' => 60*5, 'download_attempts' => 2, 'delay_in_minutes' => 1);
+            'download_wait_time' => 1000000, 
+            'timeout' => 60*8, // 8 mins before it timesout
+            'download_attempts' => 2, 
+            'delay_in_minutes' => 1 //1 minute before it tries again to download after a failed attempt.
+        );
         // $this->download_options['expire_seconds'] = false; //debug | true -- expires now
 
         if(Functions::is_production()) $this->download_options['cache_path'] = "/extra/eol_cache_gbif/";
@@ -653,7 +656,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     function get_georeference_data_via_api($taxonKey, $taxon_concept_id) //updated from original version
     {
         $options = $this->download_options;
-        $options['download_wait_time'] = 500000; //never use bigger than 1 sec here. //1000000*20; //20 seconds before it tries again to download a failed attempt.
+        $options['download_wait_time'] = 500000; //never use bigger than 1 sec here.
         $offset = 0; $limit = 300; $continue = true; $final = array(); echo "\n";
         $final['records'] = array();
         while($continue) {
@@ -1001,7 +1004,9 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 return true;
             }
             else {
-                $this->debug['json exists but zero length, will delete file'][$filename] = '';
+                $msg = 'json exists but zero length, will delete file';
+                $this->debug[$msg][$filename] = '';
+                echo "\n$msg [$filename]\n";
                 unlink($filename);
             }
         }
