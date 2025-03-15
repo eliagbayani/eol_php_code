@@ -53,8 +53,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
 
         $this->gbif_record_count    = "http://api.gbif.org/v1/occurrence/count?hasCoordinate=true&hasGeospatialIssue=false&occurrenceStatus=PRESENT&taxonKey=";
         $this->gbif_occurrence_data = "http://api.gbif.org/v1/occurrence/search?hasCoordinate=true&hasGeospatialIssue=false&occurrenceStatus=PRESENT&taxonKey=";
-        
-                        
+                                
         /*
         https://api.gbif.org/v1/occurrence/search?acceptedTaxonKey=8084280&hasCoordinate=true&hasGeospatialIssue=false&occurrenceStatus=PRESENT
         from: https://techdocs.gbif.org/en/openapi/v1/occurrence#/Searching%20occurrences/searchOccurrence
@@ -145,7 +144,6 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             if    ($connector_task == "breakdown_GBIF_DwCA_file")               $cmd = PHP_PATH.' breakdown_GBIF_DwCA_file.php jenkins ' . "'" . $json . "'";
             elseif($connector_task == "generate_map_data_using_GBIF_csv_files") $cmd = PHP_PATH.' generate_map_data_using_GBIF_csv_files.php jenkins ' . "'" . $json . "'";
             elseif($connector_task == "gen_map_data_forTaxa_with_children")     $cmd = PHP_PATH.' gen_map_data_forTaxa_with_children.php jenkins ' . "'" . $json . "'";
-            
             // echo "\n$cmd\n";
             
             // /* works well locally but bit problematic in eol-archive, will abandon for a while. Works OK now, as of Apr 25, 2019.
@@ -464,7 +462,6 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             //  --------------------------------------------------------
             echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
             self::create_map_data_include_descendants($rec['canonicalName'], $rec['EOLid'], $paths, $func); //result of refactoring
-            
         }
         unlink($local);
     }
