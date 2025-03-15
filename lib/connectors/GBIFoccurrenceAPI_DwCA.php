@@ -470,8 +470,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     private function get_json_map_data($basename)
     {
-        $filename = self::get_map_data_path($basename).$basename.".json";
-        // echo "\n$filename\n";
+        $filename = self::get_map_data_path($basename).$basename.".json"; // echo "\n$filename\n";
         // if($GLOBALS['ENV_DEBUG']) echo "\nmap file: [$filename]\n";
         if(file_exists($filename)) {
             if(filesize($filename) > 0) {
