@@ -230,18 +230,19 @@ class GBIFMapDataAPI
             $rec = array_map('trim', $rec);
             // /* dev only
             $first_char = substr($rec['canonicalName'],0,1);
-            // if(in_array(strtolower($first_char), array('a','b'))) {} else continue;          //1
+            // if(in_array(strtolower($first_char), array('a'))) {} else continue;              //1
             // if(in_array(strtolower($first_char), array('e','f'))) {} else continue;          //2
             // if(in_array(strtolower($first_char), array('i','j','k'))) {} else continue;      //3
             // if(in_array(strtolower($first_char), array('m','n','o','p'))) {} else continue;  //4
             // if(in_array(strtolower($first_char), array('q','r','s','t'))) {} else continue;  //5
-            // if(in_array(strtolower($first_char), array('u','v','w'))) {} else continue;      //6
-            if(in_array(strtolower($first_char), array('x','y','z'))) {$this->auto_refresh_mapYN = true;} else continue;      //7
+            // if(in_array(strtolower($first_char), array('u','v','w'))) {$this->auto_refresh_mapYN = true;} else continue;      //6
+            // if(in_array(strtolower($first_char), array('x','y','z'))) {$this->auto_refresh_mapYN = true;} else continue;      //7
             // if(in_array(strtolower($first_char), array('g'))) {} else continue;              //8
             // if(in_array(strtolower($first_char), array('d'))) {} else continue;              //9
             // if(in_array(strtolower($first_char), array('l'))) {} else continue;              //10
             // if(in_array(strtolower($first_char), array('c'))) {} else continue;              //11
             // if(in_array(strtolower($first_char), array('h'))) {} else continue;              //12
+            if(in_array(strtolower($first_char), array('b'))) {} else continue;              //13
 
             // if( != "G") continue;
             // if(substr($rec['canonicalName'],0,1) == "G") continue;
