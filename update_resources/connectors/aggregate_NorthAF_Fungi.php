@@ -15,7 +15,7 @@ $resource_ids = array("15406");
 $func->combine_MoftheAES_DwCAs($resource_ids);
 Functions::finalize_dwca_resource($resource_id, false, true, $timestart);
 
-/* 
+/* IMPORTANT:
 After above, next in line is to open the workspace: Remove_MoF_Records.code-workspace
 */
 
