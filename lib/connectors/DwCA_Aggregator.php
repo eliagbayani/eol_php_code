@@ -150,7 +150,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             elseif(stripos($dwca_file, "of10") !== false) {} //found string
             elseif(stripos($dwca_file, "of6") !== false) {} //found string
             else { //as of Oct 2024 - I'm thinking I'm not sure why I excluded media objects starting Jul 8, 2024.
-                if(in_array($this->resource_id, array("NorthAmericanFlora_All_2025"))) {}
+                if(in_array($this->resource_id, array("NorthAmericanFlora_All_2025", "MoftheAES_resources"))) {} //does not remove media rowtype
                 else {
                     // /* NEW: remove media rowtype: Jul 8, 2024
                     if($row_type == strtolower("http://eol.org/schema/media/Document")) continue;
