@@ -1,6 +1,38 @@
 <?php
 namespace php_active_record;
-/* This can be a generic connector that combines DwCA's. 
+/* This can be a generic connector that combines DwCA's. */
+/* start Mar 17, 2025
+Copied from Jenkins.eol.org
+
+cd /var/www/html/eol_php_code/update_resources/connectors
+## step 1: generate XXX_ENV.tar.gz for 20 DwCAs
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118935", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"120081", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"120082", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118986", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118920", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"120083", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118237", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118941", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118950", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118936", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118946", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"118978", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"119035", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"119187", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"119188", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"119520", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"120602", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"27822", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"30354", "subjects":"Description|Uses"}'
+php environments_2_eol.php jenkins '{"task": "generate_eol_tags_pensoft", "resource":"MoftheAES 1st", "resource_id":"30355", "subjects":"Description|Uses"}'
+#generates 20 DwCAs XXX_ENV.tar.gz
+
+## step 2:
+php aggregate_MoftheAES.php
+# this combines: 20 DwCAs XXX_ENV.tar.gz
+# generates MoftheAES_resources.tar.gz
+# since MoftheAES_resources.tar.gz already exists in Zenodo, the Zenodo record was updated with new DwCA.
 */
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");
