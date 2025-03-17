@@ -20,7 +20,7 @@ $resource_ids = array("118935", "120081", "120082", "118986", "118920", "120083"
 $func->combine_MoftheAES_DwCAs($resource_ids);
 Functions::finalize_dwca_resource($resource_id, false, true, $timestart);
 
-/*
+/* Not part of any operation. To save legacy DwCAs:
 wget https://editors.eol.org/eol_php_code/applications/content_server/resources/118935.tar.gz
 wget https://editors.eol.org/eol_php_code/applications/content_server/resources/120081.tar.gz
 wget https://editors.eol.org/eol_php_code/applications/content_server/resources/120082.tar.gz
