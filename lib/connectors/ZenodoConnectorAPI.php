@@ -1735,7 +1735,7 @@ class ZenodoConnectorAPI extends ZenodoFunctions
             if($zenodo_id = self::get_zenodo_id_using_eol_resource_id($resource_id)) {
                 self::update_zenodo_record_of_eol_resource($zenodo_id, $file); //https://zenodo.org/records/13240083 test record
             }
-            else echo "\nCannot link EOL resource id to a Zenodo record [$resource_id].\n";
+            else echo "\nCannot link EOL resource id to a Zenodo record [$resource_id] [$zenodo_id].\n";
         }
         else echo "\nFile does not exist [$file]. No Zenodo record.\n";
     }
