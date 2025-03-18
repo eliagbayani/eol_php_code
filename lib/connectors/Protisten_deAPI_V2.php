@@ -71,7 +71,7 @@ class Protisten_deAPI_V2
                 echo "\nprocess [$url]\n";
                 self::process_one_group($url);
                 // break; //debug - process only 1 just 1 group | ******
-                // if($i >= 2) break; //debug only
+                // if($i >= 5) break; //debug only
                 if($this->RunTest) break;
             }
         }
@@ -915,7 +915,7 @@ class Protisten_deAPI_V2
     }
     private function format_description($desc)
     {   // remove this line: "Please click on &lt; or &gt; on the image edges or on the dots at the bottom edge of the images to browse through the slides!"
-        $beginning = "Please click on";     $end = "through the slides!";
+        $beginning = "<p>Please click on";     $end = "through the slides!</p>";
         $inclusiveYN = true;                $caseSensitiveYN = false;
         $desc = Functions::delete_all_between($beginning, $end, $desc, $inclusiveYN, $caseSensitiveYN);
         $desc = Functions::remove_whitespace($desc);
