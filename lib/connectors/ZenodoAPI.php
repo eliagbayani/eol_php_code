@@ -177,7 +177,6 @@ class ZenodoAPI extends ZenodoConnectorAPI
         $arr = array_keys($this->debug['urls pathinfo']);
         asort($arr); //print_r($arr);
 
-
         print_r(array_keys($this->debug));
         echo "\ntotal resources: ".$this->debug['total resources'];
         echo "\nurls: ".count($this->debug['urls']);
