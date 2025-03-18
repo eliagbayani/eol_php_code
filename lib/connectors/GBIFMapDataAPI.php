@@ -248,8 +248,6 @@ class GBIFMapDataAPI
             // if(in_array(strtolower($first_char), array('b'))) {} else continue;              //13
             // if(in_array(strtolower($first_char), array('p'))) {} else continue;              //14
 
-            // if( != "G") continue;
-            // if(substr($rec['canonicalName'],0,1) == "G") continue;
             // */
 
             if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
