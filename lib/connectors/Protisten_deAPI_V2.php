@@ -861,7 +861,7 @@ class Protisten_deAPI_V2
 
             if($val = @$this->image_text[$image]) {
                 $str = '<p>For further information about the image, please click here: <a href="'.$rec['url'].'">Link to protisten.de page</a></p>';
-                $mr->description = Functions::remove_whitespace($val . $this->desc_suffix . $str);
+                $mr->description = self::format_description($val . $this->desc_suffix . $str);
             }
             else $this->debug['image no text'][$image] = $mr->furtherInformationURL;
 
@@ -903,7 +903,7 @@ class Protisten_deAPI_V2
 
             if($val = $text_desc) {
                 $str = '<p>For further information about the image, please click here: <a href="'.$rec['url'].'">Link to protisten.de page</a></p>';
-                $mr->description = Functions::remove_whitespace($val . $this->desc_suffix . $str);
+                $mr->description = self::format_description($val . $this->desc_suffix . $str);
             }
             else $this->debug['image no text'][$image] = $mr->furtherInformationURL;
 
@@ -913,7 +913,14 @@ class Protisten_deAPI_V2
             }
         }
     }
-
+    private function format_description($desc)
+    {   // remove this line: "Please click on &lt; or &gt; on the image edges or on the dots at the bottom edge of the images to browse through the slides!"
+        $beginning = "Please click on";     $end = "through the slides!";
+        $inclusiveYN = true;                $caseSensitiveYN = false;
+        $desc = Functions::delete_all_between($beginning, $end, $desc, $inclusiveYN, $caseSensitiveYN);
+        $desc = Functions::remove_whitespace($desc);
+        return $desc;
+    }
     private function image_exists_YN($image_url)
     {   
         return true; //debug only dev only
