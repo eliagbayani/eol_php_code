@@ -238,7 +238,7 @@ class GBIFMapDataAPI
             // if(in_array(strtolower($first_char), array('u','v','w'))) {$this->auto_refresh_mapYN = true;} else continue;      //6
             
             // if(in_array(strtolower($first_char), array('x','y','z'))) {$this->auto_refresh_mapYN = true;} else continue;      //7 DONE
-            if(in_array(strtolower($first_char), array('s'))) {} else continue;      //7
+            // if(in_array(strtolower($first_char), array('s'))) {} else continue;      //7
 
             // if(in_array(strtolower($first_char), array('g'))) {} else continue;              //8
             // if(in_array(strtolower($first_char), array('d'))) {} else continue;              //9
@@ -246,8 +246,7 @@ class GBIFMapDataAPI
             // if(in_array(strtolower($first_char), array('c'))) {} else continue;              //11
             // if(in_array(strtolower($first_char), array('h'))) {} else continue;              //12
             // if(in_array(strtolower($first_char), array('b'))) {} else continue;              //13
-            // if(in_array(strtolower($first_char), array('p'))) {} else continue;              //14
-
+            if(in_array(strtolower($first_char), array('p'))) {} else continue;              //14
             // */
 
             if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
