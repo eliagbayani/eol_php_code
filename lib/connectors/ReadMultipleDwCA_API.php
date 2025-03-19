@@ -3,7 +3,7 @@ namespace php_active_record;
 /* connector: [read_multiple_dwca.php] - first client 
 This lib basically reads multiple DwCAs.
 */
-class DwCA_Aggregator extends DwCA_Aggregator_Functions
+class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
 {
     function __construct($folder = NULL, $dwca_file = NULL, $DwCA_Type = 'wikipedia') //'wikipedia' is the first client of this lib.
     {
@@ -35,20 +35,21 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             'expire_seconds'     => false, //expires set to false for now
             'download_wait_time' => 2000000, 'timeout' => 60*5, 'download_attempts' => 1, 'delay_in_minutes' => 1, 'cache' => 1);
     }
-    function process_DwCAs($langs, $preferred_rowtypes = array())
+    function process_DwCAs($resource_ids, $preferred_rowtypes = array())
     {
-        foreach($langs as $this->lang) {
-            echo "\n---Processing: [$this->lang]---\n";
-            $dwca_file = CONTENT_RESOURCE_LOCAL_PATH.$this->lang.'.tar.gz';
+        foreach($resource_ids as $resource_id) {
+            echo "\n---Processing: [$resource_id]---\n";
+            $dwca_file = CONTENT_RESOURCE_LOCAL_PATH.$resource_id.'.tar.gz';
             if(file_exists($dwca_file)) {
                 self::convert_archive($preferred_rowtypes, $dwca_file);
             }
             else echo "\nDwCA file does not exist [$dwca_file]\n";
+            break; //debug only
         }
         $this->archive_builder->finalize(TRUE);
     }
     private function convert_archive($preferred_rowtypes = false, $dwca_file, $download_options = array('timeout' => 172800, 'expire_seconds' => 0))
-    {   /* param $preferred_rowtypes is the option to include-only those row_types you want on your final DwCA.*/
+    {   /* param $preferred_rowtypes is the option to include-only those row_types you want on your final DwCA. */
         echo "\nConverting archive to EOL DwCA [$dwca_file]...\n";
         $info = self::start($dwca_file, $download_options); //1 day expire -> 60*60*24*1
         $temp_dir = $info['temp_dir'];
@@ -64,7 +65,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             [3] => http://rs.tdwg.org/dwc/terms/measurementorfact
         */
         print_r($index); //exit("\nLet us investigate first.\n"); //good debug to see the all-lower case URIs
-        $index = $this->let_media_document_go_first_over_description($index); // print_r($index); exit;
+        $index = $this->let_media_document_go_first_over_description($index); print_r($index); //exit("\nstop muna\n");
         foreach($index as $row_type) {
 
             /* copied template
@@ -74,16 +75,15 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             elseif(stripos($dwca_file, "of6") !== false) {} //found string
             else { //as of Oct 2024 - I'm thinking I'm not sure why I excluded media objects starting Jul 8, 2024.
             } */
-            // /* NEW: remove media rowtype
+            /* copied template: remove media rowtype
             if($row_type == strtolower("http://eol.org/schema/media/Document")) continue;
-            // */    
+            */    
     
             // /* copied template -- where regular DwCA is processed.
             if($preferred_rowtypes) {
                 if(!in_array($row_type, $preferred_rowtypes)) continue;
             }
             if($extension_row_type = @$this->extensions[$row_type]) { //process only defined row_types
-                // if($extension_row_type == 'document') continue; //debug only
                 echo "\nprocessing...: [$row_type]: ".$extension_row_type."...\n";
                 self::process_table($tables[$row_type][0], $extension_row_type, $row_type);
             }
@@ -175,7 +175,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
                 $k++;
             }
             $rec = array_map('trim', $rec);
-            print_r($rec); exit("\ndebug...\n");
+            print_r($rec); //exit("\nstop muna...\n");
 
             // if($what == "document") { print_r($rec); exit("\n111\n"); }
             /*Array(
@@ -288,7 +288,7 @@ class DwCA_Aggregator extends DwCA_Aggregator_Functions
             
             $this->archive_builder->write_object_to_file($o);
 
-            // if($i >= 2) break; //debug only
+            if($i >= 2) break; //debug only
         } //end foreach()
     }
 }
