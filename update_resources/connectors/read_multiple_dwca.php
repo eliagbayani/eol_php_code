@@ -9,6 +9,7 @@ require_library('connectors/ReadMultipleDwCA_API');
 $resource_id = '-none-';
 $func = new ReadMultipleDwCA_API($resource_id, false, 'regular');
 $resource_ids = array('119035_ENV', 'MoftheAES_resources');
+$resource_ids = array('TreatmentBank_final');
 
 $func->process_DwCAs($resource_ids);
 /* copied template

@@ -38,6 +38,7 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
     }
     function process_DwCAs($resource_ids, $preferred_rowtypes = array())
     {
+        self::initialize_tsv();
         foreach($resource_ids as $resource_id) {
             $this->taxon_occurrences = array();
             $this->occurrence_MoFs = array();
@@ -190,23 +191,48 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
     }
     private function task_write_to_tsv($rec)
     {
+        $fhandle = Functions::file_open($this->report_file, "a");
+
         print_r($rec);         // [http://rs.tdwg.org/dwc/terms/taxonID] => 8c5b6e4b4fe26afbe7e2ca51a50ca35f
         // [http://rs.tdwg.org/dwc/terms/scientificName] => Pelecotoma flavipes
         $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
 
         if($occurrenceIDs = @$this->taxon_occurrences[$taxonID]) { print_r($occurrenceIDs);
             foreach($occurrenceIDs as $occurrenceID) {
-                print_r($this->occurrence_MoFs[$occurrenceID]);
+                // print_r($this->occurrence_MoFs[$occurrenceID]);
+                foreach($this->occurrence_MoFs[$occurrenceID] as $m) {
+                    if(self::valid_record($m)) {
+                        $save = array();
+                        $save[] = 'res id';
+                        $save[] = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
+                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/kingdom'];
+                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/phylum'];
+                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/class'];
+                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/order'];
+                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/family'];    
+                        $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementID'];
+                        $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementType'];
+                        $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementValue'];
+                        $save[] = @$m['http://rs.tdwg.org/dwc/terms/measurementRemarks'];
+                        $save[] = @$m['http://purl.org/dc/terms/source'];
+                        $save[] = @$m['http://purl.org/dc/terms/bibliographicCitation'];
+                        $save[] = @$m['http://rs.tdwg.org/dwc/terms/measurementUnit'];
+                        $save[] = @$m['http://eol.org/schema/terms/statisticalMethod'];
+                        fwrite($fhandle, implode("\t", $save) . "\n");    
+                    }
+                }
             }
-            exit("\nelix4\n");
-
         }
-
-
-
-        // $fhandle = Functions::file_open($txt_file, "w");
-        // fwrite($fhandle, $rec['identifier'] . "\n"); fclose($fhandle);
-
+        fclose($fhandle);
+    }
+    private function valid_record($m)
+    {
+        $mType = $m['http://rs.tdwg.org/dwc/terms/measurementType'];
+        if(in_array($mType, array('http://eol.org/schema/terms/Present', 'http://purl.obolibrary.org/obo/RO_0002303'))) return true;
+        $mRemarks = @$m['http://rs.tdwg.org/dwc/terms/measurementRemarks'];
+        if(substr($mRemarks, 0, 12) == 'source text:') return true;
+        return false;
+        // source text: "species from Florida Georgia _Kansas_ and Texas. Specimens examined"        
     }
     private function start($dwca_file = false, $download_options = array('timeout' => 172800, 'expire_seconds' => false)) //probably default expires in a month 60*60*24*30. Not false.
     {
