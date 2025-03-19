@@ -23,17 +23,18 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
                                   "http://eol.org/schema/media/document"            => "document",
                                   "http://rs.gbif.org/terms/1.0/reference"          => "reference",
                                   "http://eol.org/schema/agent/agent"               => "agent",
-
                                   //start of other row_types: check for NOTICES or WARNINGS, add here those undefined URIs
                                   "http://rs.gbif.org/terms/1.0/description"        => "document",
                                   "http://rs.gbif.org/terms/1.0/multimedia"         => "document",
                                   "http://eol.org/schema/reference/reference"       => "reference",
                                   "http://eol.org/schema/association"               => "association");
+        $this->report_file = CONTENT_RESOURCE_LOCAL_PATH . '/reports/compiled_trait.tsv';
+        /* copied template
         $this->attributions = array();
         $this->download_TB_options = array( //same value as in TreatmentBankAPI.php
             'resource_id'        => "TreatmentBank",
             'expire_seconds'     => false, //expires set to false for now
-            'download_wait_time' => 2000000, 'timeout' => 60*5, 'download_attempts' => 1, 'delay_in_minutes' => 1, 'cache' => 1);
+            'download_wait_time' => 2000000, 'timeout' => 60*5, 'download_attempts' => 1, 'delay_in_minutes' => 1, 'cache' => 1); */
     }
     function process_DwCAs($resource_ids, $preferred_rowtypes = array())
     {
@@ -65,31 +66,16 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
             [3] => http://rs.tdwg.org/dwc/terms/measurementorfact
         */
         print_r($index); //exit("\nLet us investigate first.\n"); //good debug to see the all-lower case URIs
-        $index = $this->let_media_document_go_first_over_description($index); print_r($index); //exit("\nstop muna\n");
-        foreach($index as $row_type) {
-
-            /* copied template
-            if(in_array($this->resource_id, array('71', '80', 'wikipedia_combined_languages', 'wikipedia_combined_languages_batch2'))) {} //Wikimedia commons, Wikipedia
-            elseif(stripos($dwca_file, "wikipedia") !== false) {} //found string
-            elseif(stripos($dwca_file, "of10") !== false) {} //found string
-            elseif(stripos($dwca_file, "of6") !== false) {} //found string
-            else { //as of Oct 2024 - I'm thinking I'm not sure why I excluded media objects starting Jul 8, 2024.
-            } */
-            /* copied template: remove media rowtype
-            if($row_type == strtolower("http://eol.org/schema/media/Document")) continue;
-            */    
-    
-            // /* copied template -- where regular DwCA is processed.
-            if($preferred_rowtypes) {
-                if(!in_array($row_type, $preferred_rowtypes)) continue;
-            }
-            if($extension_row_type = @$this->extensions[$row_type]) { //process only defined row_types
-                echo "\nprocessing...: [$row_type]: ".$extension_row_type."...\n";
-                self::process_table($tables[$row_type][0], $extension_row_type, $row_type);
-            }
-            else echo "\nun-initialized: [$row_type]: ".$extension_row_type."\n";
-            // */
+        $index = $this->let_media_document_go_first_over_description($index); //print_r($index); exit("\nstop muna\n"); //copied template
+        
+        $row_types = array('http://rs.tdwg.org/dwc/terms/taxon', 'http://rs.tdwg.org/dwc/terms/occurrence', 'http://rs.tdwg.org/dwc/terms/measurementorfact');
+        foreach($row_types as $row_type) {
+            $params = array('row_type' => $row_type, 'meta' => $tables[$row_type][0], 'task' => 'build-up');
+            self::process_row_type($params);
+            // break; //debug only
         }
+
+        // foreach($index as $row_type) {}
         
         // /* ================================= start of customization =================================
         /* copied template
@@ -110,38 +96,20 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
         echo ("\n temporary directory removed: " . $temp_dir);
         // */
     } //end convert_archive()
-    private function start($dwca_file = false, $download_options = array('timeout' => 172800, 'expire_seconds' => false)) //probably default expires in a month 60*60*24*30. Not false.
-    {
-        if($dwca_file) $this->dwca_file = $dwca_file;
-        
-        // /* un-comment in real operation
-        require_library('connectors/INBioAPI');
-        $func = new INBioAPI();
-        $paths = $func->extract_archive_file($this->dwca_file, "meta.xml", $download_options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
-        // print_r($paths);
-        // */
-
-        /* development only
-        $paths = Array(
-            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_05106/',
-            'temp_dir' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_05106/'
-        );
-        */
-        
-        $archive_path = $paths['archive_path'];
-        $temp_dir = $paths['temp_dir'];
-        $harvester = new ContentArchiveReader(NULL, $archive_path);
-        $tables = $harvester->tables;
-        $index = array_keys($tables);
-        if(!($tables["http://rs.tdwg.org/dwc/terms/taxon"][0]->fields)) { // take note the index key is all lower case
-            debug("Invalid archive file. Program will terminate.");
-            return false;
+    private function process_row_type($params)
+    {   $row_type = $params['row_type'];
+        if($extension_row_type = @$this->extensions[$row_type]) { //process only defined row_types
+            $params['extension_row_type'] = $extension_row_type;
+            echo "\nprocessing...: [$row_type]: ".$extension_row_type."...\n"; //exit;
+            self::process_table($params);
         }
-        return array("harvester" => $harvester, "temp_dir" => $temp_dir, "tables" => $tables, "index" => $index);
+        else echo "\nun-initialized: [$row_type]: ".$extension_row_type."\n";
     }
-    private function process_table($meta, $what, $row_type = "")
-    {   //print_r($meta);
-        // echo "\nprocessing [$what]...\n";
+    private function process_table($params)
+    {   
+        $meta = $params['meta'];
+        $what = $params['extension_row_type'];
+        $row_type = $params['row_type'];
         $i = 0;
         foreach(new FileIterator($meta->file_uri) as $line => $row) {            
             $i++; if(($i % 100000) == 0) echo "\n".number_format($i);            
@@ -177,16 +145,12 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
             $rec = array_map('trim', $rec);
             print_r($rec); //exit("\nstop muna...\n");
 
-            // if($what == "document") { print_r($rec); exit("\n111\n"); }
-            /*Array(
-                [http://rs.tdwg.org/dwc/terms/taxonID] => Q140
-                [http://purl.org/dc/terms/source] => http://ta.wikipedia.org/w/index.php?title=%E0%AE%9A%E0%AE%BF%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AE%AE%E0%AF%8D&oldid=2702618
-                [http://rs.tdwg.org/dwc/terms/parentNameUsageID] => Q127960
-                [http://rs.tdwg.org/dwc/terms/scientificName] => Panthera leo
-                [http://rs.tdwg.org/dwc/terms/taxonRank] => species
-                [http://rs.tdwg.org/dwc/terms/scientificNameAuthorship] => Carl Linnaeus, 1758
-            )*/
-            
+            if($what == "measurementorfact") {}
+
+            // ====================================================== stops here...            
+            continue; exit("\nshould not go here...\n");
+            // ====================================================== stops here...
+
             $uris = array_keys($rec);
             if($what == "taxon")                    $o = new \eol_schema\Taxon();
             elseif($what == "document")             $o = new \eol_schema\MediaResource();
@@ -290,6 +254,35 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
 
             if($i >= 2) break; //debug only
         } //end foreach()
+    }
+    private function start($dwca_file = false, $download_options = array('timeout' => 172800, 'expire_seconds' => false)) //probably default expires in a month 60*60*24*30. Not false.
+    {
+        if($dwca_file) $this->dwca_file = $dwca_file;
+        
+        // /* un-comment in real operation
+        require_library('connectors/INBioAPI');
+        $func = new INBioAPI();
+        $paths = $func->extract_archive_file($this->dwca_file, "meta.xml", $download_options); //true 'expire_seconds' means it will re-download, will NOT use cache. Set TRUE when developing
+        // print_r($paths);
+        // */
+
+        /* development only
+        $paths = Array(
+            'archive_path' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_05106/',
+            'temp_dir' => '/Volumes/AKiTiO4/eol_php_code_tmp/dir_05106/'
+        );
+        */
+        
+        $archive_path = $paths['archive_path'];
+        $temp_dir = $paths['temp_dir'];
+        $harvester = new ContentArchiveReader(NULL, $archive_path);
+        $tables = $harvester->tables;
+        $index = array_keys($tables);
+        if(!($tables["http://rs.tdwg.org/dwc/terms/taxon"][0]->fields)) { // take note the index key is all lower case
+            debug("Invalid archive file. Program will terminate.");
+            return false;
+        }
+        return array("harvester" => $harvester, "temp_dir" => $temp_dir, "tables" => $tables, "index" => $index);
     }
 }
 ?>

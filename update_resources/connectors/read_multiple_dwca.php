@@ -11,7 +11,8 @@ $func = new ReadMultipleDwCA_API($resource_id, false, 'regular');
 $resource_ids = array('119035_ENV', 'MoftheAES_resources');
 
 $func->process_DwCAs($resource_ids);
+/* copied template
 Functions::finalize_dwca_resource($resource_id, false, true, $timestart);
-
+*/
 
 ?>
