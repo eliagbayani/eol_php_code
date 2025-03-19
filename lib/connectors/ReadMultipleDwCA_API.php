@@ -192,12 +192,12 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
     private function task_write_to_tsv($rec)
     {
         $fhandle = Functions::file_open($this->report_file, "a");
-
-        print_r($rec);         // [http://rs.tdwg.org/dwc/terms/taxonID] => 8c5b6e4b4fe26afbe7e2ca51a50ca35f
+        // print_r($rec);         
+        // [http://rs.tdwg.org/dwc/terms/taxonID] => 8c5b6e4b4fe26afbe7e2ca51a50ca35f
         // [http://rs.tdwg.org/dwc/terms/scientificName] => Pelecotoma flavipes
         $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
 
-        if($occurrenceIDs = @$this->taxon_occurrences[$taxonID]) { print_r($occurrenceIDs);
+        if($occurrenceIDs = @$this->taxon_occurrences[$taxonID]) { //print_r($occurrenceIDs);
             foreach($occurrenceIDs as $occurrenceID) {
                 // print_r($this->occurrence_MoFs[$occurrenceID]);
                 foreach($this->occurrence_MoFs[$occurrenceID] as $m) {
