@@ -39,6 +39,9 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
     function process_DwCAs($resource_ids, $preferred_rowtypes = array())
     {
         foreach($resource_ids as $resource_id) {
+            $this->taxon_occurrences = array();
+            $this->occurrence_MoFs = array();
+
             echo "\n---Processing: [$resource_id]---\n";
             $dwca_file = CONTENT_RESOURCE_LOCAL_PATH.$resource_id.'.tar.gz';
             if(file_exists($dwca_file)) {
@@ -68,29 +71,21 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
         print_r($index); //exit("\nLet us investigate first.\n"); //good debug to see the all-lower case URIs
         $index = $this->let_media_document_go_first_over_description($index); //print_r($index); exit("\nstop muna\n"); //copied template
         
-        $row_types = array('http://rs.tdwg.org/dwc/terms/taxon', 'http://rs.tdwg.org/dwc/terms/occurrence', 'http://rs.tdwg.org/dwc/terms/measurementorfact');
+        /* Step 1: build-up */
+        $row_types = array('http://rs.tdwg.org/dwc/terms/occurrence', 'http://rs.tdwg.org/dwc/terms/measurementorfact');
         foreach($row_types as $row_type) {
             $params = array('row_type' => $row_type, 'meta' => $tables[$row_type][0], 'task' => 'build-up');
             self::process_row_type($params);
-            // break; //debug only
+        }
+        /* Step 2: write_tsv */
+        $row_types = array('http://rs.tdwg.org/dwc/terms/taxon');
+        foreach($row_types as $row_type) {
+            $params = array('row_type' => $row_type, 'meta' => $tables[$row_type][0], 'task' => 'write-to-tsv');
+            self::process_row_type($params);
         }
 
         // foreach($index as $row_type) {}
-        
-        // /* ================================= start of customization =================================
-        /* copied template
-        if(in_array($this->resource_id, array('wikipedia_combined_languages', 'wikipedia_combined_languages_batch2'))) {
-            $tables = $info['harvester']->tables;
-            // print_r($tables); exit;
-            // Array(
-            //     [0] => http://rs.tdwg.org/dwc/terms/taxon
-            //     [1] => http://eol.org/schema/media/document
-            // )
-            self::process_table($tables['http://rs.tdwg.org/dwc/terms/taxon'][0], 'taxon');
-            self::process_table($tables['http://eol.org/schema/media/document'][0], 'document');
-        } */
-        // ================================= end of customization ================================= */ 
-        
+                
         // /* un-comment in real operation -- remove temp dir
         recursive_rmdir($temp_dir);
         echo ("\n temporary directory removed: " . $temp_dir);
@@ -106,10 +101,11 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
         else echo "\nun-initialized: [$row_type]: ".$extension_row_type."\n";
     }
     private function process_table($params)
-    {   
+    {   //print_r($params); exit;
         $meta = $params['meta'];
         $what = $params['extension_row_type'];
         $row_type = $params['row_type'];
+        $task = $params['task'];
         $i = 0;
         foreach(new FileIterator($meta->file_uri) as $line => $row) {            
             $i++; if(($i % 100000) == 0) echo "\n".number_format($i);            
@@ -142,118 +138,47 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
                 $rec[$term] = @$tmp[$k];
                 $k++;
             }
-            $rec = array_map('trim', $rec);
-            print_r($rec); //exit("\nstop muna...\n");
+            $rec = array_map('trim', $rec); //print_r($rec); //exit("\nstop muna...\n");
 
-            if($what == "measurementorfact") {}
+            if    ($task == 'build-up')     self::task_build_up($rec, $what);
+            elseif($task == 'write-to-tsv') self::task_write_to_tsv($rec);
 
             // ====================================================== stops here...            
             continue; exit("\nshould not go here...\n");
             // ====================================================== stops here...
 
-            $uris = array_keys($rec);
-            if($what == "taxon")                    $o = new \eol_schema\Taxon();
-            elseif($what == "document")             $o = new \eol_schema\MediaResource();
-            elseif($what == "occurrence")           $o = new \eol_schema\Occurrence_specific();
-            elseif($what == "measurementorfact")    $o = new \eol_schema\MeasurementOrFact_specific();
-            elseif($what == "association")          $o = new \eol_schema\Association();
-            elseif($what == "vernacular")           $o = new \eol_schema\VernacularName();
-            elseif($what == "agent")                $o = new \eol_schema\Agent();
-            else exit("\nERROR: Undefined rowtype[$what].\n");
-            
-            if($what == "taxon") {
-                //----------taxonID must be unique
-                $taxon_id = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
-                
-                //----------sciname must not be blank
-                if(!$rec['http://rs.tdwg.org/dwc/terms/scientificName']) continue;
-                // ====================================== customize per resource:
-                if($this->DwCA_Type == 'wikipedia') {
-                    if(stripos($rec['http://purl.org/dc/terms/source'], "wikipedia.org") !== false) $rec['http://purl.org/dc/terms/source'] = 'https://www.wikidata.org/wiki/'.$taxon_id; //string is found
-                }
-                elseif($this->DwCA_Type == 'regular') {} //the rest goes here        
-                // ======================================
-                if($this->resource_id == "TreatmentBank") {
-                    $rec = $this->process_table_TreatmentBank_taxon($rec); //new Dec 12, 2023
-                    if(!$rec) continue;
-
-                    // /* Missing taxa GitHub #13
-                    // There are 7393 taxa with trait data that are not represented in the taxon file. See missingTaxonIDs.txt attached. 
-                    // If we cannot get the taxonomic data for these records, we should remove them.
-                    $this->TB_taxon_ids[$taxon_id] = '';
-                    // */
-                }
-                // ======================================    
-            } //end $what == 'taxon'
-
-            if($what == "document") {
-                $taxon_id = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
-
-                if($this->resource_id == "TreatmentBank") {
-                    if(!isset($this->TB_taxon_ids[$taxon_id])) continue; //to avoid creating media objects without taxon entry. per Github #13
-                    $rec = $this->process_table_TreatmentBank_document($rec, $row_type, $meta, $this->zip_file); //new Dec 12, 2023
-                    if(!$rec) continue;
-                }
-
-                //identifier must be unique
-                $identifier = $rec['http://purl.org/dc/terms/identifier'];
-                if(!isset($this->object_ids[$identifier])) $this->object_ids[$identifier] = '';
-                else continue;
-            }
-            elseif($what == "taxon") {
-                //identifier must be unique
-                $identifier = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
-                if(!isset($this->taxon_ids[$identifier])) $this->taxon_ids[$identifier] = '';
-                else continue;
-            }
-            elseif($what == "agent") {
-                //identifier must be unique
-                $identifier = $rec['http://purl.org/dc/terms/identifier'];
-                if(!isset($this->agent_ids[$identifier])) $this->agent_ids[$identifier] = '';
-                else continue;
-            }
-            elseif($what == "vernacular") {
-                //row must be unique
-                $identifier = $rec['http://rs.tdwg.org/dwc/terms/vernacularName']."|".$rec['http://purl.org/dc/terms/language']."|".$rec['http://rs.tdwg.org/dwc/terms/taxonID'];
-                $identifier = md5($identifier);
-                if(!isset($this->vernacular_ids[$identifier])) $this->vernacular_ids[$identifier] = '';
-                else continue;
-            }
-
-            /* Investigation only --- works OK
-            if($what == "taxon") {
-                if($rec['http://rs.tdwg.org/dwc/terms/scientificName'] == "Plicatura faginea") {
-                    echo "\n--- START Investigate ---\n";
-                    print_r($rec); print_r($meta);
-                    echo "\n--- END Investigate ---\n";
-                }
-            }
-            */
-            
-                        
-            $uris = array_keys($rec); // print_r($uris);
-            foreach($uris as $uri) {
-                $field = pathinfo($uri, PATHINFO_BASENAME);
-                /* good debug
-                echo "\n[$field][$uri]\n";
-                if($field == "vernacularName" && $uri == "http://rs.tdwg.org/dwc/terms/vernacularName") {
-                    if(!$rec[$uri]) continue;
-                }
-                */
-                
-                // /* some fields have '#', e.g. "http://schemas.talis.com/2005/address/schema#localityName"
-                $parts = explode("#", $field);
-                if($parts[0]) $field = $parts[0];
-                if(@$parts[1]) $field = $parts[1];
-                // */
-                
-                $o->$field = $rec[$uri];
-            }
-            
-            $this->archive_builder->write_object_to_file($o);
-
-            if($i >= 2) break; //debug only
         } //end foreach()
+    }
+    private function task_build_up($rec, $what)
+    {
+        if($what == 'taxon') {
+            /*Array(
+                [http://rs.tdwg.org/dwc/terms/taxonID] => 8c5b6e4b4fe26afbe7e2ca51a50ca35f
+                [http://rs.tdwg.org/dwc/terms/scientificName] => Pelecotoma flavipes
+            )*/
+        }
+        elseif($what == 'occurrence') {
+            /*Array(
+                [http://rs.tdwg.org/dwc/terms/occurrenceID] => 3bbaa00ab3e7f0872c6f041e6c7fd6b9_119035_ENV
+                [http://rs.tdwg.org/dwc/terms/taxonID] => 754d18eae95c48266764cce4fd2b3d32
+            )*/
+            $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+            $occurrenceID = $rec['http://rs.tdwg.org/dwc/terms/occurrenceID'];
+            $this->taxon_occurrences[$taxonID][] = $occurrenceID;
+        }
+        elseif($what == 'measurementorfact') {
+            /*Array(
+                [http://rs.tdwg.org/dwc/terms/measurementID] => d02a34c6a19ad91231d1ec638385f632_119035_ENV
+                [http://rs.tdwg.org/dwc/terms/occurrenceID] => e48b9f6fbde9bfc02d15f2e2477bca8c_119035_ENV
+                [http://eol.org/schema/measurementOfTaxon] => true
+                [http://rs.tdwg.org/dwc/terms/measurementType] => http://eol.org/schema/terms/Present
+                [http://rs.tdwg.org/dwc/terms/measurementValue] => http://www.geonames.org/4155751
+                [http://rs.tdwg.org/dwc/terms/measurementUnit] => 
+                [http://rs.tdwg.org/dwc/terms/measurementRemarks] => source text: "female Homotype from Monticello _Florida_ in the collection of"
+            )*/
+            $occurrenceID = $rec['http://rs.tdwg.org/dwc/terms/occurrenceID'];
+            $this->occurrence_MoFs[$occurrenceID][] = $rec;
+        }
     }
     private function start($dwca_file = false, $download_options = array('timeout' => 172800, 'expire_seconds' => false)) //probably default expires in a month 60*60*24*30. Not false.
     {
