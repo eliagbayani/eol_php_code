@@ -180,6 +180,34 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
             $this->occurrence_MoFs[$occurrenceID][] = $rec;
         }
     }
+    private function initialize_tsv()
+    {
+        $fhandle = Functions::file_open($this->report_file, "w");
+        $headers = array("resource ID", "scientificName", "kingdom", "phylum", "class", "order", "family", 
+            "measurementID", "measurementType", "measurementValue", "measurementRemarks", "source", "bibliographicCitation", "measurementUnit", "statisticalMethod");
+        fwrite($fhandle, implode("\t", $headers) . "\n");
+        fclose($fhandle);
+    }
+    private function task_write_to_tsv($rec)
+    {
+        print_r($rec);         // [http://rs.tdwg.org/dwc/terms/taxonID] => 8c5b6e4b4fe26afbe7e2ca51a50ca35f
+        // [http://rs.tdwg.org/dwc/terms/scientificName] => Pelecotoma flavipes
+        $taxonID = $rec['http://rs.tdwg.org/dwc/terms/taxonID'];
+
+        if($occurrenceIDs = @$this->taxon_occurrences[$taxonID]) { print_r($occurrenceIDs);
+            foreach($occurrenceIDs as $occurrenceID) {
+                print_r($this->occurrence_MoFs[$occurrenceID]);
+            }
+            exit("\nelix4\n");
+
+        }
+
+
+
+        // $fhandle = Functions::file_open($txt_file, "w");
+        // fwrite($fhandle, $rec['identifier'] . "\n"); fclose($fhandle);
+
+    }
     private function start($dwca_file = false, $download_options = array('timeout' => 172800, 'expire_seconds' => false)) //probably default expires in a month 60*60*24*30. Not false.
     {
         if($dwca_file) $this->dwca_file = $dwca_file;
