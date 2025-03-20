@@ -12,7 +12,7 @@ $resource_ids = array('119035_ENV', 'MoftheAES_resources');
 $resource_ids = array('TreatmentBank_final');
 
 // step 1:
-// $func->build_resources_list(); //generates a json file of resources to be used in next step
+$func->build_resources_list(); //generates a json file of resources to be used in next step. Run once only every month.
 // step 2:
 $func->process_DwCAs_using_json_list_of_resources(); //using a json file from step 1. Run each resource and write textmined traits to tsv.
 
