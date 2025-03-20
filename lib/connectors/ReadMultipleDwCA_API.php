@@ -9,8 +9,8 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
     {
         if($folder) {
             $this->resource_id = $folder;
-            $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
-            $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));
+            // $this->path_to_archive_directory = CONTENT_RESOURCE_LOCAL_PATH . '/' . $folder . '_working/';
+            // $this->archive_builder = new \eol_schema\ContentArchiveBuilder(array('directory_path' => $this->path_to_archive_directory));
         }
         $this->dwca_file = $dwca_file;
         $this->DwCA_Type = $DwCA_Type;
@@ -57,7 +57,6 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
         foreach($resources as $res_name => $rec) { echo "\n---Processing: [$res_name]\n"; print_r($rec);
             $this->taxon_occurrences = array();
             $this->occurrence_MoFs = array();
-            // print_r(pathinfo($rec['eol_resource_id'])); exit;
             $this->report['Resource ID'] = pathinfo(@$rec['eol_resource_id'], PATHINFO_BASENAME);
 
             $filename = pathinfo($rec['eol_resource_url'], PATHINFO_BASENAME); //e.g. wikipedia_en_traits.tar.gz
@@ -66,8 +65,17 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
                 self::convert_archive($preferred_rowtypes, $dwca_file);
             }
             else echo "\nDwCA file does not exist [$dwca_file]\n";
-            break; //debug only
+            // break; //debug only
         }
+        self::zip_report();
+    }
+    private function zip_report()
+    {
+        $source = $this->report_file;
+        $target = $this->report_file.".zip";
+        $output = shell_exec("zip -j $target $source");
+        echo "\n$output\n";
+        unlink($source);
     }
     function process_DwCAs($resource_ids, $preferred_rowtypes = array())
     {
@@ -233,26 +241,28 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
         if($occurrenceIDs = @$this->taxon_occurrences[$taxonID]) { //print_r($occurrenceIDs);
             foreach($occurrenceIDs as $occurrenceID) {
                 // print_r($this->occurrence_MoFs[$occurrenceID]);
-                foreach($this->occurrence_MoFs[$occurrenceID] as $m) {
-                    if(self::valid_record($m)) {
-                        $save = array();
-                        $save[] = $this->report['Resource ID'];
-                        $save[] = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
-                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/kingdom'];
-                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/phylum'];
-                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/class'];
-                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/order'];
-                        $save[] = @$rec['http://rs.tdwg.org/dwc/terms/family'];    
-                        $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementID'];
-                        $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementType'];
-                        $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementValue'];
-                        $save[] = @$m['http://rs.tdwg.org/dwc/terms/measurementRemarks'];
-                        $save[] = @$m['http://purl.org/dc/terms/source'];
-                        $save[] = @$m['http://purl.org/dc/terms/bibliographicCitation'];
-                        $save[] = @$m['http://rs.tdwg.org/dwc/terms/measurementUnit'];
-                        $save[] = @$m['http://eol.org/schema/terms/statisticalMethod'];
-                        fwrite($fhandle, implode("\t", $save) . "\n");    
-                    }
+                if($loop = @$this->occurrence_MoFs[$occurrenceID]) {
+                    foreach($loop as $m) {
+                        if(self::valid_record($m)) {
+                            $save = array();
+                            $save[] = $this->report['Resource ID'];
+                            $save[] = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
+                            $save[] = @$rec['http://rs.tdwg.org/dwc/terms/kingdom'];
+                            $save[] = @$rec['http://rs.tdwg.org/dwc/terms/phylum'];
+                            $save[] = @$rec['http://rs.tdwg.org/dwc/terms/class'];
+                            $save[] = @$rec['http://rs.tdwg.org/dwc/terms/order'];
+                            $save[] = @$rec['http://rs.tdwg.org/dwc/terms/family'];    
+                            $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementID'];
+                            $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementType'];
+                            $save[] = $m['http://rs.tdwg.org/dwc/terms/measurementValue'];
+                            $save[] = @$m['http://rs.tdwg.org/dwc/terms/measurementRemarks'];
+                            $save[] = @$m['http://purl.org/dc/terms/source'];
+                            $save[] = @$m['http://purl.org/dc/terms/bibliographicCitation'];
+                            $save[] = @$m['http://rs.tdwg.org/dwc/terms/measurementUnit'];
+                            $save[] = @$m['http://eol.org/schema/terms/statisticalMethod'];
+                            fwrite($fhandle, implode("\t", $save) . "\n");    
+                        }
+                    }    
                 }
             }
         }
