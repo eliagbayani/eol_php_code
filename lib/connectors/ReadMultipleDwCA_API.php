@@ -28,7 +28,8 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
                                   "http://rs.gbif.org/terms/1.0/multimedia"         => "document",
                                   "http://eol.org/schema/reference/reference"       => "reference",
                                   "http://eol.org/schema/association"               => "association");
-        $this->report_file = CONTENT_RESOURCE_LOCAL_PATH . '/reports/compiled_trait.tsv';
+        $this->report_file              = CONTENT_RESOURCE_LOCAL_PATH . '/reports/textmined_records.tsv';
+        $this->textmined_resources_file = CONTENT_RESOURCE_LOCAL_PATH . '/reports/textmined_resources.json';
         /* copied template
         $this->attributions = array();
         $this->download_TB_options = array( //same value as in TreatmentBankAPI.php
@@ -279,19 +280,24 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
             echo("\n$zenodo_id\n");
             $obj = $this->zenodo->retrieve_dataset($zenodo_id); //2nd param $versionLatestYN by default is true.
             // print_r($obj); exit("\nstop muna 1a\n");
-            if($isSourceOf = self::get_relation_isSourceOf($obj)) {
-                $resources[$res_name]['eol_resource_id'] = $isSourceOf;
-            }
+            if($isSourceOf = self::get_relation($obj, 'isSourceOf'))         $resources[$res_name]['eol_resource_id'] = $isSourceOf;
+            if($isSupplementTo = self::get_relation($obj, 'isSupplementTo')) $resources[$res_name]['eol_resource_url'] = $isSupplementTo;
+            break; //debug only
         }
         print_r($resources);
+        // save to a json file
+        if(!($file = Functions::file_open($this->textmined_resources_file, "w"))) return;
+        fwrite($file, json_encode($resources));
+        fclose($file);
     }
-    private function get_relation_isSourceOf($o)
+    private function get_relation($o, $relation)
     {
         foreach($o['metadata']['related_identifiers'] as $i) {
-            if($i['relation'] == 'isSourceOf') return $i['identifier'];
+            if($i['relation'] == $relation) return $i['identifier'];
         }
         return false;
     }
+
     private function get_all_textmining_resources()
     {
         $a = array();
