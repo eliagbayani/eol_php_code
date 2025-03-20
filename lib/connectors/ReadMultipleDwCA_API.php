@@ -282,7 +282,7 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
             // print_r($obj); exit("\nstop muna 1a\n");
             if($isSourceOf = self::get_relation($obj, 'isSourceOf'))         $resources[$res_name]['eol_resource_id'] = $isSourceOf;
             if($isSupplementTo = self::get_relation($obj, 'isSupplementTo')) $resources[$res_name]['eol_resource_url'] = $isSupplementTo;
-            break; //debug only
+            // break; //debug only
         }
         print_r($resources);
         // save to a json file
@@ -297,7 +297,6 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
         }
         return false;
     }
-
     private function get_all_textmining_resources()
     {
         $a = array();
