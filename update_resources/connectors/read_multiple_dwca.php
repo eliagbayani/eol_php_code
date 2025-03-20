@@ -11,8 +11,12 @@ $func = new ReadMultipleDwCA_API($resource_id, false, 'regular');
 $resource_ids = array('119035_ENV', 'MoftheAES_resources');
 $resource_ids = array('TreatmentBank_final');
 
-$func->build_resources_list();
-// $func->process_DwCAs($resource_ids); //part of main operation
+// step 1:
+// $func->build_resources_list(); //generates a json file of resources to be used in next step
+// step 2:
+$func->process_DwCAs_using_json_list_of_resources(); //using a json file from step 1. Run each resource and write textmined traits to tsv.
+
+// $func->process_DwCAs($resource_ids); //during dev
 
 /* copied template
 Functions::finalize_dwca_resource($resource_id, false, true, $timestart);

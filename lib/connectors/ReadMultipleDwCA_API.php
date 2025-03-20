@@ -37,6 +37,38 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
             'expire_seconds'     => false, //expires set to false for now
             'download_wait_time' => 2000000, 'timeout' => 60*5, 'download_attempts' => 1, 'delay_in_minutes' => 1, 'cache' => 1); */
     }
+    function process_DwCAs_using_json_list_of_resources($preferred_rowtypes = array())
+    {
+        $json = file_get_contents($this->textmined_resources_file);
+        $resources = json_decode($json, true); // print_r($resources);
+        /*Array(
+            [Wikipedia: Wikipedia English - traits (inferred records)] => Array(
+                    [zenodo_uri] => https://zenodo.org/records/14437247
+                    [eol_resource_id] => https://eol.org/resources/413
+                    [eol_resource_url] => https://editors.eol.org/eol_php_code/applications/content_server/resources/wikipedia_en_traits.tar.gz
+                )
+            [TreatmentBank] => Array(
+                    [zenodo_uri] => https://zenodo.org/records/13321535
+                    [eol_resource_id] => https://eol.org/resources/486
+                    [eol_resource_url] => https://editors.eol.org/eol_php_code/applications/content_server/resources/TreatmentBank_final.tar.gz
+                )
+        */
+        self::initialize_tsv();
+        foreach($resources as $res_name => $rec) { echo "\n---Processing: [$res_name]\n"; print_r($rec);
+            $this->taxon_occurrences = array();
+            $this->occurrence_MoFs = array();
+            // print_r(pathinfo($rec['eol_resource_id'])); exit;
+            $this->report['Resource ID'] = pathinfo(@$rec['eol_resource_id'], PATHINFO_BASENAME);
+
+            $filename = pathinfo($rec['eol_resource_url'], PATHINFO_BASENAME); //e.g. wikipedia_en_traits.tar.gz
+            $dwca_file = CONTENT_RESOURCE_LOCAL_PATH . $filename;
+            if(file_exists($dwca_file)) {
+                self::convert_archive($preferred_rowtypes, $dwca_file);
+            }
+            else echo "\nDwCA file does not exist [$dwca_file]\n";
+            break; //debug only
+        }
+    }
     function process_DwCAs($resource_ids, $preferred_rowtypes = array())
     {
         self::initialize_tsv();
@@ -52,7 +84,7 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
             else echo "\nDwCA file does not exist [$dwca_file]\n";
             break; //debug only
         }
-        $this->archive_builder->finalize(TRUE);
+        // $this->archive_builder->finalize(TRUE);
     }
     private function convert_archive($preferred_rowtypes = false, $dwca_file, $download_options = array('timeout' => 172800, 'expire_seconds' => 0))
     {   /* param $preferred_rowtypes is the option to include-only those row_types you want on your final DwCA. */
@@ -204,7 +236,7 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
                 foreach($this->occurrence_MoFs[$occurrenceID] as $m) {
                     if(self::valid_record($m)) {
                         $save = array();
-                        $save[] = 'res id';
+                        $save[] = $this->report['Resource ID'];
                         $save[] = $rec['http://rs.tdwg.org/dwc/terms/scientificName'];
                         $save[] = @$rec['http://rs.tdwg.org/dwc/terms/kingdom'];
                         $save[] = @$rec['http://rs.tdwg.org/dwc/terms/phylum'];
