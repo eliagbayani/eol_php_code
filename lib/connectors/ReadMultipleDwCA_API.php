@@ -263,5 +263,53 @@ class ReadMultipleDwCA_API extends DwCA_Aggregator_Functions
         }
         return array("harvester" => $harvester, "temp_dir" => $temp_dir, "tables" => $tables, "index" => $index);
     }
+    private function initialize_zenodo()
+    {
+        require_library('connectors/ZenodoFunctions');
+        require_library('connectors/ZenodoConnectorAPI');
+        require_library('connectors/ZenodoAPI');
+        $this->zenodo = new ZenodoAPI();
+    }
+    function build_resources_list()
+    {
+        self::initialize_zenodo();
+        $resources = self::get_all_textmining_resources(); print_r($resources);
+        foreach($resources as $res_name => $rec) {
+            $zenodo_id = pathinfo($rec['zenodo_uri'], PATHINFO_FILENAME);
+            echo("\n$zenodo_id\n");
+            $obj = $this->zenodo->retrieve_dataset($zenodo_id); //2nd param $versionLatestYN by default is true.
+            // print_r($obj); exit("\nstop muna 1a\n");
+            if($isSourceOf = self::get_relation_isSourceOf($obj)) {
+                $resources[$res_name]['eol_resource_id'] = $isSourceOf;
+            }
+        }
+        print_r($resources);
+    }
+    private function get_relation_isSourceOf($o)
+    {
+        foreach($o['metadata']['related_identifiers'] as $i) {
+            if($i['relation'] == 'isSourceOf') return $i['identifier'];
+        }
+        return false;
+    }
+    private function get_all_textmining_resources()
+    {
+        $a = array();
+        $a['Wikipedia: Wikipedia English - traits (inferred records)']['zenodo_uri'] = 'https://zenodo.org/records/14437247';
+        $a['TreatmentBank']['zenodo_uri'] = 'https://zenodo.org/records/13321535';
+        $a['Smithsonian Contributions Series: Smithsonian Contributions to Botany']['zenodo_uri'] = 'https://zenodo.org/records/13321713';
+        $a['Memoirs of the American Entomological Society']['zenodo_uri'] = 'https://zenodo.org/records/15039847';
+        $a['North American Flora: North American Flora - ALL']['zenodo_uri'] = 'https://zenodo.org/records/15020541';
+        $a['Nota Lepidopterologica: Nota Lepidopterologica (798)']['zenodo_uri'] = 'https://zenodo.org/records/13321662';
+        $a['Zoosystematics and Evolution: Zoosystematics and Evolution (834)']['zenodo_uri'] = 'https://zenodo.org/records/13321654';
+        $a['Deutsche Entomologische Zeitschrift: Deutsche Entomologische Zeitschrift (792)']['zenodo_uri'] = 'https://zenodo.org/records/13321642';
+        $a['Zookeys: ZooKeys (20) DwCA']['zenodo_uri'] = 'https://zenodo.org/records/13316129';
+        $a['AmphibiaWeb: AmphibiaWeb text w/traits based on Pensoft Annotator']['zenodo_uri'] = 'https://zenodo.org/records/13318110';
+        $a['Zookeys: Zookeys (829)']['zenodo_uri'] = 'https://zenodo.org/records/14889995';
+        $a['Mycokeys: Mycokeys (830)']['zenodo_uri'] = 'https://zenodo.org/records/14890008';
+        $a['Phytokeys: Phytokeys (826)']['zenodo_uri'] = 'https://zenodo.org/records/14890085';
+        $a['Journal of Hymenoptera Research: Journal of Hymenoptera Research (831)']['zenodo_uri'] = 'https://zenodo.org/records/14890097';
+        return $a;
+    }
 }
 ?>
