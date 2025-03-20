@@ -79,6 +79,7 @@ $func = new ZenodoAPI();
 // $func->set_all_to_keyword_active_if_not_deprecated();
 // $func->set_license_to_cc_by_sa(); //Mar 7, 2025
 // $func->set_license_all_versions_to_cc_by_sa(); //Mar 7-8, 2025
+$func->list_all_trait_resources(); //Mar 20, 2025
 // */
 
 // $func->jen_DOI_Works(); //https://github.com/EOL/ContentImport/issues/16#issuecomment-2501080414

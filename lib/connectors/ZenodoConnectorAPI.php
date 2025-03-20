@@ -67,6 +67,23 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         } //end if($objs)
         exit("\n-end rename_anne_thessen_to_2017-\n");
     }*/
+    function list_all_trait_resources()
+    {
+        // /*
+        $objs = true;
+        $q = "+keywords:textmining"; //n=
+        if($objs = $this->get_depositions_by_part_title($q)) { //print_r($objs[0]); //exit;
+            $i = 0; $total = count($objs); echo "\nTotal recs to process: [$total]\n"; //exit("\nStop muna\n");
+            foreach($objs as $o) { $i++;
+                echo "\n-----$i of $total. [".$o['id']."] ".$o['metadata']['title']."\n";
+                // if($zenodo_id = $o['id']) $this->process_stats($zenodo_id);
+                // break; //debug only, run 1 only
+                // if($i >= 5) break; //debug only
+            }
+        } //end if($objs)    
+        // */
+
+    }
     function generate_stats_for_views_downloads()
     {   
         // /*
