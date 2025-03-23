@@ -29,8 +29,6 @@ if($p['task'] == 'breakdown_GBIF_DwCA_file') $func->breakdown_GBIF_DwCA_file($ta
 elseif($p['task'] == 'generate_map_data_using_GBIF_csv_files') $func->generate_map_data_using_GBIF_csv_files();
 elseif($p['task'] == 'gen_map_data_forTaxa_with_children') $func->gen_map_data_forTaxa_with_children($p);
 
-
-
 /* testing functions
 $key = 44; //Chordata
 $key = 7707728; //Plantae - Tracheophyta
