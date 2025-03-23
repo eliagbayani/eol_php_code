@@ -201,6 +201,7 @@ class GBIFMapDataAPI
             /* using dumps
             $this->func->create_map_data($sciname, $tc_id, $paths); //result of refactoring
             */
+
             // /* using API
             $this->func->get_georeference_data_via_api($taxonKey, $tc_id);
             // */
@@ -230,25 +231,30 @@ class GBIFMapDataAPI
             $rec = array_map('trim', $rec);
             // /* dev only
             $first_char = substr($rec['canonicalName'],0,1);
-            // if(in_array(strtolower($first_char), array('a'))) {} else continue;              //1
-            // if(in_array(strtolower($first_char), array('e','f'))) {} else continue;          //2
-            if(in_array(strtolower($first_char), array('i','j','k'))) {$this->auto_refresh_mapYN = true;} else continue;      //3
-            // if(in_array(strtolower($first_char), array('m','n'))) {} else continue;      //4
-            // if(in_array(strtolower($first_char), array('q','r','t'))) {} else continue;      //5
-            // if(in_array(strtolower($first_char), array('u','v','w'))) {$this->auto_refresh_mapYN = true;} else continue;      //6
+            // if(in_array(strtolower($first_char), array('a'))) {} else continue;          //1
+            // if(in_array(strtolower($first_char), array('e'))) {} else continue;          //2
+
+            // if(in_array(strtolower($first_char), array('i','j','k'))) {$this->auto_refresh_mapYN = true;} else continue;      //3 DONE
+            // if(in_array(strtolower($first_char), array('f'))) {} else continue;          //3
+            
+            // if(in_array(strtolower($first_char), array('m'))) {} else continue;          //4
+            // if(in_array(strtolower($first_char), array('q','r'))) {} else continue;      //5
+
+            // if(in_array(strtolower($first_char), array('u','v','w'))) {$this->auto_refresh_mapYN = true;} else continue;      //6 DONE
+            // if(in_array(strtolower($first_char), array('t'))) {} else continue;          //6
             
             // if(in_array(strtolower($first_char), array('x','y','z'))) {$this->auto_refresh_mapYN = true;} else continue;      //7 DONE
-            // if(in_array(strtolower($first_char), array('s'))) {} else continue;      //7
+            // if(in_array(strtolower($first_char), array('s'))) {} else continue;          //7
 
             // if(in_array(strtolower($first_char), array('g'))) {$this->auto_refresh_mapYN = true;} else continue;              //8
-            // if(in_array(strtolower($first_char), array('d'))) {} else continue;              //9
+            if(in_array(strtolower($first_char), array('d'))) {$this->auto_refresh_mapYN = true;} else continue;              //9
             // if(in_array(strtolower($first_char), array('l'))) {} else continue;              //10
             // if(in_array(strtolower($first_char), array('c'))) {} else continue;              //11
             // if(in_array(strtolower($first_char), array('h'))) {} else continue;              //12
             // if(in_array(strtolower($first_char), array('b'))) {} else continue;              //13
             // if(in_array(strtolower($first_char), array('p'))) {} else continue;              //14
             // if(in_array(strtolower($first_char), array('o'))) {} else continue;              //15
-
+            // if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16
             // */
 
             if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
@@ -269,10 +275,12 @@ class GBIFMapDataAPI
             }
             //  --------------------------------------------------------
             echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
+
             /* orig using downloaded csv
             $this->func->create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
             */
-            // /* new: using api
+
+            // /* new: using api --- works OK
             if($usageKey = $this->func->get_usage_key($rec['canonicalName'])) { debug("\nOK GBIF key [$usageKey]\n");
                 if(!$this->auto_refresh_mapYN) {
                     if($this->func->map_data_file_already_been_generated($rec['EOLid'])) continue;
