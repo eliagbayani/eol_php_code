@@ -63,6 +63,7 @@ class GBIFMapDataAPI
         }
         $this->listOf_taxa['all']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_4maps.txt';
         $this->auto_refresh_mapYN = false; //use false when caching. But use true when finalizing map data.
+        $this->use_API_YN_2025 = true;
     }
     private function initialize()
     {
@@ -197,14 +198,14 @@ class GBIFMapDataAPI
         */
 
         if($sciname && $tc_id) {
-            // $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);
-            /* using dumps
-            $this->func->create_map_data($sciname, $tc_id, $paths); //result of refactoring
-            */
+            // $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list); //seems not needed...
 
-            // /* using API
-            $this->func->get_georeference_data_via_api($taxonKey, $tc_id);
-            // */
+            if($this->use_API_YN_2025) { // using API
+                $this->func->get_georeference_data_via_api($taxonKey, $tc_id);
+            }
+            else { // using dumps
+                $this->func->create_map_data($sciname, $tc_id, $paths); //result of refactoring
+            }
             return;
         }
 
@@ -276,22 +277,25 @@ class GBIFMapDataAPI
             //  --------------------------------------------------------
             echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
 
-            /* orig using downloaded csv
-            $this->func->create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
-            */
-
-            // /* new: using api --- works OK
-            if($usageKey = $this->func->get_usage_key($rec['canonicalName'])) { debug("\nOK GBIF key [$usageKey]\n");
-                if(!$this->auto_refresh_mapYN) {
-                    if($this->func->map_data_file_already_been_generated($rec['EOLid'])) continue;
-                }    
-                $this->func->get_georeference_data_via_api($usageKey, $rec['EOLid']);
+            if($this->use_API_YN_2025) {
+                // /* new: using api --- works OK
+                if($usageKey = $this->func->get_usage_key($rec['canonicalName'])) { debug("\nOK GBIF key [$usageKey]\n");
+                    if(!$this->auto_refresh_mapYN) {
+                        if($this->func->map_data_file_already_been_generated($rec['EOLid'])) continue;
+                    }    
+                    $this->func->get_georeference_data_via_api($usageKey, $rec['EOLid']);
+                }
+                else {
+                    echo "\n usageKey not found! [".$rec['canonicalName']."][".$rec['EOLid']."]\n";
+                    $this->debug['usageKey not found']["[".$rec['canonicalName']."][".$rec['EOLid']."]"] = '';
+                }
+                // */    
             }
             else {
-                echo "\n usageKey not found! [".$rec['canonicalName']."][".$rec['EOLid']."]\n";
-                $this->debug['usageKey not found']["[".$rec['canonicalName']."][".$rec['EOLid']."]"] = '';
+                // /* orig using downloaded csv 2025
+                $this->func->create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
+                // */
             }
-            // */
 
             // break; //debug only
         }
