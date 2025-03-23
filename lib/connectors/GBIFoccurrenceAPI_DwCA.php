@@ -638,17 +638,17 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             $this->debug['usageKey not found']["[$sciname][$taxon_concept_id]"] = '';
         }
     }
+    /* not used anymore, since May 30, 2022
     private function gen_map_data_using_api($sciname, $taxon_concept_id) //NEW Aug 24, 2018
     {
         if($this->use_API_YN) {
             debug("\nWill try to use API...");
-            if($rec = self::get_initial_data($sciname)) {
-                // print_r($rec);
+            if($rec = self::get_initial_data($sciname)) { // print_r($rec);
                 echo " -- usageKey: ".$rec['usageKey']." | count: ". $rec["count"];
                 self::get_georeference_data_via_api($rec['usageKey'], $taxon_concept_id);
             }
         }
-    }
+    } */
     function get_georeference_data_via_api($taxonKey, $taxon_concept_id) //updated from original version
     {
         $options = $this->download_options;
