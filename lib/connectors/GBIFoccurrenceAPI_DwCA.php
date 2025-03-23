@@ -100,7 +100,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $this->listOf_taxa['all']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_4maps.txt';
         $this->auto_refresh_mapYN = false;
         // New 2020 Jun 20
-        $this->use_API_YN = true;
+        $this->use_API_YN_old = true;
     }
     function jenkins_call($group, $batches, $connector_task, $filter_rank = '') //4th param $filter_rank is for gen_map_data_forTaxa_with_children() only
     {
@@ -398,7 +398,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     function x_gen_map_data_forTaxa_with_children($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $filter_rank = '')
     {
-        $this->use_API_YN = false; //no more API calls at this point.
+        $this->use_API_YN_old = false; //no more API calls at this point.
         require_library('connectors/DHConnLib'); $func = new DHConnLib('');
         $paths = $this->csv_paths; 
         
@@ -641,7 +641,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     /* not used anymore, since May 30, 2022
     private function gen_map_data_using_api($sciname, $taxon_concept_id) //NEW Aug 24, 2018
     {
-        if($this->use_API_YN) {
+        if($this->use_API_YN_old) {
             debug("\nWill try to use API...");
             if($rec = self::get_initial_data($sciname)) { // print_r($rec);
                 echo " -- usageKey: ".$rec['usageKey']." | count: ". $rec["count"];
