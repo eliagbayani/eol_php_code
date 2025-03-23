@@ -23,6 +23,10 @@ $resource_id = "1";
 $func = new DHConnLib($resource_id);
 $func->generate_children_of_taxa_from_DH(); //normal operation
 
+/* utility: 23Mar2025 - generate list of taxa under Plantae --- worked OK
+$func->generate_plantae_taxa_list(); //generated listOf_all_plantae_4maps.txt
+*/
+
 /* Not part of normal operation. Just test. First client is Katie's image bundles. Works OK!
 $func->initialize_get_ancestry_func();
 
