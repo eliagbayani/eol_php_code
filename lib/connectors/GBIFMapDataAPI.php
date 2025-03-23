@@ -63,12 +63,18 @@ class GBIFMapDataAPI
         }
         $this->listOf_taxa['all']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_4maps.txt';
         $this->auto_refresh_mapYN = false; //use false when caching. But use true when finalizing map data.
-        $this->use_API_YN_2025 = true;
+        $this->use_API_YN_2025 = true; //false; //true;
     }
     private function initialize()
     {
+        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt';
+        $this->plantae_eolids = self::process_generic_tsv($local, 'get Plantae EOLids');
+        // print_r($this->plantae_eolids);
+        // exit("\nelix 100\n");
+
         require_library('connectors/GBIFoccurrenceAPI_DwCA');
         $this->func = new GBIFoccurrenceAPI_DwCA();
+
     }
     function start($params)
     {   // print_r($params);
@@ -249,19 +255,20 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('s'))) {} else continue;          //7
     
                 // if(in_array(strtolower($first_char), array('g'))) {$this->auto_refresh_mapYN = true;} else continue;              //8
-                if(in_array(strtolower($first_char), array('d'))) {$this->auto_refresh_mapYN = true;} else continue;              //9
+                // if(in_array(strtolower($first_char), array('d'))) {$this->auto_refresh_mapYN = true;} else continue;              //9
                 // if(in_array(strtolower($first_char), array('l'))) {} else continue;              //10
                 // if(in_array(strtolower($first_char), array('c'))) {} else continue;              //11
                 // if(in_array(strtolower($first_char), array('h'))) {} else continue;              //12
                 // if(in_array(strtolower($first_char), array('b'))) {} else continue;              //13
                 // if(in_array(strtolower($first_char), array('p'))) {} else continue;              //14
                 // if(in_array(strtolower($first_char), array('o'))) {} else continue;              //15
-                // if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16    
+                if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16    
             }
             // ------------------------- */
 
             if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
             else continue;
+            if(isset($this->plantae_eolids[$rec['EOLid']])) { echo " under Plantae, will ignore. "; continue; }
             print_r($rec); //exit("\nstopx\n");
 
             /*Array(
@@ -504,6 +511,37 @@ class GBIFMapDataAPI
         /* during dev only
         return "/Volumes/Crucial_4TB/other_files/GBIF_occurrence/map_Gadiformes/0000896-250225085111116.csv";
         */
+    }
+    private function process_generic_tsv($file, $task)
+    {   echo "\nTask: [$task] [$file]\n";
+        $i = 0; $final = array();
+        if($task == "get Plantae EOLids") $mod = 500000;
+        elseif($task == "yyy")            $mod = 100000;
+        else                              $mod = 10000;
+        foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
+            if(($i % $mod) == 0) echo "\n $i ";
+            if($i == 1) { 
+                $fields = explode("\t", $row);
+                continue;
+            }
+            else {
+                if(!$row) continue;
+                $tmp = explode("\t", $row);
+                $rec = array(); $k = 0;
+                foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
+                $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
+            }
+            if($task == 'get Plantae EOLids') {
+                /*Array(
+                    [canonicalName] => Glaucophyceae
+                    [EOLid] => 4082
+                    [taxonRank] => class
+                    [taxonomicStatus] => accepted
+                )*/
+                $final[$rec['EOLid']] = '';
+            }
+        }
+        if($task == 'get Plantae EOLids') return $final;
     }
 }
 ?>
