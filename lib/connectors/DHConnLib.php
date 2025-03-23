@@ -31,7 +31,6 @@ class DHConnLib
         $this->listOf_taxa['genus']  = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_genus_4maps.txt';
         $this->listOf_taxa['all']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_4maps.txt';
         $this->listOf_taxa['all_plantae']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt'; //new 23Mar2025
-
         
         $this->all_ranks_['order'] = array('infraorder', 'hyporder', 'superorder', 'order', 'suborder');
         $this->all_ranks_['family'] = array('superfamily', 'family', 'subfamily', 'tribe');
@@ -209,7 +208,6 @@ class DHConnLib
                     // }    
                 }
             }
-
         }
         if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'save children of genus and family'))) fclose($FILE);
         // print_r($debug);
@@ -222,7 +220,7 @@ class DHConnLib
     {
         if($higherClassification = $rec['higherClassification']) {
             /* if(stripos($higherClassification, "Plantae") !== false) return true;    //string is found --- did not work */
-            
+
             // Phylums list based from: https://www.gbif.org/species/6
             if( (stripos($higherClassification, "Anthocerotophyta") !== false)   ||    //string is found
                 (stripos($higherClassification, "Bryophyta") !== false) ||     //string is found
