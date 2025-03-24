@@ -69,6 +69,11 @@ class GBIFMapDataAPI
     {
         $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt';
         $this->plantae_eolids = self::process_generic_tsv($local, 'get Plantae EOLids');
+
+        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt';
+        $this->plantae_eolids = self::process_generic_tsv($local, 'get Chordata EOLids');
+
+
         // print_r($this->plantae_eolids);
         // exit("\nelix 100\n");
 
@@ -517,7 +522,7 @@ class GBIFMapDataAPI
         $i = 0; $final = array();
         if($task == "get Plantae EOLids") $mod = 500000;
         elseif($task == "yyy")            $mod = 100000;
-        else                              $mod = 10000;
+        else                              $mod = 500000;
         foreach(new FileIterator($file) as $line => $row) { $i++; // $row = Functions::conv_to_utf8($row);
             if(($i % $mod) == 0) echo "\n $i ";
             if($i == 1) { 
@@ -531,7 +536,7 @@ class GBIFMapDataAPI
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                 $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
             }
-            if($task == 'get Plantae EOLids') {
+            if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids'))) {
                 /*Array(
                     [canonicalName] => Glaucophyceae
                     [EOLid] => 4082
@@ -541,7 +546,7 @@ class GBIFMapDataAPI
                 $final[$rec['EOLid']] = '';
             }
         }
-        if($task == 'get Plantae EOLids') return $final;
+        if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids'))) return $final;
     }
 }
 ?>
