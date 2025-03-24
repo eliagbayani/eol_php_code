@@ -31,6 +31,8 @@ class DHConnLib
         $this->listOf_taxa['genus']  = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_genus_4maps.txt';
         $this->listOf_taxa['all']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_4maps.txt';
         $this->listOf_taxa['all_plantae']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt'; //new 23Mar2025
+        $this->listOf_taxa['all_chordata']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt'; //new 23Mar2025
+
         
         $this->all_ranks_['order'] = array('infraorder', 'hyporder', 'superorder', 'order', 'suborder');
         $this->all_ranks_['family'] = array('superfamily', 'family', 'subfamily', 'tribe');
@@ -38,6 +40,8 @@ class DHConnLib
         $this->all_ranks_['species'] = array('species', 'subspecies', 'infraspecies', 'species group', 'variety', 'subvariety', 'form');
         $this->all_ranks_['all'] = array_merge($this->all_ranks_['order'], $this->all_ranks_['family'], $this->all_ranks_['genus'], $this->all_ranks_['species']);
         $this->all_ranks_['all_plantae'] = $this->all_ranks_['all'];
+        $this->all_ranks_['all_chordata'] = $this->all_ranks_['all'];
+
         /*Array(
         Hi Jen, looking at the actual values for taxon rank in DH.
         I will include these:
@@ -77,9 +81,11 @@ class DHConnLib
         echo("\n-end tests-\n");
         */
     }
-    function generate_plantae_taxa_list()
+    function generate_any_taxa_list($what)
     {
-        self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa plantae', 'all_plantae'); // for all Plantae-only taxa
+        if($what == 'kingdom Plantae') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa plantae', 'all_plantae'); // for all Plantae taxa
+        if($what == 'phylum Chordata') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa chordata', 'all_chordata'); // for all Plantae taxa
+        
     }
     function generate_children_of_taxa_from_DH() /* This generates cache of children of order, family & genus. Also generates respective list txt files. */
     {
@@ -107,7 +113,7 @@ class DHConnLib
         if($purpose == 'initialize') $this->mint2EOLid = array();
         elseif($purpose == 'buildup ancestry and children') { $this->taxID_info = array(); $this->descendants = array(); }
 
-        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'save children of genus and family'))) {
+        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'save children of genus and family'))) {
             $FILE = Functions::file_open($this->listOf_taxa[$filter_rank], 'w'); //this file will be used DATA-1818
             fwrite($FILE, implode("\t", array('canonicalName', 'EOLid', 'taxonRank', 'taxonomicStatus'))."\n");
         }
@@ -194,33 +200,37 @@ class DHConnLib
                 }
             }
             elseif($purpose == 'list of taxa plantae') { //2025
-                if(self::rec_is_Plantae_YN($rec)) {
-                    // if(in_array($rec['taxonRank'], $this->all_ranks_['all'])) { //this block was copied above; from $purpose == 'list of taxa'
-                        if($eol_id = $rec['EOLid']) { $found++;
-                            // /* text file here will be used in generating map data for all Plantae taxa
-                            if($val = $rec['canonicalName']) $sciname = $val;
-                            else                             $sciname = Functions::canonical_form($rec['scientificName']);
-                            $save = array($sciname, $eol_id, $rec['taxonRank'], $rec['taxonomicStatus']);
-                            fwrite($FILE, implode("\t", $save)."\n");
-                            // */
-                            $taxID_rank_info[$rec['EOLid']] = array('r' => $rec['taxonRank'], 'n' => $rec['scientificName']); //to use in GBIF maps
-                        }
-                    // }    
-                }
+                if(self::rec_is_Plantae_YN($rec)) $found = self::proceed_save_or_not($rec, $found, $FILE);
             }
+            elseif($purpose == 'list of taxa chordata') { //2025
+                if(self::rec_is_Chordata_YN($rec)) $found = self::proceed_save_or_not($rec, $found, $FILE);
+            }
+
         }
-        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'save children of genus and family'))) fclose($FILE);
+        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'save children of genus and family'))) fclose($FILE);
         // print_r($debug);
         
         if($returnYN && $purpose == 'list of taxa') {
             return $taxID_rank_info; //to be used in library GBIFoccurrenceAPI_DwCA - save_ids_to_text_from_many_folders()
         }
     }
-    private function rec_is_Plantae_YN($rec)
+    private function proceed_save_or_not($rec, $found, $FILE)
     {
-        if($higherClassification = $rec['higherClassification']) {
+        // if(in_array($rec['taxonRank'], $this->all_ranks_['all'])) { //this block was copied above; from $purpose == 'list of taxa'
+            if($eol_id = $rec['EOLid']) { $found++;
+                // /* text file here will be used in generating map data for all Plantae taxa
+                if($val = $rec['canonicalName']) $sciname = $val;
+                else                             $sciname = Functions::canonical_form($rec['scientificName']);
+                $save = array($sciname, $eol_id, $rec['taxonRank'], $rec['taxonomicStatus']);
+                fwrite($FILE, implode("\t", $save)."\n");
+                // */
+            }
+        // }
+        return $found;
+    }
+    private function rec_is_Plantae_YN($rec)
+    {   if($higherClassification = $rec['higherClassification']) {
             /* if(stripos($higherClassification, "Plantae") !== false) return true;    //string is found --- did not work */
-
             // Phylums list based from: https://www.gbif.org/species/6
             if( (stripos($higherClassification, "Anthocerotophyta") !== false)   ||    //string is found
                 (stripos($higherClassification, "Bryophyta") !== false) ||     //string is found
@@ -232,6 +242,13 @@ class DHConnLib
                 (stripos($higherClassification, "Rhodophyta") !== false) ||     //string is found
                 (stripos($higherClassification, "Tracheophyta") !== false)     //string is found
             ) return true;
+        }
+        return false;
+    }
+    private function rec_is_Chordata_YN($rec)
+    {
+        if($higherClassification = $rec['higherClassification']) {
+            if(stripos($higherClassification, "Chordata") !== false) return true;    //string is found
         }
         return false;
     }
