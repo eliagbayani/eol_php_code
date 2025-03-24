@@ -67,14 +67,13 @@ class GBIFMapDataAPI
     }
     private function initialize()
     {
-        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt';
-        $this->plantae_eolids = self::process_generic_tsv($local, 'get Plantae EOLids');
-
-        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt';
-        $this->plantae_eolids = self::process_generic_tsv($local, 'get Chordata EOLids');
-
-
-        // print_r($this->plantae_eolids);
+        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt';  $exclude_1 = self::process_generic_tsv($local, 'get Plantae EOLids');
+        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt'; $exclude_2 = self::process_generic_tsv($local, 'get Chordata EOLids');
+        $exclude_1 = array_keys($exclude_1);
+        $exclude_2 = array_keys($exclude_2);
+        $exclude = array_merge($exclude_1, $exclude_2);
+        foreach($exclude as $id) $this->exclude_eolids[$id] = '';
+        echo "\nExcluded EOLids: ".count($this->exclude_eolids)."\n";
         // exit("\nelix 100\n");
 
         require_library('connectors/GBIFoccurrenceAPI_DwCA');
@@ -266,14 +265,14 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('h'))) {} else continue;              //12
                 // if(in_array(strtolower($first_char), array('b'))) {} else continue;              //13
                 // if(in_array(strtolower($first_char), array('p'))) {} else continue;              //14
-                // if(in_array(strtolower($first_char), array('o'))) {} else continue;              //15
-                if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16    
+                if(in_array(strtolower($first_char), array('o'))) {} else continue;              //15
+                // if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16    
             }
             // ------------------------- */
 
             if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
             else continue;
-            if(isset($this->plantae_eolids[$rec['EOLid']])) { echo " under Plantae, will ignore. "; continue; }
+            if(isset($this->exclude_eolids[$rec['EOLid']])) { echo " under Plantae, will ignore. "; continue; }
             print_r($rec); //exit("\nstopx\n");
 
             /*Array(
