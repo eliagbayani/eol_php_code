@@ -28,7 +28,8 @@ $func->generate_children_of_taxa_from_DH();
 // /* utility: 23Mar2025 - generate list of taxa under Plantae --- worked OK
 // $func->generate_any_taxa_list('kingdom Plantae'); //generated listOf_all_plantae_4maps.txt
 // $func->generate_any_taxa_list('phylum Chordata'); //generated listOf_all_chordata_4maps.txt
-$func->generate_any_taxa_list('phylum Arthropoda'); //generated listOf_all_arthropoda_4maps.txt
+// $func->generate_any_taxa_list('phylum Arthropoda'); //generated listOf_all_arthropoda_4maps.txt
+$func->generate_any_taxa_list('phylum Passeriformes'); //generated listOf_all_passeriformes_4maps.txt
 // */
 
 /* Not part of normal operation. Just test. First client is Katie's image bundles. Works OK!

@@ -33,6 +33,7 @@ class DHConnLib
         $this->listOf_taxa['all_plantae']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt'; //new 23Mar2025
         $this->listOf_taxa['all_chordata']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt'; //new 23Mar2025
         $this->listOf_taxa['all_arthropoda']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_arthropoda_4maps.txt'; //new 23Mar2025
+        $this->listOf_taxa['all_passeriformes']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_passeriformes_4maps.txt'; //new 23Mar2025
         
         $this->all_ranks_['order'] = array('infraorder', 'hyporder', 'superorder', 'order', 'suborder');
         $this->all_ranks_['family'] = array('superfamily', 'family', 'subfamily', 'tribe');
@@ -42,6 +43,7 @@ class DHConnLib
         $this->all_ranks_['all_plantae'] = $this->all_ranks_['all'];
         $this->all_ranks_['all_chordata'] = $this->all_ranks_['all'];
         $this->all_ranks_['all_arthropoda'] = $this->all_ranks_['all'];
+        $this->all_ranks_['all_passeriformes'] = $this->all_ranks_['all'];
 
 
         /*Array(
@@ -88,6 +90,8 @@ class DHConnLib
         if($what == 'kingdom Plantae') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa plantae', 'all_plantae'); // for all Plantae taxa
         if($what == 'phylum Chordata') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa chordata', 'all_chordata'); // for all x taxa
         if($what == 'phylum Arthropoda') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa arthropoda', 'all_arthropoda'); // for all x taxa        
+        if($what == 'phylum Passeriformes') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa passeriformes', 'all_passeriformes'); // for all x taxa        
+
     }
     function generate_children_of_taxa_from_DH() /* This generates cache of children of order, family & genus. Also generates respective list txt files. */
     {
@@ -115,7 +119,7 @@ class DHConnLib
         if($purpose == 'initialize') $this->mint2EOLid = array();
         elseif($purpose == 'buildup ancestry and children') { $this->taxID_info = array(); $this->descendants = array(); }
 
-        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'list of taxa arthropoda', 
+        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'list of taxa arthropoda', 'list of taxa passeriformes',  
             'save children of genus and family'))) {
             $FILE = Functions::file_open($this->listOf_taxa[$filter_rank], 'w'); //this file will be used DATA-1818
             fwrite($FILE, implode("\t", array('canonicalName', 'EOLid', 'taxonRank', 'taxonomicStatus'))."\n");
@@ -211,10 +215,13 @@ class DHConnLib
             elseif($purpose == 'list of taxa arthropoda') { //2025
                 if(self::rec_is_Arthropoda_YN($rec)) $found = self::proceed_save_or_not($rec, $found, $FILE);
             }
+            elseif($purpose == 'list of taxa passeriformes') { //2025
+                if(self::rec_is_Passeriformes_YN($rec)) $found = self::proceed_save_or_not($rec, $found, $FILE);
+            }
 
         }
-        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'list of taxa arthropoda',  
-        'save children of genus and family'))) fclose($FILE);
+        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'list of taxa arthropoda', 
+        'list of taxa passeriformes', 'save children of genus and family'))) fclose($FILE);
         // print_r($debug);
         
         if($returnYN && $purpose == 'list of taxa') {
@@ -263,6 +270,13 @@ class DHConnLib
     {
         if($higherClassification = $rec['higherClassification']) {
             if(stripos($higherClassification, "Arthropoda") !== false) return true;    //string is found
+        }
+        return false;
+    }
+    private function rec_is_Passeriformes_YN($rec)
+    {
+        if($higherClassification = $rec['higherClassification']) {
+            if(stripos($higherClassification, "Passeriformes") !== false) return true;    //string is found
         }
         return false;
     }
