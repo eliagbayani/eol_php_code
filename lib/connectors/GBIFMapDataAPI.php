@@ -70,18 +70,20 @@ class GBIFMapDataAPI
         $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt';  $exclude_1 = self::process_generic_tsv($local, 'get Plantae EOLids');
         // $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt'; $exclude_2 = self::process_generic_tsv($local, 'get Chordata EOLids');
         $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_arthropoda_4maps.txt'; $exclude_2 = self::process_generic_tsv($local, 'get Arthropoda EOLids');
+        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_passeriformes_4maps.txt'; $exclude_3 = self::process_generic_tsv($local, 'get Passeriformes EOLids');
 
         $exclude_1 = array_keys($exclude_1);
         $exclude_2 = array_keys($exclude_2);
+        $exclude_3 = array_keys($exclude_3);
+
         // $exclude_2 = array();
-        $exclude = array_merge($exclude_1, $exclude_2);
+        $exclude = array_merge($exclude_1, $exclude_2, $exclude_3);
         foreach($exclude as $id) $this->exclude_eolids[$id] = '';
         echo "\nExcluded EOLids: ".count($this->exclude_eolids)."\n";
         // exit("\nelix 100\n");
 
         require_library('connectors/GBIFoccurrenceAPI_DwCA');
         $this->func = new GBIFoccurrenceAPI_DwCA();
-
     }
     function start($params)
     {   // print_r($params);
@@ -539,7 +541,7 @@ class GBIFMapDataAPI
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                 $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
             }
-            if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids', 'get Arthropoda EOLids'))) {
+            if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids', 'get Arthropoda EOLids', 'get Passeriformes EOLids'))) {
                 /*Array(
                     [canonicalName] => Glaucophyceae
                     [EOLid] => 4082
@@ -549,7 +551,7 @@ class GBIFMapDataAPI
                 $final[$rec['EOLid']] = '';
             }
         }
-        if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids', 'get Arthropoda EOLids'))) return $final;
+        if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids', 'get Arthropoda EOLids', 'get Passeriformes EOLids'))) return $final;
     }
 }
 ?>
