@@ -28,6 +28,9 @@ Fungi = 5          36,320,132 GEOREFERENCED RECORDS
 Protozoa = 7        1,321,912 GEOREFERENCED RECORDS
 Viruses = 8            18,765 GEOREFERENCED RECORDS
 incertae sedis = 0  5,045,233 GEOREFERENCED RECORDS
+--------------------------------------------------------------------------------------------------------------- Further division
+    map_animalia_phylum_Chordata
+    phylumkey = 44
 ---------------------------------------------------------------------------------------------------------------
 1. Kingdom not Animalia (1) nor Plantae (6)
     map_kingdom_not_animalia_nor_plantae

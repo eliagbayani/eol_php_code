@@ -68,9 +68,12 @@ class GBIFMapDataAPI
     private function initialize()
     {
         $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt';  $exclude_1 = self::process_generic_tsv($local, 'get Plantae EOLids');
-        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt'; $exclude_2 = self::process_generic_tsv($local, 'get Chordata EOLids');
+        // $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt'; $exclude_2 = self::process_generic_tsv($local, 'get Chordata EOLids');
+        $local = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_arthropoda_4maps.txt'; $exclude_2 = self::process_generic_tsv($local, 'get Arthropoda EOLids');
+
         $exclude_1 = array_keys($exclude_1);
         $exclude_2 = array_keys($exclude_2);
+        // $exclude_2 = array();
         $exclude = array_merge($exclude_1, $exclude_2);
         foreach($exclude as $id) $this->exclude_eolids[$id] = '';
         echo "\nExcluded EOLids: ".count($this->exclude_eolids)."\n";
@@ -162,6 +165,7 @@ class GBIFMapDataAPI
                 // break; //debug only
             } //end foreach()
         } //end loop paths
+        if(file_exists($tsv_path)) unlink($tsv_path); //delete big csv file
     }
     function generate_map_data_using_GBIF_csv_files($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $autoRefreshYN = false)
     {
@@ -265,8 +269,8 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('h'))) {} else continue;              //12
                 // if(in_array(strtolower($first_char), array('b'))) {} else continue;              //13
                 // if(in_array(strtolower($first_char), array('p'))) {} else continue;              //14
-                if(in_array(strtolower($first_char), array('o'))) {} else continue;              //15
-                // if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16    
+                // if(in_array(strtolower($first_char), array('o'))) {} else continue;              //15
+                if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16    
             }
             // ------------------------- */
 
@@ -535,7 +539,7 @@ class GBIFMapDataAPI
                 foreach($fields as $field) { $rec[$field] = @$tmp[$k]; $k++; }
                 $rec = array_map('trim', $rec); //print_r($rec); exit("\nstop muna\n");
             }
-            if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids'))) {
+            if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids', 'get Arthropoda EOLids'))) {
                 /*Array(
                     [canonicalName] => Glaucophyceae
                     [EOLid] => 4082
@@ -545,7 +549,7 @@ class GBIFMapDataAPI
                 $final[$rec['EOLid']] = '';
             }
         }
-        if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids'))) return $final;
+        if(in_array($task, array('get Plantae EOLids', 'get Chordata EOLids', 'get Arthropoda EOLids'))) return $final;
     }
 }
 ?>
