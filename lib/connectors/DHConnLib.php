@@ -32,7 +32,7 @@ class DHConnLib
         $this->listOf_taxa['all']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_4maps.txt';
         $this->listOf_taxa['all_plantae']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_plantae_4maps.txt'; //new 23Mar2025
         $this->listOf_taxa['all_chordata']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_chordata_4maps.txt'; //new 23Mar2025
-
+        $this->listOf_taxa['all_arthropoda']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_arthropoda_4maps.txt'; //new 23Mar2025
         
         $this->all_ranks_['order'] = array('infraorder', 'hyporder', 'superorder', 'order', 'suborder');
         $this->all_ranks_['family'] = array('superfamily', 'family', 'subfamily', 'tribe');
@@ -41,6 +41,8 @@ class DHConnLib
         $this->all_ranks_['all'] = array_merge($this->all_ranks_['order'], $this->all_ranks_['family'], $this->all_ranks_['genus'], $this->all_ranks_['species']);
         $this->all_ranks_['all_plantae'] = $this->all_ranks_['all'];
         $this->all_ranks_['all_chordata'] = $this->all_ranks_['all'];
+        $this->all_ranks_['all_arthropoda'] = $this->all_ranks_['all'];
+
 
         /*Array(
         Hi Jen, looking at the actual values for taxon rank in DH.
@@ -84,8 +86,8 @@ class DHConnLib
     function generate_any_taxa_list($what)
     {
         if($what == 'kingdom Plantae') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa plantae', 'all_plantae'); // for all Plantae taxa
-        if($what == 'phylum Chordata') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa chordata', 'all_chordata'); // for all Plantae taxa
-        
+        if($what == 'phylum Chordata') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa chordata', 'all_chordata'); // for all x taxa
+        if($what == 'phylum Arthropoda') self::get_taxID_nodes_info($this->main_path.'/taxon.tab', 'list of taxa arthropoda', 'all_arthropoda'); // for all x taxa        
     }
     function generate_children_of_taxa_from_DH() /* This generates cache of children of order, family & genus. Also generates respective list txt files. */
     {
@@ -113,7 +115,8 @@ class DHConnLib
         if($purpose == 'initialize') $this->mint2EOLid = array();
         elseif($purpose == 'buildup ancestry and children') { $this->taxID_info = array(); $this->descendants = array(); }
 
-        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'save children of genus and family'))) {
+        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'list of taxa arthropoda', 
+            'save children of genus and family'))) {
             $FILE = Functions::file_open($this->listOf_taxa[$filter_rank], 'w'); //this file will be used DATA-1818
             fwrite($FILE, implode("\t", array('canonicalName', 'EOLid', 'taxonRank', 'taxonomicStatus'))."\n");
         }
@@ -205,9 +208,13 @@ class DHConnLib
             elseif($purpose == 'list of taxa chordata') { //2025
                 if(self::rec_is_Chordata_YN($rec)) $found = self::proceed_save_or_not($rec, $found, $FILE);
             }
+            elseif($purpose == 'list of taxa arthropoda') { //2025
+                if(self::rec_is_Arthropoda_YN($rec)) $found = self::proceed_save_or_not($rec, $found, $FILE);
+            }
 
         }
-        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'save children of genus and family'))) fclose($FILE);
+        if(in_array($purpose, array('list of taxa', 'list of taxa plantae', 'list of taxa chordata', 'list of taxa arthropoda',  
+        'save children of genus and family'))) fclose($FILE);
         // print_r($debug);
         
         if($returnYN && $purpose == 'list of taxa') {
@@ -252,6 +259,14 @@ class DHConnLib
         }
         return false;
     }
+    private function rec_is_Arthropoda_YN($rec)
+    {
+        if($higherClassification = $rec['higherClassification']) {
+            if(stripos($higherClassification, "Arthropoda") !== false) return true;    //string is found
+        }
+        return false;
+    }
+
     function get_children_from_json_cache($name, $options = array(), $gen_descendants_ifNot_availableYN = true)
     {
         // download_wait_time
