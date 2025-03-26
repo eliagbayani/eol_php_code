@@ -90,26 +90,26 @@ Animalia (1)                            2,405,714,505
 2. Animalia but not Phylum Arthropoda (54) nor Chordata (44)
     map_animalia_not_phylum_Arthropoda_Chordata
     kingdomkey = 1 AND phylumkey <> 54 AND phylumkey <> 44 
-3. Chordata (44) but not Class Aves (212)
+3. Chordata (44) but not Class Aves (212) --- Compressed data size: 2.7 GB
     map_phylum_Chordata_not_class_Aves
     phylumkey = 44 AND classkey <> 212
 4. Class Aves (212) but not Order Passeriformes (729) --- Compressed data size: 53.2 GB
     map_class_Aves_not_order_Passeriformes
     classkey = 212 AND orderkey <> 729
-5. Order Passeriformes (729)
+5. Order Passeriformes (729) --- DONE
                 Family Corvidae (5235)                  101,641,071
                 Family Passerellidae (9410667)          90,413,679
                 Family Tyrannidae (5291)                48,796,928
     map_order_Passeriformes_with_3_families
     orderkey = 729 AND familykey IN (5235, 9410667, 5291)
-6. Order Passeriformes (729)
+6. Order Passeriformes (729) --- DONE
                 Family Fringillidae (5242)              86,379,609
                 Family Parulidae (5263)                 70,769,533
                 Family Turdidae (5290)                  70,521,825
                 Family Motacillidae (5257)              18,371,440
     map_order_Passeriformes_with_4_families
     orderkey = 729 AND familykey IN (5242, 5263, 5290, 5257)
-7. Order Passeriformes (729)
+7. Order Passeriformes (729) --- DONE
                 Family Paridae (9327)                   68,968,932
                 Family Icteridae (6176)                 61,050,292
                 Family Cardinalidae (9285)              39,277,227 
@@ -118,7 +118,7 @@ Animalia (1)                            2,405,714,505
                 Family Passeridae (5264)                27,285,246
     map_order_Passeriformes_with_6_families
     orderkey = 729 AND familykey IN (9327, 6176, 9285, 9355, 9350, 5264)
-8. Order Passeriformes (729) but not these families:
+8. Order Passeriformes (729) but not these families: --- DONE
                 Family Corvidae (5235)                  101,641,071
                 Family Passerellidae (9410667)          90,413,679
                 Family Tyrannidae (5291)                48,796,928
