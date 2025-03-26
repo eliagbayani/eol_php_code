@@ -93,7 +93,7 @@ Animalia (1)                            2,405,714,505
 3. Chordata (44) but not Class Aves (212)
     map_phylum_Chordata_not_class_Aves
     phylumkey = 44 AND classkey <> 212
-4. Class Aves (212) but not Order Passeriformes (729)
+4. Class Aves (212) but not Order Passeriformes (729) --- Compressed data size: 53.2 GB
     map_class_Aves_not_order_Passeriformes
     classkey = 212 AND orderkey <> 729
 5. Order Passeriformes (729)
