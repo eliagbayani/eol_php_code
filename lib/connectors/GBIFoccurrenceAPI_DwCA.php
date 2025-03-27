@@ -518,7 +518,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         return;
     }
     private function generate_map_data_using_GBIF_csv_files($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $autoRefreshYN = false)
-    {
+    {   exit("\n--- So this is still being used ---\n");
         // $eol_taxon_id_list["Gadus morhua"] = 206692;
         // $eol_taxon_id_list["Achillea millefolium L."] = 45850244;
         // $eol_taxon_id_list["Francolinus levaillantoides"] = 1; //5227890
@@ -621,7 +621,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             }
             
             if($final = self::prepare_csv_data($usageKey, $paths)) {
-                debug("\n Records from CSV: " . $final['count'] . "");
+                debug("\nUsed records from CSV: [$sciname][$taxon_concept_id][$usageKey] " . $final['count'] . "");
                 self::if_needed_2cluster_orSave($final, $taxon_concept_id);
             }
             else {
@@ -631,6 +631,15 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 self::gen_map_data_using_api($sciname, $taxon_concept_id);
                 */
                 $this->debug['no CSV data']["[$sciname][$taxon_concept_id]"] = '';
+                echo "\nNo CSV data: [$sciname][$taxon_concept_id][$usageKey]\n";
+
+                // /* ---------- 2025 block
+                echo "\nWill use API for: [$sciname][$taxon_concept_id][$usageKey]\n";
+                if(!$this->auto_refresh_mapYN) {
+                    if(self::map_data_file_already_been_generated($taxon_concept_id)) continue;
+                }    
+                self::get_georeference_data_via_api($usageKey, $taxon_concept_id);
+                // ---------- */
             }
         }
         else {
@@ -650,7 +659,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         }
     } */
     function get_georeference_data_via_api($taxonKey, $taxon_concept_id) //updated from original version
-    {
+    {   echo "\nUsing the API...\n";
         $options = $this->download_options;
         $options['download_wait_time'] = 500000; //never use bigger than 1 sec here.
         $offset = 0; $limit = 300; $continue = true; $final = array(); echo "\n";

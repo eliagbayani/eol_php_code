@@ -63,7 +63,7 @@ class GBIFMapDataAPI
         }
         $this->listOf_taxa['all']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_4maps.txt';
         $this->auto_refresh_mapYN = false; //use false when caching. But use true when finalizing map data.
-        $this->use_API_YN_2025 = true; //false; //true;
+        $this->use_API_YN_2025 = false; //true;
     }
     private function initialize()
     {
@@ -200,7 +200,12 @@ class GBIFMapDataAPI
         // $sciname = "Gadus chalcogrammus"; $tc_id = 216657;
         // $sciname = "Gadus macrocephalus"; $tc_id = 46564417;
         // $sciname = 'Stichastrella rosea'; $tc_id = '598446';
-        
+
+        // $sciname = "Amphistegina alabamensis"; $tc_id = '47098734';
+        // if($taxonKey = $this->func->get_usage_key($sciname)) { debug("\nOK GBIF key [$taxonKey]\n"); }
+
+        // $sciname = 'Eranno lagunae'; $tc_id = '459567'; $taxonKey = '2322769'; // 25 recs from CSV but 47 from API
+    
         /* just a test of the func
             $test_sciname = "Gonyaulax baltica";
             // $test_sciname = "Gadus";
@@ -246,10 +251,11 @@ class GBIFMapDataAPI
                 }
             }
             $rec = array_map('trim', $rec);
-            // /* ------------------------- dev only
-            if($this->use_API_YN_2025) {
+            // /* ------------------------- dev only 
+            // if($this->use_API_YN_2025) {
+            if(true) {
                 $first_char = substr($rec['canonicalName'],0,1);
-                // if(in_array(strtolower($first_char), array('a'))) {} else continue;          //1
+                if(in_array(strtolower($first_char), array('a'))) {} else continue;          //1
                 // if(in_array(strtolower($first_char), array('e'))) {} else continue;          //2
     
                 // if(in_array(strtolower($first_char), array('i','j','k'))) {$this->auto_refresh_mapYN = true;} else continue;      //3 DONE
@@ -263,7 +269,7 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('t'))) {} else continue;          //6
                 
                 // if(in_array(strtolower($first_char), array('x','y','z'))) {$this->auto_refresh_mapYN = true;} else continue;      //7 DONE
-                if(in_array(strtolower($first_char), array('s'))) {} else continue;          //7
+                // if(in_array(strtolower($first_char), array('s'))) {} else continue;          //7
     
                 // if(in_array(strtolower($first_char), array('g'))) {$this->auto_refresh_mapYN = true;} else continue;              //8 DONE
                 // if(in_array(strtolower($first_char), array('r'))) {} else continue;      //8
