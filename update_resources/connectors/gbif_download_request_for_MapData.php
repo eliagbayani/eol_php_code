@@ -152,10 +152,17 @@ Animalia (1)                            2,405,714,505
         Charadriiformes 172     7192402
         Columbiformes   76      1446
         Piciformes      84      724
-map_class_Aves_but_not_6_orders
+
+        Coraciiformes   18      1447
+        Cuculiformes    10      1492
+        Falconiformes   19      7191407
+        Pelecaniformes  73      7190953
+
+
+map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
     classkey = 212 AND orderkey NOT IN (7191147, 1108, 1448, 7192402, 1446, 724)
 
-10. map_class_Aves_order_Charadriiformes
+10. map_class_Aves_order_Charadriiformes --- Compressed data size: 9.7 GB
     classkey = 212 AND orderkey = 7192402
 
 ==================================                
