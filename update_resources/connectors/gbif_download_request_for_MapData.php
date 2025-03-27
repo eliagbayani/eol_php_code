@@ -20,6 +20,16 @@ php update_resources/connectors/gbif_download_request_for_MapData.php _ '{"task"
 --------------------------------------------------------------------------------------------------------------- as of Feb 23, 2025
 Animalia = 1    2,405,787,432 GEOREFERENCED RECORDS
 Plantae = 6       437,438,303 GEOREFERENCED RECORDS
+    Anthocerotophyta
+    Bryophyta
+    Charophyta
+    Chlorophyta
+    Glaucophyta
+    Langiophytophyta
+    Marchantiophyta
+    Rhodophyta
+    Tracheophyta
+
 
 Archaea = 2           348,156 GEOREFERENCED RECORDS
 Bacteria = 3       19,176,920 GEOREFERENCED RECORDS
@@ -134,6 +144,19 @@ Animalia (1)                            2,405,714,505
                 Family Passeridae (5264)                27,285,246
     map_order_Passeriformes_but_not_13_families
     orderkey = 729 AND familykey NOT IN (5235, 9410667, 5291, 5242, 5263, 5290, 5257, 9327, 6176, 9285, 9355, 9350, 5264)
+
+9. orders under Aves (212): in Millions
+        Accipitriformes 97      7191147
+        Anseriformes    169     1108
+        Apodiformes     29      1448
+        Charadriiformes 172     7192402
+        Columbiformes   76      1446
+        Piciformes      84      724
+map_class_Aves_but_not_6_orders
+    classkey = 212 AND orderkey NOT IN (7191147, 1108, 1448, 7192402, 1446, 724)
+
+10. map_class_Aves_order_Charadriiformes
+    classkey = 212 AND orderkey = 7192402
 
 ==================================                
 Order Passeriformes un-used:

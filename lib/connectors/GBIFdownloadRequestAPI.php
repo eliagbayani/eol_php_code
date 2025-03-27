@@ -61,6 +61,8 @@ class GBIFdownloadRequestAPI
         elseif($this->resource_id == 'map_order_Passeriformes_with_4_families')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_order_Passeriformes_with_4_families';                
         elseif($this->resource_id == 'map_order_Passeriformes_with_6_families')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_order_Passeriformes_with_6_families';        
         elseif($this->resource_id == 'map_order_Passeriformes_but_not_13_families')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_order_Passeriformes_but_not_13_families';
+        elseif($this->resource_id == 'map_class_Aves_but_not_6_orders')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_class_Aves_but_not_6_orders';
+
         // Plantae map data: n = 4
         elseif($this->resource_id == 'map_plantae_not_phylum_Tracheophyta')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_plantae_not_phylum_Tracheophyta';        
         elseif($this->resource_id == 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3')  $this->destination_path = DOC_ROOT.'update_resources/connectors/files/map_phylum_Tracheophyta_class_Magnoliopsida_orders_3';
@@ -389,6 +391,7 @@ class GBIFdownloadRequestAPI
             'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes', 'map_order_Passeriformes_with_3_families', 
             'map_order_Passeriformes_with_4_families', 'map_order_Passeriformes_but_not_13_families', 'map_order_Passeriformes_with_6_families', 
             'map_plantae_not_phylum_Tracheophyta', 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3', 
+            'map_class_Aves_but_not_6_orders', 
             'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae', 'map_Gadiformes'
             ))) $format = 'SQL_TSV_ZIP';
         
@@ -428,6 +431,7 @@ class GBIFdownloadRequestAPI
                     'map_animalia_phylum_Arthropoda', 'map_animalia_not_phylum_Arthropoda_Chordata', 'map_phylum_Chordata_not_class_Aves', 'map_class_Aves_not_order_Passeriformes', 
                     'map_order_Passeriformes_with_3_families', 'map_order_Passeriformes_with_4_families', 'map_order_Passeriformes_with_6_families',
                     'map_order_Passeriformes_but_not_13_families', 'map_plantae_not_phylum_Tracheophyta', 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3', 
+                    'map_class_Aves_but_not_6_orders', 
                     'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3', 'map_phylum_Tracheophyta_not_class_Magnoliopsida', 'map_kingdom_not_animalia_nor_plantae', 'map_Gadiformes'))) {
             unset($param['predicate']);
             // /* Eli initiated dataset filters: BOLD: e.g. scientificname = "BOLD:AAB3717"
@@ -451,6 +455,8 @@ class GBIFdownloadRequestAPI
             elseif($this->resource_id == 'map_order_Passeriformes_with_4_families') $sql_part = " orderkey = 729 AND (familykey = 5242 OR familykey = 5263 OR familykey = 5290 OR familykey = 5257) ";            
             elseif($this->resource_id == 'map_order_Passeriformes_with_6_families') $sql_part = " orderkey = 729 AND (familykey = 9327 OR familykey = 6176 OR familykey = 9285 OR familykey = 9355 OR familykey = 9350 OR familykey = 5264) ";
             elseif($this->resource_id == 'map_order_Passeriformes_but_not_13_families') $sql_part = " orderkey = 729 AND familykey NOT IN (5235, 9410667, 5291, 5242, 5263, 5290, 5257, 9327, 6176, 9285, 9355, 9350, 5264) ";
+            elseif($this->resource_id == 'map_class_Aves_but_not_6_orders') $sql_part = " classkey = 212 AND orderkey NOT IN (7191147, 1108, 1448, 7192402, 1446, 724) ";
+
             // -----------------------------            
             elseif($this->resource_id == 'map_plantae_not_phylum_Tracheophyta') $sql_part = " kingdomkey = 6 AND phylumkey <> 7707728 ";
             elseif($this->resource_id == 'map_phylum_Tracheophyta_class_Magnoliopsida_orders_3') $sql_part = " phylumkey = 7707728 AND classkey = 220 AND orderkey IN (414, 422, 1353) ";            
