@@ -1004,8 +1004,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         if($GLOBALS['ENV_DEBUG']) echo "\nmap file: [$filename]\n";
         if(file_exists($filename)) {
             if(filesize($filename) > 0) {
-                if($GLOBALS['ENV_DEBUG']) echo "[$basename] map data (.json) already generated OK [$filename]";
-                echo " - already generated\n";
+                if($GLOBALS['ENV_DEBUG']) echo "[$basename][$filename] map data (.json) already generated OK";
+                // echo " - already generated\n";
                 return true;
             }
             else {
