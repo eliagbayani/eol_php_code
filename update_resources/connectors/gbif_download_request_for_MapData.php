@@ -171,8 +171,6 @@ Animalia (1)                            2,405,714,505
                             154 total
 
 
-
-
 map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
     classkey = 212 AND orderkey NOT IN (7191147, 1108, 1448, 7192402, 1446, 724)
 
@@ -183,9 +181,9 @@ map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
 12. map_class_Aves_with_4_orders --- Compressed data size: 16.1 GB
     classkey = 212 AND orderkey IN (1108, 1448, 724) //originally included: 1446 -> Compressed data size: 20.7 GB TOO BIG!
 
-13. map_class_Aves_with_5_orders --- Compressed data size: xxx GB
+13. map_class_Aves_with_5_orders --- Compressed data size: 8.0 GB
     classkey = 212 AND orderkey IN (1446, 1447, 839, 723, 1493)
-14. map_class_Aves_with_7_orders --- Compressed data size: xxx GB
+14. map_class_Aves_with_7_orders --- Compressed data size: 8.2 GB
     classkey = 212 AND orderkey IN (1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775)
 
 ==================================                

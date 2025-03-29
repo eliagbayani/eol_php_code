@@ -264,8 +264,8 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('i','j','k'))) {} else continue;  //3 
                 // if(in_array(strtolower($first_char), array('f'))) {} else continue;          //3
 
-                // if(in_array(strtolower($first_char), array('m'))) {} else continue;          //4
-                if(in_array(strtolower($first_char), array('q'))) {$this->auto_refresh_mapYN = true;} else continue;          //5 
+                if(in_array(strtolower($first_char), array('m'))) {} else continue;          //4
+                // if(in_array(strtolower($first_char), array('q'))) {$this->auto_refresh_mapYN = true;} else continue;          //5 
 
     
                 // if(in_array(strtolower($first_char), array('u','v','w'))) {$this->auto_refresh_mapYN = true;} else continue;      //6 
