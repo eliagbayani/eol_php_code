@@ -146,17 +146,31 @@ Animalia (1)                            2,405,714,505
     orderkey = 729 AND familykey NOT IN (5235, 9410667, 5291, 5242, 5263, 5290, 5257, 9327, 6176, 9285, 9355, 9350, 5264)
 
 9. orders under Aves (212): in Millions
-        Accipitriformes 97      7191147
-        Anseriformes    169     1108
+        Charadriiformes 172     7192402     done 10
+        Accipitriformes 97      7191147     done 11
+    
+        Anseriformes    169     1108        12 running... b
         Apodiformes     29      1448
-        Charadriiformes 172     7192402
-        Columbiformes   76      1446
         Piciformes      84      724
+                        282 total
 
-        Coraciiformes   18      1447
-        Cuculiformes    10      1492
-        Falconiformes   19      7191407
-        Pelecaniformes  73      7190953
+        Columbiformes       76      1446    13 running...
+        Coraciiformes       18      1447
+        Ciconiiformes       3       839
+        Galliformes         16      723
+        Gruiformes          28      1493
+                            141 total
+
+        Cuculiformes        10      1492        14 running...
+        Falconiformes       19      7191407
+        Pelecaniformes      73      7190953
+        Procellariiformes   5       7192755
+        Gaviiformes         5       7192754
+        Podicipediformes    16      7191588
+        Suliformes          26      7192775
+                            154 total
+
+
 
 
 map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
@@ -164,6 +178,15 @@ map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
 
 10. map_class_Aves_order_Charadriiformes --- Compressed data size: 9.7 GB
     classkey = 212 AND orderkey = 7192402
+11. map_class_Aves_order_Accipitriformes
+    classkey = 212 AND orderkey = 7191147
+12. map_class_Aves_with_4_orders --- Compressed data size: 16.1 GB
+    classkey = 212 AND orderkey IN (1108, 1448, 724) //originally included: 1446 -> Compressed data size: 20.7 GB TOO BIG!
+
+13. map_class_Aves_with_5_orders --- Compressed data size: xxx GB
+    classkey = 212 AND orderkey IN (1446, 1447, 839, 723, 1493)
+14. map_class_Aves_with_7_orders --- Compressed data size: xxx GB
+    classkey = 212 AND orderkey IN (1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775)
 
 ==================================                
 Order Passeriformes un-used:
