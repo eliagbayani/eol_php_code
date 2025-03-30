@@ -215,10 +215,11 @@ map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
 
 15. map_class_Aves_but_not_17_orders --- Compressed data size: 68.0 GB  TOO BIG!
     classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775)
+    classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775, 716, 8510645, 1445, 7190978, 1450, 1449))
 
-16. map_class_Aves_with_6_orders --- Compressed data size: xxx GB
+
+16. map_class_Aves_with_6_orders --- Compressed data size: 1.9 GB
     classkey = 212 AND orderkey IN (716, 8510645, 1445, 7190978, 1450, 1449)
-
 
 
 ==================================                
