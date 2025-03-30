@@ -149,19 +149,19 @@ Animalia (1)                            2,405,714,505
         Charadriiformes 172     7192402     done 10
         Accipitriformes 97      7191147     done 11
     
-        Anseriformes    169     1108        12 running... b
+        Anseriformes    169     1108        done 12
         Apodiformes     29      1448
         Piciformes      84      724
                         282 total
 
-        Columbiformes       76      1446    13 running...
+        Columbiformes       76      1446    done 13
         Coraciiformes       18      1447
         Ciconiiformes       3       839
         Galliformes         16      723
         Gruiformes          28      1493
                             141 total
 
-        Cuculiformes        10      1492        14 running...
+        Cuculiformes        10      1492        done 14
         Falconiformes       19      7191407
         Pelecaniformes      73      7190953
         Procellariiformes   5       7192755
@@ -169,6 +169,34 @@ Animalia (1)                            2,405,714,505
         Podicipediformes    16      7191588
         Suliformes          26      7192775
                             154 total
+        
+        Bucerotiformes      716         2m      running... 16th
+        Caprimulgiformes    8510645     2m
+        Psittaciformes      1445        16m
+        Sphenisciformes     7190978     1m
+        Strigiformes        1450        9m
+        Trogoniformes       1449        1m
+                                        31m total
+
+        Apterygiformes      8454030
+        Cariamiformes       8706725
+        Casuariiformes      8602104
+        Coliiformes         721
+        Eurypygiformes      8481794
+        Leptosomiformes     8454707
+        Mesitornithiformes  8617753
+        Musophagiformes     1444
+        Nyctibiiformes      10833565
+        Opisthocomiformes   8705315
+        Otidiformes         8708973
+        Phaethontiformes    7190987
+        Phoenicopteriformes 7191426
+        Pteroclidiformes    7192749
+        Rheiformes          8603836
+        Steatornithiformes  10726067
+        Struthioniformes    725
+        Tinamiformes        726
+
 
 
 map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
@@ -180,11 +208,18 @@ map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
     classkey = 212 AND orderkey = 7191147
 12. map_class_Aves_with_4_orders --- Compressed data size: 16.1 GB
     classkey = 212 AND orderkey IN (1108, 1448, 724) //originally included: 1446 -> Compressed data size: 20.7 GB TOO BIG!
-
 13. map_class_Aves_with_5_orders --- Compressed data size: 8.0 GB
     classkey = 212 AND orderkey IN (1446, 1447, 839, 723, 1493)
 14. map_class_Aves_with_7_orders --- Compressed data size: 8.2 GB
     classkey = 212 AND orderkey IN (1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775)
+
+15. map_class_Aves_but_not_17_orders --- Compressed data size: 68.0 GB  TOO BIG!
+    classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775)
+
+16. map_class_Aves_with_6_orders --- Compressed data size: xxx GB
+    classkey = 212 AND orderkey IN (716, 8510645, 1445, 7190978, 1450, 1449)
+
+
 
 ==================================                
 Order Passeriformes un-used:

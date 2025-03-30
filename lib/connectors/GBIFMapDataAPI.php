@@ -264,7 +264,7 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('i','j','k'))) {} else continue;  //3 
                 // if(in_array(strtolower($first_char), array('f'))) {} else continue;          //3
 
-                if(in_array(strtolower($first_char), array('m'))) {} else continue;          //4
+                // if(in_array(strtolower($first_char), array('m'))) {} else continue;          //4
                 // if(in_array(strtolower($first_char), array('q'))) {$this->auto_refresh_mapYN = true;} else continue;          //5 
 
     
@@ -275,7 +275,7 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('s'))) {} else continue;          //7
     
                 // if(in_array(strtolower($first_char), array('g'))) {$this->auto_refresh_mapYN = true;} else continue;              //8 
-                // if(in_array(strtolower($first_char), array('r'))) {} else continue;      //8
+                // if(in_array(strtolower($first_char), array('g', 'r'))) {} else continue;      //8
 
 
                 // if(in_array(strtolower($first_char), array('d'))) {$this->auto_refresh_mapYN = true;} else continue;              //9
@@ -286,7 +286,7 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('b'))) {} else continue;              //13
                 // if(in_array(strtolower($first_char), array('p'))) {} else continue;              //14
                 // if(in_array(strtolower($first_char), array('o'))) {} else continue;              //15
-                // if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16    
+                if(in_array(strtolower($first_char), array('n'))) {} else continue;              //16    
             }
             // ------------------------- */
 
