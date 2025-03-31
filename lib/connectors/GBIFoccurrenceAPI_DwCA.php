@@ -805,7 +805,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     private function prepare_csv_data($usageKey, $paths)
     {
-        $final = array();
+        $final = array(); $elix = 0;
         foreach($paths as $path) {
             $final_path = self::get_md5_path($path, $usageKey);
             $csv = $final_path . $usageKey . ".csv";
@@ -891,7 +891,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             else debug("\n[$usageKey] NOT found in [$path]");
         } //outer foreach()
 
-        echo "\nLast records to add: [$elix]\n";
+        echo "\nLast records to add: [".@$elix."]\n";
         // echo "\nCCC count: ".@$final['count']."";
         // echo "\nCCC total: ".@$final['total']."\n";
 
