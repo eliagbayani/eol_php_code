@@ -603,12 +603,13 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     private function if_needed_2cluster_orSave($final, $taxon_concept_id)
     {
+        $final['tc_id'] = $taxon_concept_id; //for debug only
         if($final['count'] > $this->limit_20k) {
-            debug(" --- > 20K\n");
+            debug(" --- ".$final['count']." > 20K\n");
             self::process_revised_cluster($final, $taxon_concept_id, false, 'b'); //done after main demo using screenshots
         }
         elseif($final['count'] <= $this->limit_20k) {
-            debug(" --- <= 20K\n");
+            debug(" --- ".$final['count']." <= 20K\n");
             $final['actual'] = $final['count'];
             self::save_json_file($taxon_concept_id, $final);
         }
@@ -621,6 +622,10 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             }
             
             if($final = self::prepare_csv_data($usageKey, $paths)) {
+                echo "\n=======================\n";
+                // print_r($final); 
+                print_r(array_keys($final));
+                echo "\n=======================\n";
                 debug("\nUsed records from CSV: [$sciname][$taxon_concept_id][$usageKey] " . $final['count'] . "");
                 self::if_needed_2cluster_orSave($final, $taxon_concept_id);
             }
@@ -696,9 +701,19 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     private function process_revised_cluster($final, $basename, $early_cluster = false, $whoCalled) //4th param $whoCalled is just for debug.
     {
+        // study running 'a'
+        // Used records from CSV: [Ammodramus savannarum][45511206][2491123] 30898
+        // why seems a duplicate clustering routine...
+
+        $usage_ki = @$final['usageKey']; //just for debug
+        $tc_aydi = @$final['tc_id']; //just for debug
+
+        // echo "\nAAA count: ".@$final['count']."";
+        // echo "\nAAA total: ".@$final['total']."\n";
+
         if($early_cluster) debug("\nStart of early cluster [$whoCalled]...");
         else               debug("\nStart with revised cluster [$whoCalled]");
-        echo "\nInitial total: ".count($final['records']);
+        echo "\nInitial total: [$usage_ki][$tc_aydi] ".count($final['records']);
         $to_be_saved = array();
         $to_be_saved['records'] = array();
         $unique = array();
@@ -726,11 +741,13 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 $to_be_saved['records'] = array();
                 $unique = array();
             }
-        }
+        } //end while()
         
         //flag if after revised cluster is still unsuccessful
         if(count($unique) > $limit_to_break) {
             debug("\ntaxon_concept_ID/gbifID [$basename] revised cluster unsuccessful [$early_cluster YN] [".count($unique)."]\n"); //gbifID is only for early clustering
+            if($early_cluster) echo "\nearly_cluster = YES\n";
+            else               echo "\nearly_cluster = NO\n";
             $fhandle = Functions::file_open(CONTENT_RESOURCE_LOCAL_PATH . "/revised_cluster_unsuccessful.txt", "a");
             fwrite($fhandle, "$basename" . "\t" . count($unique) ."\t". date('Y-m-d') . "\n"); fclose($fhandle);
             
@@ -859,20 +876,29 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     }
                     */
                     
+                    /* As of 31Mar2025 doing an early cluster here is beneficial. Should remain as is. */
                     // /* PROBABLY WE CAN TRY early cluster here. Early clustering may provide a better spread of coordinates.
                     if(count($final['records']) > $this->rec_limit) { //for early clustering, the taxon_concept_id or gbifID is irrelevant bec. you're not saving json file yet.
-                        $final['records'] = self::process_revised_cluster(array('count' => count($final['records']), 'records' => $final['records']), $gbifid."_gbifID", true, 'c'); //3rd param true means 'early cluster'
+                        $final['records'] = self::process_revised_cluster(array('count' => count($final['records']), 'records' => $final['records'], 'usageKey' => $usageKey), $gbifid."_gbifID", true, 'c'); //3rd param true means 'early cluster'
+                        $elix = 0;                        
                     }
                     // */
+                    @$elix++;
                     
                 } //inner foreach()
                 $final['count'] = count($final['records']);
             }
             else debug("\n[$usageKey] NOT found in [$path]");
         } //outer foreach()
-        // print_r($final); //exit("\nelix 2025\n");
+
+        echo "\nLast records to add: [$elix]\n";
+        // echo "\nCCC count: ".@$final['count']."";
+        // echo "\nCCC total: ".@$final['total']."\n";
+
         if(@$final['records']) $final = self::run_lookups_now($final, 1); //for csv download
         // print_r($final); exit("\nelix 2025\n");
+        // echo "\nBBB count: ".@$final['count']."";
+        // echo "\nBBB total: ".@$final['total']."\n";
         return $final;
     }
     /*

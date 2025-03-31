@@ -208,22 +208,21 @@ class GBIFMapDataAPI
         // if($taxonKey = $this->func->get_usage_key($sciname)) { debug("\nOK GBIF key [$taxonKey]\n"); }
 
         // $sciname = 'Eranno lagunae'; $tc_id = '459567'; $taxonKey = '2322769'; // 25 recs from CSV but 47 from API
+
+        /*
+        // Used records from CSV: [][][] 30898
+        $sciname = 'Ammodramus savannarum'; $tc_id = '45511206'; $taxonKey = '2491123';
+        */
+
     
         /* just a test of the func
-            $test_sciname = "Gonyaulax baltica";
-            // $test_sciname = "Gadus";
-            // $test_sciname = "Gonyaulax";
-            // $test_sciname = "Fervidicoccaceae";
-            $test_sciname = "Globigerina";
-            if($usageKey = $this->func->get_usage_key($test_sciname)) { debug("\nOK GBIF key [$usageKey]\n");
-            }
+            $test_sciname = "Ammodramus savannarum";
+            if($usageKey = $this->func->get_usage_key($test_sciname)) { debug("\nOK GBIF key [$usageKey]\n"); }
             else echo "\n usageKey not found! [".$test_sciname."]\n";
             exit("\n-end test-\n");
         */
 
         if($sciname && $tc_id) { exit("\nshould not go here...\n");
-            // $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list); //seems not needed...
-
             if($this->use_API_YN_2025) { // using API
                 $this->func->get_georeference_data_via_api($taxonKey, $tc_id);
             }
@@ -259,22 +258,22 @@ class GBIFMapDataAPI
             if(true) {
                 $first_char = substr($rec['canonicalName'],0,1);
                 // if(in_array(strtolower($first_char), array('a'))) {} else continue;          //1
-                // if(in_array(strtolower($first_char), array('b'))) {} else continue;          //2
+                if(in_array(strtolower($first_char), array('b'))) {$this->auto_refresh_mapYN = true;} else continue;          //2
                 // if(in_array(strtolower($first_char), array('c'))) {} else continue;          //3
                 // if(in_array(strtolower($first_char), array('d'))) {$this->auto_refresh_mapYN = true;} else continue;          //4    DONE
                 // if(in_array(strtolower($first_char), array('e'))) {} else continue;          //5
 
                 // if(in_array(strtolower($first_char), array('t','u','v','w','x','y','z'))) {} else continue;  //6
 
-                if(in_array(strtolower($first_char), array('f','g'))) {$this->auto_refresh_mapYN = true;} else continue;      //7
+                // if(in_array(strtolower($first_char), array('f','g'))) {$this->auto_refresh_mapYN = true;} else continue;      //7
                 // if(in_array(strtolower($first_char), array('h'))) {} else continue;          //8 
                 // if(in_array(strtolower($first_char), array('i','j','k'))) {$this->auto_refresh_mapYN = true;} else continue;  //9    done
                 // if(in_array(strtolower($first_char), array('l'))) {} else continue;          //10
                 // if(in_array(strtolower($first_char), array('m'))) {} else continue;          //11
                 // if(in_array(strtolower($first_char), array('n'))) {$this->auto_refresh_mapYN = true;} else continue;          //12   done
-                // if(in_array(strtolower($first_char), array('o'))) {} else continue;          //13
+                // if(in_array(strtolower($first_char), array('o'))) {$this->auto_refresh_mapYN = true;} else continue;          //13
                 // if(in_array(strtolower($first_char), array('p'))) {} else continue;          //14
-                // if(in_array(strtolower($first_char), array('q', 'r'))) {} else continue;     //15 
+                // if(in_array(strtolower($first_char), array('q', 'r'))) {$this->auto_refresh_mapYN = true;} else continue;     //15 
                 // if(in_array(strtolower($first_char), array('s'))) {} else continue;          //16
             }
             // ------------------------- */
