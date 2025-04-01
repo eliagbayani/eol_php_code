@@ -170,7 +170,7 @@ Animalia (1)                            2,405,714,505
         Suliformes          26      7192775
                             154 total
         
-        Bucerotiformes      716         2m      running... 16th
+        Bucerotiformes      716         2m      done 16th
         Caprimulgiformes    8510645     2m
         Psittaciformes      1445        16m
         Sphenisciformes     7190978     1m
@@ -178,7 +178,7 @@ Animalia (1)                            2,405,714,505
         Trogoniformes       1449        1m
                                         31m total
 
-        Apterygiformes      8454030
+        Apterygiformes      8454030             done 17th
         Cariamiformes       8706725
         Casuariiformes      8602104
         Coliiformes         721
@@ -218,7 +218,7 @@ map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
     - Compressed data size: 68.0 GB  TOO BIG!
 
     classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775, 716, 8510645, 1445, 7190978, 1450, 1449))
-    - Compressed data size: 65.6 GB
+    - Compressed data size: 65.6 GB     STILL TOO BIG!
 
 
 16. map_class_Aves_with_6_orders --- Compressed data size: 1.9 GB
@@ -226,6 +226,8 @@ map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
 17. map_class_Aves_with_18_orders --- Compressed data size: 212.8 MB
     classkey = 212 AND orderkey IN (8454030, 8706725, 8602104, 721, 8481794, 8454707, 8617753, 1444, 10833565, 8705315, 8708973, 7190987, 7191426, 7192749, 8603836, 10726067, 725, 726)
 
+18. map_class_Aves_but_not_all_orders --- Compressed data size: 65.3 GB     STILL TOO BIG!
+    classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775, 716, 8510645, 1445, 7190978, 1450, 1449, 8454030, 8706725, 8602104, 721, 8481794, 8454707, 8617753, 1444, 10833565, 8705315, 8708973, 7190987, 7191426, 7192749, 8603836, 10726067, 725, 726))
 
 
 
