@@ -262,11 +262,11 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_char), array('c'))) {} else continue;          //3
 
                 // if(in_array(strtolower($first_char), array('d'))) {$this->auto_refresh_mapYN = true;} else continue;          //4    DONE
-                if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {$this->auto_refresh_mapYN = true;} else continue;  //4
+                // if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {$this->auto_refresh_mapYN = true;} else continue;  //4   done
 
                 // if(in_array(strtolower($first_char), array('e'))) {} else continue;          //5
 
-                // if(in_array(strtolower($first_char), array('t'))) {} else continue;          //6
+                if(in_array(strtolower($first_char), array('t'))) {} else continue;          //6
 
 
                 // if(in_array(strtolower($first_char), array('f','g'))) {$this->auto_refresh_mapYN = true;} else continue;      //7    DONE

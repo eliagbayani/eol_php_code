@@ -622,10 +622,10 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             }
             
             if($final = self::prepare_csv_data($usageKey, $paths)) {
-                echo "\n=======================\n";
+                // echo "\n=======================\n";
                 // print_r($final); 
-                print_r(array_keys($final));
-                echo "\n=======================\n";
+                // print_r(array_keys($final));
+                // echo "\n=======================\n";
                 debug("\nUsed records from CSV: [$sciname][$taxon_concept_id][$usageKey] " . $final['count'] . "");
                 self::if_needed_2cluster_orSave($final, $taxon_concept_id);
             }
