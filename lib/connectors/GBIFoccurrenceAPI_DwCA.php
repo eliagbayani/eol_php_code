@@ -906,7 +906,10 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         // echo "\nCCC count: ".@$final['count']."";
         // echo "\nCCC total: ".@$final['total']."\n";
 
+        /* correct to comment this since lookups are done in 1 place only: save_json_file()
         if(@$final['records']) $final = self::run_lookups_now($final, 1); //for csv download
+        */
+
         // print_r($final); exit("\nelix 2025\n");
         // echo "\nBBB count: ".@$final['count']."";
         // echo "\nBBB total: ".@$final['total']."\n";
