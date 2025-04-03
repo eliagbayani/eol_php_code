@@ -211,9 +211,9 @@ class GBIFMapDataAPI
 
         /*
         // Used records from CSV: [][][] 30898
-        $sciname = 'Ammodramus savannarum'; $tc_id = '45511206'; $taxonKey = '2491123';
+        // $sciname = 'Ammodramus savannarum'; $tc_id = '45511206'; $taxonKey = '2491123';         //e.g. big csv value
+        $sciname = 'Chlorospingus semifuscus'; $tc_id = '45513538'; $taxonKey = '2488735';      //e.g. small csv value
         */
-
     
         /* just a test of the func
             $test_sciname = "Ammodramus savannarum";
@@ -222,7 +222,7 @@ class GBIFMapDataAPI
             exit("\n-end test-\n");
         */
 
-        if($sciname && $tc_id) { exit("\nshould not go here...\n");
+        if($sciname && $tc_id) { //exit("\nshould not go here...\n");
             if($this->use_API_YN_2025) { // using API
                 $this->func->get_georeference_data_via_api($taxonKey, $tc_id);
             }
@@ -264,13 +264,11 @@ class GBIFMapDataAPI
                 // if(in_array(strtolower($first_2chars), array('an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az'))) {} else continue;          //2
 
 
-
                 // if(in_array(strtolower($first_char), array('b'))) {$this->auto_refresh_mapYN = true;} else continue;          //2    done
 
                 // if(in_array(strtolower($first_char), array('c'))) {} else continue;          //3
                 // if(in_array(strtolower($first_2chars), array('ca', 'cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm'))) {} else continue;          //3
                 // if(in_array(strtolower($first_2chars), array('cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz'))) {} else continue;          //4
-
 
 
                 // if(in_array(strtolower($first_char), array('d'))) {$this->auto_refresh_mapYN = true;} else continue;          //4    DONE
