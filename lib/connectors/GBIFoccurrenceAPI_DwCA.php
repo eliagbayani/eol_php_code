@@ -1075,6 +1075,19 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         foreach($to_be_saved['records'] as $r) {
             $gbif_ids[$r['g']] = '';
         }
+
+        /* seems not needed for now, but this works OK
+        // step 1-a: remove from original those records from current
+        $i = -1;
+        foreach($original_recs as $o) { $i++;
+            if(isset($gbif_ids[$o['g']])) unset($original_recs[$i]);
+        }
+        echo "\norig recs 2: [".count($original_recs)."]";
+        // step 1-b: compute how many records to add to current
+        $to_add = $this->limit_20k - count($to_be_saved['records']);
+        echo "\n# of records to be added to current: [$to_add]\n";
+        */
+
         // step 2: add to current the recs from original but not existing gbif id in current
         foreach($original_recs as $o) {
             if(!isset($gbif_ids[$o['g']])) $to_be_saved['records'][] = $o;
