@@ -781,7 +781,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     private function save_json_file($tc_id, $rec)
     {
-        if(@$rec['records']) $rec = self::run_lookups_now($rec, 2); //for API
+        if(@$rec['records']) $rec = self::run_lookups_now($rec, 2); //for API and CSV --- should be the only place for lookups! or does it?
 
         if($rec['count'] > 0) {
             $filename = self::get_map_data_path($tc_id).$tc_id.".json";
