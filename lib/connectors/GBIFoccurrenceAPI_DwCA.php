@@ -489,7 +489,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         
         /* step 2: refresh map data of $taxon_concept_id. Important: since the current ver. is the cumulated-from-children version. */
         $this->auto_refresh_mapYN = true;
-        self::generate_map_data_using_GBIF_csv_files($sciname, $taxon_concept_id);
+        self::generate_map_data_using_GBIF_csv_files($sciname, $taxon_concept_id); //goes to local version
         $this->auto_refresh_mapYN = false;
         
         /* step 3: loop to all children (include taxon in question), consolidate map data. Then save to json file. */
@@ -518,7 +518,12 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         return;
     }
     private function generate_map_data_using_GBIF_csv_files($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $autoRefreshYN = false)
-    {   exit("\n--- So this is still being used ---\n");
+    {   
+        echo "\nsciname: [$sciname]";
+        echo "\ntc_id: [$tc_id]";
+        echo "\nautoRefreshYN: [$autoRefreshYN]";
+        // exit("\n--- So this is still being used ---\n");
+
         // $eol_taxon_id_list["Gadus morhua"] = 206692;
         // $eol_taxon_id_list["Achillea millefolium L."] = 45850244;
         // $eol_taxon_id_list["Francolinus levaillantoides"] = 1; //5227890
@@ -539,7 +544,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         // $eol_taxon_id_list["Aichi virus"] = 540501;
         */
         
-        $paths = $this->csv_paths; 
+        $paths = $this->csv_paths; //print_r($paths);
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; //print_r($eol_taxon_id_list);
             self::create_map_data($sciname, $tc_id, $paths); //result of refactoring
