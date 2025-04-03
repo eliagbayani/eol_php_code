@@ -751,7 +751,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         //flag if after revised cluster is still unsuccessful
         if(count($unique) > $limit_to_break) {
             debug("\ntaxon_concept_ID/gbifID [$basename] revised cluster unsuccessful [$early_cluster YN] [".count($unique)."]\n"); //gbifID is only for early clustering
-            echo "\nearly_cluster = [".Functions::format_YN($early_cluster)."]\n";
+            echo "\nearly_cluster = [".self::format_YN($early_cluster)."]\n";
             $fhandle = Functions::file_open(CONTENT_RESOURCE_LOCAL_PATH . "/revised_cluster_unsuccessful.txt", "a");
             fwrite($fhandle, "$basename" . "\t" . count($unique) ."\t". date('Y-m-d') . "\n"); fclose($fhandle);
             
@@ -761,7 +761,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
 
             $to_be_saved['count'] = count($to_be_saved['records']); //the smaller value; the bigger one is $to_be_saved['actual']
             $to_be_saved['actual'] = $final['count'];
-            echo "\nearly_cluster A: [".Functions::format_YN($early_cluster)."]\n";
+            echo "\nearly_cluster A: [".self::format_YN($early_cluster)."]\n";
             if(!$early_cluster) self::save_json_file($basename, $to_be_saved);
             else return $to_be_saved['records'];
         }
@@ -771,7 +771,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             debug(" to_be_saved_records: ".$to_be_saved_records_count."\n");
             $to_be_saved['count'] = $to_be_saved_records_count; //the smaller value; the bigger one is $to_be_saved['actual']
             $to_be_saved['actual'] = $final['count'];
-            echo "\nearly_cluster B: [".Functions::format_YN($early_cluster)."]\n";
+            echo "\nearly_cluster B: [".self::format_YN($early_cluster)."]\n";
             if(!$early_cluster) {
                 $to_be_saved = self::add_recs_from_original_if_needed($to_be_saved, $final['records']);
                 self::save_json_file($basename, $to_be_saved);
@@ -1567,6 +1567,11 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         if($total > 120000 && $total <= 240000) return 60000;
         if($total > 240000 && $total <= 300000) return 100000;
         if($total > 300000) return 200000;
+    }
+    private function format_YN($bool)
+    {
+        if($bool) return 'Yes';
+        else return "No";
     }
     /*
     private function main_loop($sciname, $taxon_concept_id = false)
