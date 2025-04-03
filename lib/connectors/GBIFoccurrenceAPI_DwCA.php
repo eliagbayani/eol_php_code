@@ -751,8 +751,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         //flag if after revised cluster is still unsuccessful
         if(count($unique) > $limit_to_break) {
             debug("\ntaxon_concept_ID/gbifID [$basename] revised cluster unsuccessful [$early_cluster YN] [".count($unique)."]\n"); //gbifID is only for early clustering
-            if($early_cluster) echo "\nearly_cluster = YES\n";
-            else               echo "\nearly_cluster = NO\n";
+            echo "\nearly_cluster = [".Functions::format_YN($early_cluster)."]\n";
             $fhandle = Functions::file_open(CONTENT_RESOURCE_LOCAL_PATH . "/revised_cluster_unsuccessful.txt", "a");
             fwrite($fhandle, "$basename" . "\t" . count($unique) ."\t". date('Y-m-d') . "\n"); fclose($fhandle);
             
@@ -762,14 +761,21 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
 
             $to_be_saved['count'] = count($to_be_saved['records']); //the smaller value; the bigger one is $to_be_saved['actual']
             $to_be_saved['actual'] = $final['count'];
+            echo "\nearly_cluster A: [".Functions::format_YN($early_cluster)."]\n";
             if(!$early_cluster) self::save_json_file($basename, $to_be_saved);
             else return $to_be_saved['records'];
         }
         else {
-            debug("\n Final total [$decimal_places]: " . count($unique) . "\n");
-            $to_be_saved['count'] = count($to_be_saved['records']); //the smaller value; the bigger one is $to_be_saved['actual']
+            $to_be_saved_records_count = count($to_be_saved['records']);
+            debug("\n Final total [$decimal_places]: " . count($unique) . "");
+            debug(" to_be_saved_records: ".$to_be_saved_records_count."\n");
+            $to_be_saved['count'] = $to_be_saved_records_count; //the smaller value; the bigger one is $to_be_saved['actual']
             $to_be_saved['actual'] = $final['count'];
-            if(!$early_cluster) self::save_json_file($basename, $to_be_saved);
+            echo "\nearly_cluster B: [".Functions::format_YN($early_cluster)."]\n";
+            if(!$early_cluster) {
+                $to_be_saved = self::add_recs_from_original_if_needed($to_be_saved, $final['records']);
+                self::save_json_file($basename, $to_be_saved);
+            }
             else return $to_be_saved['records'];
         }
     }
@@ -1059,6 +1065,23 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             if(count($final) >= $this->limit_20k) break;
         }
         $to_be_saved['records'] = $final;
+        return $to_be_saved;
+    }
+    function add_recs_from_original_if_needed($to_be_saved, $original_recs)
+    {
+        echo "\norig recs: [".count($original_recs)."]";
+        echo "\ncurrent 1: [".count($to_be_saved['records'])."]";
+        // step 1: get all gbif IDs from current
+        foreach($to_be_saved['records'] as $r) {
+            $gbif_ids[$r['g']] = '';
+        }
+        // step 2: add to current the recs from original but not existing gbif id in current
+        foreach($original_recs as $o) {
+            if(!isset($gbif_ids[$o['g']])) $to_be_saved['records'][] = $o;
+            if(count($to_be_saved['records']) >= $this->limit_20k) break;
+        }
+        $to_be_saved['count'] = count($to_be_saved['records']);
+        echo "\ncurrent 2: [".count($to_be_saved['records'])."] (final)\n"; //exit("\nstop muna\n");
         return $to_be_saved;
     }
     function save_ids_to_text_from_many_folders() //a utility
