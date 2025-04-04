@@ -237,6 +237,7 @@ class GBIFMapDataAPI
         $options['expire_seconds'] = 60*60*24*30; //1 month expires
         $local = Functions::save_remote_file_to_local($this->listOf_taxa['all'], $options);
         $i = 0;
+        $ctr = $this->ctr;
         foreach(new FileIterator($local) as $line_number => $line) {
             $i++; if(($i % 500000) == 0) echo "\n".number_format($i)." ";
             $row = explode("\t", $line); // print_r($row);
@@ -260,26 +261,67 @@ class GBIFMapDataAPI
                 $first_char = substr($rec['canonicalName'],0,1);
                 $first_2chars = substr($rec['canonicalName'],0,2);
 
-                // if(in_array(strtolower($first_2chars), array('aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am'))) {} else continue;   //1
-                // if(in_array(strtolower($first_2chars), array('an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az'))) {} else continue;   //2
-                // if(in_array(strtolower($first_char), array('b'))) {$this->auto_refresh_mapYN = true;} else continue;                                             //3
-                // if(in_array(strtolower($first_2chars), array('ca', 'cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm'))) {} else continue;   //4
-                // if(in_array(strtolower($first_2chars), array('cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz'))) {} else continue;   //5
-                // if(in_array(strtolower($first_char), array('d'))) {$this->auto_refresh_mapYN = true;} else continue;             //6    
-                // if(in_array(strtolower($first_char), array('e'))) {$this->auto_refresh_mapYN = true;} else continue;             //7    
-                // if(in_array(strtolower($first_char), array('f','g'))) {$this->auto_refresh_mapYN = true;} else continue;         //8    
-                // if(in_array(strtolower($first_char), array('h'))) {$this->auto_refresh_mapYN = true;} else continue;             //9    
-                // if(in_array(strtolower($first_char), array('i','j','k'))) {$this->auto_refresh_mapYN = true;} else continue;     //10    
-                // if(in_array(strtolower($first_char), array('l'))) {$this->auto_refresh_mapYN = true;} else continue;             //11   
-                // if(in_array(strtolower($first_char), array('m'))) {} else continue;                                              //12
-                // if(in_array(strtolower($first_char), array('n'))) {$this->auto_refresh_mapYN = true;} else continue;             //13   
-                // if(in_array(strtolower($first_char), array('o'))) {$this->auto_refresh_mapYN = true;} else continue;             //14   
-                // if(in_array(strtolower($first_2chars), array('pa', 'pb', 'pc', 'pd', 'pe', 'pf', 'pg', 'ph', 'pi', 'pj', 'pk', 'pl', 'pm'))) {} else continue;   //15
-                // if(in_array(strtolower($first_2chars), array('pn', 'po', 'pp', 'pq', 'pr', 'ps', 'pt', 'pu', 'pv', 'pw', 'px', 'py', 'pz'))) {} else continue;   //16
-                // if(in_array(strtolower($first_char), array('q', 'r'))) {$this->auto_refresh_mapYN = true;} else continue;                                        //17
-                // if(in_array(strtolower($first_char), array('s'))) {} else continue;                                                                              //18
-                // if(in_array(strtolower($first_char), array('t'))) {} else continue;                                                                              //19
-                // if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {$this->auto_refresh_mapYN = true;} else continue;                         //20
+                // $this->auto_refresh_mapYN = true;
+                if($ctr == 1) {
+                    if(in_array(strtolower($first_2chars), array('aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am'))) {} else continue;  //1
+                }
+                if($ctr == 2) {
+                    if(in_array(strtolower($first_2chars), array('an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az'))) {} else continue;  //2
+                }
+                if($ctr == 3) {
+                    if(in_array(strtolower($first_char), array('b'))) {} else continue;                                                                             //3
+                }
+                if($ctr == 4) {
+                    if(in_array(strtolower($first_2chars), array('ca', 'cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm'))) {} else continue;  //4
+                }
+                if($ctr == 5) {
+                    if(in_array(strtolower($first_2chars), array('cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz'))) {} else continue;  //5
+                }
+                if($ctr == 6) {
+                    if(in_array(strtolower($first_char), array('d'))) {} else continue;             //6    
+                }
+                if($ctr == 7) {
+                    if(in_array(strtolower($first_char), array('e'))) {} else continue;             //7    
+                }
+                if($ctr == 8) {
+                    if(in_array(strtolower($first_char), array('f','g'))) {} else continue;         //8    
+                }
+                if($ctr == 9) {
+                    if(in_array(strtolower($first_char), array('h'))) {} else continue;             //9    
+                }
+                if($ctr == 10) {
+                    if(in_array(strtolower($first_char), array('i','j','k'))) {} else continue;     //10    
+                }
+                if($ctr == 11) {
+                    if(in_array(strtolower($first_char), array('l'))) {} else continue;             //11   
+                }
+                if($ctr == 12) {
+                    if(in_array(strtolower($first_char), array('m'))) {} else continue;             //12
+                }
+                if($ctr == 13) {
+                    if(in_array(strtolower($first_char), array('n'))) {} else continue;             //13   
+                }
+                if($ctr == 14) {
+                    if(in_array(strtolower($first_char), array('o'))) {} else continue;             //14   
+                }
+                if($ctr == 15) {
+                    if(in_array(strtolower($first_2chars), array('pa', 'pb', 'pc', 'pd', 'pe', 'pf', 'pg', 'ph', 'pi', 'pj', 'pk', 'pl', 'pm'))) {} else continue;  //15
+                }
+                if($ctr == 16) {
+                    if(in_array(strtolower($first_2chars), array('pn', 'po', 'pp', 'pq', 'pr', 'ps', 'pt', 'pu', 'pv', 'pw', 'px', 'py', 'pz'))) {} else continue;  //16
+                }
+                if($ctr == 17) {
+                    if(in_array(strtolower($first_char), array('q', 'r'))) {} else continue;                                                                        //17
+                }
+                if($ctr == 18) {
+                    if(in_array(strtolower($first_char), array('s'))) {} else continue;                                                                             //18
+                }
+                if($ctr == 19) {
+                    if(in_array(strtolower($first_char), array('t'))) {} else continue;                                                                             //19
+                }
+                if($ctr == 20) {
+                    if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {} else continue;                                                         //20
+                }
             }
             // ------------------------- */
 
