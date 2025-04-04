@@ -701,7 +701,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         }
         $final['count']  = count($final['records']);
         $final['actual'] = count($final['records']);
-        debug("\n: " . $final['count'] . " -- ");
+        debug("\n: Found in API: " . $final['count'] . " -- ");
         self::if_needed_2cluster_orSave($final, $taxon_concept_id);
     }
     private function process_revised_cluster($final, $basename, $early_cluster = false, $whoCalled) //4th param $whoCalled is just for debug.
