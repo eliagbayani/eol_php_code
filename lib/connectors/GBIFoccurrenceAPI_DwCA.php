@@ -88,7 +88,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $this->csv_paths = array();
         $this->csv_paths[] = $this->save_path['taxa_csv_path'];
         
-        $this->rec_limit = 50000; //50000 ideal for API; //100000 ideal for csv downloads
+        $this->rec_limit = 100000; //50000 ideal for API; //100000 ideal for csv downloads
         $this->limit_20k = 20000; //20000;
         $this->api['dataset'] = "http://api.gbif.org/v1/dataset/";
         $this->debug = array();
