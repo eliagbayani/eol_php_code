@@ -255,7 +255,7 @@ class GBIFMapDataAPI
                 }
             }
             $rec = array_map('trim', $rec);
-            /* ------------------------- dev only 
+            // /* ------------------------- dev only 
             // if($this->use_API_YN_2025) {
             if(true) {
                 $first_char = substr($rec['canonicalName'],0,1);
@@ -323,10 +323,10 @@ class GBIFMapDataAPI
                     if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {} else continue;                                                         //20
                 }
             }
-            ------------------------- */
+            // ------------------------- */
 
-            // if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
-            if($rec['taxonRank'] != 'species') {} //run only higher-level taxa at this point
+            if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
+            // if($rec['taxonRank'] != 'species') {} //run only higher-level taxa at this point
             else continue;
             if(isset($this->exclude_eolids[$rec['EOLid']])) { echo " under Plantae, will ignore. "; continue; }
             print_r($rec); //exit("\nstopx\n");
@@ -337,11 +337,10 @@ class GBIFMapDataAPI
                 [taxonomicStatus] => accepted
             )*/
 
-            // /* caching usageKey only. Not part of main operation
+            /* caching usageKey only. Not part of main operation
             if($usageKey = $this->func->get_usage_key($rec['canonicalName'])) debug("\nOK GBIF key [$usageKey]\n");
             continue;
-            // */
-
+            */
 
             //  new ranges ---------------------------------------------
             if($range_from && $range_to) {
