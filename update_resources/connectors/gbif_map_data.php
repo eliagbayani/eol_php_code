@@ -27,7 +27,7 @@ $params['json']              = @$argv[2]; //useful here
 $p = json_decode($params['json'], true);
 
 $taxonGroup = @$p['taxonGroup'];
-$func = new GBIFMapDataAPI($taxonGroup);
+$func = new GBIFMapDataAPI($taxonGroup, @$p['ctr']);
 if($p['task'] == 'breakdown_GBIF_DwCA_file') $func->breakdown_GBIF_DwCA_file($taxonGroup);
 elseif($p['task'] == 'generate_map_data_using_GBIF_csv_files') $func->generate_map_data_using_GBIF_csv_files();
 elseif($p['task'] == 'gen_map_data_forTaxa_with_children') $func->gen_map_data_forTaxa_with_children($p);
