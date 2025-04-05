@@ -484,8 +484,14 @@ class GBIFdownloadRequestAPI
             elseif($this->resource_id == 'map_phylum_Tracheophyta_class_Magnoliopsida_not_orders_3') $sql_part = " phylumkey = 7707728 AND classkey = 220 AND orderkey NOT IN (414, 422, 1353) ";
             elseif($this->resource_id == 'map_phylum_Tracheophyta_not_class_Magnoliopsida') $sql_part = " phylumkey = 7707728 AND classkey <> 220 ";
             // -----------------------------
+            /* From: https://techdocs.gbif.org/en/data-use/api-sql-downloads
+            - mediatype = e.g. values: StillImage, MovingImage or Sound
+            - v_associatedmedia
+            */
+
             $param['sql'] = "SELECT catalognumber, scientificname, publishingorgkey, institutioncode, datasetkey, gbifid, decimallatitude, decimallongitude, 
-            recordedby, identifiedby, eventdate, kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey
+            recordedby, identifiedby, eventdate, kingdomkey, phylumkey, classkey, orderkey, familykey, genuskey, subgenuskey, specieskey,
+            mediatype, v_associatedmedia
             FROM occurrence WHERE
             $sql_part
             AND taxonomicstatus = 'ACCEPTED' //newly added 12Feb2025
