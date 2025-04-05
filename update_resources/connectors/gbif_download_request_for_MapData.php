@@ -103,7 +103,7 @@ Animalia (1)                            2,405,714,505
 3. Chordata (44) but not Class Aves (212) --- Compressed data size: 2.7 GB
     map_phylum_Chordata_not_class_Aves
     phylumkey = 44 AND classkey <> 212
-4. Class Aves (212) but not Order Passeriformes (729) --- Compressed data size: 53.2 GB
+4. Class Aves (212) but not Order Passeriformes (729) --- Compressed data size: 53.2 GB         NOT USED
     map_class_Aves_not_order_Passeriformes
     classkey = 212 AND orderkey <> 729
 5. Order Passeriformes (729) --- DONE
@@ -199,7 +199,7 @@ Animalia (1)                            2,405,714,505
 
 
 
-map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
+map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!        NOT USED
     classkey = 212 AND orderkey NOT IN (7191147, 1108, 1448, 7192402, 1446, 724)
 
 10. map_class_Aves_order_Charadriiformes --- Compressed data size: 9.7 GB
@@ -213,7 +213,7 @@ map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
 14. map_class_Aves_with_7_orders --- Compressed data size: 8.2 GB
     classkey = 212 AND orderkey IN (1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775)
 
-15. map_class_Aves_but_not_17_orders --- 
+15. map_class_Aves_but_not_17_orders --- NOT USED
     classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775)
     - Compressed data size: 68.0 GB  TOO BIG!
 
@@ -226,7 +226,7 @@ map_class_Aves_but_not_6_orders --- Compressed data size: 82.1 GB       TOO BIG!
 17. map_class_Aves_with_18_orders --- Compressed data size: 212.8 MB
     classkey = 212 AND orderkey IN (8454030, 8706725, 8602104, 721, 8481794, 8454707, 8617753, 1444, 10833565, 8705315, 8708973, 7190987, 7191426, 7192749, 8603836, 10726067, 725, 726)
 
-18. map_class_Aves_but_not_all_orders --- Compressed data size: 65.3 GB     STILL TOO BIG!
+18. map_class_Aves_but_not_all_orders --- Compressed data size: 65.3 GB     NO CHOICE BUT USED THIS AND SUCCEEDED OK!
     classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775, 716, 8510645, 1445, 7190978, 1450, 1449, 8454030, 8706725, 8602104, 721, 8481794, 8454707, 8617753, 1444, 10833565, 8705315, 8708973, 7190987, 7191426, 7192749, 8603836, 10726067, 725, 726))
 
 
