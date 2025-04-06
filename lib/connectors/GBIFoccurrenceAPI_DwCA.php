@@ -641,7 +641,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 $this->debug['CSV map data not available']["[$sciname][$taxon_concept_id]"] = '';
                 self::gen_map_data_using_api($sciname, $taxon_concept_id);
                 */
-                $this->debug['no CSV data']["[$sciname][$taxon_concept_id]"] = '';
+                $this->debug['no CSV data']["[$sciname][$taxon_concept_id][$usageKey]"] = '';
                 echo "\nNo CSV data: [$sciname][$taxon_concept_id][$usageKey]\n";
 
                 // /* ---------- 2025 block
