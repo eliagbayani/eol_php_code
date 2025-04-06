@@ -476,7 +476,10 @@ class GBIFdownloadRequestAPI
             elseif($this->resource_id == 'map_class_Aves_with_7_orders') $sql_part = " classkey = 212 AND orderkey IN (1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775) ";            
             elseif($this->resource_id == 'map_class_Aves_but_not_17_orders') $sql_part = " classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775, 716, 8510645, 1445, 7190978, 1450, 1449) ";
             elseif($this->resource_id == 'map_class_Aves_with_6_orders') $sql_part = " classkey = 212 AND orderkey IN (716, 8510645, 1445, 7190978, 1450, 1449) ";
+            
             elseif($this->resource_id == 'map_class_Aves_with_18_orders') $sql_part = " classkey = 212 AND orderkey IN (8454030, 8706725, 8602104, 721, 8481794, 8454707, 8617753, 1444, 10833565, 8705315, 8708973, 7190987, 7191426, 7192749, 8603836, 10726067, 725, 726) ";
+            // elseif($this->resource_id == 'map_class_Aves_with_18_orders') $sql_part = " specieskey = 2477528 ";
+
             elseif($this->resource_id == 'map_class_Aves_but_not_all_orders') $sql_part = " classkey = 212 AND orderkey NOT IN (7192402, 7191147, 1108, 1448, 724, 1446, 1447, 839, 723, 1493, 1492, 7191407, 7190953, 7192755, 7192754, 7191588, 7192775, 716, 8510645, 1445, 7190978, 1450, 1449, 8454030, 8706725, 8602104, 721, 8481794, 8454707, 8617753, 1444, 10833565, 8705315, 8708973, 7190987, 7191426, 7192749, 8603836, 10726067, 725, 726) ";
             // -----------------------------            
             elseif($this->resource_id == 'map_plantae_not_phylum_Tracheophyta') $sql_part = " kingdomkey = 6 AND phylumkey <> 7707728 ";
