@@ -88,8 +88,9 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $this->csv_paths = array();
         $this->csv_paths[] = $this->save_path['taxa_csv_path'];
         
-        $this->rec_limit = 100000; //50000 ideal for API; //100000 ideal for csv downloads
-        $this->limit_20k = 20000; //20000;
+        $this->rec_limit     = 100000; // 100000 ideal for csv downloads
+        $this->rec_limit_api = 100000; //new 2025: 50000 ideal for API
+        $this->limit_20k = 20000; //20000; --- map points limit
         $this->api['dataset'] = "http://api.gbif.org/v1/dataset/";
         $this->debug = array();
         
@@ -677,7 +678,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $offset = 0; $limit = 300; $continue = true; $final = array(); echo "\n";
         $final['records'] = array();
         while($continue) {
-            if($offset > $this->rec_limit) break; //working... uncomment if u want to limit to 100,000
+            if($offset > $this->rec_limit_api) break; //working... uncomment if u want to limit to 100,000
             
             // /* new: Mar 5, 2025
             if(($offset + $limit) > 100001) $limit = 100001 - $offset;
@@ -695,8 +696,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 $recs = self::write_to_file($j); //ngayon lang commented
                 $final['records'] = array_merge($final['records'], $recs);
                 debug(" increments: " . count($recs) . "");
-                if($j->endOfRecords)                            $continue = false;
-                if(count($final['records']) > $this->rec_limit) $continue = false; //limit no. of markers in Google maps is 100K //working... uncomment if u want to limit to 100,000
+                if($j->endOfRecords)                                $continue = false;
+                if(count($final['records']) > $this->rec_limit_api) $continue = false; //limit no. of markers in Google maps is 100K //working... uncomment if u want to limit to 100,000
             }
             else break; //just try again next time...
             $offset += $limit;
