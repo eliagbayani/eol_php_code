@@ -644,6 +644,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 echo "\nNo CSV data: [$sciname][$taxon_concept_id][$usageKey]\n";
 
                 // /* ---------- 2025 block
+                // IMPORTANT: If u disable this block and no map data from CSV then no map data will be generated. 
+                // After that if u decide to enable this block then that's the time it will call the API calls for this taxon, and generate map data using API results.
                 echo "\nWill use API for: [$sciname][$taxon_concept_id][$usageKey]\n";
                 if(!$this->auto_refresh_mapYN) {
                     if(self::map_data_file_already_been_generated($taxon_concept_id)) continue;
