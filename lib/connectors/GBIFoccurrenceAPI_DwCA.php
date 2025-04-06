@@ -730,8 +730,10 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 if(is_numeric($r['h']) && is_numeric($r['i'])) {
                     $lat = number_format($r['h'], $decimal_places);
                     $lon = number_format($r['i'], $decimal_places);
+                    // /* orig: change this block if u want to prioritize recs with rec['l'] meaning with media stillimage movingimage or audio
                     if(isset($unique["$lat,$lon"])) continue;
                     else $unique["$lat,$lon"] = '';
+                    // */
                     $to_be_saved['records'][] = $r;
                 }
             }
