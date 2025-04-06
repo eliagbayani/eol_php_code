@@ -878,7 +878,14 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     $rec['i']   = $rek['decimallongitude'];
                     $rec['j']   = @$rek['recordedby'];
                     $rec['k']   = @$rek['identifiedby'];
+
+                    /* orig but obsolete
                     $rec['l']   = self::get_media_by_gbifid($gbifid);
+                    */
+                    // /* 2025
+                    $rec['l']   = self::format_media_2025(@$rec['v_associatedmedia']);
+                    // */
+
                     $rec['m']   = @$rek['eventdate'];
                     /* to have map data with only those with media
                     if($rec['l']) $final['records'][] = $rec;
@@ -926,6 +933,14 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     :: [update_resources/connectors/gbif_map_data.php [29]]<br>
     map file: [/Volumes/Crucial_4TB/google_maps/map_data_dwca//9/46547909.json]
     */
+    private function format_media_2025($pipe_delimited)
+    {
+        if($pipe_delimited) {
+            $arr = explode("|", $pipe_delimited);
+            return @$arr[0]; //just get 1 image
+        }
+        else return "";
+    }
     private function run_lookups_now($arr, $what)
     { echo "\nrun_lookups_now...$what\n";
         /*Array(
