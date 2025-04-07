@@ -374,6 +374,9 @@ class GBIFMapDataAPI
             // break; //debug only
         } //end foreach()
         unlink($local);
+        print_r($this->debug);
+        print_r($this->func->debug);
+        if($this->func->debug) Functions::start_print_debug($this->func->debug, "gen_map_data_via_gbif_csv");
     }
     function gen_map_data_forTaxa_with_children($p) //($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $filter_rank = '')
     {
