@@ -606,8 +606,6 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             self::create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
         }
         unlink($local);
-        print_r($this->debug);
-        if($this->debug) Functions::start_print_debug($this->debug, "gen_map_data_via_gbif_csv");
     }
     private function if_needed_2cluster_orSave($final, $taxon_concept_id)
     {
@@ -653,7 +651,12 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 if(!$this->auto_refresh_mapYN) {
                     if(self::map_data_file_already_been_generated($taxon_concept_id)) continue;
                 }    
-                self::get_georeference_data_via_api($usageKey, $taxon_concept_id);
+                $num = self::get_georeference_data_via_api($usageKey, $taxon_concept_id);
+                if($num) {
+                    $this->debug['no CSV data but with API']['genus'][self::get_genus($sciname)] = '';
+                    $this->debug['no CSV data but with API']['usageKey'][$usageKey] = '';
+                    // print_r($this->debug); exit("\nhuli ka\n"); //debug only
+                }
                 // ---------- */
             }
         }
@@ -708,6 +711,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $final['actual'] = count($final['records']);
         debug("\n: Found in API: " . $final['count'] . " -- ");
         self::if_needed_2cluster_orSave($final, $taxon_concept_id);
+        return $final['count']; //only for stats report
     }
     private function process_revised_cluster($final, $basename, $early_cluster = false, $whoCalled) //4th param $whoCalled is just for debug.
     {
@@ -1610,6 +1614,11 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     {
         if($bool) return 'Yes';
         else return "No";
+    }
+    private function get_genus($sciname)
+    {
+        $arr = explode(" ", trim($sciname));
+        return @$arr[0];
     }
     /*
     private function main_loop($sciname, $taxon_concept_id = false)
