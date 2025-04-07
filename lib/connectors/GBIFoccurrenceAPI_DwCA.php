@@ -641,7 +641,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 $this->debug['CSV map data not available']["[$sciname][$taxon_concept_id]"] = '';
                 self::gen_map_data_using_api($sciname, $taxon_concept_id);
                 */
-                $this->debug['no CSV data']["[$sciname][$taxon_concept_id][$usageKey]"] = '';
+                // $this->debug['no CSV data']["[$sciname][$taxon_concept_id][$usageKey]"] = ''; //not needed
                 echo "\nNo CSV data: [$sciname][$taxon_concept_id][$usageKey]\n";
 
                 // /* ---------- 2025 block
@@ -655,6 +655,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 if($num) {
                     $this->debug['no CSV data but with API']['genus'][self::get_genus($sciname)] = '';
                     $this->debug['no CSV data but with API']['usageKey'][$usageKey] = '';
+                    $this->debug['no CSV data but with API']['sciname'][$sciname] = '';
                     // print_r($this->debug); exit("\nhuli ka\n"); //debug only
                 }
                 // ---------- */
