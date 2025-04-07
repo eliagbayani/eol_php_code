@@ -2596,8 +2596,10 @@ class Functions
     }
     public static function start_print_debug($this_debug, $resource_id)
     {
-        $file = CONTENT_RESOURCE_LOCAL_PATH . $resource_id."_debug.txt";
-        $WRITE = Functions::file_open($file, "w");
+        if(in_array($resource_id, array('gen_map_data_via_gbif_csv'))) $attrib = "a"; //new 2025
+        else                                                           $attrib = "w"; //orig value
+        $file = CONTENT_RESOURCE_LOCAL_PATH . $resource_id."_debug_".date('Y-m-d').".txt";
+        $WRITE = Functions::file_open($file, $attrib);
         foreach($this_debug as $topic => $arr) {
             fwrite($WRITE, "============================================================="."\n");
             fwrite($WRITE, $topic."\n");
