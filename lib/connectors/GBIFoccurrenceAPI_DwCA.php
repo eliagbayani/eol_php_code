@@ -93,7 +93,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $this->rec_limit     = 100000; // 100000 ideal for csv downloads
         $this->rec_limit_api = 50000; //new 2025: 50000 ideal for API
         $this->limit_20k = 20000; //20000; --- map points limit
-        $this->api['dataset'] = "http://api.gbif.org/v1/dataset/";
+        $this->api['dataset']      = "http://api.gbif.org/v1/dataset/";      //http://api.gbif.org/v1/dataset/4fa7b334-ce0d-4e88-aaae-2e0c138d049e
+        $this->api['organization'] = "http://api.gbif.org/v1/organization/"; //http://api.gbif.org/v1/organization/645eec4e-8d79-4291-80b4-0402b74ba92c
         $this->debug = array();
         
         // For DATA-1818
@@ -193,7 +194,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         /* tests
         $datasetKey = "0e7bd6f7-7fc6-4150-a531-2209f7156a91";
         $datasetKey = "492d63a8-4978-4bc7-acd8-7d0e3ac0e744";
-        $str = self::get_org_name('dataset', $datasetKey);
+        $str = self::get_dataset_field($datasetKey, 'title');
         echo "\ndataset: [$str]\n";
         $orgKey = self::get_dataset_field($datasetKey, 'publishingOrganizationKey');
         $dataset_name = self::get_dataset_field($datasetKey, 'title');
@@ -384,8 +385,21 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             }
             return $obj->$return_field;
         }
-        else return self::get_org_name('dataset', $datasetKey);
     }
+    function get_organization_field($organizationKey, $return_field)
+    {
+        $options = $this->download_options;
+        $options['expire_seconds'] = false; //should always be false, unless organization info changes alot
+        if($organizationKey && $json = Functions::lookup_with_cache($this->api['organization'].$organizationKey, $options)) {
+            $obj = json_decode($json);
+            if(!isset($obj->$return_field)) { //debug only
+                print_r($obj);
+                exit("\nInvestigate 1: [$organizationKey]: ".$this->api['organization'].$organizationKey."\n");
+            }
+            return $obj->$return_field;
+        }
+    }
+
     //##################################### end DwCA process #############################################################################################################################
     //==========================
     // start GBIF methods
@@ -870,7 +884,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     $rec['b']   = $rek['scientificname'];
 
                     /* new 2025: these can be postponed
-                    $rec['c']   = self::get_org_name('publisher', @$rek['publishingorgkey']);
+                    $rec['c']   = self::get_org_name(@$rek['publishingorgkey']);
                     $rec['d']   = @$rek['publishingorgkey'];
                     if($val = @$rek['institutioncode']) $rec['c'] .= " ($val)";
                     */
@@ -878,7 +892,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     $rec['d'] = 'nyc';
 
                     // /* ----- new 2025: postpone assignment of letter e since not all records that pass here will be used.
-                    // $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title'); //self::get_org_name('dataset', @$rek['datasetkey']);
+                    // $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title');
                     $rec['e'] = 'nyc';
                     // ----- */    
                     $rec['f']   = @$rek['datasetkey'];
@@ -990,17 +1004,17 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             $r['c'] = ''; $r['d'] = ''; $r['e'] = ''; //remove the 'nyc' not yet computed reminder.
             if($datasetkey = $r['f']) {
                 if($publishingorgkey = self::get_dataset_field($datasetkey, 'publishingOrganizationKey')) { //this was postponed before
-                    $r['c']   = self::get_org_name('publisher', $publishingorgkey);
+                    $r['c']   = self::get_org_name($publishingorgkey);
                     $r['d']   = $publishingorgkey;    
                 }
                 $r['e']   = self::get_dataset_field($datasetkey, 'title');
             }
             $final[] = $r;
-            // /* debug only
-            if($r['c']) {
-                print_r($c); exit("\nhuli ka\n");
+            /* debug only
+            if($r['c']) { //organization name or title
+                print_r($r); exit("\nhuli ka\n");
             }
-            // */
+            */
         }
         if($final) return array('records' => $final, 'count' => count($final));
         return $arr;
@@ -1321,10 +1335,10 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 $rec['b']   = self::get_sciname($r);
 
                 /* postpone
-                $rec['c']   = self::get_org_name('publisher', @$r->publishingOrgKey);
+                $rec['c']   = self::get_org_name(@$r->publishingOrgKey);
                 $rec['d']   = @$r->publishingOrgKey;
                 if($val = @$r->institutionCode) $rec['c'] .= " ($val)";
-                $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title'); //self::get_org_name('dataset', @$r->datasetKey);
+                $rec['e']   = self::get_dataset_field(@$rek['datasetkey'], 'title');
                 */
                 $rec['c']   = 'nyc';
                 $rec['d']   = 'nyc';
@@ -1407,8 +1421,10 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         // if($r->taxonRank == "SPECIES") return $r->species;
         return $r->scientificName;
     }
-    function get_org_name($org, $id)
+    function get_org_name($organizationKey)
     {
+        return self::get_organization_field($organizationKey, 'title');
+        /* obsolete
         $id = trim($id);
         if(!$id) return "";
         $options = $this->download_options;
@@ -1418,6 +1434,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             if(preg_match("/Full title<\/h3>(.*?)<\/p>/ims", $html, $arr)) return strip_tags(trim($arr[1]));
         }
         return '';
+        */
     }
     private function get_initial_data($sciname)
     {
