@@ -89,7 +89,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $this->csv_paths[] = $this->save_path['taxa_csv_path'];
         
         $this->rec_limit     = 100000; // 100000 ideal for csv downloads
-        $this->rec_limit_api = 100000; //new 2025: 50000 ideal for API
+        $this->rec_limit_api = 50000; //new 2025: 50000 ideal for API
         $this->limit_20k = 20000; //20000; --- map points limit
         $this->api['dataset'] = "http://api.gbif.org/v1/dataset/";
         $this->debug = array();
@@ -606,6 +606,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
             self::create_map_data($rec['canonicalName'], $rec['EOLid'], $paths); //result of refactoring
         }
         unlink($local);
+        print_r($this->debug);
+        if($this->debug) Functions::start_print_debug($this->debug, "gen_map_data_via_gbif_csv");
     }
     private function if_needed_2cluster_orSave($final, $taxon_concept_id)
     {
