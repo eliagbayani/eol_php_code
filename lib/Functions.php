@@ -2601,7 +2601,7 @@ class Functions
         $file = CONTENT_RESOURCE_LOCAL_PATH . $resource_id."_debug_".date('Y-m-d').".txt";
         $WRITE = Functions::file_open($file, $attrib);
         foreach($this_debug as $topic => $arr) {
-            fwrite($WRITE, "============================================================="."\n");
+            fwrite($WRITE, "=============================================================[".date('Y-m-d')."]\n");
             fwrite($WRITE, $topic."\n");
             if(is_array($arr)) {
                 foreach($arr as $subtopic => $arr2) {
