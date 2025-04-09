@@ -761,7 +761,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     $to_be_saved['records'][] = $r;
                 }
             }
-            debug("\n New total [$decimal_places]: " . count($unique) . "");
+            echo "\n New total [$decimal_places]: " . count($unique) . "";
             $limit_to_break = $this->limit_20k;
             if($basename == 281) $limit_to_break = 35000; //Plantae 34131
             // /* NEW: Feb 26, 2025
