@@ -289,22 +289,28 @@ class GBIFMapDataAPI
                     if(in_array(strtolower($first_char), array('f','g'))) {} else continue;         //8    
                 }
                 if($ctr == 9) {
-                    if(in_array(strtolower($first_char), array('h'))) {} else continue;             //9    
+                    if(in_array(strtolower($first_2chars), array('ha', 'hb', 'hc', 'hd', 'he', 'hf', 'hg', 'hh', 'hi', 'hj', 'hk', 'hl', 'hm'))) {} else continue;  //9
                 }
                 if($ctr == 10) {
-                    if(in_array(strtolower($first_char), array('i','j','k'))) {} else continue;     //10    
+                    if(in_array(strtolower($first_2chars), array('hn', 'ho', 'hp', 'hq', 'hr', 'hs', 'ht', 'hu', 'hv', 'hw', 'hx', 'hy', 'hz'))
+                        || in_array(strtolower($first_char), array('i','j','k'))
+                    ) {} else continue;  //10
                 }
                 if($ctr == 11) {
                     if(in_array(strtolower($first_char), array('l'))) {} else continue;             //11   
                 }
                 if($ctr == 12) {
-                    if(in_array(strtolower($first_char), array('m'))) {} else continue;             //12
+                    if(in_array(strtolower($first_2chars), array('ma', 'mb', 'mc', 'md', 'me', 'mf', 'mg', 'mh', 'mi', 'mj', 'mk', 'ml', 'mm'))) {} else continue;  //12
                 }
                 if($ctr == 13) {
-                    if(in_array(strtolower($first_char), array('n'))) {} else continue;             //13   
+                    if(in_array(strtolower($first_2chars), array('mn', 'mo', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu', 'mv', 'mw', 'mx', 'my', 'mz'))
+                        || in_array(strtolower($first_char), array('n'))
+                    ) {} else continue;  //13
                 }
                 if($ctr == 14) {
-                    if(in_array(strtolower($first_char), array('o'))) {} else continue;             //14   
+                    if(in_array(strtolower($first_2chars), array('sn', 'so', 'sp', 'sq', 'sr', 'ss', 'st', 'su', 'sv', 'sw', 'sx', 'sy', 'sz'))
+                        || in_array(strtolower($first_char), array('o'))
+                    ) {} else continue;  //14
                 }
                 if($ctr == 15) {
                     if(in_array(strtolower($first_2chars), array('pa', 'pb', 'pc', 'pd', 'pe', 'pf', 'pg', 'ph', 'pi', 'pj', 'pk', 'pl', 'pm'))) {} else continue;  //15
@@ -316,7 +322,7 @@ class GBIFMapDataAPI
                     if(in_array(strtolower($first_char), array('q', 'r'))) {} else continue;                                                                        //17
                 }
                 if($ctr == 18) {
-                    if(in_array(strtolower($first_char), array('s'))) {} else continue;                                                                             //18
+                    if(in_array(strtolower($first_2chars), array('sa', 'sb', 'sc', 'sd', 'se', 'sf', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm'))) {} else continue;  //18
                 }
                 if($ctr == 19) {
                     if(in_array(strtolower($first_char), array('t'))) {} else continue;                                                                             //19
