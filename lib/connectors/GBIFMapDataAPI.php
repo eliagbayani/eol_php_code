@@ -320,13 +320,17 @@ class GBIFMapDataAPI
                     if(in_array(strtolower($first_2chars), array('pn', 'po', 'pp', 'pq', 'pr', 'ps', 'pt', 'pu', 'pv', 'pw', 'px', 'py', 'pz'))) {} else continue;  //16
                 }
                 if($ctr == 17) {
-                    if(in_array(strtolower($first_char), array('q', 'r'))) {} else continue;                                                                        //17
+                    if(in_array(strtolower($first_2chars), array('tn', 'to', 'tp', 'tq', 'tr', 'ts', 'tt', 'tu', 'tv', 'tw', 'tx', 'ty', 'tz'))
+                        || in_array(strtolower($first_char), array('q', 'r'))
+                    ) {} else continue;  //17
                 }
                 if($ctr == 18) {
                     if(in_array(strtolower($first_2chars), array('sa', 'sb', 'sc', 'sd', 'se', 'sf', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm'))) {} else continue;  //18
                 }
                 if($ctr == 19) {
-                    if(in_array(strtolower($first_char), array('t'))) {} else continue;                                                                             //19
+                    // if(in_array(strtolower($first_char), array('t'))) {} else continue;                                                                             //19
+                    if(in_array(strtolower($first_2chars), array('ta', 'tb', 'tc', 'td', 'te', 'tf', 'tg', 'th', 'ti', 'tj', 'tk', 'tl', 'tm'))) {} else continue;  //19
+
                 }
                 if($ctr == 20) {
                     if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {} else continue;                                                         //20
