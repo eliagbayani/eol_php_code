@@ -216,6 +216,7 @@ class GBIFMapDataAPI
         // Used records from CSV: [][][] 30898
         // $sciname = 'Ammodramus savannarum'; $tc_id = '45511206'; $taxonKey = '2491123';         //e.g. big csv value
         $sciname = 'Chlorospingus semifuscus'; $tc_id = '45513538'; $taxonKey = '2488735';      //e.g. small csv value
+        $sciname = 'Agelaius phoeniceus'; $tc_id = '45511155'; $taxonKey = '9409198';      //18+ million csv records!
         */
     
         /* just a test of the func

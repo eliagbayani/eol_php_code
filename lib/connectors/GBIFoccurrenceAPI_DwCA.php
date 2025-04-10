@@ -845,6 +845,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     private function prepare_csv_data($usageKey, $paths)
     {
         $final = array(); $elix = 0;
+        $main_total = 0; //new 2025
         foreach($paths as $path) {
             $final_path = self::get_md5_path($path, $usageKey);
             $csv = $final_path . $usageKey . ".csv";
@@ -914,6 +915,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     if($rec['l']) $final['records'][] = $rec;
                     */
                     $final['records'][] = $rec;
+                    $main_total++;
                     
                     /* new - WORKS BUT DOES NOT USE early clustering
                     if(count($final['records']) > $this->rec_limit) {
@@ -927,10 +929,13 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     if(count($final['records']) > $this->rec_limit) { //for early clustering, the taxon_concept_id or gbifID is irrelevant bec. you're not saving json file yet.
                         $final['records'] = self::process_revised_cluster(array('count' => count($final['records']), 'records' => $final['records'], 'usageKey' => $usageKey), $gbifid."_gbifID", true, 'c'); //3rd param true means 'early cluster'
                         $elix = 0;                        
+                        echo "\nmain_total: [$main_total]\n";
                     }
                     // */
                     @$elix++;
-                    
+
+                    if($main_total >= 1000000) break; //new 2025 for those big big csv records e.g. [Agelaius phoeniceus][45511155] OK GBIF key [9409198] --- 18 million records
+
                 } //inner foreach()
                 $final['count'] = count($final['records']);
             }
