@@ -8,11 +8,14 @@ Step 1:
     php update_resources/connectors/gbif_map_data.php _ '{"task":"breakdown_GBIF_DwCA_file", "taxonGroup":"map_Gadiformes"}' //Gadiformes - during dev
 Step 2:
     php update_resources/connectors/gbif_map_data.php _ '{"task":"generate_map_data_using_GBIF_csv_files"}'
-    OR
+    OR ctr 1 to 20
     php update_resources/connectors/gbif_map_data.php _ '{"task":"generate_map_data_using_GBIF_csv_files", "ctr": 1}'
-
+    php update_resources/connectors/gbif_map_data.php _ '{"task":"generate_map_data_using_GBIF_csv_files", "ctr": 2}'
+    php update_resources/connectors/gbif_map_data.php _ '{"task":"generate_map_data_using_GBIF_csv_files", "ctr": 20}'
 Step 3:
-    php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"genus"}'
+    php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"genus", "ctr": 1}'
+    php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"genus", "ctr": 2}'
+
     php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"family"}'
     php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"order"}'
 

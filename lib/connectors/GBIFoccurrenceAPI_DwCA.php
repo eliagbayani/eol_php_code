@@ -640,16 +640,20 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
     }
     function create_map_data($sciname, $taxon_concept_id, $paths)
     {
+        echo "\nuse_API_YN: [$this->use_API_YN]\n"; //value came from GBIFMapDataAPI.php
+
+        // /* normal operation - use CSV first then API if no map data yet
         $this->auto_refresh_map_CSV_YN = false;
-        $this->auto_refresh_map_API_YN = true;
+        $this->auto_refresh_map_API_YN = false;
+        // */
 
         if($usageKey = self::get_usage_key($sciname)) { debug("\nOK GBIF key [$usageKey]\n");
 
-            /* should now be commented
-            // if(!$this->auto_refresh_map_CSV_YN) {
-            //     if(self::map_data_file_already_been_generated($taxon_concept_id)) return; //continue; //before 'continue' was used since it is inside the loop above
-            // }
-            */
+            // /* normal operation
+            if(!$this->auto_refresh_map_CSV_YN) {
+                if(self::map_data_file_already_been_generated($taxon_concept_id)) return; //continue; //before 'continue' was used since it is inside the loop above
+            }
+            // */
 
             if($final = self::prepare_csv_data($usageKey, $paths)) {
                 // echo "\n=======================\n";
@@ -668,12 +672,18 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                 // $this->debug['no CSV data']["[$sciname][$taxon_concept_id][$usageKey]"] = ''; //not needed
                 echo "\nNo CSV data: [$sciname][$taxon_concept_id][$usageKey]\n";
 
+                if(!$this->use_API_YN) {
+                    echo "\nNo more API calls at this point.\n"; //for higher level taxa
+                    return;
+                }
+                else echo "\nWill try to use API...\n";
+
                 // /* ---------- 2025 block
                 // IMPORTANT: If u disable this block and no map data from CSV then no map data will be generated. 
                 // After that if u decide to enable this block then that's the time it will call the API calls for this taxon, and generate map data using API results.
                 echo "\nWill use API for: [$sciname][$taxon_concept_id][$usageKey]\n";
                 if(!$this->auto_refresh_map_API_YN) {
-                    if(self::map_data_file_already_been_generated($taxon_concept_id)) continue;
+                    if(self::map_data_file_already_been_generated($taxon_concept_id)) return;
                 }    
                 $num = self::get_georeference_data_via_api($usageKey, $taxon_concept_id);
                 if($num) {
@@ -857,10 +867,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         foreach($paths as $path) {
             $final_path = self::get_md5_path($path, $usageKey);
             $csv = $final_path . $usageKey . ".csv";
-            if(file_exists($csv)) {
-
-                if(!$this->auto_refresh_map_CSV_YN) return false; // new 2025
-                
+            if(file_exists($csv)) {                
                 debug("\nusageKey = [$usageKey] found in [$csv]");
                 // $file_array = file($csv);
                 $gbif_ids = array(); $i = 0;

@@ -64,9 +64,16 @@ class GBIFMapDataAPI
         foreach($folders as $folder) {
             if(!is_dir($folder)) mkdir($folder);
         }
+        
+        $this->listOf_taxa['order']  = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_order_4maps.txt';
+        $this->listOf_taxa['family'] = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_family_4maps.txt';
+        $this->listOf_taxa['genus']  = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_genus_4maps.txt';
         $this->listOf_taxa['all']    = CONTENT_RESOURCE_LOCAL_PATH . '/listOf_all_4maps.txt';
-        $this->auto_refresh_mapYN = false; //use false when caching. But use true when finalizing map data.
-        $this->use_API_YN_2025 = false; //true;
+
+        $this->auto_refresh_mapYN = false;  //use false for normal operation
+        $this->use_API_not_CSV_YN_2025 = false;     //use false for normal operation
+        $this->use_API_YN = false;     //use false for normal operation
+
     }
     private function initialize()
     {
@@ -177,6 +184,7 @@ class GBIFMapDataAPI
     }
     function generate_map_data_using_GBIF_csv_files($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $autoRefreshYN = false)
     {
+        $this->func->use_API_YN = true; //will be used in GBIFoccurrenceAPI_DwCA.php
         self::initialize();
         $paths = $this->csv_paths;
         // $eol_taxon_id_list["Gadus morhua"] = 206692;
@@ -217,6 +225,7 @@ class GBIFMapDataAPI
         // $sciname = 'Ammodramus savannarum'; $tc_id = '45511206'; $taxonKey = '2491123';         //e.g. big csv value
         $sciname = 'Chlorospingus semifuscus'; $tc_id = '45513538'; $taxonKey = '2488735';      //e.g. small csv value
         $sciname = 'Agelaius phoeniceus'; $tc_id = '45511155'; $taxonKey = '9409198';      //18+ million csv records!
+        $sciname = 'Agrostis capillaris'; $tc_id = '1114012'; $taxonKey = '2706490';      //no csv data
         */
     
         /* just a test of the func
@@ -227,7 +236,7 @@ class GBIFMapDataAPI
         */
 
         if($sciname && $tc_id) { //exit("\nshould not go here...\n");
-            if($this->use_API_YN_2025) { // using API
+            if($this->use_API_not_CSV_YN_2025) { // using API
                 $this->func->get_georeference_data_via_api($taxonKey, $tc_id);
             }
             else { // using dumps
@@ -259,7 +268,7 @@ class GBIFMapDataAPI
             }
             $rec = array_map('trim', $rec);
             // /* ------------------------- dev only 
-            // if($this->use_API_YN_2025) {
+            // if($this->use_API_not_CSV_YN_2025) {
             if(true) {
                 $first_char = substr($rec['canonicalName'],0,1);
                 $first_2chars = substr($rec['canonicalName'],0,2);
@@ -364,8 +373,8 @@ class GBIFMapDataAPI
             //  --------------------------------------------------------
             echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
 
-            if($this->use_API_YN_2025) {
-                // /* new: using api --- works OK
+            if($this->use_API_not_CSV_YN_2025) { //normal operation this is false. Priority is CSV data.
+                /* new: using api --- works OK
                 if($usageKey = $this->func->get_usage_key($rec['canonicalName'])) { debug("\nOK GBIF key [$usageKey]\n");
                     if(!$this->auto_refresh_mapYN) {
                         if($this->func->map_data_file_already_been_generated($rec['EOLid'])) continue;
@@ -376,7 +385,7 @@ class GBIFMapDataAPI
                     echo "\n usageKey not found! [".$rec['canonicalName']."][".$rec['EOLid']."]\n";
                     $this->debug['usageKey not found']["[".$rec['canonicalName']."][".$rec['EOLid']."]"] = '';
                 }
-                // */    
+                */
             }
             else {
                 // /* orig using downloaded csv 2025
@@ -394,18 +403,19 @@ class GBIFMapDataAPI
     function gen_map_data_forTaxa_with_children($p) //($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $filter_rank = '')
     {
         self::initialize();
-        $this->use_API_YN = false; //no more API calls at this point.
+        $this->func->use_API_YN = false; //no more API calls at this point. Since this is higher-level taxa now
         require_library('connectors/DHConnLib'); $func = new DHConnLib('');
         $paths = $this->csv_paths; 
         
-        $sciname = "Gadus";     $tc_id = "46564414";
+        /* for testing only - works OK
+        // $sciname = "Gadus";     $tc_id = "46564414";
         // $sciname = "Gadidae";   $tc_id = "5503";
-
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; print_r($eol_taxon_id_list); 
             $this->func->create_map_data_include_descendants($sciname, $tc_id, $paths, $func); //result of refactoring
             return;
         }
+        */
         
         /* used FileIterator below instead, to save on memory
         $i = 0;
@@ -427,6 +437,7 @@ class GBIFMapDataAPI
         $options['expire_seconds'] = 60*60*24*30; //1 month expires
         $local = Functions::save_remote_file_to_local($this->listOf_taxa[$p['filter_rank']], $options);
         $i = 0; $found = 0;
+        $ctr = $this->ctr;
         foreach(new FileIterator($local) as $line_number => $line) {
             $i++; if(($i % 500000) == 0) echo "\n".number_format($i)." ";
             $row = explode("\t", $line); // print_r($row);
@@ -452,17 +463,26 @@ class GBIFMapDataAPI
                 [taxonomicStatus] => accepted
             )*/
             
-            //  new ranges ---------------------------------------------
+            /* //  new ranges --------------------------------------------- not used anymore
             if($range_from && $range_to) {
                 $cont = false;
                 if($i >= $range_from && $i < $range_to) $cont = true;
                 if(!$cont) continue;
             }
-            //  --------------------------------------------------------
-            echo "\n$i of $range_to. [".$rec['canonicalName']."][".$rec['EOLid']."]";
-            self::create_map_data_include_descendants($rec['canonicalName'], $rec['EOLid'], $paths, $func); //result of refactoring
+            //  -------------------------------------------------------- */
+
+            $first_char = substr($rec['canonicalName'],0,1);
+            if($ctr == 1) { if(in_array(strtolower($first_char), array('a', 'b', 'c', 'd', 'e'))) {} else continue; } //1
+            if($ctr == 2) { if(in_array(strtolower($first_char), array('f', 'g', 'h', 'i', 'j'))) {} else continue; } //2
+            if($ctr == 3) { if(in_array(strtolower($first_char), array('k', 'l', 'm', 'n', 'o'))) {} else continue; } //3
+            if($ctr == 4) { if(in_array(strtolower($first_char), array('p', 'q', 'r', 's', 't'))) {} else continue; } //4
+            if($ctr == 5) { if(in_array(strtolower($first_char), array('u', 'v', 'w', 'x', 'y', 'z'))) {} else continue; } //5
+
+            echo "\n$i of . [".$rec['canonicalName']."][".$rec['EOLid']."]";
+            $this->func->create_map_data_include_descendants($rec['canonicalName'], $rec['EOLid'], $paths, $func); //result of refactoring
             
-        }
+            // break; //debug only
+        } //end foreach()
         unlink($local);
     }
 
