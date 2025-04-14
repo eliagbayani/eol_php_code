@@ -93,6 +93,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         $this->rec_limit     = 100000; // 100000 ideal for csv downloads
         $this->rec_limit_api = 50000; //new 2025: 50000 ideal for API
         $this->limit_20k = 20000; //20000; --- map points limit
+        $this->limit_1m = 1000000; //new 2025 for those big big csv records e.g. [Agelaius phoeniceus][45511155] OK GBIF key [9409198] --- 18 million csv records
+
         $this->api['dataset']      = "http://api.gbif.org/v1/dataset/";      //http://api.gbif.org/v1/dataset/4fa7b334-ce0d-4e88-aaae-2e0c138d049e
         $this->api['organization'] = "http://api.gbif.org/v1/organization/"; //http://api.gbif.org/v1/organization/645eec4e-8d79-4291-80b4-0402b74ba92c
         $this->debug = array();
@@ -934,7 +936,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
                     // */
                     @$elix++;
 
-                    if($main_total >= 1000000) break; //new 2025 for those big big csv records e.g. [Agelaius phoeniceus][45511155] OK GBIF key [9409198] --- 18 million records
+                    if($main_total >= $this->limit_1m) break; //new 2025 for those big big csv records e.g. [Agelaius phoeniceus][45511155] OK GBIF key [9409198] --- 18 million records
 
                 } //inner foreach()
                 $final['count'] = count($final['records']);
