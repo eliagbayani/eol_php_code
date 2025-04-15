@@ -409,8 +409,8 @@ class GBIFMapDataAPI
         $paths = $this->csv_paths; 
         
         /* ----- for testing only - works OK
-        // $sciname = "Gadus";     $tc_id = "46564414";
-        $sciname = "Gadidae";   $tc_id = "5503";
+        $sciname = "Gadus";     $tc_id = "46564414";
+        // $sciname = "Gadidae";   $tc_id = "5503";
         // $sciname = 'Adlafia'; $tc_id = '12093';
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; print_r($eol_taxon_id_list); 
@@ -474,15 +474,38 @@ class GBIFMapDataAPI
             //  -------------------------------------------------------- */
 
             $first_char = substr($rec['canonicalName'],0,1);
-            if($ctr == 1) { if(in_array(strtolower($first_char), array('a'))) {} else continue; } //1
+            $first_2chars = substr($rec['canonicalName'],0,2);
+            
+            if($ctr == 1) { 
+                // if(in_array(strtolower($first_char), array('a'))) {} else continue; 
+                if(in_array(strtolower($first_2chars), array('aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am'))) {} else continue;  //1
+            } //1
+            if($ctr == 13) { 
+                if(in_array(strtolower($first_2chars), array('an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az'))) {} else continue;  //1
+            } //1
+
             if($ctr == 2) { if(in_array(strtolower($first_char), array('b'))) {} else continue; } //1
-            if($ctr == 3) { if(in_array(strtolower($first_char), array('c', 'd', 'e'))) {} else continue; } //1
+            
+            if($ctr == 3) { 
+                if(in_array(strtolower($first_2chars), array('ca', 'cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm'))) {} else continue;  //1
+            } //1
+            if($ctr == 16) { 
+                if(in_array(strtolower($first_2chars), array('cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz'))) {} else continue;  //1
+            } //1
+
+            if($ctr == 14) { if(in_array(strtolower($first_char), array('d', 'e'))) {} else continue; } //1
+
+
             if($ctr == 4) { if(in_array(strtolower($first_char), array('f', 'g'))) {} else continue; } //2
             if($ctr == 5) { if(in_array(strtolower($first_char), array('h', 'i', 'j'))) {} else continue; } //2
             if($ctr == 6) { if(in_array(strtolower($first_char), array('k', 'l'))) {} else continue; } //3
             if($ctr == 7) { if(in_array(strtolower($first_char), array('m', 'n', 'o'))) {} else continue; } //3
             if($ctr == 8) { if(in_array(strtolower($first_char), array('p', 'q'))) {} else continue; } //4
-            if($ctr == 9) { if(in_array(strtolower($first_char), array('r', 's'))) {} else continue; } //4
+            
+            if($ctr == 9) { if(in_array(strtolower($first_char), array('r'))) {} else continue; } //4
+            if($ctr == 15) { if(in_array(strtolower($first_char), array('s'))) {} else continue; } //4
+
+
             if($ctr == 10) { if(in_array(strtolower($first_char), array('t'))) {} else continue; } //4
             if($ctr == 11) { if(in_array(strtolower($first_char), array('u', 'v', 'w'))) {} else continue; } //5
             if($ctr == 12) { if(in_array(strtolower($first_char), array('x', 'y', 'z'))) {} else continue; } //5
