@@ -509,6 +509,7 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         /* step 2: refresh map data of $taxon_concept_id. Important: since the current ver. is the cumulated-from-children version. */
         $this->auto_refresh_mapYN = true;
         self::generate_map_data_using_GBIF_csv_files($sciname, $taxon_concept_id); //goes to local version
+        // exit("\nexit muna\n");
         $this->auto_refresh_mapYN = false;
         
         /* step 3: loop to all children (include taxon in question), consolidate map data. Then save to json file. */
@@ -643,8 +644,18 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         echo "\nuse_API_YN: [$this->use_API_YN]\n"; //value came from GBIFMapDataAPI.php
 
         // /* normal operation - use CSV first then API if no map data yet
-        $this->auto_refresh_map_CSV_YN = false;
-        $this->auto_refresh_map_API_YN = false;
+        if($this->run_species_level) {
+            $this->auto_refresh_map_CSV_YN = false;
+            $this->auto_refresh_map_API_YN = false;    
+        }
+        else { // run higher-level taxa
+            $filename = self::get_map_data_path($taxon_concept_id).$taxon_concept_id.".json";
+            if(file_exists($filename)) {
+                if(unlink($filename)) echo "\nDeleted/initialized coz we will be adding children records as well [$filename]\n";
+            }
+            $this->auto_refresh_map_CSV_YN = true;
+            $this->auto_refresh_map_API_YN = false;    
+        }
         // */
 
         if($usageKey = self::get_usage_key($sciname)) { debug("\nOK GBIF key [$usageKey]\n");
