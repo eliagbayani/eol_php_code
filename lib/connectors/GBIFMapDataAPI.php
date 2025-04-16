@@ -499,8 +499,13 @@ class GBIFMapDataAPI
             if($ctr == 4) { if(in_array(strtolower($first_char), array('f', 'g'))) {} else continue; } //2
             if($ctr == 5) { if(in_array(strtolower($first_char), array('h', 'i', 'j'))) {} else continue; } //2
             if($ctr == 6) { if(in_array(strtolower($first_char), array('k', 'l'))) {} else continue; } //3
-            if($ctr == 7) { if(in_array(strtolower($first_char), array('m', 'n', 'o'))) {} else continue; } //3
-            if($ctr == 8) { if(in_array(strtolower($first_char), array('p', 'q'))) {} else continue; } //4
+
+            if($ctr == 7) { if(in_array(strtolower($first_char), array('m'))) {} else continue; } //3
+            if($ctr == 17) { if(in_array(strtolower($first_char), array('n', 'o'))) {} else continue; } //3
+
+            if($ctr == 8) { if(in_array(strtolower($first_char), array('p'))) {} else continue; } //4
+            if($ctr == 18) { if(in_array(strtolower($first_char), array('q'))) {} else continue; } //3
+
             
             if($ctr == 9) { if(in_array(strtolower($first_char), array('r'))) {} else continue; } //4
             if($ctr == 15) { if(in_array(strtolower($first_char), array('s'))) {} else continue; } //4
