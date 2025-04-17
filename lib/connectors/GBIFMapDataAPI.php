@@ -488,10 +488,10 @@ class GBIFMapDataAPI
             
             if($ctr == 3) { 
                 if(in_array(strtolower($first_2chars), array('ca', 'cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm'))) {} else continue;  //1
-            } //1
+            } //
             if($ctr == 16) { 
                 if(in_array(strtolower($first_2chars), array('cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz'))) {} else continue;  //1
-            } //1
+            } //
 
             if($ctr == 14) { if(in_array(strtolower($first_char), array('d', 'e'))) {} else continue; } //1
 
@@ -503,7 +503,18 @@ class GBIFMapDataAPI
             if($ctr == 7) { if(in_array(strtolower($first_char), array('m'))) {} else continue; } //3
             if($ctr == 17) { if(in_array(strtolower($first_char), array('n', 'o'))) {} else continue; } //3
 
-            if($ctr == 8) { if(in_array(strtolower($first_char), array('p'))) {} else continue; } //4
+            // if($ctr == 8) { if(in_array(strtolower($first_char), array('p'))) {} else continue; } //4
+            // if($ctr == 19) { if(in_array(strtolower($first_char), array('p'))) {} else continue; } //4
+
+            if($ctr == 8) { 
+                if(in_array(strtolower($first_2chars), array('pa', 'pb', 'pc', 'pd', 'pe', 'pf', 'pg', 'ph', 'pi', 'pj', 'pk', 'pl', 'pm'))) {} else continue;  //1
+            } //
+            if($ctr == 19) { 
+                if(in_array(strtolower($first_2chars), array('pn', 'po', 'pp', 'pq', 'pr', 'ps', 'pt', 'pu', 'pv', 'pw', 'px', 'py', 'pz'))) {} else continue;  //1
+            } //
+
+
+
             if($ctr == 18) { if(in_array(strtolower($first_char), array('q'))) {} else continue; } //3
 
             
