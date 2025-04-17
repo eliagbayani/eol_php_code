@@ -409,8 +409,8 @@ class GBIFMapDataAPI
         $paths = $this->csv_paths; 
         
         /* ----- for testing only - works OK
-        $sciname = "Gadus";     $tc_id = "46564414";
-        // $sciname = "Gadidae";   $tc_id = "5503";
+        // $sciname = "Gadus";     $tc_id = "46564414";
+        $sciname = "Gadidae";   $tc_id = "5503";
         // $sciname = 'Adlafia'; $tc_id = '12093';
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; print_r($eol_taxon_id_list); 
