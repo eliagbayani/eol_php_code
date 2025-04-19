@@ -184,8 +184,9 @@ class GBIFMapDataAPI
     }
     function generate_map_data_using_GBIF_csv_files($sciname = false, $tc_id = false, $range_from = false, $range_to = false, $autoRefreshYN = false)
     {
-        $this->func->use_API_YN = true; //will be used in GBIFoccurrenceAPI_DwCA.php
         self::initialize();
+        $this->func->use_API_YN = true; //will be used in GBIFoccurrenceAPI_DwCA.php
+        $this->func->run_species_level = true;
         $paths = $this->csv_paths;
         // $eol_taxon_id_list["Gadus morhua"] = 206692;
         // $eol_taxon_id_list["Achillea millefolium L."] = 45850244;
@@ -347,8 +348,8 @@ class GBIFMapDataAPI
             }
             // ------------------------- */
 
-            if($rec['taxonRank'] == 'species') {} //run only species-level taxa at this point
-            // if($rec['taxonRank'] != 'species') {} //run only higher-level taxa at this point
+            if(in_array($rec['taxonRank'], array('species', 'subspecies'))) {} //run only species-level and subspecies-level taxa. subspecies exclusively from API only.
+            // if($rec['taxonRank'] != 'species') {} //run only higher-level taxa at this point //was NEVER used. And DO NO use it.
             else continue;
             if(isset($this->exclude_eolids[$rec['EOLid']])) { echo " under Plantae, will ignore. "; continue; }
             print_r($rec); //exit("\nstopx\n");
