@@ -13,11 +13,9 @@ Step 2:
     php update_resources/connectors/gbif_map_data.php _ '{"task":"generate_map_data_using_GBIF_csv_files", "ctr": 2}'
     php update_resources/connectors/gbif_map_data.php _ '{"task":"generate_map_data_using_GBIF_csv_files", "ctr": 20}'
 Step 3:
-    genus n = 165,610       family n = 13,048       order n = 1,695
+    genus n = 165,610       family n = 13,048       order n = 1,695         ctr is 1 - 19
     php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"genus", "ctr": 1}'
-    php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"genus", "ctr": 2}'
     php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"family", "ctr": 1}'
-    php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"family", "ctr": 2}'
     php update_resources/connectors/gbif_map_data.php _ '{"task":"gen_map_data_forTaxa_with_children", "filter_rank":"order", "ctr": 1}'
 */
 include_once(dirname(__FILE__) . "/../../config/environment.php");
