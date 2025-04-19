@@ -349,9 +349,13 @@ class GBIFMapDataAPI
             // ------------------------- */
 
             if(in_array($rec['taxonRank'], array('species', 'subspecies'))) {} //run only species-level and subspecies-level taxa. subspecies exclusively from API only.
-            // if($rec['taxonRank'] != 'species') {} //run only higher-level taxa at this point //was NEVER used. And DO NO use it.
+            // if($rec['taxonRank'] != 'species') {} //run only higher-level taxa at this point //Was NEVER used. And DO NO use it.
             else continue;
+
+            /* working way to filter records but not used atm.
             if(isset($this->exclude_eolids[$rec['EOLid']])) { echo " under Plantae, will ignore. "; continue; }
+            */
+
             print_r($rec); //exit("\nstopx\n");
             /*Array(
                 [canonicalName] => Oscillatoriales
@@ -410,8 +414,9 @@ class GBIFMapDataAPI
         $paths = $this->csv_paths; 
         
         /* ----- for testing only - works OK
-        // $sciname = "Gadus";     $tc_id = "46564414";
-        $sciname = "Gadidae";   $tc_id = "5503";
+        // $sciname = "Gadus";         $tc_id = "46564414";    //genus
+        // $sciname = "Gadidae";       $tc_id = "5503";        //family
+        $sciname = "Gadiformes";    $tc_id = "5496";         //order
         // $sciname = 'Adlafia'; $tc_id = '12093';
         if($sciname && $tc_id) {
             $eol_taxon_id_list[$sciname] = $tc_id; print_r($eol_taxon_id_list); 
