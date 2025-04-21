@@ -488,10 +488,16 @@ class GBIFMapDataAPI
             if($ctr == 13) { 
                 if(in_array(strtolower($first_2chars), array('an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az'))) {} else continue;
             }
-            if($ctr == 2) { if(in_array(strtolower($first_char), array('b'))) {} else continue; }
-            if($ctr == 3) { 
-                if(in_array(strtolower($first_2chars), array('ca', 'cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm'))) {} else continue;
+            if($ctr == 2) { 
+                if(in_array(strtolower($first_char), array('b'))) {} 
+                elseif(in_array(strtolower($first_2chars), array('ca'))) {} 
+                else continue; 
             }
+
+            if($ctr == 3) { 
+                if(in_array(strtolower($first_2chars), array('cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm'))) {} else continue;
+            }
+
             if($ctr == 16) { 
                 if(in_array(strtolower($first_2chars), array('cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz'))) {} else continue;
             }
