@@ -505,7 +505,6 @@ class GBIFMapDataAPI
             if($ctr == 14) { if(in_array(strtolower($first_char), array('d'))) {} else continue; }
             if($ctr == 20) { if(in_array(strtolower($first_char), array('e'))) {} else continue; }
 
-
             if($ctr == 4) { if(in_array(strtolower($first_char), array('f', 'g'))) {} else continue; }
             if($ctr == 5) { if(in_array(strtolower($first_char), array('h', 'i', 'j'))) {} else continue; }
             if($ctr == 6) { if(in_array(strtolower($first_char), array('k', 'l'))) {} else continue; }
@@ -526,9 +525,6 @@ class GBIFMapDataAPI
                 elseif(in_array(strtolower($first_2chars), array('sn', 'so', 'sp', 'sq', 'sr', 'ss', 'st', 'su', 'sv', 'sw', 'sx', 'sy', 'sz'))) {}
                 else continue;
             }
-
-
-
 
             if($ctr == 10) { if(in_array(strtolower($first_char), array('t'))) {} else continue; }
             if($ctr == 11) { if(in_array(strtolower($first_char), array('u', 'v', 'w'))) {} else continue; }
