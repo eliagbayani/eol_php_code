@@ -755,7 +755,8 @@ class GBIFoccurrenceAPI_DwCA //this makes use of the GBIF DwCA occurrence downlo
         }
         $final['count']  = count($final['records']);
         $final['actual'] = count($final['records']);
-        debug("\n: Found in API: " . $final['count'] . " -- ");
+        if($final['count'] > 0) debug("\n: Found in API: " . $final['count'] . " -- ");
+        else                    debug("\n: Nothing found in API -- ");
         self::if_needed_2cluster_orSave($final, $taxon_concept_id);
         return $final['count']; //only for stats report
     }
