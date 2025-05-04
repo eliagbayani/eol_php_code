@@ -270,7 +270,7 @@ class GBIFMapDataAPI
             $rec = array_map('trim', $rec);
             // /* ------------------------- dev only 
             // if($this->use_API_not_CSV_YN_2025) {
-            if(true) {
+            if(true) {  //TO DO: DISTRIBUTE $ctr 3x, 13y, 14z to: 9x, 10x, 19y, 20z or 4
                 $first_char = substr($rec['canonicalName'],0,1);
                 $first_2chars = substr($rec['canonicalName'],0,2);
 
@@ -283,7 +283,7 @@ class GBIFMapDataAPI
                 }
                 if($ctr == 3) {
                     if(in_array(strtolower($first_2chars), array('ca', 'cb', 'cc', 'cd', 'ce'))
-                        || in_array(strtolower($first_char), array('b'))
+                        || in_array(strtolower($first_2chars), array('ba', 'bb', 'bc', 'bd', 'be'))
                     ) {} else continue;  //3                
                 }
                 if($ctr == 4) { //long
@@ -302,11 +302,14 @@ class GBIFMapDataAPI
                     if(in_array(strtolower($first_char), array('f','g'))) {} else continue;         //8    
                 }
                 if($ctr == 9) {
-                    if(in_array(strtolower($first_2chars), array('ha', 'hb', 'hc', 'hd', 'he', 'hf', 'hg', 'hh', 'hi', 'hj', 'hk', 'hl', 'hm'))) {} else continue;  //9
+                    if(in_array(strtolower($first_2chars), array('ha', 'hb', 'hc', 'hd', 'he', 'hf', 'hg', 'hh', 'hi', 'hj', 'hk', 'hl', 'hm'))) {} 
+                    elseif(in_array(strtolower($first_2chars), array('bn', 'bo', 'bp', 'bq', 'br', 'bs', 'bt', 'bu', 'bv', 'bw', 'bx', 'by', 'bz'))) {} 
+                    else continue;  //9
                 }
                 if($ctr == 10) {
                     if(in_array(strtolower($first_2chars), array('hn', 'ho', 'hp', 'hq', 'hr', 'hs', 'ht', 'hu', 'hv', 'hw', 'hx', 'hy', 'hz'))
                         || in_array(strtolower($first_char), array('i','j','k'))
+                        || in_array(strtolower($first_2chars), array('bf', 'bg', 'bh', 'bi', 'bj', 'bk', 'bl', 'bm'))
                     ) {} else continue;  //10
                 }
                 if($ctr == 11) {
@@ -317,12 +320,12 @@ class GBIFMapDataAPI
                 }
                 if($ctr == 13) {
                     if(in_array(strtolower($first_2chars), array('mn', 'mo', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu', 'mv', 'mw', 'mx', 'my', 'mz', 'pa', 'pb', 'pc', 'pd', 'pe'))
-                        || in_array(strtolower($first_char), array('n'))
+                        || in_array(strtolower($first_2chars), array('na', 'nb', 'nc', 'nd', 'ne', 'nf', 'ng', 'nh', 'ni', 'nj', 'nk', 'nl', 'nm'))
                     ) {} else continue;  //13
                 }
                 if($ctr == 14) {
                     if(in_array(strtolower($first_2chars), array('sn', 'so', 'sp', 'sq', 'sr', 'ss', 'st', 'su', 'sv', 'sw', 'sx', 'sy', 'sz'))
-                        || in_array(strtolower($first_char), array('o'))
+                        || in_array(strtolower($first_2chars), array('oa', 'ob', 'oc', 'od', 'oe', 'of', 'og', 'oh', 'oi', 'oj', 'ok', 'ol', 'om'))
                     ) {} else continue;  //14
                 }
                 if($ctr == 15) { //long
@@ -340,10 +343,14 @@ class GBIFMapDataAPI
                     if(in_array(strtolower($first_2chars), array('sa', 'sb', 'sc', 'sd', 'se', 'sf', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm'))) {} else continue;  //18
                 }
                 if($ctr == 19) {
-                    if(in_array(strtolower($first_2chars), array('ta', 'tb', 'tc', 'td', 'te', 'tf', 'tg', 'th', 'ti', 'tj', 'tk', 'tl', 'tm'))) {} else continue;  //19
+                    if(in_array(strtolower($first_2chars), array('ta', 'tb', 'tc', 'td', 'te', 'tf', 'tg', 'th', 'ti', 'tj', 'tk', 'tl', 'tm'))) {} 
+                    elseif(in_array(strtolower($first_2chars), array('nn', 'no', 'np', 'nq', 'nr', 'ns', 'nt', 'nu', 'nv', 'nw', 'nx', 'ny', 'nz'))) {}
+                    else continue;  //19
                 }
                 if($ctr == 20) {
-                    if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {} else continue;                                                         //20
+                    if(in_array(strtolower($first_char), array('u','v','w','x','y','z'))) {} 
+                    elseif(in_array(strtolower($first_2chars), array('on', 'oo', 'op', 'oq', 'or', 'os', 'ot', 'ou', 'ov', 'ow', 'ox', 'oy', 'oz'))) {}
+                    else continue;                                                         //20
                 }
             }
             // ------------------------- */
