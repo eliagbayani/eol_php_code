@@ -268,6 +268,11 @@ class DwCA_Utility
             $func = new DWCA_Measurements_Fix($this->archive_builder, $this->resource_id);
             $func->start($info);
         }
+        if(@$this->params['resource'] == 'MoF_reassign_values') {
+            require_library('connectors/DWCA_Measurements_ReassignValuesAPI');
+            $func = new DWCA_Measurements_ReassignValuesAPI($this->archive_builder, $this->resource_id);
+            $func->start($info);
+        }
 
         if(in_array($this->resource_id, array('NorthAmericanFlora_All_subset'))) {
             require_library('connectors/DWCA_Remove_MoF_RecordsAPI');
