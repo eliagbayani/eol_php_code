@@ -1756,6 +1756,13 @@ class ZenodoConnectorAPI extends ZenodoFunctions
         }
         else echo "\nFile does not exist [$file]. No Zenodo record.\n";
     }
+    function update_Zenodo_record_using_EOL_resourceID_directly($zenodo_id, $resource_id) //e.g. $resource_id is 'MAD_traits' for MAD_traits.tar.gz
+    {
+        $file = CONTENT_RESOURCE_LOCAL_PATH.$resource_id.".tar.gz";
+        if(file_exists($file)) echo "\nFile to be uploaded to Zenodo: [$file]\n";
+        else exit("\nFile to be uploaded to Zenodo does not exist: [$file]\n");
+        self::update_zenodo_record_of_eol_resource($zenodo_id, $file);
+    }
     private function get_zenodo_id_using_eol_resource_id($resource_id)
     {
         $file = $this->github_EOL_resource_id_and_Zenodo_id_file;
