@@ -339,7 +339,7 @@ class GBIFMapDataAPI
                         || in_array(strtolower($first_char), array('q', 'r'))
                     ) {} else continue;  //17
                 }
-                if($ctr == 18) {
+                if($ctr == 18) { //species-level
                     if(in_array(strtolower($first_2chars), array('sa', 'sb', 'sc', 'sd', 'se', 'sf', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm'))) {} else continue;  //18
                 }
                 if($ctr == 19) {
@@ -487,55 +487,48 @@ class GBIFMapDataAPI
             //  -------------------------------------------------------- */
             $first_char = substr($rec['canonicalName'],0,1);
             $first_2chars = substr($rec['canonicalName'],0,2);
-            if($ctr == 1) { 
+            if($ctr == 1) { //higher-level
                 if(in_array(strtolower($first_2chars), array('aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am'))) {} 
                 elseif(in_array(strtolower($first_2chars), array('sa'))) {}
                 else continue;
             }
-            if($ctr == 13) { 
+            if($ctr == 2) { 
                 if(in_array(strtolower($first_2chars), array('an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az'))) {} else continue;
             }
-            if($ctr == 2) { 
+            if($ctr == 3) { 
                 if(in_array(strtolower($first_char), array('b'))) {} 
                 elseif(in_array(strtolower($first_2chars), array('ca'))) {} 
                 else continue; 
             }
-
-            if($ctr == 3) { 
+            if($ctr == 4) { 
                 if(in_array(strtolower($first_2chars), array('cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm'))) {} else continue;
             }
-
-            if($ctr == 16) { 
+            if($ctr == 5) { 
                 if(in_array(strtolower($first_2chars), array('cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz'))) {} else continue;
             }
-            
-            if($ctr == 14) { if(in_array(strtolower($first_char), array('d'))) {} else continue; }
-            if($ctr == 20) { if(in_array(strtolower($first_char), array('e'))) {} else continue; }
-
-            if($ctr == 4) { if(in_array(strtolower($first_char), array('f', 'g'))) {} else continue; }
-            if($ctr == 5) { if(in_array(strtolower($first_char), array('h', 'i', 'j'))) {} else continue; }
-            if($ctr == 6) { if(in_array(strtolower($first_char), array('k', 'l'))) {} else continue; }
-            if($ctr == 7) { if(in_array(strtolower($first_char), array('m'))) {} else continue; }
-            if($ctr == 17) { if(in_array(strtolower($first_char), array('n', 'o'))) {} else continue; }
-            if($ctr == 8) { 
+            if($ctr == 6) { if(in_array(strtolower($first_char), array('d'))) {} else continue; }
+            if($ctr == 7) { if(in_array(strtolower($first_char), array('e'))) {} else continue; }
+            if($ctr == 8) { if(in_array(strtolower($first_char), array('f', 'g'))) {} else continue; }
+            if($ctr == 9) { if(in_array(strtolower($first_char), array('h', 'i', 'j'))) {} else continue; }
+            if($ctr == 10) { if(in_array(strtolower($first_char), array('k', 'l'))) {} else continue; }
+            if($ctr == 11) { if(in_array(strtolower($first_char), array('m'))) {} else continue; }
+            if($ctr == 12) { if(in_array(strtolower($first_char), array('n', 'o'))) {} else continue; }
+            if($ctr == 13) { 
                 if(in_array(strtolower($first_2chars), array('pa', 'pb', 'pc', 'pd', 'pe', 'pf', 'pg', 'ph', 'pi', 'pj', 'pk', 'pl', 'pm'))) {} else continue;
             }
-            if($ctr == 19) { 
+            if($ctr == 14) { 
                 if(in_array(strtolower($first_2chars), array('pn', 'po', 'pp', 'pq', 'pr', 'ps', 'pt', 'pu', 'pv', 'pw', 'px', 'py', 'pz'))) {} else continue;
             }
-            if($ctr == 18) { if(in_array(strtolower($first_char), array('q'))) {} else continue; }            
-            if($ctr == 9) { if(in_array(strtolower($first_char), array('r'))) {} else continue; }
-            
-            // if($ctr == 15) { if(in_array(strtolower($first_char), array('s'))) {} else continue; }
-            if($ctr == 15) { 
+            if($ctr == 15) { if(in_array(strtolower($first_char), array('q'))) {} else continue; }            
+            if($ctr == 16) { if(in_array(strtolower($first_char), array('r'))) {} else continue; }
+            if($ctr == 17) { //higher-level
                 if(in_array(strtolower($first_2chars), array('sb', 'sc', 'sd', 'se', 'sf', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm'))) {}
                 elseif(in_array(strtolower($first_2chars), array('sn', 'so', 'sp', 'sq', 'sr', 'ss', 'st', 'su', 'sv', 'sw', 'sx', 'sy', 'sz'))) {}
                 else continue;
             }
-
-            if($ctr == 10) { if(in_array(strtolower($first_char), array('t'))) {} else continue; }
-            if($ctr == 11) { if(in_array(strtolower($first_char), array('u', 'v', 'w'))) {} else continue; }
-            if($ctr == 12) { if(in_array(strtolower($first_char), array('x', 'y', 'z'))) {} else continue; }
+            if($ctr == 18) { if(in_array(strtolower($first_char), array('t'))) {} else continue; }
+            if($ctr == 19) { if(in_array(strtolower($first_char), array('u', 'v', 'w'))) {} else continue; }
+            if($ctr == 20) { if(in_array(strtolower($first_char), array('x', 'y', 'z'))) {} else continue; }
             echo "\n$i of . [".$rec['canonicalName']."][".$rec['EOLid']."]";
             $this->func->create_map_data_include_descendants($rec['canonicalName'], $rec['EOLid'], $paths, $func); //result of refactoring
             // break; //debug only
