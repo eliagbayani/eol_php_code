@@ -13,23 +13,21 @@ $GLOBALS['ENV_DEBUG'] = true; //set to true during development
 
 $params['jenkins_or_cron']  = @$argv[1]; //not needed here
 $params                     = json_decode(@$argv[2], true);
-$zenodo_id = @$params['zenodo_id']; 
-$resource_id = @$params['resource_id']; 
+if($zenodo_id = @$params['zenodo_id']) {}
+else exit("\nzenodi_id is required.\n");
+if($resource_id = @$params['resource_id']) {}
+else exit("\nresource_id is required.\n");
 print_r($params); //exit("\n$zenodo_id\n$resource_id\n");
 
-/* as of Sep 4, 2024: snippet to update corresponding Zenodo record */
-// $EOL_resource_id = "200_meta_recoded"; // $EOL_resource_id = "24"; //force assign
+/* as of May 5, 2025: snippet to update corresponding Zenodo record directly */
 require_library('connectors/ZenodoFunctions');
 require_library('connectors/ZenodoConnectorAPI');
 require_library('connectors/ZenodoAPI');
 $func = new ZenodoAPI();
 $func->update_Zenodo_record_using_EOL_resourceID_directly($zenodo_id, $resource_id) //e.g. $resource_id is 'MAD_traits' for MAD_traits.tar.gz
 
-
 /* Jenkins entry:
-
 #NEXT STEP: Update respective Zenodo record
 php update_Zenodo_record_using_EOL_resourceID_directly.php _ '{"resource_id":"MAD_traits", "zenodo_id":"13321578"}'
-
 */
 ?>
