@@ -1,6 +1,7 @@
 <?php
 namespace php_active_record;
-/* connector for CalPhotos EoL XML resource -- https://eol-jira.bibalex.org/browse/DATA-1618
+/* Contact is: calphotos@berkeley.edu
+connector for CalPhotos EoL XML resource -- https://eol-jira.bibalex.org/browse/DATA-1618
 execution time: 
 
 CalPhotos (ID = 267)
@@ -18,7 +19,7 @@ $GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 $resource_id = 267;
 
-$xml_resource = "http://calphotos.berkeley.edu/eol.xml.gz";
+$xml_resource = "http://calphotos.berkeley.edu/eol.xml.gz"; //recently offline, informed partner already.
 // $xml_resource = "http://localhost/cp/CalPhotos/eol.xml.gz"; //local debug only
 
 $func = new INBioAPI();
