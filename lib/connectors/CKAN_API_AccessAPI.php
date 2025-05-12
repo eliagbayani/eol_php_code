@@ -27,7 +27,8 @@ class CKAN_API_AccessAPI
 
         $this->api_resource_show = "https://opendata.eol.org/api/3/action/resource_show?id=";
         // e.g. https://opendata.eol.org/api/3/action/resource_show?id=259b34c9-8752-4553-ab37-f85300daf8f2
-        $this->download_options = array('cache' => 1, 'resource_id' => 'CKAN', 'timeout' => 3600, 'download_attempts' => 1, 'expire_seconds' => 0);
+        $this->download_options = array('cache' => 1, 'resource_id' => 'CKAN', 'download_wait_time' => 100000, 
+            'timeout' => 3600, 'download_attempts' => 1, 'expire_seconds' => 0);
 
         // /* for EOL resource mapping with Opendata resource
         $this->api_package_list = "https://opendata.eol.org/api/3/action/package_list";
