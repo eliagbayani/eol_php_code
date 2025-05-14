@@ -44,6 +44,7 @@ class PlaziArchiveAPI
             recursive_rmdir($paths['archive_path']);
             echo ("\n temporary directory removed: " . $paths['archive_path']);
         }
+        else echo "\nPartner file not accessible: [$dwca_file]\nProgram will terminate.\n";
     }
 }
 ?>
