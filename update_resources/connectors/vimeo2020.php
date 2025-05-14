@@ -48,6 +48,7 @@ Add group "Encyclopedia of Life Videos".
 
 */
 
+exit("\nConnector needs to be reviewed. API not working.\n");
 $timestart = time_elapsed();
 $resource_id = 214;
 // /* main - normal operation

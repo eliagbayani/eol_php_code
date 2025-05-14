@@ -11,13 +11,15 @@ http://www.eol.org/content_partners/602/resources/648
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/FeaturedCreaturesAPI');
 
+exit("\nPartner hosted file is now offline: http://entnemdept.ufl.edu/creatures/main/search_scientific.htm\n");
+
 $timestart = time_elapsed();
 $resource_id = "648";
 
 $func = new FeaturedCreaturesAPI($resource_id);
-$func->get_all_taxa(false); // 'true' if to generate text articles, 'false' for outlinks
+$ret = $func->get_all_taxa(false); // 'true' if to generate text articles, 'false' for outlinks
 
-Functions::finalize_dwca_resource($resource_id, false, true);
+if($ret) Functions::finalize_dwca_resource($resource_id, false, true);
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n elapsed time = " . $elapsed_time_sec . " seconds";
