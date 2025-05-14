@@ -15,7 +15,8 @@ class FeaturedCreaturesAPI
         $this->SPM = 'http://rs.tdwg.org/ontology/voc/SPMInfoItems';
         $this->EOL = 'http://www.eol.org/voc/table_of_contents';
         $this->text_count = 0;
-        $this->download_options = array('download_wait_time' => 1000000, 'timeout' => 1200, 'download_attempts' => 2, 'expire_seconds' => false, 'resource_id' => $folder);
+        $this->download_options = array('download_wait_time' => 1000000, 'timeout' => 1200, 'download_attempts' => 2, 
+        'expire_seconds' => false, 'resource_id' => $folder);
 
         if(Functions::is_production()) $this->download_options['resource_id'] = $folder; //$folder is resource_id 648 or 649
         
@@ -36,9 +37,11 @@ class FeaturedCreaturesAPI
                 // if($i == 5) break; // debug
             }
             $this->create_archive();
+            echo "\n\n total texts: " . $this->text_count . "\n";
         }
-        echo "\n\n total texts: " . $this->text_count . "\n";
+        else return false;
         if($this->debug) print_r($this->debug);
+        return true;
     }
 
     private function prepare_outlinks($rec)
@@ -49,7 +52,7 @@ class FeaturedCreaturesAPI
         $homepage = "http://entnemdept.ifas.ufl.edu/creatures/";
         $description = "<a href='" . $rec["url"] . "'>$rec[url]</a>" . "<br><br>Founded in 1996 by Thomas Fasulo, Featured Creatures provides in-depth profiles of insects, nematodes, arachnids and other organisms.<br><br>The Featured Creatures site is a cooperative venture of the University of Florida's Entomology and Nematology Department and the Florida Department of Agriculture and Consumer Services' Division of Plant Industry.<br><br>Visit Featured Creatures at <a href='$homepage'>$homepage</a>";
         $identifier = (string) $rec["taxon_id"] . "_outlink";
-        if(in_array($identifier, $this->do_ids)) continue;
+        if(in_array($identifier, $this->do_ids)) return; //continue;
         else $this->do_ids[] = $identifier;
         $mr = new \eol_schema\MediaResource();
         $mr->taxonID        = (string) $rec["taxon_id"];
