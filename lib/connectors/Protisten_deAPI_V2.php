@@ -927,7 +927,8 @@ class Protisten_deAPI_V2
     }
     private function image_exists_YN($image_url)
     {   
-        return true; //debug only dev only
+        // return true; //debug only dev only
+        
         /* curl didn't work
         // Initialize cURL
         $ch = curl_init($image_url);
