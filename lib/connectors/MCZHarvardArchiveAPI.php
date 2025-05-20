@@ -134,6 +134,8 @@ class MCZHarvardArchiveAPI
         if($str == "Available under Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA) license") return "http://creativecommons.org/licenses/by-nc-sa/3.0/";
         elseif($str == "Available under Creative Commons Attribution Share Alike Non Commerical (CC-BY-NC-SA 3.0) license") return "http://creativecommons.org/licenses/by-nc-sa/3.0/";
         elseif($str == "Available under Creative Commons Attribution Share Alike Non Commerical (CC-BY-NC-SA 4.0) license") return "http://creativecommons.org/licenses/by-nc-sa/3.0/";
+        elseif($str == "Available under Creative Commons Attribution (CC BY) license") return "http://creativecommons.org/licenses/by/3.0/";
+        elseif($str == "Available under Creative Commons Attribution-NonCommercial (CC BY-NC) license") return "http://creativecommons.org/licenses/by-nc/3.0/";
         else echo "\nUpdate code, unknown license [$str]\n";
         return;
     }
