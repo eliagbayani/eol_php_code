@@ -25,6 +25,13 @@ class MCZHarvardArchiveAPI
         $this->occurrence_ids = array();
         $this->types = array(); // for stats
         $this->page_by_guid = "http://mczbase.mcz.harvard.edu/guid/";
+
+        $this->license['public domain']   = "http://creativecommons.org/licenses/publicdomain/";
+        $this->license['by']              = "http://creativecommons.org/licenses/by/3.0/";
+        $this->license['by-nc']           = "http://creativecommons.org/licenses/by-nc/3.0/";
+        $this->license['by-sa']           = "http://creativecommons.org/licenses/by-sa/3.0/";
+        $this->license['by-nc-sa']        = "http://creativecommons.org/licenses/by-nc-sa/3.0/";
+        $this->license['no restrictions'] = "No known copyright restrictions";        
     }
 
     /*
@@ -131,11 +138,12 @@ class MCZHarvardArchiveAPI
     }
     private function get_license($str)
     {
-        if($str == "Available under Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA) license") return "http://creativecommons.org/licenses/by-nc-sa/3.0/";
-        elseif($str == "Available under Creative Commons Attribution Share Alike Non Commerical (CC-BY-NC-SA 3.0) license") return "http://creativecommons.org/licenses/by-nc-sa/3.0/";
-        elseif($str == "Available under Creative Commons Attribution Share Alike Non Commerical (CC-BY-NC-SA 4.0) license") return "http://creativecommons.org/licenses/by-nc-sa/3.0/";
-        elseif($str == "Available under Creative Commons Attribution (CC BY) license") return "http://creativecommons.org/licenses/by/3.0/";
-        elseif($str == "Available under Creative Commons Attribution-NonCommercial (CC BY-NC) license") return "http://creativecommons.org/licenses/by-nc/3.0/";
+        if($str == "Available under Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA) license")           return $this->license['by-nc-sa'];
+        elseif($str == "Available under Creative Commons Attribution Share Alike Non Commerical (CC-BY-NC-SA 3.0) license") return $this->license['by-nc-sa'];
+        elseif($str == "Available under Creative Commons Attribution Share Alike Non Commerical (CC-BY-NC-SA 4.0) license") return $this->license['by-nc-sa'];
+        elseif($str == "Available under Creative Commons Attribution (CC BY) license")                                      return $this->license['by'];
+        elseif($str == "Available under Creative Commons Attribution-NonCommercial (CC BY-NC) license")                     return $this->license['by-nc'];
+        elseif($str == "Available under Creative Commons Zero (CC0) license")                                               return $this->license['public domain'];
         else echo "\nUpdate code, unknown license [$str]\n";
         return;
     }
