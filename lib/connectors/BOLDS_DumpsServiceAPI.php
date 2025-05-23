@@ -28,10 +28,11 @@ class BOLDS_DumpsServiceAPI
         $this->service['phylum'] = "http://v2.boldsystems.org/connect/REST/getSpeciesBarcodeStatus.php?phylum=";
         */
         // $this->service["taxId"]  = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId=";
-        $this->service["taxId"]  = "https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=images,stats,basic&includeTree=true&taxId=";
+        $this->service["taxId"]  = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=images,stats,basic&includeTree=true&taxId=";
+        $this->service["taxId"]  = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
 
         // $this->service["taxId2"] = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
-        $this->service["taxId2"] = "https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
+        $this->service["taxId2"] = "https://v3.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
                                     
 
         $this->download_options = array('cache' => 1, 'resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*2, 
