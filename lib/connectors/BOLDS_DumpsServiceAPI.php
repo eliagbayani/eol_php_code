@@ -409,7 +409,9 @@ class BOLDS_DumpsServiceAPI
     public function get_info_from_page($taxid)
     {
         if(isset($this->pages_cannot_be_located[$taxid])) return false; //to save futile api calls
-        if($html = Functions::lookup_with_cache($this->page['sourceURL'].$taxid, $this->download_options)) {
+        $options = $this->download_options;
+        $options['expire_seconds'] = false;
+        if($html = Functions::lookup_with_cache($this->page['sourceURL'].$taxid, $options)) {
             /*
             <h3>TAXONOMY BROWSER: Bryophyta</h3>
             <p>Phylum : Bryophyta</p>
