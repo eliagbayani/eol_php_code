@@ -28,10 +28,7 @@ class BOLDS_DumpsServiceAPI
         $this->service['phylum'] = "http://v2.boldsystems.org/connect/REST/getSpeciesBarcodeStatus.php?phylum=";
         */
         // $this->service["taxId"]  = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId=";
-        $this->service["taxId"]  = "https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId=";
         $this->service["taxId"]  = "https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=images,stats,basic&includeTree=true&taxId=";
-
-                                    // https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId=671319
 
         // $this->service["taxId2"] = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
         $this->service["taxId2"] = "https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
@@ -205,7 +202,8 @@ class BOLDS_DumpsServiceAPI
                 foreach(array_keys($higher_level_ids) as $taxid) {
                     if(isset($this->taxon_ids[$taxid])) continue; //meaning this taxon has already been added to dwca
                     if(self::process_record($taxid)) {}
-                    else {
+                    else { echo "-F1-";
+                        $this->debug['api call failed 1'][$taxid] = ''; //means it can probably create taxon but not media nor traits anymore
                         if($taxon_info = self::get_info_from_page($taxid)) self::create_taxon_archive($taxon_info);
                     }
                 }
@@ -395,7 +393,8 @@ class BOLDS_DumpsServiceAPI
             // print_r($arr);
             foreach($arr['parents without entries during process'] as $taxid) {
                 if(self::process_record($taxid)) {}
-                else {
+                else { echo "-F2-";
+                    $this->debug['api call failed 2'][$taxid] = ''; //means it can probably create taxon but not media nor traits anymore
                     if($taxon_info = self::get_info_from_page($taxid)) {
                         echo "\Scraped taxon info [$taxid] but may not get parentID here.\n";
                         self::create_taxon_archive($taxon_info);
@@ -772,12 +771,60 @@ class BOLDS_DumpsServiceAPI
         */
         $options = $this->download_options;
         $options['expire_seconds'] = false; //used false since there is now a quota for this type of call
-        $options['download_wait_time'] = 3000000; //again 3 secs bec there is now a quota for this type of call
+        $options['download_wait_time'] = 4000000; //again 3 secs bec there is now a quota for this type of call
         if($json = Functions::lookup_with_cache($this->service["taxId"].$taxid, $options)) {
             $a = json_decode($json, true);
             // print_r($a); echo "\n[$taxid]\n"; //exit;
             $a = @$a[$taxid]; //needed
-            print_r($a); exit;
+            // print_r($a); exit;
+            /*Array(
+                [images] => Array(
+                        [0] => Array(
+                                [specimenid] => 16682385
+                                [sampleid] => BIOUG95575-D03
+                                [catalognum] => BIOUG95575-D03
+                                [fieldnum] => GMP#37477
+                                [image] => THAMD/BIOUG95575-D03+1670516210.jpg
+                                [original] => 1
+                                [meta] => Microplate
+                                [imagequality] => 9
+                                [external] => 
+                                [aspectratio] => 1.333
+                                [copyright] => Centre for Biodiversity Genomics
+                                [copyright_holder] => Centre for Biodiversity Genomics
+                                [copyright_year] => 2022
+                                [copyright_license] => CreativeCommons - Attribution
+                                [copyright_institution] => Centre for Biodiversity Genomics
+                                [copyright_contact] => ccdbcol@uoguelph.ca
+                                [photographer] => CBG Robotic Imager
+                                [mam_uri] => bold.org/7828469
+                                [taxonrep] => Insecta
+                            )
+                        [1] => ... and many more
+                    )
+                [stats] => Array(
+                        [publicmarkersequences] => Array(
+                                [COI-5P] => 12241391
+                                [COII] => 2688
+                                ... and many more
+                            )
+                        [publicrecords] => 13590869
+                        [publicspecies] => 319695
+                        [publicsubspecies] => 9398
+                        [publicbins] => 793702
+                        [specimenrecords] => 23726231
+                        [sequencedspecimens] => 20242157
+                        [barcodespecimens] => 19267626
+                        [species] => 381791
+                        [barcodespecies] => 348436
+                    )
+                [taxid] => 20
+                [taxon] => Arthropoda
+                [tax_rank] => phylum
+                [tax_division] => Animalia
+                [parentid] => 1
+                [taxonrep] => Arthropoda
+            )*/            
             if(@$a['taxon']) {
                 self::create_taxon_archive($a);
                 self::create_media_archive($a);
@@ -950,8 +997,8 @@ class BOLDS_DumpsServiceAPI
     {
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*365; // 1 yr cache
-        if($json = Functions::lookup_with_cache($this->service["taxId2"].$id, $options)) {
-            // http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=887622 --- e.g.
+        if($json = Functions::lookup_with_cache($this->service["taxId2"].$id, $options)) { 
+            //e.g. https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=887622
             $rec = json_decode($json, true);
             // print_r($rec); //exit; //good debug
             if($val = @$rec[$id]['parentid']) {
