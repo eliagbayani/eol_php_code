@@ -26,7 +26,7 @@ But latest connector logs show some [parents without entries] n=38
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 ini_set('memory_limit','7096M');
-// $GLOBALS['ENV_DEBUG'] = false;
+$GLOBALS['ENV_DEBUG'] = true;
 $timestart = time_elapsed();
 
 // $resource_id = "Annelida_new"; //Animals

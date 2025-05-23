@@ -429,7 +429,7 @@ class BOLDS_DumpsServiceAPI
                 }
             }
             if(@$info['taxon'] && $info['tax_rank']) {
-                echo "\nSalvaged by scraping: [$taxid]"; print_r($info);
+                echo "\nSalvaged by scraping: [$taxid]"; //print_r($info);
                 return $info;
             }
             elseif(stripos($html, "This taxon cannot be located") !== false) { //string is found
