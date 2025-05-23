@@ -24,9 +24,19 @@ class BOLDS_DumpsServiceAPI
         
         $this->page['home'] = "http://www.boldsystems.org/index.php/TaxBrowser_Home";
         $this->page['sourceURL'] = "http://www.boldsystems.org/index.php/Taxbrowser_Taxonpage?taxid=";
+        /* not used anymore
         $this->service['phylum'] = "http://v2.boldsystems.org/connect/REST/getSpeciesBarcodeStatus.php?phylum=";
-        $this->service["taxId"]  = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId=";
-        $this->service["taxId2"] = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
+        */
+        // $this->service["taxId"]  = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId=";
+        $this->service["taxId"]  = "https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId=";
+        $this->service["taxId"]  = "https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=images,stats,basic&includeTree=true&taxId=";
+
+                                    // https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=all&includeTree=true&taxId=671319
+
+        // $this->service["taxId2"] = "http://www.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
+        $this->service["taxId2"] = "https://v4.boldsystems.org/index.php/API_Tax/TaxonData?dataTypes=basic&includeTree=true&taxId=";
+                                    
+
         $this->download_options = array('cache' => 1, 'resource_id' => 'BOLDS', 'expire_seconds' => 60*60*24*30*2, 
                                         'download_wait_time' => 500000, 'timeout' => 10800, 'download_attempts' => 1); //2 months to expire
         // $this->download_options['expire_seconds'] = false;
@@ -40,7 +50,7 @@ class BOLDS_DumpsServiceAPI
         $this->cnt = 0;
         $this->with_parent_id = true; //true - will make it a point that every taxon has a parentNameUsageID
         if(Functions::is_production()) $this->BOLDS_new_path = "https://editors.eol.org/eol_connector_data_files/BOLDS_new/";
-        else                           $this->BOLDS_new_path = "http://localhost/cp/BOLDS_new/";
+        else                           $this->BOLDS_new_path = LOCAL_HOST."/cp/BOLDS_new/";
         $this->parents_without_entries_file	 = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/BOLDSystems/parents_without_entries.tsv";
     }
     function get_parents_without_entries()
@@ -81,7 +91,9 @@ class BOLDS_DumpsServiceAPI
         
         foreach($phylums as $phylum) $this->dump[$phylum] = $this->BOLDS_new_path."bold_".$phylum.".txt.zip"; //assign respective source .txt.zip file
 
-        foreach($phylums as $phylum) {
+        $p = 0; //debug only
+        foreach($phylums as $phylum) { $p++;
+            echo "\n$p. [$phylum]\n";
             if(!$phylum) continue;
             $this->current_kingdom = self::get_kingdom_given_phylum($phylum);
             $this->tax_ids = array(); //initialize parentID
@@ -97,13 +109,16 @@ class BOLDS_DumpsServiceAPI
             self::create_media_archive_from_dump();
             $this->img_tax_ids = array(); //initialize images per phylum
 
-            recursive_rmdir($this->temp_path);
+            recursive_rmdir($this->temp_path); //deletes temp path for every phylum. Kinda weird actually.
             // */
             //for images end -------------------------------------------------
 
             //for taxon
             $txt_file = self::process_dump($phylum, "write_taxon_archive");
-            unlink($txt_file);
+            unlink($txt_file); //part of main operation --- un-comment in real operation
+
+            // break; //debug only - process only 1 phylum
+            // if($p >= 2) break; //debug only process only 2 phylums
         }
         // /* we no longer provide the parentNameUsageID since it is not scalable when doing thousands of API calls. Doable but not scalable
         if($this->with_parent_id) self::add_needed_parent_entries(1);
@@ -130,7 +145,11 @@ class BOLDS_DumpsServiceAPI
     private function process_dump($phylum, $what)
     {
         $txt_file = DOC_ROOT."tmp/bold_".$phylum.".txt";
+        echo "\ntxt_file: [$txt_file]\n"; //exit;
         $i = 0; $higher_level_ids = array();
+        
+        // $txt_file = "/Volumes/OWC_Express/Downloads/BOLD_Public.28-Mar-2025/BOLD_Public.28-Mar-2025.tsv";
+
         foreach(new FileIterator($txt_file) as $line_number => $line) {
             $i++;
             $row = explode("\t", $line);
@@ -177,7 +196,9 @@ class BOLDS_DumpsServiceAPI
                 if(($i % 10000) == 0) echo "\n".number_format($i)." $phylum $what";
             }
             // if($i >= 1000) break; //debug only
-        }
+        } //foreach()
+        // exit("\nstop muna\n");
+
         // /* if commented, we no longer provide the parentNameUsageID
         if($this->with_parent_id) {
             if($what == "write_taxon_archive") {
@@ -288,22 +309,36 @@ class BOLDS_DumpsServiceAPI
         */
         // /* ver.2
         $tax_ids = array_keys($this->img_tax_ids);
-        echo "\ntotal taxon IDs with img: ".count($tax_ids)."\n";
-        foreach($tax_ids as $taxonID) {
+        $total = count($tax_ids);
+        echo "\ntotal taxon IDs with img: ".$total."\n";
+        $t = 0;
+        foreach($tax_ids as $taxonID) { $t++;
+            if(($t % 100) == 0) echo "\n$t of $total: [$taxonID]\n";
             $this->image_cap = array(); //initialize
-            
             $md5 = md5($taxonID);
             $cache1 = substr($md5, 0, 2);
             $cache2 = substr($md5, 2, 2);
             $file = $this->temp_path . "$cache1/$cache2/".$taxonID.".txt";
             
-            foreach(new FileIterator($file) as $line_number => $line) {
+            $l = 0;
+            foreach(new FileIterator($file) as $line_number => $line) { $l++; //echo "-[$l]-";
                 // echo "\n$line";
-                
                 if(@$this->image_cap[$taxonID] >= 10) continue;
-                
                 $image = json_decode($line, true);
+                if(!$image) continue;
                 // print_r($image); echo "\n-=-=-=-=-=-=\n";
+                /* Array(
+                    [processid] => CNCHA1497-11
+                    [image_ids] => 1140179
+                    x[image_urls] => http://www.boldsystems.org/pics/CNCHA/CNC#HEM301972+1305725792.jpg
+                    x[media_descriptors] => Dorsal
+                    x[captions] => 
+                    x[copyright_holders] => CNC/BIO Photography Group
+                    x[copyright_years] => 2011
+                    x[copyright_licenses] => CreativeCommons - Attribution Non-Commercial Share-Alike
+                    x[copyright_institutions] => Centre for Biodiversity Genomics
+                    x[photographers] => Grace Bannon
+                ) */              
                 
                 //below is exactly same as commented above...
                 //pattern the fields like that of the API results so we can only use one script for creating media archive
@@ -315,18 +350,36 @@ class BOLDS_DumpsServiceAPI
                 $img['copyright_contact']       = '';
                 $img['copyright_year']          = $image['copyright_years'];
                 $img['image']                   = str_ireplace("http://www.boldsystems.org/pics/", "", $image['image_urls']);
-                if(substr($img['image'],0,4) == "http") {
-                    print_r($image);
-                    exit("\nInvestigate: image URL\n");
-                }
+                // if(substr($img['image'],0,4) == "http") {
+                //     print_r($image);
+                //     exit("\nInvestigate: image URL\n");
+                // }
+                $img['image']                   = $image['image_urls'];
                 $img['photographer']            = $image['photographers'];
                 $img['meta']                    = $image['media_descriptors'].".";
                 if($val = $image['captions']) $img['meta']." Caption: ".$val.".";
                 $img['imagequality']            = '';
-                self::write_image_record($img, $taxonID);
+
+                /* works OK: excludes offline images but too slow
+                // if(self::image_exists_YN($img['image'])) self::write_image_record($img, $taxonID);
+                // if(Functions::ping($img['image'])) { self::write_image_record($img, $taxonID); echo " Y "; }
+                // else echo " X ";
+                */
+
+                self::write_image_record($img, $taxonID); //this one is fast but it includes even those offline images
             }
         }
         // */
+    }
+    private function image_exists_YN($image_url)
+    {
+        // /* ----- fopen worked spledidly OK
+        // Open file
+        $handle = @fopen($image_url, 'r');
+        // Check if file exists
+        if(!$handle) return false; //echo 'File not found';
+        else         return true; //echo 'File exists';
+        // ----- */
     }
     private function add_needed_parent_entries($trials)
     {
@@ -377,7 +430,7 @@ class BOLDS_DumpsServiceAPI
                 }
             }
             if(@$info['taxon'] && $info['tax_rank']) {
-                echo "\nSalvaged by scraping: [$taxid]";
+                echo "\nSalvaged by scraping: [$taxid]"; print_r($info);
                 return $info;
             }
             elseif(stripos($html, "This taxon cannot be located") !== false) { //string is found
@@ -450,37 +503,37 @@ class BOLDS_DumpsServiceAPI
     }
     private function get_higher_level_ids($rec, $higher_level_ids)
     {
-        if($taxName = $rec['phylum_name']) {
+        if($taxName = @$rec['phylum_name']) {
             $taxID = $rec['phylum_taxID'];
             $taxRank = 'phylum';
             $this->tax_ids[$taxID]['p'] = self::compute_parent_id($rec, $taxRank);
             $higher_level_ids[$taxID] = '';
         }
-        if($taxName = $rec['class_name']) {
+        if($taxName = @$rec['class_name']) {
             $taxID = $rec['class_taxID'];
             $taxRank = 'class';
             $this->tax_ids[$taxID]['p'] = self::compute_parent_id($rec, $taxRank);
             $higher_level_ids[$taxID] = '';
         }
-        if($taxName = $rec['order_name']) {
+        if($taxName = @$rec['order_name']) {
             $taxID = $rec['order_taxID'];
             $taxRank = 'order';
             $this->tax_ids[$taxID]['p'] = self::compute_parent_id($rec, $taxRank);
             $higher_level_ids[$taxID] = '';
         }
-        if($taxName = $rec['family_name']) {
+        if($taxName = @$rec['family_name']) {
             $taxID = $rec['family_taxID'];
             $taxRank = 'family';
             $this->tax_ids[$taxID]['p'] = self::compute_parent_id($rec, $taxRank);
             $higher_level_ids[$taxID] = '';
         }
-        if($taxName = $rec['subfamily_name']) {
+        if($taxName = @$rec['subfamily_name']) {
             $taxID = $rec['subfamily_taxID'];
             $taxRank = 'subfamily';
             $this->tax_ids[$taxID]['p'] = self::compute_parent_id($rec, $taxRank);
             $higher_level_ids[$taxID] = '';
         }
-        if($taxName = $rec['genus_name']) {
+        if($taxName = @$rec['genus_name']) {
             $taxID = $rec['genus_taxID'];
             $taxRank = 'genus';
             $this->tax_ids[$taxID]['p'] = self::compute_parent_id($rec, $taxRank);
@@ -492,51 +545,53 @@ class BOLDS_DumpsServiceAPI
     {}
     private function valid_rec($rec)
     {
+        if(!$rec) return false;
+        if(is_null($rec)) return false;
         $taxName = false;
-        if($taxName = $rec['subspecies_name']) {
+        if($taxName = @$rec['subspecies_name']) {
             $taxID = $rec['subspecies_taxID'];
             $taxRank = 'subspecies';
             $taxParent = self::compute_parent_id($rec, $taxRank);
             $ancestry = self::compute_ancestry($rec, $taxRank);
         }
-        elseif($taxName = $rec['species_name']) {
+        elseif($taxName = @$rec['species_name']) {
             $taxID = $rec['species_taxID'];
             $taxRank = 'species';
             $taxParent = self::compute_parent_id($rec, $taxRank);
             $ancestry = self::compute_ancestry($rec, $taxRank);
         }
         // /* uncomment to get more images from dump
-        elseif($taxName = $rec['genus_name']) {
+        elseif($taxName = @$rec['genus_name']) {
             $taxID = $rec['genus_taxID'];
             $taxRank = 'genus';
             $taxParent = self::compute_parent_id($rec, $taxRank);
             $ancestry = self::compute_ancestry($rec, $taxRank);
         }
-        elseif($taxName = $rec['subfamily_name']) {
+        elseif($taxName = @$rec['subfamily_name']) {
             $taxID = $rec['subfamily_taxID'];
             $taxRank = 'subfamily';
             $taxParent = self::compute_parent_id($rec, $taxRank);
             $ancestry = self::compute_ancestry($rec, $taxRank);
         }
-        elseif($taxName = $rec['family_name']) {
+        elseif($taxName = @$rec['family_name']) {
             $taxID = $rec['family_taxID'];
             $taxRank = 'family';
             $taxParent = self::compute_parent_id($rec, $taxRank);
             $ancestry = self::compute_ancestry($rec, $taxRank);
         }
-        elseif($taxName = $rec['order_name']) {
+        elseif($taxName = @$rec['order_name']) {
             $taxID = $rec['order_taxID'];
             $taxRank = 'order';
             $taxParent = self::compute_parent_id($rec, $taxRank);
             $ancestry = self::compute_ancestry($rec, $taxRank);
         }
-        elseif($taxName = $rec['class_name']) {
+        elseif($taxName = @$rec['class_name']) {
             $taxID = $rec['class_taxID'];
             $taxRank = 'class';
             $taxParent = self::compute_parent_id($rec, $taxRank);
             $ancestry = self::compute_ancestry($rec, $taxRank);
         }
-        elseif($taxName = $rec['phylum_name']) {
+        elseif($taxName = @$rec['phylum_name']) {
             $taxID = $rec['phylum_taxID'];
             $taxRank = 'phylum';
             $taxParent = self::compute_parent_id($rec, $taxRank);
@@ -622,6 +677,7 @@ class BOLDS_DumpsServiceAPI
         if($use_cache) $download_options['cache'] = 1;
         // $download_options['cache'] = 0; // 0 only when developing //debug - comment in real operation
         $temp_path = Functions::save_remote_file_to_local($file, $download_options);
+        echo "\nremote file: [$file]\n"; //exit;
         echo "\nunzipping this file [$temp_path]... \n";
         shell_exec("unzip -o " . $temp_path . " -d " . DOC_ROOT."tmp/"); //worked OK
         unlink($temp_path);
@@ -714,16 +770,21 @@ class BOLDS_DumpsServiceAPI
                     [taxonrep] => Mollusca
         [sitemap] => http://www.boldsystems.org/index.php/TaxBrowser_Maps_CollectionSites?taxid=2
         */
-        if($json = Functions::lookup_with_cache($this->service["taxId"].$taxid, $this->download_options)) {
+        $options = $this->download_options;
+        $options['expire_seconds'] = false; //used false since there is now a quota for this type of call
+        $options['download_wait_time'] = 3000000; //again 3 secs bec there is now a quota for this type of call
+        if($json = Functions::lookup_with_cache($this->service["taxId"].$taxid, $options)) {
             $a = json_decode($json, true);
             // print_r($a); echo "\n[$taxid]\n"; //exit;
             $a = @$a[$taxid]; //needed
+            print_r($a); exit;
             if(@$a['taxon']) {
                 self::create_taxon_archive($a);
                 self::create_media_archive($a);
                 self::create_trait_archive($a);
+                return true;
             }
-            return true;
+            else return false;
         }
         else return false;
         // exit("\n");
@@ -755,8 +816,7 @@ class BOLDS_DumpsServiceAPI
         */
         
         // /* un-comment in real operation
-        if($images = @$a['images']) {
-            // print_r($images);
+        if($images = @$a['images']) { // print_r($images);
             foreach($images as $img) {
                 if($img['image']) {
                     self::write_image_record($img, $a['taxid']);
@@ -806,6 +866,8 @@ class BOLDS_DumpsServiceAPI
         $mr->Owner                  = self::format_rightsHolder($img);
         $mr->rights                 = '';
         $mr->accessURI              = "http://www.boldsystems.org/pics/".$img['image'];
+        $mr->accessURI              = $img['image'];
+
         $mr->Rating                 = $img['imagequality']; //will need to check what values they have here...
         if(!isset($this->object_ids[$mr->identifier])) {
             $this->archive_builder->write_object_to_file($mr);
@@ -1273,7 +1335,7 @@ class BOLDS_DumpsServiceAPI
             else fwrite($WRITE, $arr."\n");
         }
         fclose($WRITE);
-        print_r($this->debug);
+        // print_r($this->debug);
     }
     private function cannot_be_located_pages()
     {
