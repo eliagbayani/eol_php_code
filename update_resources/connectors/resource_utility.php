@@ -273,8 +273,9 @@ elseif($task == 'metadata_recoding') {
         else                            $dwca_file = "http://localhost/eol_php_code/applications/content_server/resources_3/griis.tar.gz";
     }
     elseif($resource_id == '770_meta_recoded') {
-        if(Functions::is_production())  $dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/770.tar.gz";
-        else                            $dwca_file = "http://localhost/eol_php_code/applications/content_server/resources_3/770.tar.gz";
+        //770.tar.gz is obsolete. Source is already offline. Will use legacy file: 770_2020_Sep15.tar.gz
+        if(Functions::is_production())  $dwca_file = "https://editors.eol.org/eol_php_code/applications/content_server/resources/770_2020_Sep15.tar.gz";
+        else                            $dwca_file = "http://localhost/eol_php_code/applications/content_server/resources_3/770_2020_Sep15.tar.gz";
     }
 
     elseif($resource_id == 'natdb_meta_recoded_1') {
