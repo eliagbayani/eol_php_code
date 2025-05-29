@@ -359,13 +359,15 @@ class BOLDS_DumpsServiceAPI
                 if($val = $image['captions']) $img['meta']." Caption: ".$val.".";
                 $img['imagequality']            = '';
 
-                /* works OK: excludes offline images but too slow
-                // if(self::image_exists_YN($img['image'])) self::write_image_record($img, $taxonID);
+                // /* works OK: excludes offline images but too slow
+                if(self::image_exists_YN($img['image'])) self::write_image_record($img, $taxonID);
                 // if(Functions::ping($img['image'])) { self::write_image_record($img, $taxonID); echo " Y "; }
                 // else echo " X ";
-                */
+                // */
 
-                self::write_image_record($img, $taxonID); //this one is fast but it includes even those offline images
+                /* this one is fast but it includes even those offline images
+                self::write_image_record($img, $taxonID);
+                */
             }
         }
         // */
