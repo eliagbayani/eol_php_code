@@ -374,6 +374,7 @@ class BOLDS_DumpsServiceAPI
     }
     private function image_exists_YN($image_url)
     {
+        sleep(1);
         // /* ----- fopen worked spledidly OK
         // Open file
         $handle = @fopen($image_url, 'r');
