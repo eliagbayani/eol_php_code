@@ -34,9 +34,22 @@ class Protisten_deAPI_V2
         $this->desc_suffix = '<p>© Wolfgang Bettighofer,<br />images under Creative Commons License V 3.0 (CC BY-NC-SA).<br />For permission to use of (high resolution) images please contact <a href="mailto:postmaster@protisten.de">postmaster@protisten.de</a>.</p>';
         /* To edit 1 record search for "******" and un-comment line. */
         $this->RunTest = @$param['RunTest'];
+
+        // /* For ImageYN routine:
+        if(Functions::is_production()) $this->cache_path = '/extra/other_files/ImageYNcache/';
+        else                           $this->cache_path = '/Volumes/AKiTiO4/other_files/ImageYNcache/';
+        if(!is_dir($this->cache_path)) mkdir($this->cache_path);
+        $this->cache_path .= "protisten_de/"; //this will be for any resource. E.g. protisten_de/ OR BOLDS/, etc.
+        if(!is_dir($this->cache_path)) mkdir($this->cache_path);
+        // */
     }
     function start()
     {   
+        // /* For ImageYN routine:
+        require_library('connectors/CacheMngtAPI');
+        $this->func = new CacheMngtAPI($this->cache_path);
+        // */
+
         // /* access DH - part of main operation
         require_library('connectors/EOL_DH_API');
         $this->func = new EOL_DH_API();
@@ -848,8 +861,15 @@ class Protisten_deAPI_V2
             $this->debug['mimetype'][$mr->format] = '';
             $mr->accessURI              = $image;
             
-            // /* New: Jun 13,2023
+            /* New: Jun 13,2023
             if(!self::image_exists_YN($mr->accessURI)) {
+                $this->debug['does not exist'][$mr->accessURI] = '';
+                continue;
+            }
+            */
+
+            // /* New: May 30, 2025
+            if(!$this->func->ImageExistsYN($mr->accessURI)) {
                 $this->debug['does not exist'][$mr->accessURI] = '';
                 continue;
             }
@@ -890,13 +910,20 @@ class Protisten_deAPI_V2
             $this->debug['mimetype'][$mr->format] = '';
             $mr->accessURI              = $image;
             
-            // /* New: Jun 13,2023
+            /* New: Jun 13,2023
             if(!self::image_exists_YN($mr->accessURI)) {
                 $this->debug['does not exist'][$mr->accessURI] = '';
                 continue;
             }
+            */
+
+            // /* New: May 30, 2025
+            if(!$this->func->ImageExistsYN($mr->accessURI)) {
+                $this->debug['does not exist'][$mr->accessURI] = '';
+                continue;
+            }
             // */
-            
+
             $mr->furtherInformationURL  = $rec['url'];
             $mr->Owner                  = "Wolfgang Bettighofer";
             $mr->UsageTerms             = "http://creativecommons.org/licenses/by-nc-sa/3.0/";
@@ -926,7 +953,7 @@ class Protisten_deAPI_V2
         return $desc;
     }
     private function image_exists_YN($image_url)
-    {   
+    {   exit("\nNot used anymore...\n");
         // return true; //debug only dev only
         
         /* curl didn't work
@@ -941,7 +968,7 @@ class Protisten_deAPI_V2
         else                     return false; //echo 'File not found';
         */
 
-        // /* fopen worked spledidly OK
+        // /* fopen worked splendidly OK
         // Open file
         $handle = @fopen($image_url, 'r');
         // Check if file exists
