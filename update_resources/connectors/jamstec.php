@@ -22,7 +22,7 @@ $resource_id = 'jamstec';
 
 $func = new JamstecAPI($resource_id);
 $func->start();
-Functions::finalize_dwca_resource($resource_id, false, false); //3rd true means delete working dir
+Functions::finalize_dwca_resource($resource_id, false, true); //3rd true means delete working dir
 
 $elapsed_time_sec = time_elapsed() - $timestart;
 echo "\n\n";
