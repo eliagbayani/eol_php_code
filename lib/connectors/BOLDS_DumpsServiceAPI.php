@@ -359,15 +359,17 @@ class BOLDS_DumpsServiceAPI
                 if($val = $image['captions']) $img['meta']." Caption: ".$val.".";
                 $img['imagequality']            = '';
 
-                // /* works OK: excludes offline images but too slow
+                /* works OK: excludes offline images but too slow
                 if(self::image_exists_YN($img['image'])) self::write_image_record($img, $taxonID);
                 // if(Functions::ping($img['image'])) { self::write_image_record($img, $taxonID); echo " Y "; }
                 // else echo " X ";
-                // */
-
-                /* this one is fast but it includes even those offline images
-                self::write_image_record($img, $taxonID);
                 */
+
+                // To do: make a cached version of checking if image exists or not. Can be used by this resource and the likes of protisten.de
+
+                // /* this one is fast but it includes even those offline images
+                self::write_image_record($img, $taxonID);
+                // */
             }
         }
         // */
