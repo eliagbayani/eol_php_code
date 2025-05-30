@@ -47,15 +47,15 @@ class CacheMngtAPI
     {
         $md5_id = md5($image_url);
         if($arr = self::retrieve_json_obj($md5_id, false)) { //2nd param false means returned value is an array()
-            echo "\nCache retrieved.\n";
+            echo "-[RC]-";
         }
         else {
-            echo "\nCache saved.\n";
+            echo "-[SC]-";
             $arr = array("ImageExistsYN" => self::fopen_image_YN($image_url));
             $json = json_encode($arr);
             self::save_json($md5_id, $json);
         }
-        print_r($arr);
+        // print_r($arr);
         if($arr['ImageExistsYN']) return true;
         else return false;
     }
