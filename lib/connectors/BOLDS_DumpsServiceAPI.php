@@ -50,6 +50,14 @@ class BOLDS_DumpsServiceAPI
         if(Functions::is_production()) $this->BOLDS_new_path = "https://editors.eol.org/eol_connector_data_files/BOLDS_new/";
         else                           $this->BOLDS_new_path = LOCAL_HOST."/cp/BOLDS_new/";
         $this->parents_without_entries_file	 = "https://github.com/eliagbayani/EOL-connector-data-files/raw/master/BOLDSystems/parents_without_entries.tsv";
+
+        // /* For ImageYN routine:
+        if(Functions::is_production()) $this->cache_path = '/extra/other_files/ImageYNcache/';
+        else                           $this->cache_path = '/Volumes/AKiTiO4/other_files/ImageYNcache/';
+        if(!is_dir($this->cache_path)) mkdir($this->cache_path);
+        $this->cache_path .= "BOLDS/"; //this will be for any resource. E.g. protisten_de/ OR BOLDS/, etc.
+        if(!is_dir($this->cache_path)) mkdir($this->cache_path);
+        // */
     }
     function get_parents_without_entries()
     {
@@ -68,6 +76,18 @@ class BOLDS_DumpsServiceAPI
     }
     function start_using_dump()
     {
+        // /* For ImageYN routine:
+        require_library('connectors/CacheMngtAPI');
+        $this->func = new CacheMngtAPI($this->cache_path);
+        // */
+
+        /* test only
+        $image_url = "https://editors.eol.org/eoearth/resources/assets/EOL_logo_simple_jpgvx.jpg";
+        $image_url = "https://d11a6trkgmumsb.cloudfront.net/original/3X/a/d/ad2526334012b2ad0c3421f9b6dd94bae2ede52f.svg";
+        if($this->func->ImageExistsYN($image_url))
+        exit("\n-end tests-\n");
+        */
+
         $this->pages_cannot_be_located = self::cannot_be_located_pages();
         self::get_parents_without_entries(); //generates $this->parents_without_entries
         self::create_kingdom_taxa(); //create taxon entry for the 4 kingdoms
@@ -359,31 +379,13 @@ class BOLDS_DumpsServiceAPI
                 if($val = $image['captions']) $img['meta']." Caption: ".$val.".";
                 $img['imagequality']            = '';
 
-                /* works OK: excludes offline images but too slow
-                if(self::image_exists_YN($img['image'])) self::write_image_record($img, $taxonID);
-                // if(Functions::ping($img['image'])) { self::write_image_record($img, $taxonID); echo " Y "; }
-                // else echo " X ";
-                */
-
-                // To do: make a cached version of checking if image exists or not. Can be used by this resource and the likes of protisten.de
-
-                // /* this one is fast but it includes even those offline images
+                /* this one is fast but it includes even those offline images
                 self::write_image_record($img, $taxonID);
-                // */
+                */
+                if($this->func->ImageExistsYN($img['image'])) self::write_image_record($img, $taxonID);
             }
         }
         // */
-    }
-    private function image_exists_YN($image_url)
-    {
-        sleep(1);
-        // /* ----- fopen worked spledidly OK
-        // Open file
-        $handle = @fopen($image_url, 'r');
-        // Check if file exists
-        if(!$handle) return false; //echo 'File not found';
-        else         return true; //echo 'File exists';
-        // ----- */
     }
     private function add_needed_parent_entries($trials)
     {

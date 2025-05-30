@@ -41,4 +41,34 @@ class CacheMngtAPI
         return $this->json_path . "$cache1/$cache2/$filename";
     }
     /* ------------- END: retrieve module ------------- */
+
+    /* ------------- START: image exists YN module ------------- */
+    function ImageExistsYN($image_url)
+    {
+        $md5_id = md5($image_url);
+        if($arr = self::retrieve_json_obj($md5_id, false)) { //2nd param false means returned value is an array()
+            echo "\nCache retrieved.\n";
+        }
+        else {
+            echo "\nCache saved.\n";
+            $arr = array("ImageExistsYN" => self::fopen_image_YN($image_url));
+            $json = json_encode($arr);
+            self::save_json($md5_id, $json);
+        }
+        print_r($arr);
+        if($arr['ImageExistsYN']) return true;
+        else return false;
+    }
+    private function fopen_image_YN($image_url)
+    {
+        // /* ----- fopen worked splendidly OK
+        // Open file
+        $handle = @fopen($image_url, 'r');
+        // Check if file exists
+        if(!$handle) return false; //echo 'File not found';
+        else         return true; //echo 'File exists';
+        // ----- */
+    }
+    /* ------------- END: image exists YN module ------------- */
+
 }
