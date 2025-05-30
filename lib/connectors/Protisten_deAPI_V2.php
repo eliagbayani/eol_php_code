@@ -47,7 +47,7 @@ class Protisten_deAPI_V2
     {   
         // /* For ImageYN routine:
         require_library('connectors/CacheMngtAPI');
-        $this->func = new CacheMngtAPI($this->cache_path);
+        $this->func_img = new CacheMngtAPI($this->cache_path);
         // */
 
         // /* access DH - part of main operation
@@ -869,7 +869,7 @@ class Protisten_deAPI_V2
             */
 
             // /* New: May 30, 2025
-            if(!$this->func->ImageExistsYN($mr->accessURI)) {
+            if(!$this->func_img->ImageExistsYN($mr->accessURI)) {
                 $this->debug['does not exist'][$mr->accessURI] = '';
                 continue;
             }
@@ -918,7 +918,7 @@ class Protisten_deAPI_V2
             */
 
             // /* New: May 30, 2025
-            if(!$this->func->ImageExistsYN($mr->accessURI)) {
+            if(!$this->func_img->ImageExistsYN($mr->accessURI)) {
                 $this->debug['does not exist'][$mr->accessURI] = '';
                 continue;
             }
