@@ -37,7 +37,8 @@ class USDAPlantNewAPI
         
         $this->max_images_per_taxon = 10;
         $this->service['URLs'] = "https://plants.usda.gov/assets/config.json"; //a local copy is saved in /resources/USDA/plants_usda_gov_assets_config.json
-        $this->service['plant_list'] = "https://plants.usda.gov/assets/docs/CompletePLANTSList/plantlst.txt";
+        $this->service['plant_list'] = "https://plants.usda.gov/assets/docs/CompletePLANTSList/plantlst.txt"; //now offline
+        $this->service['plant_list'] = "https://github.com/eliagbayani/EOL-connector-data-files/raw/refs/heads/master/USDA_Plants/plantlst.txt";
 
         $this->download_options = array('cache' => 1, 'resource_id' => 'usda_plants', 'expire_seconds' => 60*60*24*30*6, //6 months
         'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //6 months to expire
@@ -94,6 +95,7 @@ class USDAPlantNewAPI
     {
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*30*3; //3 months
+        $options['expire_seconds'] = false; //since URL is now inaccessible
         $csv_file = Functions::save_remote_file_to_local($this->service['plant_list'], $options);
         $out = shell_exec("wc -l ".$csv_file); echo "$out";
         $i = 0;
