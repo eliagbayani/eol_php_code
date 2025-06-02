@@ -95,7 +95,7 @@ class USDAPlantNewAPI
     {
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*30*3; //3 months
-        $options['expire_seconds'] = false; //since URL is now inaccessible
+        $options['expire_seconds'] = false; //since URL is now static
         $csv_file = Functions::save_remote_file_to_local($this->service['plant_list'], $options);
         $out = shell_exec("wc -l ".$csv_file); echo "$out";
         $i = 0;
