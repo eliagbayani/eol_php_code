@@ -97,14 +97,14 @@ class USDAPlantNewAPI
         $options['expire_seconds'] = 60*60*24*30*3; //3 months
         $options['expire_seconds'] = false; //since URL is now static
         $csv_file = Functions::save_remote_file_to_local($this->service['plant_list'], $options);
-        $out = shell_exec("wc -l ".$csv_file); echo "$out";
+        $out = shell_exec("wc -l ".$csv_file); echo "No. of rows: $out";
         $i = 0;
         $file = Functions::file_open($csv_file, "r");
         while(!feof($file)) {
             $row = fgetcsv($file);
             if(!$row) break;
             // print_r($row);
-            $i++; if(($i % 2000) == 0) echo "\n$i";
+            $i++; if(($i % 100) == 0) echo "\n$i of $out";
             if($i == 1) {
                 $fields = $row;
                 // $fields = self::fill_up_blank_fieldnames($fields); // copied template
