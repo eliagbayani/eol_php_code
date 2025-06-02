@@ -47,8 +47,7 @@ $func = new USDAPlantNewAPI($resource_id);
 $func->start();
 unset($func);
 // exit("\n-stop muna-\n");
-Functions::finalize_dwca_resource($resource_id, false, true, $timestart); //3rd param true means delete folder
-
+Functions::finalize_dwca_resource($resource_id, false, false, $timestart); //3rd param true means delete folder
 // */
 
 require_library('connectors/DWCADiagnoseAPI');
