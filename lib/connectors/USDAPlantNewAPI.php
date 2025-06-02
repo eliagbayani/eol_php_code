@@ -88,7 +88,7 @@ class USDAPlantNewAPI
         self::initialize();
         self::main();
         $this->archive_builder->finalize(true);
-        // Functions::start_print_debug();
+        Functions::start_print_debug($this->debug, $this->resource_id);
     }
     private function main()
     {
