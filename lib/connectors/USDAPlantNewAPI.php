@@ -42,7 +42,7 @@ class USDAPlantNewAPI
 
         $this->download_options = array('cache' => 1, 'resource_id' => 'usda_plants', 'expire_seconds' => 60*60*24*30*6, //6 months
         'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //orig, 6 months to expire
-        // $this->download_options['expire_seconds'] = false; //not orig, only for faster refresh
+        $this->download_options['expire_seconds'] = false; //not orig, only for faster refresh
         $this->debug = array();
         $this->github['US State list'] = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/USDA_Plants/US_State_list.tsv';
         /*

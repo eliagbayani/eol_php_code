@@ -9,7 +9,7 @@ class USDAPlants2019
         $this->archive_builder = $archive_builder;
         
         $this->download_options = array('cache' => 1, 'resource_id' => $resource_id, 'expire_seconds' => 60*60*24*30*4, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1, 'delay_in_minutes' => 1);
-        // $this->download_options['expire_seconds'] = false; //comment after first harvest
+        $this->download_options['expire_seconds'] = false; //comment after first harvest
         
         $this->debug = array();
         
@@ -71,6 +71,10 @@ class USDAPlants2019
         https://plants.usda.gov/assets/docs/PLANTS_Help_Document.pdf#page=8 --> Source of codes and acronyms.
         https://plantsservices.sc.egov.usda.gov/api/StateSearch --> XML of list know states and territories. But not used ATM.
         */
+
+        $this->save_path = "/extra/other_files/USDA_StatesAndTerritories/";
+        if(!is_dir($this->save_path)) mkdir($this->save_path);
+
     }
     /*================================================================= STARTS HERE ======================================================================*/
     function start($info)
@@ -343,13 +347,25 @@ class USDAPlants2019
     {   echo "\nStates and Territories total: ".count($aliases)."\n";
         $i = 0;
         foreach($aliases as $alias) { $i++;
-            echo "\nDownloading CSV ".$alias."..."."$i of ".count($aliases);
+            echo "\nDownloading CSV ".$alias."..."."$i of ".count($aliases); //Downloading CSV Arizona...4 of 52
             // continue; //debug only
             $options = $this->download_options;
+            $options['expire_seconds'] = false; //the .txt files from partner is now offline
+            $options['cache'] = 1;
             $url = str_replace("STATE_NAME", str_replace(" ", "", $alias), $this->service['per_location']);
             if($local = Functions::save_remote_file_to_local($url, $options)) {
                 self::parse_state_list($local, $alias);
-                if(file_exists($local)) unlink($local);
+                if(file_exists($local)) {
+
+                    // /* will try to download the text files since they are now offline
+                    $destination = $this->save_path . "/$alias".".txt";
+                    if(!is_file($destination)) {
+                        if(copy($local, $destination)) echo "\nFile copied $i: [$destination]\n";
+                    }
+                    // */
+                    
+                    unlink($local);
+                }
             }
             // break; //debug - process just 1 alias
         }
