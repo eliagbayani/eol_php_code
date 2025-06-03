@@ -360,8 +360,11 @@ class USDAPlants2019
                     // /* will try to download the text files since they are now offline
                     $destination = $this->save_path . "/$alias".".txt";
                     if(!is_file($destination)) {
+                        echo "\nFile does not exist: [$destination]\n";
                         if(copy($local, $destination)) echo "\nFile copied $i: [$destination]\n";
+                        else echo "\nERROR: File not copied $i: [$destination]\n";
                     }
+                    else echo "\nFile already exists: [$destination]\n";
                     // */
                     
                     unlink($local);
