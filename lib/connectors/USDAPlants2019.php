@@ -376,7 +376,7 @@ class USDAPlants2019
                 $local = $this->save_path . "/$alias".".txt"; //this was generated above
                 self::parse_state_list($local, $alias);
             }
-            // break; //debug - process just 1 alias
+            // break; //debug only - process just 1 alias
         }
     }
     private function get_state_territory_names()
