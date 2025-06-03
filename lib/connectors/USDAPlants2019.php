@@ -359,6 +359,7 @@ class USDAPlants2019
 
                     // /* will try to download the text files since they are now offline
                     $destination = $this->save_path . "/$alias".".txt";
+                    echo "\nsource: $local\ndestination: $destination\n";
                     if(!is_file($destination)) {
                         echo "\nFile does not exist: [$destination]\n";
                         if(copy($local, $destination)) echo "\nFile copied $i: [$destination]\n";
@@ -369,6 +370,7 @@ class USDAPlants2019
                     
                     unlink($local);
                 }
+                else echo "\nERROR: Source does not exist: [$local]\n";
             }
             // break; //debug - process just 1 alias
         }
