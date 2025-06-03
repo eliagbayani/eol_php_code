@@ -42,7 +42,7 @@ class USDAPlantNewAPI
 
         $this->download_options = array('cache' => 1, 'resource_id' => 'usda_plants', 'expire_seconds' => 60*60*24*30*6, //6 months
         'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1); //orig, 6 months to expire
-        $this->download_options['expire_seconds'] = false; //not orig, only for faster refresh
+        // $this->download_options['expire_seconds'] = false; //not orig, only for faster refresh
         $this->debug = array();
         $this->github['US State list'] = 'https://github.com/eliagbayani/EOL-connector-data-files/raw/master/USDA_Plants/US_State_list.tsv';
         /*
@@ -535,16 +535,18 @@ class USDAPlantNewAPI
     {
         $options = $this->download_options;
         $options['expire_seconds'] = 60*60*24*30*12; //1 year
-        $tsv_file = Functions::save_remote_file_to_local($this->github['US State list'], $options);
-        $out = shell_exec("wc -l ".$tsv_file); echo "\nUS States/Territories: $out";
-        $i = 0;
-        foreach(new FileIterator($tsv_file) as $line_number => $line) { $i++;
-            $row = explode("\t", $line);
-            $abbrev = $row[1];
-            $state_name = $row[0];
-            $this->US_abbrev_state[$abbrev] = $state_name;
+        if($tsv_file = Functions::save_remote_file_to_local($this->github['US State list'], $options)) {
+            $out = shell_exec("wc -l ".$tsv_file); echo "\nUS States/Territories: $out";
+            $i = 0;
+            foreach(new FileIterator($tsv_file) as $line_number => $line) { $i++;
+                $row = explode("\t", $line);
+                $abbrev = $row[1];
+                $state_name = $row[0];
+                $this->US_abbrev_state[$abbrev] = $state_name;
+            }
+            unlink($tsv_file);
         }
-        unlink($tsv_file);
+        else exit("\nInvestigate: (US State list) file not found [".$this->github['US State list']."]\n");
     }
     private function set_service_urls()
     {
@@ -556,9 +558,9 @@ class USDAPlantNewAPI
             // print_r($obj); print_r($this->serviceUrls);
             // "plantsServicesUrl": "https://plantsservices.sc.egov.usda.gov/api/",        TO BE USED
             // "imageLibraryUrl": "https://plants.sc.egov.usda.gov/ImageLibrary",          TO BE USED
-
             // $this->serviceUrls->imageLibraryUrl --- for media accessURI
         }
+        else exit("\nInvestigate. Service URLs not found: [".$this->service['URLs']."]\n");
     }
     // =========================================================================================
     // ========================================================================================= copied template below
@@ -573,11 +575,13 @@ class USDAPlantNewAPI
         $download_options['expire_seconds'] = 60*60*24*30; //1 month
         if($use_cache) $download_options['cache'] = 1;
         // $download_options['cache'] = 0; // 0 only when developing //debug - comment in real operation
-        $temp_path = Functions::save_remote_file_to_local($file, $download_options);
-        echo "\nunzipping this file [$temp_path]... \n";
-        shell_exec("unzip -o " . $temp_path . " -d " . DOC_ROOT."tmp/"); //worked OK
-        unlink($temp_path);
-        if(is_dir(DOC_ROOT."tmp/"."__MACOSX")) recursive_rmdir(DOC_ROOT."tmp/"."__MACOSX");
+        if($temp_path = Functions::save_remote_file_to_local($file, $download_options)) {
+            echo "\nunzipping this file [$temp_path]... \n";
+            shell_exec("unzip -o " . $temp_path . " -d " . DOC_ROOT."tmp/"); //worked OK
+            unlink($temp_path);
+            if(is_dir(DOC_ROOT."tmp/"."__MACOSX")) recursive_rmdir(DOC_ROOT."tmp/"."__MACOSX");
+        }
+        else exit("\nInvestigate: remote file not found: [$file]\n");
     }
     //==================================================================================================================
     /* not being used as of Aug 6, 2018

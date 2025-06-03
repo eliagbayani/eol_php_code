@@ -9,7 +9,7 @@ class USDAPlants2019
         $this->archive_builder = $archive_builder;
         
         $this->download_options = array('cache' => 1, 'resource_id' => $resource_id, 'expire_seconds' => 60*60*24*30*4, 'download_wait_time' => 1000000, 'timeout' => 10800, 'download_attempts' => 1, 'delay_in_minutes' => 1);
-        $this->download_options['expire_seconds'] = false; //comment after first harvest
+        // $this->download_options['expire_seconds'] = false; //comment after first harvest
         
         $this->debug = array();
         
@@ -371,6 +371,10 @@ class USDAPlants2019
                     unlink($local);
                 }
                 else echo "\nERROR: Source does not exist: [$local]\n";
+            }
+            else {
+                $local = $this->save_path . "/$alias".".txt"; //this was generated above
+                self::parse_state_list($local, $alias);
             }
             // break; //debug - process just 1 alias
         }
