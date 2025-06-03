@@ -7,7 +7,7 @@ first client: Micro*scope
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 $timestart = time_elapsed();
-// $GLOBALS['ENV_DEBUG'] = true;
+$GLOBALS['ENV_DEBUG'] = true;
 
 print_r($argv);
 $params['jenkins_or_cron'] = @$argv[1]; //not needed here
