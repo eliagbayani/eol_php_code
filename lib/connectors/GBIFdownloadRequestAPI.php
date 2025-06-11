@@ -577,7 +577,7 @@ class GBIFdownloadRequestAPI
             AND NOT ARRAY_CONTAINS(issue, 'COORDINATE_OUT_OF_RANGE') " .$this->datasetKey_filters. " 
             GROUP BY specieskey, continent";
         }
-        echo("\n".$param['sql']."\n"); //exit;
+        echo("\n".@$param['sql']."\n"); //exit;
         return json_encode($param);
         /* from GBIF API Downloads: Country_checklists or WaterBody_checklists Continent_checklists
             {
