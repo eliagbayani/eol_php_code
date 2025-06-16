@@ -56,7 +56,8 @@ Size size history:
 
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 require_library('connectors/iNatImagesAPI');
-ini_set('memory_limit','17096M'); //orig 15096M; this can be removed and choose a caching solution. But let us try this first.
+ini_set('memory_limit','19096M'); //orig 15096M; this can be removed and choose a caching solution. But let us try this first.
+                                  // 17096M still not enough
 $timestart = time_elapsed();
 
 // $resource_id = 'inat_images'; //being used currently, caching image scores
