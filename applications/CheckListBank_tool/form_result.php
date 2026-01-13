@@ -101,7 +101,7 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
             if(is_dir($download_directory) && file_exists($meta_xml_path)) {
                 // echo "\n[$download_directory]\n"; exit;
                 $taxon_file        = get_file_from_DwCA($meta_xml_path, "http://rs.tdwg.org/dwc/terms/Taxon"); //taxon.tab
-                $distribution_file = get_file_from_DwCA($meta_xml_path, "http://rs.gbif.org/terms/1.0/Distribution"); //taxon.tab
+                $distribution_file = get_file_from_DwCA($meta_xml_path, "http://rs.gbif.org/terms/1.0/Distribution"); //distribution.tab
 
                 copy_file_now($taxon_file, $download_directory, $time_var);
                 copy_file_now($distribution_file, $download_directory, $time_var);
@@ -268,7 +268,7 @@ function get_file_from_DwCA($meta_xml, $rowType)
     if(preg_match("/".preg_quote($left, '/')."(.*?)<\/files>/ims", $xml, $arr)) {
         if(preg_match("/<location>(.*?)<\/location>/ims", $arr[1], $arr2)) return $arr2[1]; //e.g. "taxon.tab"
     }
-    echo "\nERROR: file not found. An extension file for: [$rowType]\n";
+    exit("\nERROR: Required file not found. An extension file for: [$rowType]\n");
 }
 function copy_file_now($some_file, $download_directory, $time_var)
 {
