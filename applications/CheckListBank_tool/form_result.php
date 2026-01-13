@@ -87,10 +87,20 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
         if($download_directory = ContentManager::download_temp_file_and_assign_extension($dwca_full_path, "")) { //added 2nd blank param to suffice: "Warning: Missing argument 2"
             debug("<br>newfile = [$newfile]<br>download_directory:[$download_directory]<br>"); //exit("\nstop 2\n");
             // $download_directory = '/Library/WebServer/Webroot/eol_php_code/applications/content_server/tmp/9f508e44e8038fb56bbc0c9b34eb3ac7';
-            if(is_dir($download_directory) && file_exists($download_directory ."/meta.xml")) {
+
+            // /* New: Jan 13, 2026 - accomodate other path for meta.xml
+            $filename = pathinfo($orig_file, PATHINFO_FILENAME);
+            $meta_xml_path = $download_directory ."/meta.xml";
+            if(!file_exists($meta_xml_path)) {
+                $meta_xml_path = $download_directory ."/$filename/meta.xml";
+                if(!file_exists($meta_xml_path)) exit("<hr>ERROR:* Cannot proceed. DwCA doesn't have meta.xml [$download_directory][$meta_xml_path]. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
+            }
+            // */
+
+            if(is_dir($download_directory) && file_exists($meta_xml_path)) {
                 // echo "\n[$download_directory]\n"; exit;
-                $taxon_file        = get_file_from_DwCA($download_directory ."/meta.xml", "http://rs.tdwg.org/dwc/terms/Taxon"); //taxon.tab
-                $distribution_file = get_file_from_DwCA($download_directory ."/meta.xml", "http://rs.gbif.org/terms/1.0/Distribution"); //taxon.tab
+                $taxon_file        = get_file_from_DwCA($meta_xml_path, "http://rs.tdwg.org/dwc/terms/Taxon"); //taxon.tab
+                $distribution_file = get_file_from_DwCA($meta_xml_path, "http://rs.gbif.org/terms/1.0/Distribution"); //taxon.tab
 
                 copy_file_now($taxon_file, $download_directory, $time_var);
                 copy_file_now($distribution_file, $download_directory, $time_var);
@@ -102,7 +112,7 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
                 // */
 
             }
-            else exit("<hr>ERROR: Cannot proceed. DwCA doesn't have meta.xml [$download_directory]. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
+            else exit("<hr>ERROR:** Cannot proceed. DwCA doesn't have meta.xml [$download_directory]. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>"); //does not go here anymore
         }
         else exit("<hr>ERROR: Cannot proceed. File is lost [$dwca_full_path]. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
         // ---------- */
