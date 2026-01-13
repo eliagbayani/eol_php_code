@@ -255,7 +255,7 @@ function get_val_var($v)
     else return NULL;
 }
 function get_file_from_DwCA($meta_xml, $rowType)
-{   echo "<br>meta.xml path: [$meta_xml]<br>";
+{   //echo "<br>meta.xml path: [$meta_xml]<br>";
     $xml = file_get_contents($meta_xml);
     /* e.g. meta.xml contents:
     <table encoding="UTF-8" fieldsTerminatedBy="\t" linesTerminatedBy="\n" ignoreHeaderLines="1" rowType="http://rs.tdwg.org/dwc/terms/Taxon">
@@ -268,7 +268,7 @@ function get_file_from_DwCA($meta_xml, $rowType)
     if(preg_match("/".preg_quote($left, '/')."(.*?)<\/files>/ims", $xml, $arr)) {
         if(preg_match("/<location>(.*?)<\/location>/ims", $arr[1], $arr2)) return $arr2[1]; //e.g. "taxon.tab"
     }
-    echo "\nERROR: extension file not found [$rowType]\n";
+    echo "\nERROR: file not found. An extension file for: [$rowType]\n";
 }
 function copy_file_now($some_file, $download_directory, $time_var)
 {
