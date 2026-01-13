@@ -92,7 +92,8 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
             $filename = pathinfo($orig_file, PATHINFO_FILENAME);
             $meta_xml_path = $download_directory ."/meta.xml";
             if(!file_exists($meta_xml_path)) {
-                $meta_xml_path = $download_directory ."/$filename/meta.xml";
+                $download_directory .= "/$filename";
+                $meta_xml_path = $download_directory ."/meta.xml";
                 if(!file_exists($meta_xml_path)) exit("<hr>ERROR:* Cannot proceed. DwCA doesn't have meta.xml [$download_directory][$meta_xml_path]. <br> <a href='javascript:history.go(-1)'> &lt;&lt; Go back</a><hr>");
             }
             // */
