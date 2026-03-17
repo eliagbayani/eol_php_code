@@ -112,6 +112,8 @@ elseif($file_type = @$_FILES["file_upload2"]["type"]) { // Darwin Core Archive
                 /* used for the longest time. Changed due to diff type of .zip file e.g. new_test.zip from Tom O.
                 if(strlen($basename) == 32 && is_dir($download_directory)) recursive_rmdir($download_directory);
                 ERROR: Cannot delete temporary folder in [/content_server/tmp/][new_test][/var/www/html/eol_php_code/applications/content_server/tmp/605c1102ca6bf127086eb9e7732ae61d/new_test]
+                path can now be also: /content_server/tmp/605c1102ca6bf127086eb9e7732ae61d/new_test
+                not just the orig:    /content_server/tmp/605c1102ca6bf127086eb9e7732ae61d/
                 */
                 if(is_dir($download_directory)) recursive_rmdir($download_directory);
                 else exit("<br>ERROR: Cannot delete temporary folder in [/content_server/tmp/][$basename][$download_directory]<br>");

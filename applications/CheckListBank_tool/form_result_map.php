@@ -166,10 +166,13 @@ function get_text_contents($basename)
 }
 function generate_array_map($form, $table)
 {
+    // print_r($form); echo "\n[$table]\n";
     $final = array();
-    foreach($form[$table] as $whole) {
-        $parts = explode("|", $whole);
-        $final[$parts[0]] = @$parts[1];
+    if($arr = @$form[$table]) {
+        foreach($arr as $whole) {
+            $parts = explode("|", $whole);
+            $final[$parts[0]] = @$parts[1];
+        }
     }
     return $final;
 }
@@ -286,7 +289,7 @@ function write_output_rec_2txt($rec, $filename)
 function generate_array_comment_UR($form)
 {
     $tS = $form['taxonomicStatus'];
-    $CUR = $form['comment_unacceptability_reason'];
+    $CUR = @$form['comment_unacceptability_reason'];
     foreach($tS as $pipe) {
         $parts = explode("|", $pipe);
         $left = $parts[0];

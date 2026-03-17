@@ -80,8 +80,8 @@ class CheckListBankRules extends CheckListBankWeb
         $a = self::sort_key_val_array($this->debug['nomenclaturalStatus']); self::write_array_2txt(array_keys($a), "nomenclaturalStatus");  //print_r($a);
         $a = self::sort_key_val_array($this->debug['taxonRemarks']);        self::write_array_2txt(array_keys($a), "taxonRemarks");         //print_r($a);
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Distribution_file'], 'process Distribution.tsv'); //generate unique lists from Distribution.tsv
-        $a = self::sort_key_val_array($this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
-        $a = self::sort_key_val_array($this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
+        $a = self::sort_key_val_array(@$this->debug['locality']);            self::write_array_2txt(array_keys($a), "locality");             //print_r($a);
+        $a = self::sort_key_val_array(@$this->debug['occurrenceStatus']);    self::write_array_2txt(array_keys($a), "occurrenceStatus");     //print_r($a);
         self::parse_TSV_file($this->temp_folder . $this->arr_json['Taxon_file'], 'do main mapping');
         self::parse_references_with_anystyle();
 
@@ -341,6 +341,7 @@ class CheckListBankRules extends CheckListBankWeb
     }
     function sort_key_val_array($multi_array, $key_orientation = SORT_ASC, $value_orientation = SORT_ASC)
     {
+        if(!$multi_array) return array();
         $data = array();
         foreach($multi_array as $key => $value) $data[] = array('language' => $key, 'count' => $value);
         // Obtain a list of columns

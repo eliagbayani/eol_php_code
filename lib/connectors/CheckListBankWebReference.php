@@ -33,7 +33,7 @@ class CheckListBankWebReference
         $references = self::get_text_contents('References');
         // $unique_types = self::get_unique_values($references, 'Item type'); //print_r($unique_types); exit; //works but not used anymore
 
-        $fields = explode("\t", $references[0]);
+        $fields = explode("\t", @$references[0]);
         // additional fields:
         $fields[] = 'listed_pub_date';
         $fields[] = 'isbn';
@@ -144,8 +144,11 @@ class CheckListBankWebReference
     private function get_text_contents($basename)
     {
         $filename = $this->temp_dir.$basename.".txt"; //echo "\nfilename: [$filename]\n";
-        $contents = file_get_contents($filename);
-        return explode("\n", $contents);
+        if(file_exists($filename)) {
+            $contents = file_get_contents($filename);
+            return explode("\n", $contents);
+        }
+        return array();
     }
     private function get_unique_values($references, $type)
     {
