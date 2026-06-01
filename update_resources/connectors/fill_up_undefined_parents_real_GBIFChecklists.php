@@ -38,7 +38,7 @@ c_MZ
 
 ------------------------------------ end ------------------------------------
 */
-
+exit("\nReported to loop indefinitely. Since we won't use it anymore, will disable this script.\n");
 include_once(dirname(__FILE__) . "/../../config/environment.php");
 ini_set('memory_limit','7096M');
 

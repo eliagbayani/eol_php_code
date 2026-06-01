@@ -13,6 +13,7 @@ class DWCADiagnoseAPI
         $this->file['vernacularname']    = "http://rs.tdwg.org/dwc/terms/vernacularName";
         $this->file['measurementorfact'] = "http://rs.tdwg.org/dwc/terms/measurementID"; //newly added
         $this->file['association']       = "http://eol.org/schema/associationID";
+        exit("\nReported to loop indefinitely. Since we won't use it anymore, will disable this script.\n");
     }
     function investigate_extension($resource_id, $tab_file) //$tab_file e.g. 'taxon.tab'
     {
